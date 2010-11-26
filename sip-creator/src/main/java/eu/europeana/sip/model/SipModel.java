@@ -158,22 +158,21 @@ public class SipModel {
         return fileStore;
     }
 
-    public void createDataSetStore(final String spec, final File file, final ProgressMonitor progressMonitor, final Action launchAction) {
+    public void createDataSetStore(final FileStore.DataSetStore dataSetStore, final File file, final ProgressMonitor progressMonitor, final Action launchAction) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    final FileStore.DataSetStore store = fileStore.createDataSetStore(spec);
-                    store.importFile(file, new ProgressListener.Adapter(progressMonitor, launchAction));
+                    dataSetStore.importFile(file, new ProgressListener.Adapter(progressMonitor, launchAction));
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            setDataSetStore(store);
+                            setDataSetStore(dataSetStore);
                         }
                     });
                 }
                 catch (FileStoreException e) {
-                    userNotifier.tellUser("Couldn't create dataset from " + file.getAbsolutePath(), e);
+                    userNotifier.tellUser("Couldn't create Data Set from " + file.getAbsolutePath(), e);
                 }
             }
         });

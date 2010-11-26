@@ -107,19 +107,48 @@ public class SipCreatorGUI extends JFrame {
                     return false;
                 }
                 else {
-                    String spec = JOptionPane.showInputDialog(
+                    int upgradeExisting = JOptionPane.showConfirmDialog(
                             SipCreatorGUI.this,
-                            String.format(
-                                    "<html>You have selected the following file for importing:<br><br>" +
-                                            "<pre>      <strong>%s</strong></pre><br>" +
-                                            "To complete the import you must enter a Data Set Spec name which will serve<br>" +
-                                            "to identify it in the future. For consistency this cannot be changed later, so choose<br>" +
-                                            "carefully.",
+                            String.format("<html>Do you wish to update an existing Data Set for<br><br>" +
+                                    "<pre>    <strong>%s</strong></pre><br><br>" +
+                                    "If not you will be asked to create a Data Set Spec.",
                                     file.getAbsolutePath()
                             ),
-                            "Select and Enter Data Set Spec",
-                            JOptionPane.QUESTION_MESSAGE
+                            "Existing",
+                            JOptionPane.YES_NO_OPTION
                     );
+                    String spec;
+                    if (upgradeExisting == JOptionPane.YES_OPTION) {
+                        Object[] specs = sipModel.getFileStore().getDataSetSpecs().toArray();
+                        spec = (String) JOptionPane.showInputDialog(
+                                SipCreatorGUI.this,
+                                String.format(
+                                        "<html>Choose an existing Data Set for receiving<br><br>" +
+                                                "<pre>    <strong>%s</strong></pre><br>",
+                                        file.getAbsolutePath()
+                                ),
+                                "Existing Data Set",
+                                JOptionPane.PLAIN_MESSAGE,
+                                null,
+                                specs,
+                                ""
+                        );
+                    }
+                    else {
+                        spec = JOptionPane.showInputDialog(
+                                SipCreatorGUI.this,
+                                String.format(
+                                        "<html>You have selected the following file for importing:<br><br>" +
+                                                "<pre>      <strong>%s</strong></pre><br>" +
+                                                "To complete the import you must enter a Data Set Spec name which will serve<br>" +
+                                                "to identify it in the future. For consistency this cannot be changed later, so choose<br>" +
+                                                "carefully.",
+                                        file.getAbsolutePath()
+                                ),
+                                "Select and Enter Data Set Spec",
+                                JOptionPane.QUESTION_MESSAGE
+                        );
+                    }
                     if (spec == null || spec.trim().isEmpty()) {
                         return false;
                     }
@@ -138,12 +167,19 @@ public class SipCreatorGUI extends JFrame {
                     );
                     if (doImport == JOptionPane.YES_OPTION) {
                         ProgressMonitor progressMonitor = new ProgressMonitor(SipCreatorGUI.this, "Importing", "Storing data for " + spec, 0, 100);
-                        sipModel.createDataSetStore(spec, file, progressMonitor, null);
-                        return true;
+                        try {
+                            FileStore.DataSetStore store = upgradeExisting == JOptionPane.YES_OPTION ? sipModel.getFileStore().getDataSetStore(spec) : sipModel.getFileStore().createDataSetStore(spec);
+                            if (store.hasSource()) {
+                                store.clearSource();
+                            }
+                            sipModel.createDataSetStore(store, file, progressMonitor, null);
+                            return true;
+                        }
+                        catch (FileStoreException e) {
+                            sipModel.tellUser("Unable to import", e);
+                        }
                     }
-                    else {
-                        return false;
-                    }
+                    return false;
                 }
             }
         }));
