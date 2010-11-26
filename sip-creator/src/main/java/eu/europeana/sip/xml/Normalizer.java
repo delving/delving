@@ -95,7 +95,7 @@ public class Normalizer implements Runnable {
             ToolCodeResource toolCodeResource = new ToolCodeResource();
             fileSetOutput = sipModel.getDataSetStore().createMappingOutput(recordMapping, normalizedFile);
             if (normalizedFile != null) {
-                Writer out = fileSetOutput.getNormalizedWriter();
+                Writer out = fileSetOutput.getOutputWriter();
                 out.write("<?xml version='1.0' encoding='UTF-8'?>\n");
                 out.write("<metadata");
                 writeNamespace(out, MetadataNamespace.DC);
@@ -114,7 +114,7 @@ public class Normalizer implements Runnable {
                     String validated = recordValidator.validateRecord(output, problems);
                     if (problems.isEmpty()) {
                         if (normalizedFile != null) {
-                            fileSetOutput.getNormalizedWriter().write(validated);
+                            fileSetOutput.getOutputWriter().write(validated);
                         }
                         fileSetOutput.recordNormalized();
                     }
@@ -166,7 +166,7 @@ public class Normalizer implements Runnable {
                 }
             }
             if (normalizedFile != null) {
-                fileSetOutput.getNormalizedWriter().write("</metadata>\n");
+                fileSetOutput.getOutputWriter().write("</metadata>\n");
             }
             fileSetOutput.close(!running);
             if (!running) {

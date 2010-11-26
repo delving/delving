@@ -49,10 +49,16 @@ public interface FileStore {
 
     DataSetStore getDataSetStore(String spec) throws FileStoreException;
 
-    DataSetStore createDataSetStore(String spec, File inputFile, ProgressListener progressListener) throws FileStoreException;
+    DataSetStore createDataSetStore(String spec) throws FileStoreException;
 
     public interface DataSetStore {
         String getSpec();
+
+        boolean hasSource();
+
+        void importFile(File inputFile, ProgressListener progressListener) throws FileStoreException;
+
+        void clearSource() throws FileStoreException;
 
         InputStream createXmlInputStream() throws FileStoreException;
 
@@ -68,20 +74,20 @@ public interface FileStore {
 
         void setSourceDetails(SourceDetails details) throws FileStoreException;
 
-        MappingOutput createMappingOutput(RecordMapping recordMapping, File normalizedFile) throws FileStoreException;
+        MappingOutput createMappingOutput(RecordMapping recordMapping, File normalizedDirectory) throws FileStoreException;
 
         void delete() throws FileStoreException;
 
         File getSourceDetailsFile() throws FileStoreException;
 
-        File getSourceFile() throws FileStoreException;
+        File getSourceDirectory() throws FileStoreException;
 
         Collection<File> getMappingFiles() throws FileStoreException;
     }
 
     public interface MappingOutput {
 
-        Writer getNormalizedWriter();
+        Writer getOutputWriter();
 
         Writer getDiscardedWriter();
 
@@ -93,11 +99,10 @@ public interface FileStore {
     }
 
     String APP_CONFIG_FILE_NAME = "app-config.xml";
-    String SOURCE_FILE_PREFIX = "source.";
-    String SOURCE_FILE_SUFFIX = ".xml.gz";
+    String SOURCE_FILE_NAME = "source.xml.gz";
     String STATISTICS_FILE_NAME = "statistics.ser";
     String SOURCE_DETAILS_FILE_NAME = "source-details.txt";
-    String MAPPING_FILE_PREFIX = "mapping.";
-    String DISCARDED_FILE_PREFIX = "discarded.";
-
+    String MAPPING_FILE_NAME = "mapping.xml";
+    String MAPPING_DIRECTORY_PREFIX = "mapping_";
+    String SOURCE_DIRECTORY_PREFIX = "source_";
 }
