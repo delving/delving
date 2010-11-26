@@ -163,7 +163,8 @@ public class SipModel {
             @Override
             public void run() {
                 try {
-                    final FileStore.DataSetStore store = fileStore.createDataSetStore(spec, file, new ProgressListener.Adapter(progressMonitor, launchAction));
+                    final FileStore.DataSetStore store = fileStore.createDataSetStore(spec);
+                    store.importFile(file, new ProgressListener.Adapter(progressMonitor, launchAction));
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {

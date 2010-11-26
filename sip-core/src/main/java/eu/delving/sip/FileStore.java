@@ -80,7 +80,7 @@ public interface FileStore {
 
         File getSourceDetailsFile() throws FileStoreException;
 
-        File getSourceDirectory() throws FileStoreException;
+        File getSourceFile() throws FileStoreException;
 
         Collection<File> getMappingFiles() throws FileStoreException;
     }

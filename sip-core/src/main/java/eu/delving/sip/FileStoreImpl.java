@@ -371,12 +371,9 @@ public class FileStoreImpl implements FileStore {
         }
 
         @Override
-        public File getSourceDirectory() throws FileStoreException {
-            File[] sources = directory.listFiles(new SourceDirectoryFilter());
-            if (sources.length != 1) {
-                throw new FileStoreException("Expected exactly one source directory");
-            }
-            return sources[0];
+        public File getSourceFile() throws FileStoreException {
+            File sourceDirectory = getSourceDirectory();
+            return new File(sourceDirectory, SOURCE_FILE_NAME);
         }
 
         @Override
@@ -387,6 +384,14 @@ public class FileStoreImpl implements FileStore {
         @Override
         public String toString() {
             return getSpec();
+        }
+
+        private File getSourceDirectory() throws FileStoreException {
+            File[] sources = directory.listFiles(new SourceDirectoryFilter());
+            if (sources.length != 1) {
+                throw new FileStoreException("Expected exactly one source directory");
+            }
+            return sources[0];
         }
 
         private File mappingDirectory(RecordMapping recordMapping) {
