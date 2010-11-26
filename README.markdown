@@ -105,7 +105,7 @@ In addition, Delving is commercially backed by Delving BV based in Rotterdam, th
 
 ### Delving Contributors ###
 
-* Manuel Gay
+* Manuel Bernhardt
 * Christian Sadilek
 
 ### Europeana Core Team Developers ###
