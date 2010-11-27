@@ -59,6 +59,7 @@ public class RepositoryConnection {
 
     public void enablePolling(boolean enable) {
         if (enable) {
+            executor.execute(new ListFetcher());
             periodicListFetchTimer.restart();
         }
         else {

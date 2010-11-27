@@ -108,7 +108,7 @@ public class DataSetListModel extends AbstractListModel {
         public String toHtml() throws FileStoreException {
             StringBuilder html = new StringBuilder(
                     String.format(
-                            "<html><table><tr><td width=200><h1>%s</h1></td><td>",
+                            "<html><table><tr><td width=260><h2>%s</h2></td><td>",
                             spec
                     )
             );
