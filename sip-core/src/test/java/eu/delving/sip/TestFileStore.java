@@ -84,11 +84,11 @@ public class TestFileStore {
         store.importFile(sampleFile(), null);
         Assert.assertTrue(store.hasSource());
         Assert.assertEquals("Should be one file", 1, DIR.listFiles().length);
-        Assert.assertEquals("Should be one sped", 1, fileStore.getDataSetSpecs().size());
+        Assert.assertEquals("Should be one spec", 1, fileStore.getDataSetStores().size());
         Assert.assertEquals("Should be one file", 1, new File(DIR, SPEC).listFiles().length);
         log.info("Created " + new File(DIR, SPEC).listFiles()[0].getAbsolutePath());
         InputStream inputStream = sampleInputStream();
-        InputStream storedStream = fileStore.getDataSetStore(SPEC).createXmlInputStream();
+        InputStream storedStream = fileStore.getDataSetStores().get(SPEC).createXmlInputStream();
         int input = 0, stored;
         while (input != -1) {
             input = inputStream.read();
@@ -121,9 +121,9 @@ public class TestFileStore {
         MappingModel mappingModel = new MappingModel();
         mappingModel.setRecordMapping(recordMapping);
         mappingModel.setConstant("/some/path", "value");
-        fileStore.getDataSetStore(SPEC).setRecordMapping(recordMapping);
+        fileStore.getDataSetStores().get(SPEC).setRecordMapping(recordMapping);
         Assert.assertEquals("Should be two files", 2, new File(DIR, SPEC).listFiles().length);
-        recordMapping = fileStore.getDataSetStore(SPEC).getRecordMapping(recordDefinition);
+        recordMapping = fileStore.getDataSetStores().get(SPEC).getRecordMapping(recordDefinition);
         Assert.assertEquals("Should have held constant", "value", recordMapping.getConstant("/some/path"));
     }
 
@@ -141,7 +141,7 @@ public class TestFileStore {
         stats.add(statistics);
         store.setStatistics(stats);
         Assert.assertEquals("Should be one directory ", 1, new File(DIR, SPEC).listFiles().length);
-        stats = fileStore.getDataSetStore(SPEC).getStatistics();
+        stats = fileStore.getDataSetStores().get(SPEC).getStatistics();
         Assert.assertEquals("Should be one stat", 1, stats.size());
         Assert.assertEquals("Path discrepancy", "/stat/path", stats.get(0).getPath().toString());
     }
@@ -154,7 +154,7 @@ public class TestFileStore {
         Assert.assertEquals("source details should be empty", "", sourceDetails.get("recordPath"));
         sourceDetails.set("recordPath", "Wingy");
         store.setSourceDetails(sourceDetails);
-        sourceDetails = fileStore.getDataSetStore(SPEC).getSourceDetails();
+        sourceDetails = fileStore.getDataSetStores().get(SPEC).getSourceDetails();
         Assert.assertEquals("source details should be restored", "Wingy", sourceDetails.get("recordPath"));
     }
 
@@ -171,7 +171,7 @@ public class TestFileStore {
         Assert.assertEquals("Should be two files", 2, new File(DIR, SPEC).listFiles().length);
         mo.close(false);
         store.setRecordMapping(recordMapping);
-        recordMapping = fileStore.getDataSetStore(SPEC).getRecordMapping(recordDefinition);
+        recordMapping = fileStore.getDataSetStores().get(SPEC).getRecordMapping(recordDefinition);
         Assert.assertEquals("Mapping should contain facts", 1, recordMapping.getRecordsDiscarded());
         Assert.assertEquals("Mapping should contain facts", 2, recordMapping.getRecordsNormalized());
     }

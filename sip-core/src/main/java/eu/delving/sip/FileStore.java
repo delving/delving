@@ -31,7 +31,7 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * This interface describes how files are stored by the sip-creator
@@ -45,9 +45,7 @@ public interface FileStore {
 
     void setAppConfig(AppConfig appConfig) throws FileStoreException;
 
-    Set<String> getDataSetSpecs();
-
-    DataSetStore getDataSetStore(String spec) throws FileStoreException;
+    Map<String, DataSetStore> getDataSetStores();
 
     DataSetStore createDataSetStore(String spec) throws FileStoreException;
 
@@ -82,7 +80,7 @@ public interface FileStore {
 
         File getSourceFile() throws FileStoreException;
 
-        Collection<File> getMappingFiles() throws FileStoreException;
+        Collection<File> getMappingDirectories() throws FileStoreException;
     }
 
     public interface MappingOutput {

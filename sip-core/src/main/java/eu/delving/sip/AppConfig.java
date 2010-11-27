@@ -23,9 +23,6 @@ package eu.delving.sip;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * This class
  *
@@ -36,7 +33,7 @@ import java.util.List;
 @XStreamAlias("sip-creator-configuration")
 public class AppConfig {
     private String accessKey;
-    private List<String> recentDirectories;
+    private String recentDirectory;
 
     public String getAccessKey() {
         if (accessKey == null) {
@@ -49,11 +46,14 @@ public class AppConfig {
         this.accessKey = accessKey;
     }
 
-    public List<String> getRecentDirectories() {
-        if (recentDirectories == null) {
-            recentDirectories = new ArrayList<String>();
+    public String getRecentDirectory() {
+        if (recentDirectory == null) {
+            recentDirectory = System.getProperty("user.home");
         }
-        return recentDirectories;
+        return recentDirectory;
     }
 
+    public void setRecentDirectory(String recentDirectory) {
+        this.recentDirectory = recentDirectory;
+    }
 }

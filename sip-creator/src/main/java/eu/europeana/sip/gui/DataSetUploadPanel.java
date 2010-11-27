@@ -69,10 +69,10 @@ public class DataSetUploadPanel extends JPanel {
                 File sourceFile = store.getSourceFile();
                 add(new JButton(new UploadFileAction("Source XML", sourceFile)), gbc);
                 gbc.gridy++;
-                for (File mappingFile : store.getMappingFiles()) {
-                    add(new JButton(new UploadFileAction("Mapping", mappingFile)), gbc);
-                    gbc.gridy++;
-                }
+//                for (File mappingFile : store.getMappingFiles()) {
+//                    add(new JButton(new UploadFileAction("Mapping", mappingFile)), gbc);
+//                    gbc.gridy++;
+//                }
             }
             catch (FileStoreException e) {
                 sipModel.tellUser("Unable to find the source file for "+store.getSpec(), e);

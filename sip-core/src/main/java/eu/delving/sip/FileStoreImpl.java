@@ -48,8 +48,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -107,23 +107,14 @@ public class FileStoreImpl implements FileStore {
     }
 
     @Override
-    public Set<String> getDataSetSpecs() {
-        Set<String> specs = new TreeSet<String>();
+    public Map<String,DataSetStore> getDataSetStores() {
+        Map<String, DataSetStore> map = new TreeMap<String, DataSetStore>();
         for (File file : home.listFiles()) {
             if (file.isDirectory()) {
-                specs.add(file.getName());
+                map.put(file.getName(), new DataSetStoreImpl(file));
             }
         }
-        return specs;
-    }
-
-    @Override
-    public DataSetStore getDataSetStore(String spec) throws FileStoreException {
-        File directory = new File(home, spec);
-        if (!directory.exists()) {
-            throw new FileStoreException(String.format("Data store directory %s not found", directory.getAbsolutePath()));
-        }
-        return new DataSetStoreImpl(directory);
+        return map;
     }
 
     @Override
@@ -377,7 +368,7 @@ public class FileStoreImpl implements FileStore {
         }
 
         @Override
-        public Collection<File> getMappingFiles() throws FileStoreException {
+        public Collection<File> getMappingDirectories() throws FileStoreException {
             return Arrays.asList(directory.listFiles(new MappingDirectoryFilter()));
         }
 

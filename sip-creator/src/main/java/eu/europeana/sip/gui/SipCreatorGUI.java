@@ -23,7 +23,6 @@ package eu.europeana.sip.gui;
 
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.MetadataModelImpl;
-import eu.delving.metadata.Path;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.FileStoreImpl;
@@ -32,17 +31,35 @@ import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.UserNotifier;
 import org.apache.log4j.Logger;
 
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.HeadlessException;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The main GUI class for the sip creator
@@ -52,50 +69,84 @@ import java.util.Arrays;
  */
 
 public class SipCreatorGUI extends JFrame {
+    private static final Dimension SIZE = new Dimension(800, 600);
     private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel;
+    private MappingFrame mappingFrame;
+    private DataSetListModel dataSetListModel = new DataSetListModel();
+    private JList dataSetList = new JList(dataSetListModel);
+    private List<JButton> mappingButtons = new ArrayList<JButton>();
+    public static final int MARGIN = 15;
 
     public SipCreatorGUI(File fileStoreDirectory, String serverUrl) throws FileStoreException {
-        super("SIP Creator");
+        super("Delving SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         FileStore fileStore = new FileStoreImpl(fileStoreDirectory);
         this.sipModel = new SipModel(fileStore, loadMetadataModel(), new PopupExceptionHandler(), serverUrl);
-        sipModel.addUpdateListener(new SipModel.UpdateListener() {
-
+        this.mappingFrame = new MappingFrame(sipModel);
+        setJMenuBar(createMenuBar());
+        JPanel main = new JPanel(new BorderLayout(MARGIN, MARGIN));
+        main.setBorder(BorderFactory.createEmptyBorder(MARGIN, MARGIN, MARGIN, MARGIN));
+        getContentPane().add(main);
+        main.add(createList(), BorderLayout.CENTER);
+        main.add(createControl(), BorderLayout.SOUTH);
+        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+        setSize(SIZE);
+        setLocation((screen.width - SIZE.width) / 2, (screen.height - SIZE.height) / 2);
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
-            public void templateApplied() {
-            }
-
-            @Override
-            public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
-                if (dataSetStore == null) {
-                    SipCreatorGUI.this.setTitle("SIP Creator");
+            public void run() {
+                for (FileStore.DataSetStore dataSetStore : sipModel.getFileStore().getDataSetStores().values()) {
+                    dataSetListModel.setDataSetStore(dataSetStore);
                 }
-                else {
-                    SipCreatorGUI.this.setTitle(String.format("SIP Creator - Data Set %s", dataSetStore.getSpec()));
-                }
-            }
-
-            @Override
-            public void updatedRecordRoot(Path recordRoot, int recordCount) {
-            }
-
-            @Override
-            public void normalizationMessage(boolean complete, String message) {
             }
         });
-        JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Analysis", new AnalysisPanel(sipModel));
-        tabs.addTab("Mapping", new MappingPanel(sipModel));
-        tabs.addTab("Refinement", new RefinementPanel(sipModel));
-        tabs.addTab("Normalization", new NormalizationPanel(sipModel));
-        if (serverUrl != null) {
-            tabs.addTab("Repository", new DataSetPanel(sipModel));
+        for (JButton button : mappingButtons) {
+            button.setEnabled(false);
         }
-        getContentPane().add(tabs, BorderLayout.CENTER);
-        setJMenuBar(createMenuBar());
-//        setSize(1024, 768);
-        setSize(Toolkit.getDefaultToolkit().getScreenSize());
+    }
+
+    private JComponent createList() {
+        dataSetList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        dataSetList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent event) {
+                DataSetListModel.Entry entry = (DataSetListModel.Entry) dataSetList.getSelectedValue();
+                boolean enable = entry != null && entry.getDataSetStore() != null;
+                for (JButton button : mappingButtons) {
+                    button.setEnabled(enable);
+                }
+            }
+        });
+        JScrollPane scroll = new JScrollPane(dataSetList);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        JPanel p = new JPanel(new BorderLayout());
+        p.setBorder(BorderFactory.createTitledBorder("Data Sets"));
+        p.add(scroll);
+        return p;
+    }
+
+    private JComponent createControl() {
+        JPanel p = new JPanel();
+        p.setBorder(BorderFactory.createTitledBorder("Control"));
+        for (final String prefix : sipModel.getMetadataModel().getPrefixes()) {
+            JButton button = new JButton(String.format("Map to '%s'", prefix));
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent actionEvent) {
+                    int selected = dataSetList.getSelectedIndex();
+                    if (selected >= 0) {
+                        DataSetListModel.Entry entry = dataSetListModel.getEntry(selected);
+                        sipModel.setDataSetStore(entry.getDataSetStore());
+                        mappingFrame.show(prefix);
+                    }
+                }
+            });
+            p.add(button);
+            mappingButtons.add(button);
+        }
+        return p;
     }
 
     private JMenuBar createMenuBar() {
@@ -119,7 +170,8 @@ public class SipCreatorGUI extends JFrame {
                     );
                     String spec;
                     if (upgradeExisting == JOptionPane.YES_OPTION) {
-                        Object[] specs = sipModel.getFileStore().getDataSetSpecs().toArray();
+                        Map<String, FileStore.DataSetStore> dataSetStores = sipModel.getFileStore().getDataSetStores();
+                        Object[] specs = dataSetStores.keySet().toArray();
                         spec = (String) JOptionPane.showInputDialog(
                                 SipCreatorGUI.this,
                                 String.format(
@@ -168,7 +220,7 @@ public class SipCreatorGUI extends JFrame {
                     if (doImport == JOptionPane.YES_OPTION) {
                         ProgressMonitor progressMonitor = new ProgressMonitor(SipCreatorGUI.this, "Importing", "Storing data for " + spec, 0, 100);
                         try {
-                            FileStore.DataSetStore store = upgradeExisting == JOptionPane.YES_OPTION ? sipModel.getFileStore().getDataSetStore(spec) : sipModel.getFileStore().createDataSetStore(spec);
+                            FileStore.DataSetStore store = upgradeExisting == JOptionPane.YES_OPTION ? sipModel.getFileStore().getDataSetStores().get(spec) : sipModel.getFileStore().createDataSetStore(spec);
                             if (store.hasSource()) {
                                 store.clearSource();
                             }
@@ -183,14 +235,6 @@ public class SipCreatorGUI extends JFrame {
                 }
             }
         }));
-        bar.add(new DataSetMenu(sipModel, new DataSetMenu.SelectListener() {
-            @Override
-            public void selectDataSet(String spec) {
-                sipModel.setDataSetStore(spec);
-            }
-        }));
-        MappingTemplateMenu mappingTemplateMenu = new MappingTemplateMenu(this, sipModel);
-        bar.add(mappingTemplateMenu);
         return bar;
     }
 
@@ -239,6 +283,35 @@ public class SipCreatorGUI extends JFrame {
         @Override
         public void tellUser(String message) {
             tellUser(message, null);
+        }
+    }
+
+    private class MappingFrame extends JFrame {
+        private SipModel sipModel;
+
+        private MappingFrame(SipModel sipModel) throws HeadlessException {
+            super("Mapping");
+            this.sipModel = sipModel;
+            JTabbedPane tabs = new JTabbedPane();
+            tabs.addTab("Analysis", new AnalysisPanel(sipModel));
+            tabs.addTab("Mapping", new MappingPanel(sipModel));
+            tabs.addTab("Refinement", new RefinementPanel(sipModel));
+            tabs.addTab("Normalization", new NormalizationPanel(sipModel));
+            getContentPane().add(tabs, BorderLayout.CENTER);
+            setSize(Toolkit.getDefaultToolkit().getScreenSize());
+            addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent windowEvent) {
+                    SipCreatorGUI.this.setVisible(true);
+                }
+            });
+//        MappingTemplateMenu mappingTemplateMenu = new MappingTemplateMenu(this, sipModel);
+//        bar.add(mappingTemplateMenu);
+        }
+
+        public void show(String prefix) {
+            setTitle(String.format("Mapping '%s' of '%s'", prefix, sipModel.getDataSetStore().getSpec()));
+            setVisible(true);
         }
     }
 

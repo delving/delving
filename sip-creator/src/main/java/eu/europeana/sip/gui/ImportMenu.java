@@ -30,7 +30,6 @@ import javax.swing.filechooser.FileFilter;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.util.List;
 
 /**
  * The menu for handling files
@@ -60,7 +59,7 @@ public class ImportMenu extends JMenu {
         private JFileChooser chooser = new JFileChooser("XML File");
 
         private LoadNewFileAction(File directory) {
-            super("Explore " + directory.getAbsolutePath());
+            super("From " + directory.getAbsolutePath());
             chooser.setCurrentDirectory(directory);
             chooser.setFileFilter(new FileFilter() {
                 @Override
@@ -81,7 +80,7 @@ public class ImportMenu extends JMenu {
             int choiceMade = chooser.showOpenDialog(parent);
             if (choiceMade == JFileChooser.APPROVE_OPTION) {
                 File file = chooser.getSelectedFile();
-                sipModel.addRecentDirectory(file);
+                sipModel.setRecentDirectory(file);
                 selectListener.selectInputFile(file);
                 refresh();
             }
@@ -90,10 +89,10 @@ public class ImportMenu extends JMenu {
 
     private void refresh() {
         removeAll();
-        add(new LoadNewFileAction(new File("/")));
-        List<String> directoryList = sipModel.getRecentDirectories();
-        for (String directory : directoryList) {
-            add(new LoadNewFileAction(new File(directory)));
+        File directory = new File(sipModel.getRecentDirectory());
+        while (directory != null) {
+            add(new LoadNewFileAction(directory));
+            directory = directory.getParentFile();
         }
     }
 }

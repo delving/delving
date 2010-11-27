@@ -191,23 +191,15 @@ public class SipModel {
         executor.execute(new AppConfigSetter());
     }
 
-    public List<String> getRecentDirectories() {
-        return appConfig.getRecentDirectories();
+    public String getRecentDirectory() {
+        return appConfig.getRecentDirectory();
     }
 
-    public void addRecentDirectory(File directory) {
+    public void setRecentDirectory(File directory) {
         if (!directory.isDirectory()) {
             directory = directory.getParentFile();
         }
-        List<String> recent = appConfig.getRecentDirectories();
-        int existing = recent.indexOf(directory.getAbsolutePath());
-        if (existing >= 0) {
-            recent.remove(existing);
-        }
-        recent.add(0, directory.getAbsolutePath());
-        if (recent.size() > 20) {
-            recent.remove(appConfig.getRecentDirectories().size() - 1);
-        }
+        appConfig.setRecentDirectory(directory.getAbsolutePath());
         executor.execute(new AppConfigSetter());
     }
 
@@ -235,16 +227,7 @@ public class SipModel {
         userNotifier.tellUser(message, e);
     }
 
-    public void setDataSetStore(String spec) {
-        try {
-            setDataSetStore(getFileStore().getDataSetStore(spec));
-        }
-        catch (FileStoreException e) {
-            tellUser(String.format("Unable to select Data set %s", spec), e);
-        }
-    }
-
-    private void setDataSetStore(final FileStore.DataSetStore dataSetStore) {
+    public void setDataSetStore(final FileStore.DataSetStore dataSetStore) {
         checkSwingThread();
         this.dataSetStore = dataSetStore;
         if (dataSetStore != null) {
