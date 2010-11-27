@@ -9,16 +9,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -31,66 +23,66 @@ import java.util.concurrent.Executors;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class DataSetPanel extends JPanel {
+public class RepositoryConnection {
     private static final int LIST_FETCH_DELAY_MILLIS = 5000;
     private Executor executor = Executors.newSingleThreadExecutor();
-    private JTextField keyField = new JTextField(20);
-    private JButton checkKey = new JButton("Use this key");
-    private JLabel errorMessage = new JLabel("", JLabel.CENTER);
     private SipModel sipModel;
-    private DataSetControlPanel dataSetControlPanel;
     private Timer periodicListFetchTimer;
     private HttpClient httpClient = new DefaultHttpClient();
+    private Listener listener;
 
-    public DataSetPanel(SipModel sipModel) {
-        super(new BorderLayout(8, 8));
+    public interface Listener {
+        void setInfo(DataSetInfo dataSetInfo);
+        void setList(List<DataSetInfo> list);
+    }
+
+    public enum DataSetState {
+        DISABLED,
+        UPLOADED,
+        QUEUED,
+        INDEXING,
+        ENABLED,
+        ERROR
+    }
+
+    public RepositoryConnection(SipModel sipModel, Listener listener) {
         this.sipModel = sipModel;
-        Enable enable = new Enable() {
-            @Override
-            public void setEnabled(String datasetSpec, boolean enable) {
-                executor.execute(new XAbler(datasetSpec, enable));
-            }
-        };
-        JPanel grid = new JPanel(new GridLayout(1, 0, 8, 8));
-        grid.add(new DataSetUploadPanel(sipModel));
-        grid.add(dataSetControlPanel = new DataSetControlPanel(enable));
-        add(grid, BorderLayout.CENTER);
-        add(createSouthPanel(), BorderLayout.SOUTH);
-        keyField.setText(sipModel.getServerAccessKey());
+        this.listener = listener;
         periodicListFetchTimer = new Timer(LIST_FETCH_DELAY_MILLIS, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 executor.execute(new ListFetcher());
             }
         });
-        periodicListFetchTimer.setRepeats(false);
-        if (!sipModel.getServerAccessKey().isEmpty()) {
-            executor.execute(new ListFetcher());
+        periodicListFetchTimer.setRepeats(true);
+    }
+
+    public void enablePolling(boolean enable) {
+        if (enable) {
+            periodicListFetchTimer.restart();
+        }
+        else {
+            periodicListFetchTimer.stop();
         }
     }
 
-    public interface Enable {
-        void setEnabled(String datasetSpec, boolean enable);
+    public void setEnabled(String spec, boolean enable) {
+        executor.execute(new XAbler(spec, enable));
     }
 
-    private JPanel createSouthPanel() {
-        checkKey.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sipModel.setServerAccessKey(keyField.getText().trim());
-                executor.execute(new ListFetcher());
-            }
-        });
-        errorMessage.setForeground(Color.RED);
-        JPanel flow = new JPanel();
-        flow.add(new JLabel("Access Key:"));
-        flow.add(keyField);
-        flow.add(checkKey);
-        JPanel grid = new JPanel(new GridLayout(0, 1, 4, 4));
-        grid.setBorder(BorderFactory.createTitledBorder("Services Access"));
-        grid.add(flow);
-        grid.add(errorMessage);
-        return grid;
+    public boolean enableAction(DataSetInfo info) {
+        switch (DataSetState.valueOf(info.state)) {
+            case INDEXING:
+            case ENABLED:
+            case QUEUED:
+                return false;
+            case UPLOADED:
+            case DISABLED:
+            case ERROR:
+                return true;
+            default:
+                throw new RuntimeException();
+        }
     }
 
     private class ListFetcher implements Runnable {
@@ -105,21 +97,21 @@ public class DataSetPanel extends JPanel {
                 HttpGet get = new HttpGet(url);
                 HttpResponse response = httpClient.execute(get);
                 HttpEntity entity = response.getEntity();
-                final List list = (List) xstream().fromXML(entity.getContent());
+                @SuppressWarnings("unchecked")
+                final List<DataSetInfo> list = (List<DataSetInfo>) xstream().fromXML(entity.getContent());
+                entity.consumeContent();
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        dataSetControlPanel.setList(list);
-                        errorMessage.setText(null);
-                        periodicListFetchTimer.restart();
+                        listener.setList(list);
                     }
                 });
             }
-            catch (Exception e) {
+            catch (final Exception e) {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        errorMessage.setText("Access to list failed with this key");
+                        sipModel.tellUser("Access to list failed with this key", e);
                     }
                 });
             }
@@ -148,19 +140,20 @@ public class DataSetPanel extends JPanel {
                 HttpGet get = new HttpGet(url);
                 HttpResponse response = httpClient.execute(get);
                 HttpEntity entity = response.getEntity();
-                final DataSetInfo info = (DataSetInfo) xstream().fromXML(entity.getContent());
+                final DataSetInfo dataSetInfo = (DataSetInfo) xstream().fromXML(entity.getContent());
+                entity.consumeContent();
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        dataSetControlPanel.setInfo(info);
+                        listener.setInfo(dataSetInfo);
                     }
                 });
             }
-            catch (Exception e) {
+            catch (final Exception e) {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        errorMessage.setText("Access to enable/disable control failed");
+                        sipModel.tellUser("Access to enable/disable control failed", e);
                     }
                 });
             }

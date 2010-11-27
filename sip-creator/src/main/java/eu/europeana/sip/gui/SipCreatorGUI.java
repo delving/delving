@@ -23,6 +23,7 @@ package eu.europeana.sip.gui;
 
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.MetadataModelImpl;
+import eu.delving.sip.DataSetInfo;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.FileStoreImpl;
@@ -31,18 +32,20 @@ import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.UserNotifier;
 import org.apache.log4j.Logger;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.ListSelectionModel;
-import javax.swing.ProgressMonitor;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -53,13 +56,14 @@ import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The main GUI class for the sip creator
@@ -70,19 +74,34 @@ import java.util.Map;
 
 public class SipCreatorGUI extends JFrame {
     private static final Dimension SIZE = new Dimension(800, 600);
+    private static final int MARGIN = 15;
     private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel;
     private MappingFrame mappingFrame;
+    private RepositoryConnection repositoryConnection;
     private DataSetListModel dataSetListModel = new DataSetListModel();
     private JList dataSetList = new JList(dataSetListModel);
     private List<JButton> mappingButtons = new ArrayList<JButton>();
-    public static final int MARGIN = 15;
 
     public SipCreatorGUI(File fileStoreDirectory, String serverUrl) throws FileStoreException {
         super("Delving SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         FileStore fileStore = new FileStoreImpl(fileStoreDirectory);
         this.sipModel = new SipModel(fileStore, loadMetadataModel(), new PopupExceptionHandler(), serverUrl);
+        this.repositoryConnection = new RepositoryConnection(sipModel, new RepositoryConnection.Listener() {
+
+            @Override
+            public void setInfo(DataSetInfo dataSetInfo) {
+                dataSetListModel.setDataSetInfo(dataSetInfo);
+            }
+
+            @Override
+            public void setList(List<DataSetInfo> list) {
+                for (DataSetInfo info : list) {
+                    dataSetListModel.setDataSetInfo(info);
+                }
+            }
+        });
         this.mappingFrame = new MappingFrame(sipModel);
         setJMenuBar(createMenuBar());
         JPanel main = new JPanel(new BorderLayout(MARGIN, MARGIN));
@@ -124,14 +143,6 @@ public class SipCreatorGUI extends JFrame {
         JScrollPane scroll = new JScrollPane(dataSetList);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(
-                BorderFactory.createCompoundBorder(
-                        BorderFactory.createTitledBorder("Data Sets"),
-                        BorderFactory.createEmptyBorder(5, 5, 5, 5)
-                )
-        );
-        p.add(scroll);
         return scroll;
     }
 
@@ -159,90 +170,18 @@ public class SipCreatorGUI extends JFrame {
 
     private JMenuBar createMenuBar() {
         JMenuBar bar = new JMenuBar();
-        bar.add(new ImportMenu(this, sipModel, new ImportMenu.SelectListener() {
+        bar.add(new ImportMenu(this, sipModel));
+        JMenu repository = new JMenu("Repository");
+        repository.add(new AccessKeyAction());
+        JCheckBoxMenuItem connect = new JCheckBoxMenuItem("Connect");
+        connect.addItemListener(new ItemListener() {
             @Override
-            public boolean selectInputFile(File file) {
-                if (!file.exists()) {
-                    return false;
-                }
-                else {
-                    int upgradeExisting = JOptionPane.showConfirmDialog(
-                            SipCreatorGUI.this,
-                            String.format("<html>Do you wish to update an existing Data Set for<br><br>" +
-                                    "<pre>    <strong>%s</strong></pre><br><br>" +
-                                    "If not you will be asked to create a Data Set Spec.",
-                                    file.getAbsolutePath()
-                            ),
-                            "Existing",
-                            JOptionPane.YES_NO_OPTION
-                    );
-                    String spec;
-                    if (upgradeExisting == JOptionPane.YES_OPTION) {
-                        Map<String, FileStore.DataSetStore> dataSetStores = sipModel.getFileStore().getDataSetStores();
-                        Object[] specs = dataSetStores.keySet().toArray();
-                        spec = (String) JOptionPane.showInputDialog(
-                                SipCreatorGUI.this,
-                                String.format(
-                                        "<html>Choose an existing Data Set for receiving<br><br>" +
-                                                "<pre>    <strong>%s</strong></pre><br>",
-                                        file.getAbsolutePath()
-                                ),
-                                "Existing Data Set",
-                                JOptionPane.PLAIN_MESSAGE,
-                                null,
-                                specs,
-                                ""
-                        );
-                    }
-                    else {
-                        spec = JOptionPane.showInputDialog(
-                                SipCreatorGUI.this,
-                                String.format(
-                                        "<html>You have selected the following file for importing:<br><br>" +
-                                                "<pre>      <strong>%s</strong></pre><br>" +
-                                                "To complete the import you must enter a Data Set Spec name which will serve<br>" +
-                                                "to identify it in the future. For consistency this cannot be changed later, so choose<br>" +
-                                                "carefully.",
-                                        file.getAbsolutePath()
-                                ),
-                                "Select and Enter Data Set Spec",
-                                JOptionPane.QUESTION_MESSAGE
-                        );
-                    }
-                    if (spec == null || spec.trim().isEmpty()) {
-                        return false;
-                    }
-                    int doImport = JOptionPane.showConfirmDialog(
-                            SipCreatorGUI.this,
-                            String.format(
-                                    "<html>Are you sure you wish to import this file<br><br>" +
-                                            "<pre>     <strong>%s</strong></pre><br>" +
-                                            "as a new Data set by the name of<br><br>" +
-                                            "<pre>     <strong>%s</strong></pre>",
-                                    file.getAbsolutePath(),
-                                    spec
-                            ),
-                            "Verify your choice",
-                            JOptionPane.YES_NO_OPTION
-                    );
-                    if (doImport == JOptionPane.YES_OPTION) {
-                        ProgressMonitor progressMonitor = new ProgressMonitor(SipCreatorGUI.this, "Importing", "Storing data for " + spec, 0, 100);
-                        try {
-                            FileStore.DataSetStore store = upgradeExisting == JOptionPane.YES_OPTION ? sipModel.getFileStore().getDataSetStores().get(spec) : sipModel.getFileStore().createDataSetStore(spec);
-                            if (store.hasSource()) {
-                                store.clearSource();
-                            }
-                            sipModel.createDataSetStore(store, file, progressMonitor, null);
-                            return true;
-                        }
-                        catch (FileStoreException e) {
-                            sipModel.tellUser("Unable to import", e);
-                        }
-                    }
-                    return false;
-                }
+            public void itemStateChanged(ItemEvent itemEvent) {
+                repositoryConnection.enablePolling(itemEvent.getStateChange() == ItemEvent.SELECTED);
             }
-        }));
+        });
+        repository.add(connect);
+        bar.add(repository);
         return bar;
     }
 
@@ -267,7 +206,9 @@ public class SipCreatorGUI extends JFrame {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    String html = String.format("<html><h3>%s</h3><p>%s</p></html>", message, exception.getMessage());
+                    String html = exception != null ?
+                            String.format("<html><h3>%s</h3><p>%s</p></html>", message, exception.getMessage()):
+                            String.format("<html><h3>%s</h3></html>", message);
                     if (exception instanceof RecordValidationException) {
                         RecordValidationException rve = (RecordValidationException) exception;
                         StringBuilder problemHtml = new StringBuilder(String.format("<html><h3>%s</h3><ul>", message));
@@ -291,6 +232,21 @@ public class SipCreatorGUI extends JFrame {
         @Override
         public void tellUser(String message) {
             tellUser(message, null);
+        }
+    }
+
+    private class AccessKeyAction extends AbstractAction {
+
+        public AccessKeyAction() {
+            super("Access Key");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            String accessKey = JOptionPane.showInputDialog(SipCreatorGUI.this, "Server Access Key", sipModel.getServerAccessKey());
+            if (accessKey != null && !accessKey.isEmpty()) {
+                sipModel.setServerAccessKey(accessKey);
+            }
         }
     }
 

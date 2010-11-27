@@ -126,8 +126,13 @@ public class DataSetListModel extends AbstractListModel {
                 }
             }
             if (dataSetInfo != null) {
-                // todo: it appears on the server
-                // todo: show strings according to state
+                html.append("<p>Present in the server</p>");
+                html.append(String.format(
+                        "<p>State '%s', with %d indexed of %d</p>",
+                        dataSetInfo.state,
+                        dataSetInfo.recordsIndexed,
+                        dataSetInfo.recordCount
+                ));
             }
             html.append("</td></table></html>");
             return html.toString();
