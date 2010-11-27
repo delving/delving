@@ -118,13 +118,21 @@ public class SipCreatorGUI extends JFrame {
                 }
             }
         });
+        dataSetList.setCellRenderer(new DataSetListModel.Cell());
+        dataSetList.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        dataSetList.setBackground(getBackground());
         JScrollPane scroll = new JScrollPane(dataSetList);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Data Sets"));
+        p.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createTitledBorder("Data Sets"),
+                        BorderFactory.createEmptyBorder(5, 5, 5, 5)
+                )
+        );
         p.add(scroll);
-        return p;
+        return scroll;
     }
 
     private JComponent createControl() {

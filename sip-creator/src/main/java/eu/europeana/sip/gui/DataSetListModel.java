@@ -26,6 +26,14 @@ import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 
 import javax.swing.AbstractListModel;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.ListCellRenderer;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -98,13 +106,22 @@ public class DataSetListModel extends AbstractListModel {
         }
 
         public String toHtml() throws FileStoreException {
-            StringBuilder out = new StringBuilder(String.format("<html><h1>%s</h1>", spec));
+            StringBuilder html = new StringBuilder(
+                    String.format(
+                            "<html><table><tr><td width=200><h1>%s</h1></td><td>",
+                            spec
+                    )
+            );
             if (dataSetStore != null) {
-                // todo: it appears locally!
+                html.append("<p>Present in the local file store</p>");
                 if (dataSetStore.hasSource()) {
                     for (File mappingDir : dataSetStore.getMappingDirectories()) {
-                        // todo: it has a mapping
-                        // todo: show its status
+                        html.append(
+                                String.format(
+                                        "<p>Has mapping for '%s'</p>",
+                                        mappingDir.getName().substring(FileStore.MAPPING_DIRECTORY_PREFIX.length())
+                                )
+                        );
                     }
                 }
             }
@@ -112,7 +129,8 @@ public class DataSetListModel extends AbstractListModel {
                 // todo: it appears on the server
                 // todo: show strings according to state
             }
-            return out.toString();
+            html.append("</td></table></html>");
+            return html.toString();
         }
 
         public String toString() {
@@ -150,5 +168,34 @@ public class DataSetListModel extends AbstractListModel {
             index++;
         }
         return fresh;
+    }
+
+    public static class Cell implements ListCellRenderer {
+        private JPanel p = new JPanel(new BorderLayout());
+        private DefaultListCellRenderer renderer = new DefaultListCellRenderer();
+
+        public Cell() {
+            p.setBorder(
+                    BorderFactory.createCompoundBorder(
+                            BorderFactory.createEmptyBorder(5, 5, 5, 5),
+                            BorderFactory.createRaisedBevelBorder()
+                    )
+            );
+            p.add(renderer);
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList jList, Object o, int i, boolean selected, boolean hasFocus) {
+            renderer.getListCellRendererComponent(jList, o, i, selected, false);
+            if (selected) {
+                renderer.setForeground(Color.BLACK);
+                renderer.setBackground(Color.WHITE);
+            }
+            else {
+                renderer.setForeground(Color.BLACK);
+                renderer.setBackground(p.getBackground());
+            }
+            return p;
+        }
     }
 }
