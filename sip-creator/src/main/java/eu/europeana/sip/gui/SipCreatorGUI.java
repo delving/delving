@@ -170,7 +170,14 @@ public class SipCreatorGUI extends JFrame {
 
     private JMenuBar createMenuBar() {
         JMenuBar bar = new JMenuBar();
-        bar.add(new ImportMenu(this, sipModel));
+        bar.add(new ImportMenu(this, sipModel, new Runnable() {
+            @Override
+            public void run() {
+                for (FileStore.DataSetStore dataSetStore : sipModel.getFileStore().getDataSetStores().values()) {
+                    dataSetListModel.setDataSetStore(dataSetStore);
+                }
+            }
+        }));
         JMenu repository = new JMenu("Repository");
         repository.add(new AccessKeyAction());
         JCheckBoxMenuItem connect = new JCheckBoxMenuItem("Connect");

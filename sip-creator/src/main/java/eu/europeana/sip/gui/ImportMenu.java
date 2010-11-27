@@ -23,6 +23,7 @@ package eu.europeana.sip.gui;
 
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
+import eu.delving.sip.ProgressListener;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.AbstractAction;
@@ -46,11 +47,13 @@ import java.util.Map;
 public class ImportMenu extends JMenu {
     private Component parent;
     private SipModel sipModel;
+    private Runnable dataStoreCreated;
 
-    public ImportMenu(Component parent, SipModel sipModel) {
+    public ImportMenu(Component parent, SipModel sipModel, Runnable dataStoreCreated) {
         super("Import");
         this.parent = parent;
         this.sipModel = sipModel;
+        this.dataStoreCreated = dataStoreCreated;
         refresh();
     }
 
@@ -157,7 +160,7 @@ public class ImportMenu extends JMenu {
                     if (store.hasSource()) {
                         store.clearSource();
                     }
-                    sipModel.createDataSetStore(store, file, progressMonitor, null);
+                    sipModel.createDataSetStore(store, file, new ProgressListener.Adapter(progressMonitor, dataStoreCreated));
                     return true;
                 }
                 catch (FileStoreException e) {

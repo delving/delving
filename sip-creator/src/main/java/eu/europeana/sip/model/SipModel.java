@@ -45,9 +45,7 @@ import eu.europeana.sip.xml.MetadataParser;
 import eu.europeana.sip.xml.Normalizer;
 import org.apache.log4j.Logger;
 
-import javax.swing.Action;
 import javax.swing.ListModel;
-import javax.swing.ProgressMonitor;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.table.TableModel;
@@ -158,12 +156,12 @@ public class SipModel {
         return fileStore;
     }
 
-    public void createDataSetStore(final FileStore.DataSetStore dataSetStore, final File file, final ProgressMonitor progressMonitor, final Action launchAction) {
+    public void createDataSetStore(final FileStore.DataSetStore dataSetStore, final File file, final ProgressListener progressListener) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    dataSetStore.importFile(file, new ProgressListener.Adapter(progressMonitor, launchAction));
+                    dataSetStore.importFile(file, progressListener);
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
