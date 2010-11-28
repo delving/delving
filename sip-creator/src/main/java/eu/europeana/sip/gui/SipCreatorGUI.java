@@ -111,6 +111,12 @@ public class SipCreatorGUI extends JFrame {
         JPanel main = new JPanel(new BorderLayout(MARGIN, MARGIN));
         main.setBorder(BorderFactory.createEmptyBorder(MARGIN, MARGIN, MARGIN, MARGIN));
         JPanel north = new JPanel(new BorderLayout());
+        north.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createEmptyBorder(MARGIN, MARGIN, 0, MARGIN),
+                        BorderFactory.createRaisedBevelBorder()
+                )
+        );
         JLabel northCenter = new JLabel("Data Sets", JLabel.CENTER);
         northCenter.setBackground(Color.WHITE);
         northCenter.setOpaque(true);
@@ -227,7 +233,7 @@ public class SipCreatorGUI extends JFrame {
                 @Override
                 public void run() {
                     String html = exception != null ?
-                            String.format("<html><h3>%s</h3><p>%s</p></html>", message, exception.getMessage()):
+                            String.format("<html><h3>%s</h3><p>%s</p></html>", message, exception.getMessage()) :
                             String.format("<html><h3>%s</h3></html>", message);
                     if (exception instanceof RecordValidationException) {
                         RecordValidationException rve = (RecordValidationException) exception;
