@@ -77,10 +77,13 @@ import java.util.List;
  */
 
 public class SipCreatorGUI extends JFrame {
+    private static final String LOCAL_SETS = "Local Data Sets";
+    private static final String LOCAL_AND_REMOTE_SETS = "Local and Remote Data Sets";
     private static final Dimension SIZE = new Dimension(800, 600);
     private static final int MARGIN = 15;
     private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel;
+    private JLabel titleLabel = new JLabel(LOCAL_SETS, JLabel.CENTER);
     private MappingFrame mappingFrame;
     private RepositoryConnection repositoryConnection;
     private DataSetListModel dataSetListModel = new DataSetListModel();
@@ -117,12 +120,11 @@ public class SipCreatorGUI extends JFrame {
                         BorderFactory.createRaisedBevelBorder()
                 )
         );
-        JLabel northCenter = new JLabel("Data Sets", JLabel.CENTER);
-        northCenter.setBackground(Color.WHITE);
-        northCenter.setOpaque(true);
-        northCenter.setFont(new Font("Sans", Font.BOLD, 24));
+        titleLabel.setBackground(Color.WHITE);
+        titleLabel.setOpaque(true);
+        titleLabel.setFont(new Font("Sans", Font.BOLD, 24));
         JLabel northRight = new JLabel(new ImageIcon(getClass().getResource("/delving-logo-name.jpg")));
-        north.add(northCenter, BorderLayout.CENTER);
+        north.add(titleLabel, BorderLayout.CENTER);
         north.add(northRight, BorderLayout.EAST);
         getContentPane().add(north, BorderLayout.NORTH);
         getContentPane().add(main, BorderLayout.CENTER);
@@ -203,7 +205,15 @@ public class SipCreatorGUI extends JFrame {
         connect.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent itemEvent) {
-                repositoryConnection.enablePolling(itemEvent.getStateChange() == ItemEvent.SELECTED);
+                boolean enabled = itemEvent.getStateChange() == ItemEvent.SELECTED;
+                repositoryConnection.enablePolling(enabled);
+                if (!enabled) {
+                    dataSetListModel.clear();
+                    for (FileStore.DataSetStore dataSetStore : sipModel.getFileStore().getDataSetStores().values()) {
+                        dataSetListModel.setDataSetStore(dataSetStore);
+                    }
+                }
+                titleLabel.setText(enabled ? LOCAL_AND_REMOTE_SETS : LOCAL_SETS);
             }
         });
         repository.add(connect);

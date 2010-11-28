@@ -63,6 +63,12 @@ public class DataSetListModel extends AbstractListModel {
         return entries.get(i);
     }
 
+    public void clear() {
+        int before = getSize();
+        entries.clear();
+        fireIntervalRemoved(this, 0, before);
+    }
+
     @Override
     public int getSize() {
         return entries.size();
