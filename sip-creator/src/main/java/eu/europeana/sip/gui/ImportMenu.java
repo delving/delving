@@ -93,82 +93,76 @@ public class ImportMenu extends JMenu {
         if (!file.exists()) {
             return false;
         }
-        else {
-            int upgradeExisting = JOptionPane.showConfirmDialog(
-                    parent,
-                    String.format("<html>Do you wish to update an existing Data Set for<br><br>" +
-                            "<pre>    <strong>%s</strong></pre><br><br>" +
-                            "If not you will be asked to create a Data Set Spec.",
-                            file.getAbsolutePath()
-                    ),
-                    "Existing",
-                    JOptionPane.YES_NO_OPTION
-            );
-            String spec;
-            if (upgradeExisting == JOptionPane.YES_OPTION) {
-                Map<String, FileStore.DataSetStore> dataSetStores = sipModel.getFileStore().getDataSetStores();
-                Object[] specs = dataSetStores.keySet().toArray();
-                spec = (String) JOptionPane.showInputDialog(
-                        parent,
-                        String.format(
-                                "<html>Choose an existing Data Set for receiving<br><br>" +
-                                        "<pre>    <strong>%s</strong></pre><br>",
-                                file.getAbsolutePath()
-                        ),
-                        "Existing Data Set",
-                        JOptionPane.PLAIN_MESSAGE,
-                        null,
-                        specs,
-                        ""
-                );
-            }
-            else {
-                spec = JOptionPane.showInputDialog(
-                        parent,
-                        String.format(
-                                "<html>You have selected the following file for importing:<br><br>" +
-                                        "<pre>      <strong>%s</strong></pre><br>" +
-                                        "To complete the import you must enter a Data Set Spec name which will serve<br>" +
-                                        "to identify it in the future. For consistency this cannot be changed later, so choose<br>" +
-                                        "carefully.",
-                                file.getAbsolutePath()
-                        ),
-                        "Select and Enter Data Set Spec",
-                        JOptionPane.QUESTION_MESSAGE
-                );
-            }
-            if (spec == null || spec.trim().isEmpty()) {
-                return false;
-            }
-            int doImport = JOptionPane.showConfirmDialog(
-                    parent,
-                    String.format(
-                            "<html>Are you sure you wish to import this file<br><br>" +
-                                    "<pre>     <strong>%s</strong></pre><br>" +
-                                    "as a new Data set by the name of<br><br>" +
-                                    "<pre>     <strong>%s</strong></pre>",
-                            file.getAbsolutePath(),
-                            spec
-                    ),
-                    "Verify your choice",
-                    JOptionPane.YES_NO_OPTION
-            );
-            if (doImport == JOptionPane.YES_OPTION) {
-                ProgressMonitor progressMonitor = new ProgressMonitor(parent, "Importing", "Storing data for " + spec, 0, 100);
-                try {
-                    FileStore.DataSetStore store = upgradeExisting == JOptionPane.YES_OPTION ? sipModel.getFileStore().getDataSetStores().get(spec) : sipModel.getFileStore().createDataSetStore(spec);
-                    if (store.hasSource()) {
-                        store.clearSource();
-                    }
-                    sipModel.createDataSetStore(store, file, new ProgressListener.Adapter(progressMonitor, dataStoreCreated));
-                    return true;
-                }
-                catch (FileStoreException e) {
-                    sipModel.tellUser("Unable to import", e);
-                }
-            }
+        Map<String, FileStore.DataSetStore> dataSetStores = sipModel.getFileStore().getDataSetStores();
+        Object[] specs = new Object[dataSetStores.keySet().size() + 1];
+        int index = 0;
+        for (String key : dataSetStores.keySet()) {
+            specs[index++] = key;
+        }
+        specs[index] = "<New Data Set>";
+        String spec = (String) JOptionPane.showInputDialog(
+                parent,
+                String.format(
+                        "<html>Please choose the Data Set into which<br><br>" +
+                                "<pre><strong>%s</strong></pre><br>" +
+                                "will be imported.  You may either choose an existing one<br>" +
+                                "or create a new one.<br><br>",
+                        file.getAbsolutePath()
+                ),
+                "Existing Data Set",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                specs,
+                ""
+        );
+        if (spec == null) {
             return false;
         }
+        if (spec.startsWith("<")) {
+            spec = JOptionPane.showInputDialog(
+                    parent,
+                    String.format(
+                            "<html>You have selected the following file for importing:<br><br>" +
+                                    "<pre><strong>%s</strong></pre><br>" +
+                                    "To complete the import you must enter a Data Set Spec name which will serve<br>" +
+                                    "to identify it in the future. For consistency this cannot be changed later, so choose<br>" +
+                                    "carefully.<br><br>",
+                            file.getAbsolutePath()
+                    ),
+                    "Select and Enter Data Set Spec",
+                    JOptionPane.QUESTION_MESSAGE
+            );
+        }
+        if (spec == null || spec.trim().isEmpty()) {
+            return false;
+        }
+        int doImport = JOptionPane.showConfirmDialog(
+                parent,
+                String.format(
+                        "<html>Are you sure you wish to import this file<br><br>" +
+                                "<pre><strong>%s</strong></pre><br>" +
+                                "as a Data Set called '<strong>%s</strong>'?<br><br>",
+                        file.getAbsolutePath(),
+                        spec
+                ),
+                "Verify your choice",
+                JOptionPane.YES_NO_OPTION
+        );
+        if (doImport == JOptionPane.YES_OPTION) {
+            ProgressMonitor progressMonitor = new ProgressMonitor(parent, "Importing", "Storing data for " + spec, 0, 100);
+            try {
+                FileStore.DataSetStore store = dataSetStores.containsKey(spec) ? sipModel.getFileStore().getDataSetStores().get(spec) : sipModel.getFileStore().createDataSetStore(spec);
+                if (store.hasSource()) {
+                    store.clearSource();
+                }
+                sipModel.createDataSetStore(store, file, new ProgressListener.Adapter(progressMonitor, dataStoreCreated));
+                return true;
+            }
+            catch (FileStoreException e) {
+                sipModel.tellUser("Unable to import", e);
+            }
+        }
+        return false;
     }
 
     private void refresh() {
