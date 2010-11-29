@@ -88,7 +88,7 @@ public class Normalizer implements Runnable {
     public void run() {
         FileStore.MappingOutput fileSetOutput = null;
         try {
-            RecordMapping recordMapping = sipModel.getRecordMapping();
+            RecordMapping recordMapping = sipModel.getMappingModel().getRecordMapping();
             if (recordMapping == null) {
                 return;
             }

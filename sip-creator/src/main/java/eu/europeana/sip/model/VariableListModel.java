@@ -24,6 +24,7 @@ package eu.europeana.sip.model;
 import eu.delving.metadata.AnalysisTree;
 import eu.delving.metadata.FieldMapping;
 import eu.delving.metadata.MappingModel;
+import eu.delving.metadata.RecordMapping;
 import eu.delving.metadata.SourceVariable;
 
 import javax.swing.AbstractListModel;
@@ -101,17 +102,20 @@ public class VariableListModel extends AbstractListModel {
             int sizeBefore = getSize();
             sourceVariables.clear();
             fireIntervalRemoved(this, 0, sizeBefore);
-            for (SourceVariable uncountedHolder : variableList) {
-                SourceVariable sourceVariable = new SourceVariable(uncountedHolder.getNode());
-                for (FieldMapping fieldMapping : mappingModel.getRecordMapping().getFieldMappings()) {
-                    for (String variable : fieldMapping.getVariables()) {
-                        sourceVariable.checkIfMapped(variable);
+            RecordMapping recordMapping = mappingModel.getRecordMapping();
+            if (recordMapping != null) {
+                for (SourceVariable uncountedHolder : variableList) {
+                    SourceVariable sourceVariable = new SourceVariable(uncountedHolder.getNode());
+                    for (FieldMapping fieldMapping : mappingModel.getRecordMapping().getFieldMappings()) {
+                        for (String variable : fieldMapping.getVariables()) {
+                            sourceVariable.checkIfMapped(variable);
+                        }
                     }
+                    sourceVariables.add(sourceVariable);
                 }
-                sourceVariables.add(sourceVariable);
+                Collections.sort(sourceVariables);
+                fireIntervalAdded(this, 0, getSize());
             }
-            Collections.sort(sourceVariables);
-            fireIntervalAdded(this, 0, getSize());
         }
 
         @Override

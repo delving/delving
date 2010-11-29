@@ -1,5 +1,8 @@
 package eu.europeana.sip.model;
 
+import eu.delving.sip.FileStoreException;
+import eu.delving.sip.FileType;
+import eu.delving.sip.Hasher;
 import eu.delving.sip.ProgressListener;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -26,12 +29,16 @@ import java.io.OutputStream;
 public class FileUploader implements Runnable {
     private static final int BLOCK_SIZE = 4096;
     private Logger log = Logger.getLogger(getClass());
+    private String dataSetSpec;
     private File file;
+    private FileType fileType;
     private String serverUrl, serverAccessKey;
     private UserNotifier userNotifier;
     private ProgressListener progressListener;
 
-    public FileUploader(File file, String serverUrl, String serverAccessKey, UserNotifier userNotifier, ProgressListener progressListener) {
+    public FileUploader(String dataSetSpec, FileType fileType, File file, String serverUrl, String serverAccessKey, UserNotifier userNotifier, ProgressListener progressListener) {
+        this.dataSetSpec = dataSetSpec;
+        this.fileType = fileType;
         this.file = file;
         this.serverUrl = serverUrl;
         this.serverAccessKey = serverAccessKey;
@@ -44,9 +51,17 @@ public class FileUploader implements Runnable {
         final int totalBlocks = (int) (file.length() / BLOCK_SIZE);
         progressListener.setTotal(totalBlocks);
         try {
-            uploadFile();
+            int hashSeparator = file.getName().indexOf("__");
+            String hash;
+            if (hashSeparator > 0) {
+                hash = file.getName().substring(0, hashSeparator);
+            }
+            else {
+                hash = calculateHash(file);
+            }
+            uploadFile(hash);
         }
-        catch (IOException e) {
+        catch (Exception e) {
             userNotifier.tellUser("Unable to upload file "+file.getAbsolutePath());
             log.warn("Unable to upload file "+file.getAbsolutePath(), e);
         }
@@ -60,18 +75,25 @@ public class FileUploader implements Runnable {
         }
     }
 
-    private void uploadFile() throws IOException {
+    private String calculateHash(File file) throws FileStoreException {
+        Hasher hasher = new Hasher();
+        hasher.digest(file);
+        return hasher.toString();
+    }
+
+    private void uploadFile(String hash) throws IOException {
         HttpClient httpClient = new DefaultHttpClient();
         String postUrl = String.format(
-                "%s/submit/%s?accessKey=%s",
+                "%s/submit/%s/%s/%s?accessKey=%s",
                 serverUrl,
-                file.getName(),
+                dataSetSpec,
+                fileType,
+                hash,
                 serverAccessKey
         );
         log.info("Posting to: " + postUrl);
         HttpPost httpPost = new HttpPost(postUrl);
-        String contentType = file.getName().endsWith(".gz") ? "application/gzip" : "text/plain";
-        FileEntity fileEntity = new FileEntity(file, contentType);
+        FileEntity fileEntity = new FileEntity(file, fileType.getContentType());
         fileEntity.setChunked(true);
         httpPost.setEntity(fileEntity);
         HttpResponse response = httpClient.execute(httpPost);

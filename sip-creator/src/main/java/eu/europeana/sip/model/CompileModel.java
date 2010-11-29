@@ -188,7 +188,12 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     private String getDisplayCode() {
         switch (type) {
             case RECORD:
-                return recordMapping.toDisplayCode(metadataModel.getRecordDefinition());
+                if (recordMapping != null) {
+                    return recordMapping.toDisplayCode(metadataModel.getRecordDefinition());
+                }
+                else {
+                    return "// no mapping";
+                }
             case FIELD:
                 if (selectedPath == null) {
                     return "// no code";

@@ -80,7 +80,7 @@ public class FieldListModel extends AbstractListModel {
             FieldDefinition europeanaField = (FieldDefinition) value;
             String string = europeanaField.getFieldNameString();
             if (europeanaField.requiredGroup != null) {
-                string += " (required: "+ europeanaField.requiredGroup+")";
+                string += " (required: " + europeanaField.requiredGroup + ")";
             }
             return super.getListCellRendererComponent(list, string, index, isSelected, cellHasFocus);
         }
@@ -104,16 +104,18 @@ public class FieldListModel extends AbstractListModel {
             int sizeBefore = getSize();
             unmappedFields.clear();
             fireIntervalRemoved(this, 0, sizeBefore);
-            nextVariable:
-            for (FieldDefinition fieldDefinition : fieldDefinitions) {
-                for (FieldMapping fieldMapping : recordMapping.getFieldMappings()) {
-                    if (fieldMapping.fieldDefinition == fieldDefinition) {
-                        continue nextVariable;
+            if (recordMapping != null) {
+                nextVariable:
+                for (FieldDefinition fieldDefinition : fieldDefinitions) {
+                    for (FieldMapping fieldMapping : recordMapping.getFieldMappings()) {
+                        if (fieldMapping.fieldDefinition == fieldDefinition) {
+                            continue nextVariable;
+                        }
                     }
+                    unmappedFields.add(fieldDefinition);
                 }
-                unmappedFields.add(fieldDefinition);
+                fireIntervalAdded(this, 0, getSize());
             }
-            fireIntervalAdded(this, 0, getSize());
         }
     }
 }

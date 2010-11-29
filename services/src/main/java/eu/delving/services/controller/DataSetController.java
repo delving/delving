@@ -9,6 +9,8 @@ import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.AccessKeyException;
 import eu.delving.services.exceptions.BadArgumentException;
 import eu.delving.sip.DataSetInfo;
+import eu.delving.sip.DataSetResponse;
+import eu.delving.sip.FileType;
 import eu.delving.sip.ServiceAccessToken;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServer;
@@ -145,92 +147,102 @@ public class DataSetController {
         return view(dataSet);
     }
 
-    @RequestMapping(value = "/dataset/submit/{dataSetSpec}/source-details.txt", method = RequestMethod.POST)
+    @RequestMapping(value = "/dataset/submit/{dataSetSpec}/{fileType}/{hash}", method = RequestMethod.POST)
     public
     @ResponseBody
-    String submitDetails(
+    DataSetResponse submitDetails(
             @PathVariable String dataSetSpec,
-            InputStream inputStream,
-            @RequestParam(required = false) String accessKey
-    ) throws AccessKeyException, BadArgumentException, MetadataException {
-        checkAccessKey(accessKey);
-        log.info("submit details for " + dataSetSpec);
-        MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
-        SourceDetails details = SourceDetails.read(inputStream);
-        if (dataSet == null) {
-            dataSet = metaRepo.createDataSet(dataSetSpec);
-        }
-        dataSet.setName(details.get("name"));
-        dataSet.setProviderName(details.get("provider"));
-        dataSet.setDescription(details.get("description"));
-        dataSet.getMetadataFormat().setPrefix(details.get("prefix"));
-        dataSet.getMetadataFormat().setNamespace(details.get("URI"));
-        dataSet.getMetadataFormat().setSchema(details.get("schema"));
-        dataSet.getMetadataFormat().setAccessKeyRequired(true);
-        dataSet.setRecordRoot(new Path(details.get("recordRoot")));
-        dataSet.setUniqueElement(new Path(details.get("uniqueElement")));
-        dataSet.save();
-        return "OK";
-    }
-
-    @RequestMapping(value = "/dataset/submit/{dataSetSpec}/source.{hash}.xml.gz", method = RequestMethod.POST)
-    public
-    @ResponseBody
-    String submitSource(
-            @PathVariable String dataSetSpec,
+            @PathVariable String fileType,
             @PathVariable String hash,
             InputStream inputStream,
             @RequestParam(required = false) String accessKey
     ) throws AccessKeyException {
         checkAccessKey(accessKey);
-        log.info("submit source for " + dataSetSpec);
+        try {
+            FileType type = FileType.valueOf(fileType);
+            log.info(String.format("submit %s for %s", type, dataSetSpec));
+            switch (type) {
+                case SOURCE_DETAILS:
+                    return receiveSourceDetails(SourceDetails.read(inputStream), dataSetSpec, hash);
+                case SOURCE:
+                    return receiveSource(new GZIPInputStream(inputStream), dataSetSpec, hash);
+                case MAPPING:
+                    return receiveMapping(RecordMapping.read(inputStream, metadataModel), dataSetSpec, hash);
+                default:
+                    return DataSetResponse.SYSTEM_ERROR;
+            }
+        }
+        catch (Exception e) {
+            log.error("Unable to submit", e);
+        }
+        return DataSetResponse.SYSTEM_ERROR;
+    }
+
+    private DataSetResponse receiveMapping(RecordMapping recordMapping, String dataSetSpec, String hash) {
         try {
             MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
             if (dataSet == null) {
-                return String.format("Data set %s not found", dataSetSpec);
+                return DataSetResponse.DATA_SET_NOT_FOUND;
             }
-            String sourceHash = dataSet.getSourceHash();
-            if (hash.equals(sourceHash)) {
-                return String.format("Data set %s already contains this data", dataSetSpec);
+            if (hash.equals(dataSet.getMappingHash(recordMapping.getPrefix()))) {
+                return DataSetResponse.SORRY_GOT_IT_ALREADY;
             }
-            dataSet.parseRecords(hash, new GZIPInputStream(inputStream));
+            dataSet.setMapping(recordMapping);
             dataSet.save();
-            return "OK";
+            return DataSetResponse.THANK_YOU;
+        }
+        catch (BadArgumentException e) {
+            log.error("Unable to receive mapping", e);
+            return DataSetResponse.SYSTEM_ERROR;
+        }
+
+    }
+
+    private DataSetResponse receiveSource(InputStream inputStream, String dataSetSpec, String hash) {
+        try {
+            MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
+            if (dataSet == null) {
+                throw new IOException(String.format("Data set %s not found", dataSetSpec));
+            }
+            if (hash.equals(dataSet.getSourceHash())) {
+                return DataSetResponse.SORRY_GOT_IT_ALREADY;
+            }
+            dataSet.parseRecords(new GZIPInputStream(inputStream));
+            dataSet.save();
+            return DataSetResponse.THANK_YOU;
         }
         catch (Exception e) {
-            log.error("Problem during upload/parse", e);
-            return problem("while submitting source xml", e);
+            log.error("Unable to receive source", e);
+            return DataSetResponse.SYSTEM_ERROR;
         }
     }
 
-    @RequestMapping(value = "/dataset/submit/{dataSetSpec}/mapping.{prefix}", method = RequestMethod.POST)
-    public
-    @ResponseBody
-    String submitMapping(
-            @PathVariable String dataSetSpec,
-            @PathVariable String prefix,
-            InputStream inputStream,
-            @RequestParam(required = false) String accessKey
-    ) throws AccessKeyException {
-        checkAccessKey(accessKey);
-        log.info("submit mapping for " + dataSetSpec);
+    private DataSetResponse receiveSourceDetails(SourceDetails details, String dataSetSpec, String hash) {
         try {
             MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
             if (dataSet == null) {
-                return String.format("Data set %s not found", dataSetSpec);
+                dataSet = metaRepo.createDataSet(dataSetSpec);
             }
-            RecordMapping mapping = RecordMapping.read(inputStream, metadataModel.getRecordDefinition());
-            if (!mapping.getPrefix().equals(prefix)) {
-                return String.format("Mapping name mapping.%s contains prefix %s", prefix, mapping.getPrefix());
+            else if (hash.equals(dataSet.getSourceDetailsHash())) {
+                return DataSetResponse.SORRY_GOT_IT_ALREADY;
             }
-            dataSet.setMapping(mapping);
+            dataSet.setName(details.get("name"));
+            dataSet.setProviderName(details.get("provider"));
+            dataSet.setDescription(details.get("description"));
+            dataSet.getMetadataFormat().setPrefix(details.get("prefix"));
+            dataSet.getMetadataFormat().setNamespace(details.get("URI"));
+            dataSet.getMetadataFormat().setSchema(details.get("schema"));
+            dataSet.getMetadataFormat().setAccessKeyRequired(true);
+            dataSet.setRecordRoot(new Path(details.get("recordRoot")));
+            dataSet.setUniqueElement(new Path(details.get("uniqueElement")));
+            dataSet.setSourceDetailsHash(hash);
             dataSet.save();
+            return DataSetResponse.THANK_YOU;
         }
-        catch (Exception e) {
-            log.error("Problem during mapping upload");
-            return problem("while submitting mapping", e);
+        catch (BadArgumentException e) {
+            log.error("Unable to receive source details", e);
+            return DataSetResponse.SYSTEM_ERROR;
         }
-        return "OK";
     }
 
     private String problem(String message) {

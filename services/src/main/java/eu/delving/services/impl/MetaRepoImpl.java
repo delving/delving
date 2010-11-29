@@ -392,10 +392,7 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public void parseRecords(String sourceHash, InputStream inputStream) throws XMLStreamException, IOException {
-            if (getSourceHash().equals(sourceHash)) {
-                throw new RuntimeException("Should be checking for equal hash before parse");
-            }
+        public void parseRecords(InputStream inputStream) throws XMLStreamException, IOException {
             records().drop();
             object.put(SOURCE_HASH, "");
             saveObject();
@@ -411,7 +408,6 @@ public class MetaRepoImpl implements MetaRepo {
                 records().insert(record);
             }
             object.put(NAMESPACES, parser.getNamespaces());
-            object.put(SOURCE_HASH, sourceHash);
             saveObject();
         }
 
@@ -456,12 +452,33 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
+        public void setSourceDetailsHash(String sourceHash) {
+            object.put(SOURCE_HASH, sourceHash);
+        }
+
+        @Override
+        public String getSourceDetailsHash() {
+            return getNonemptyString(SOURCE_DETAILS_HASH);
+        }
+
+        @Override
+        public void setSourceHash(String sourceHash) {
+            object.put(SOURCE_HASH, sourceHash);
+        }
+
+        @Override
         public String getSourceHash() {
-            String hash = (String) object.get(SOURCE_HASH);
-            if (hash == null) {
-                hash = "";
-            }
-            return hash;
+            return getNonemptyString(SOURCE_HASH);
+        }
+
+        @Override
+        public void setMappingHash(String metadataPrefix, String hash) {
+            object.put(MAPPING_HASH_PREFIX + metadataPrefix, hash);
+        }
+
+        @Override
+        public String getMappingHash(String metadataPrefix) {
+            return getNonemptyString(MAPPING_HASH_PREFIX + metadataPrefix);
         }
 
         @Override
@@ -564,6 +581,14 @@ public class MetaRepoImpl implements MetaRepo {
         private void saveObject() {
             DBCollection collection = db().getCollection(DATASETS_COLLECTION);
             collection.save(object);
+        }
+
+        private String getNonemptyString(String key) {
+            String s = (String) object.get(key);
+            if (s == null) {
+                s = "";
+            }
+            return s;
         }
     }
 
@@ -754,7 +779,7 @@ public class MetaRepoImpl implements MetaRepo {
 
         @Override
         public RecordMapping getRecordMapping() throws MetadataException {
-            return RecordMapping.read((String) object.get(RECORD_MAPPING), metadataModel.getRecordDefinition());
+            return RecordMapping.read((String) object.get(RECORD_MAPPING), metadataModel);
         }
 
         @Override

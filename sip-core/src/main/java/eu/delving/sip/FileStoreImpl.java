@@ -23,6 +23,7 @@ package eu.delving.sip;
 
 import com.thoughtworks.xstream.XStream;
 import eu.delving.metadata.MetadataException;
+import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.RecordDefinition;
 import eu.delving.metadata.RecordMapping;
 import eu.delving.metadata.SourceDetails;
@@ -43,8 +44,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -62,10 +61,12 @@ import java.util.zip.GZIPOutputStream;
 public class FileStoreImpl implements FileStore {
 
     private File home;
+    private MetadataModel metadataModel;
     public static final int BLOCK_SIZE = 4096;
 
-    public FileStoreImpl(File home) throws FileStoreException {
+    public FileStoreImpl(File home, MetadataModel metadataModel) throws FileStoreException {
         this.home = home;
+        this.metadataModel = metadataModel;
         if (!home.exists()) {
             if (!home.mkdirs()) {
                 throw new FileStoreException(String.format("Unable to create file store in %s", home.getAbsolutePath()));
@@ -152,7 +153,7 @@ public class FileStoreImpl implements FileStore {
             int fileBlocks = (int) (inputFile.length() / BLOCK_SIZE);
             if (progressListener != null) progressListener.setTotal(fileBlocks);
             File source = new File(directory, SOURCE_FILE_NAME);
-            MessageDigest digest = getDigest();
+            Hasher hasher = new Hasher();
             boolean cancelled = false;
             try {
                 InputStream inputStream;
@@ -178,7 +179,7 @@ public class FileStoreImpl implements FileStore {
                             break;
                         }
                     }
-                    digest.digest(buffer, 0, bytesRead);
+                    hasher.digest(buffer, bytesRead);
                 }
                 if (progressListener != null) progressListener.finished();
                 inputStream.close();
@@ -196,7 +197,7 @@ public class FileStoreImpl implements FileStore {
                 }
             }
             else {
-                String hash = toHexadecimal(digest.digest());
+                String hash = hasher.toString();
                 File sourceDirectory = new File(directory, SOURCE_DIRECTORY_PREFIX + hash);
                 if (!sourceDirectory.mkdirs()) {
                     throw new FileStoreException(String.format("Unable to create directory %s", sourceDirectory.getAbsolutePath()));
@@ -274,7 +275,8 @@ public class FileStoreImpl implements FileStore {
         }
 
         @Override
-        public RecordMapping getRecordMapping(RecordDefinition recordDefinition) throws FileStoreException {
+        public RecordMapping getRecordMapping(String metadataPrefix) throws FileStoreException {
+            RecordDefinition recordDefinition = metadataModel.getRecordDefinition(metadataPrefix);
             File mappingDirectory = mappingDirectory(recordDefinition);
             if (!mappingDirectory.exists()) {
                 if (!mappingDirectory.mkdirs()) {
@@ -285,7 +287,7 @@ public class FileStoreImpl implements FileStore {
             if (mappingFile.exists()) {
                 try {
                     FileInputStream is = new FileInputStream(mappingFile);
-                    return RecordMapping.read(is, recordDefinition);
+                    return RecordMapping.read(is, metadataModel);
                 }
                 catch (Exception e) {
                     throw new FileStoreException(String.format("Unable to read mapping from %s", mappingFile.getAbsolutePath()), e);
@@ -501,24 +503,5 @@ public class FileStoreImpl implements FileStore {
         public boolean accept(File file) {
             return file.isDirectory() && file.getName().startsWith(MAPPING_DIRECTORY_PREFIX);
         }
-    }
-
-    private static MessageDigest getDigest() {
-        try {
-            return MessageDigest.getInstance("MD5");
-        }
-        catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("MD5 not available??");
-        }
-    }
-
-    static final String HEXES = "0123456789ABCDEF";
-
-    private static String toHexadecimal(byte[] raw) {
-        final StringBuilder hex = new StringBuilder(2 * raw.length);
-        for (final byte b : raw) {
-            hex.append(HEXES.charAt((b & 0xF0) >> 4)).append(HEXES.charAt((b & 0x0F)));
-        }
-        return hex.toString();
     }
 }

@@ -64,7 +64,7 @@ public interface FileStore {
 
         void setStatistics(List<Statistics> statisticsList) throws FileStoreException;
 
-        RecordMapping getRecordMapping(RecordDefinition recordDefinition) throws FileStoreException;
+        RecordMapping getRecordMapping(String metadataPrefix) throws FileStoreException;
 
         void setRecordMapping(RecordMapping recordMapping) throws FileStoreException;
 

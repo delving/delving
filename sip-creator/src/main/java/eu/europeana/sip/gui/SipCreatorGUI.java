@@ -28,6 +28,7 @@ import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.FileStoreImpl;
 import eu.europeana.sip.core.RecordValidationException;
+import eu.europeana.sip.model.ConstantFieldModel;
 import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.UserNotifier;
 import org.apache.log4j.Logger;
@@ -55,6 +56,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
@@ -85,6 +87,7 @@ public class SipCreatorGUI extends JFrame {
     private SipModel sipModel;
     private JLabel titleLabel = new JLabel(LOCAL_SETS, JLabel.CENTER);
     private MappingFrame mappingFrame;
+    private ConstantsFrame constantsFrame;
     private RepositoryConnection repositoryConnection;
     private DataSetListModel dataSetListModel = new DataSetListModel();
     private JList dataSetList = new JList(dataSetListModel);
@@ -93,8 +96,9 @@ public class SipCreatorGUI extends JFrame {
     public SipCreatorGUI(File fileStoreDirectory, String serverUrl) throws FileStoreException {
         super("Delving SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        FileStore fileStore = new FileStoreImpl(fileStoreDirectory);
-        this.sipModel = new SipModel(fileStore, loadMetadataModel(), new PopupExceptionHandler(), serverUrl);
+        MetadataModel metadataModel = loadMetadataModel();
+        FileStore fileStore = new FileStoreImpl(fileStoreDirectory, metadataModel);
+        this.sipModel = new SipModel(fileStore, metadataModel, new PopupExceptionHandler(), serverUrl);
         this.repositoryConnection = new RepositoryConnection(sipModel, new RepositoryConnection.Listener() {
 
             @Override
@@ -110,6 +114,7 @@ public class SipCreatorGUI extends JFrame {
             }
         });
         this.mappingFrame = new MappingFrame(sipModel);
+        this.constantsFrame = new ConstantsFrame(sipModel.getConstantFieldModel());
         setJMenuBar(createMenuBar());
         JPanel main = new JPanel(new BorderLayout(MARGIN, MARGIN));
         main.setBorder(BorderFactory.createEmptyBorder(MARGIN, MARGIN, MARGIN, MARGIN));
@@ -170,8 +175,21 @@ public class SipCreatorGUI extends JFrame {
     private JComponent createControl() {
         JPanel p = new JPanel();
         p.setBorder(BorderFactory.createTitledBorder("Control"));
-        for (final String prefix : sipModel.getMetadataModel().getPrefixes()) {
-            JButton button = new JButton(String.format("Map to '%s'", prefix));
+        JButton sourceDetailsButton = new JButton("Edit Source Details");
+        sourceDetailsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                int selected = dataSetList.getSelectedIndex();
+                if (selected >= 0) {
+                    DataSetListModel.Entry entry = dataSetListModel.getEntry(selected);
+                    sipModel.setDataSetStore(entry.getDataSetStore());
+                    constantsFrame.show(sipModel.getDataSetStore().getSpec());
+                }
+            }
+        });
+        p.add(sourceDetailsButton);
+        for (final String metadataPrefix : sipModel.getMetadataModel().getPrefixes()) {
+            JButton button = new JButton(String.format("<html>Edit '<strong>%s</strong>' Mapping", metadataPrefix));
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent actionEvent) {
@@ -179,13 +197,15 @@ public class SipCreatorGUI extends JFrame {
                     if (selected >= 0) {
                         DataSetListModel.Entry entry = dataSetListModel.getEntry(selected);
                         sipModel.setDataSetStore(entry.getDataSetStore());
-                        mappingFrame.show(prefix);
+                        sipModel.setMetadataPrefix(metadataPrefix);
+                        mappingFrame.show(metadataPrefix);
                     }
                 }
             });
             p.add(button);
             mappingButtons.add(button);
         }
+
         return p;
     }
 
@@ -311,6 +331,36 @@ public class SipCreatorGUI extends JFrame {
 
         public void show(String prefix) {
             setTitle(String.format("Mapping '%s' of '%s'", prefix, sipModel.getDataSetStore().getSpec()));
+            setVisible(true);
+        }
+    }
+
+    private class ConstantsFrame extends JFrame {
+        private final Dimension CONSTANTS_SIZE = new Dimension(760, 760);
+
+        public ConstantsFrame(ConstantFieldModel constantFieldModel) {
+            super("Constants");
+            JPanel bp = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            JButton hide = new JButton("Finished");
+            hide.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent actionEvent) {
+                    setVisible(false);
+                }
+            });
+            bp.add(hide);
+            ConstantFieldPanel fieldPanel = new ConstantFieldPanel(constantFieldModel);
+            JPanel main = new JPanel(new BorderLayout(15, 15));
+            main.add(fieldPanel, BorderLayout.CENTER);
+            main.add(bp, BorderLayout.SOUTH);
+            getContentPane().add(main);
+            Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+            setSize(CONSTANTS_SIZE);
+            setLocation((screen.width - CONSTANTS_SIZE.width) / 2, (screen.height - CONSTANTS_SIZE.height) / 2);
+        }
+
+        public void show(String dataSetSpec) {
+            setTitle(String.format("Constants for '%s'", dataSetSpec));
             setVisible(true);
         }
     }

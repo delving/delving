@@ -26,7 +26,6 @@ import eu.delving.metadata.MetadataException;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.MetadataModelImpl;
 import eu.delving.metadata.Path;
-import eu.delving.metadata.RecordDefinition;
 import eu.delving.metadata.RecordMapping;
 import eu.delving.metadata.SourceDetails;
 import eu.delving.metadata.Statistics;
@@ -55,9 +54,10 @@ public class TestFileStore {
     private static final String SPEC = "spek";
     private Logger log = Logger.getLogger(getClass());
     private FileStore fileStore;
+    public static final String METADATA_PREFIX = "abm";
 
     @Before
-    public void createStore() throws FileStoreException {
+    public void createStore() throws FileStoreException, IOException, MetadataException {
         if (!TARGET.exists()) {
             throw new RuntimeException("Target directory " + TARGET.getAbsolutePath() + " not found");
         }
@@ -67,7 +67,7 @@ public class TestFileStore {
         if (!DIR.mkdirs()) {
             throw new RuntimeException("Unable to create directory " + DIR.getAbsolutePath());
         }
-        this.fileStore = new FileStoreImpl(DIR);
+        this.fileStore = new FileStoreImpl(DIR, getMetadataModel());
     }
 
     @After
@@ -114,16 +114,15 @@ public class TestFileStore {
         FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC);
         store.importFile(sampleFile(), null);
         Assert.assertEquals("Spec should be the same", SPEC, store.getSpec());
-        RecordDefinition recordDefinition = getRecordDefinition();
-        RecordMapping recordMapping = store.getRecordMapping(recordDefinition);
-        Assert.assertEquals("Prefixes should be the same", recordDefinition.prefix, recordMapping.getPrefix());
+        RecordMapping recordMapping = store.getRecordMapping(METADATA_PREFIX);
+        Assert.assertEquals("Prefixes should be the same", METADATA_PREFIX, recordMapping.getPrefix());
         log.info("Mapping created with prefix " + recordMapping.getPrefix());
         MappingModel mappingModel = new MappingModel();
         mappingModel.setRecordMapping(recordMapping);
         mappingModel.setConstant("/some/path", "value");
         fileStore.getDataSetStores().get(SPEC).setRecordMapping(recordMapping);
         Assert.assertEquals("Should be two files", 2, new File(DIR, SPEC).listFiles().length);
-        recordMapping = fileStore.getDataSetStores().get(SPEC).getRecordMapping(recordDefinition);
+        recordMapping = fileStore.getDataSetStores().get(SPEC).getRecordMapping(METADATA_PREFIX);
         Assert.assertEquals("Should have held constant", "value", recordMapping.getConstant("/some/path"));
     }
 
@@ -138,6 +137,7 @@ public class TestFileStore {
         Statistics statistics = new Statistics(new Path("/stat/path"));
         statistics.recordOccurrence();
         statistics.recordValue("booger");
+        statistics.finish();
         stats.add(statistics);
         store.setStatistics(stats);
         Assert.assertEquals("Should be one directory ", 1, new File(DIR, SPEC).listFiles().length);
@@ -162,8 +162,7 @@ public class TestFileStore {
     public void pretendNormalize() throws IOException, FileStoreException, MetadataException {
         FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC);
         store.importFile(sampleFile(), null);
-        RecordDefinition recordDefinition = getRecordDefinition();
-        RecordMapping recordMapping = store.getRecordMapping(recordDefinition);
+        RecordMapping recordMapping = store.getRecordMapping(METADATA_PREFIX);
         FileStore.MappingOutput mo = store.createMappingOutput(recordMapping, null);
         mo.recordDiscarded();
         mo.recordNormalized();
@@ -171,19 +170,19 @@ public class TestFileStore {
         Assert.assertEquals("Should be two files", 2, new File(DIR, SPEC).listFiles().length);
         mo.close(false);
         store.setRecordMapping(recordMapping);
-        recordMapping = fileStore.getDataSetStores().get(SPEC).getRecordMapping(recordDefinition);
+        recordMapping = fileStore.getDataSetStores().get(SPEC).getRecordMapping(METADATA_PREFIX);
         Assert.assertEquals("Mapping should contain facts", 1, recordMapping.getRecordsDiscarded());
         Assert.assertEquals("Mapping should contain facts", 2, recordMapping.getRecordsNormalized());
     }
 
-    private RecordDefinition getRecordDefinition() throws IOException, MetadataException {
-        return getMetadataModel().getRecordDefinition();
-    }
-
+//    private RecordDefinition getRecordDefinition() throws IOException, MetadataException {
+//        return getMetadataModel().getRecordDefinition();
+//    }
+//
     private MetadataModel getMetadataModel() throws IOException, MetadataException {
         MetadataModelImpl metadataModel = new MetadataModelImpl();
         metadataModel.setRecordDefinitionResources(Arrays.asList("/abm-record-definition.xml"));
-        metadataModel.setDefaultPrefix("abm");
+        metadataModel.setDefaultPrefix(METADATA_PREFIX);
         return metadataModel;
     }
 
