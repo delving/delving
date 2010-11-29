@@ -35,6 +35,7 @@ import eu.europeana.sip.model.SipModel;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -82,7 +83,7 @@ public class MappingPanel extends JPanel {
     private JButton createObviousMappingButton = new JButton("Create obvious mappings");
     private JButton removeMappingButton = new JButton("Remove the selected mapping");
     private JList variablesList, mappingList, fieldList;
-    private JLabel statisticsView = new JLabel();
+    private JEditorPane statisticsView = new JEditorPane();
 
     public MappingPanel(SipModel sipModel) {
         super(new GridBagLayout());
@@ -139,6 +140,8 @@ public class MappingPanel extends JPanel {
         JPanel p = new JPanel(new BorderLayout(5, 5));
         p.setPreferredSize(PREFERRED_SIZE);
         p.setBorder(BorderFactory.createTitledBorder("Statistics"));
+        statisticsView.setEditable(false);
+        statisticsView.setContentType("text/html");
         p.add(scroll(statisticsView), BorderLayout.CENTER);
         return p;
     }
@@ -196,7 +199,13 @@ public class MappingPanel extends JPanel {
 
             @Override
             public void updatedStatistics(Statistics statistics) {
-                // todo: implement
+                if (statistics == null) {
+                    statisticsView.setText("<html><h3>No Statistics</h3>");
+                }
+                else {
+                    statisticsView.setText(statistics.toHtml());
+                }
+                statisticsView.setCaretPosition(0);
             }
 
             @Override

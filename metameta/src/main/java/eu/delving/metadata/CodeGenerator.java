@@ -23,7 +23,6 @@ package eu.delving.metadata;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Generate code snippets for field mappings
@@ -163,7 +162,7 @@ public class CodeGenerator {
     }
 
     private void renderValueMapLine(FieldDefinition fieldDefinition, FieldMapping fieldMapping, AnalysisTree.Node node, String variable) {
-        fieldMapping.createValueMap(getActualValues(node));
+        fieldMapping.createValueMap(node.getStatistics().getHistogramValues());
         fieldMapping.addCodeLine(
                 String.format(
                         "%s.%s %s(%s)",
@@ -192,15 +191,5 @@ public class CodeGenerator {
 
     private void endBlock(FieldMapping fieldMapping) {
         fieldMapping.addCodeLine("}");
-    }
-
-    private Set<String> getActualValues(AnalysisTree.Node node) {
-        Histogram histogram = node.getStatistics().getHistogram();
-        if (histogram != null) {
-            return histogram.getValues();
-        }
-        else {
-            return null;
-        }
     }
 }
