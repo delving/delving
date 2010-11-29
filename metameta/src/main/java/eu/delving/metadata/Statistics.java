@@ -125,9 +125,11 @@ public class Statistics implements Comparable<Statistics>, Serializable {
 
         public void finish() {
             if (uniqueness != null) {
-                uniqueValues = true;
                 uniqueness = null;
-                histogram = null;
+                if (total > 1) {
+                    uniqueValues = true;
+                    histogram = null;
+                }
             }
             if (histogram != null) {
                 randomSample = null;

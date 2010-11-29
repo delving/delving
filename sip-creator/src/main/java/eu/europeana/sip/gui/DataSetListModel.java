@@ -121,13 +121,11 @@ public class DataSetListModel extends AbstractListModel {
             if (dataSetStore != null) {
                 html.append("<p>Present in the local file store</p>");
                 if (dataSetStore.hasSource()) {
-                    for (File mappingDir : dataSetStore.getMappingDirectories()) {
-                        html.append(
-                                String.format(
-                                        "<p>Has mapping for '%s'</p>",
-                                        mappingDir.getName().substring(FileStore.MAPPING_DIRECTORY_PREFIX.length())
-                                )
-                        );
+                    for (File mappingFile : dataSetStore.getMappingFiles()) {
+                        String name = mappingFile.getName();
+                        name = name.substring(FileStore.MAPPING_FILE_PREFIX.length());
+                        name = name.substring(0, name.length() - FileStore.MAPPING_FILE_SUFFIX.length());
+                        html.append(String.format("<p>Has mapping for '%s'</p>",name));
                     }
                 }
             }
