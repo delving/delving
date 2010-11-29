@@ -28,6 +28,7 @@ import eu.delving.metadata.MappingModel;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.Path;
 import eu.delving.metadata.RecordMapping;
+import eu.delving.metadata.RecordValidator;
 import eu.delving.metadata.SourceDetails;
 import eu.delving.metadata.SourceVariable;
 import eu.delving.metadata.Statistics;
@@ -38,7 +39,6 @@ import eu.delving.sip.ProgressListener;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordValidationException;
-import eu.europeana.sip.core.RecordValidator;
 import eu.europeana.sip.core.ToolCodeResource;
 import eu.europeana.sip.xml.AnalysisParser;
 import eu.europeana.sip.xml.MetadataParser;
@@ -48,7 +48,6 @@ import org.apache.log4j.Logger;
 import javax.swing.ListModel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import java.awt.event.ActionEvent;
@@ -90,7 +89,6 @@ public class SipModel {
     private MappingModel mappingModel = new MappingModel();
     private MappingSaveTimer mappingSaveTimer = new MappingSaveTimer();
     private VariableListModel variableListModel = new VariableListModel();
-    private StatisticsTableModel statisticsTableModel = new StatisticsTableModel();
     private List<UpdateListener> updateListeners = new CopyOnWriteArrayList<UpdateListener>();
     private List<ParseListener> parseListeners = new CopyOnWriteArrayList<ParseListener>();
     private String serverUrl;
@@ -100,6 +98,8 @@ public class SipModel {
         void templateApplied();
 
         void updatedDataSetStore(FileStore.DataSetStore dataSetStore);
+
+        void updatedStatistics(Statistics statistics);
 
         void updatedRecordRoot(Path recordRoot, int recordCount);
 
@@ -414,14 +414,6 @@ public class SipModel {
         return analysisTreeModel;
     }
 
-    public void selectNode(AnalysisTree.Node node) {
-        checkSwingThread();
-        if (node != null && node.getStatistics() != null) {
-            List<? extends Statistics.Counter> counters = node.getStatistics().getCounters();
-            statisticsTableModel.setCounterList(counters);
-        }
-    }
-
     public Path getUniqueElement() {
         if (sourceDetails == null || sourceDetails.get(SourceDetails.UNIQUE_ELEMENT_PATH).isEmpty()) {
             return null;
@@ -458,10 +450,6 @@ public class SipModel {
         sourceDetails.set(SourceDetails.RECORD_COUNT, String.valueOf(recordCount));
         constantFieldModel.setSourceDetails(sourceDetails);
         executor.execute(new SourceDetailsSetter(sourceDetails));
-    }
-
-    public TableModel getStatisticsTableModel() {
-        return statisticsTableModel;
     }
 
     public long getElementCount() {
@@ -573,6 +561,12 @@ public class SipModel {
         }
     }
 
+    public void setStatistics(Statistics statistics) {
+        for (UpdateListener updateListener : updateListeners) {
+            updateListener.updatedStatistics(statistics);
+        }
+    }
+
     private void setStatisticsList(List<Statistics> statisticsList) {
         checkSwingThread();
         this.statisticsList = statisticsList;
@@ -586,7 +580,7 @@ public class SipModel {
         if (getRecordRoot() != null) {
             AnalysisTree.setRecordRoot(analysisTreeModel, getRecordRoot());
         }
-        statisticsTableModel.setCounterList(null);
+        setStatistics(null);
     }
 
     private void createMetadataParser(int recordNumber) {

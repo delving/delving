@@ -26,6 +26,7 @@ import eu.delving.metadata.FieldDefinition;
 import eu.delving.metadata.FieldMapping;
 import eu.delving.metadata.Path;
 import eu.delving.metadata.SourceVariable;
+import eu.delving.metadata.Statistics;
 import eu.delving.sip.FileStore;
 import eu.europeana.sip.model.FieldListModel;
 import eu.europeana.sip.model.FieldMappingListModel;
@@ -34,6 +35,7 @@ import eu.europeana.sip.model.SipModel;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -80,6 +82,7 @@ public class MappingPanel extends JPanel {
     private JButton createObviousMappingButton = new JButton("Create obvious mappings");
     private JButton removeMappingButton = new JButton("Remove the selected mapping");
     private JList variablesList, mappingList, fieldList;
+    private JLabel statisticsView = new JLabel();
 
     public MappingPanel(SipModel sipModel) {
         super(new GridBagLayout());
@@ -136,13 +139,7 @@ public class MappingPanel extends JPanel {
         JPanel p = new JPanel(new BorderLayout(5, 5));
         p.setPreferredSize(PREFERRED_SIZE);
         p.setBorder(BorderFactory.createTitledBorder("Statistics"));
-        JPanel tablePanel = new JPanel(new BorderLayout());
-        JTable statsTable = new JTable(sipModel.getStatisticsTableModel(), createStatsColumnModel());
-        statsTable.getTableHeader().setReorderingAllowed(false);
-        statsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tablePanel.add(statsTable.getTableHeader(), BorderLayout.NORTH);
-        tablePanel.add(scroll(statsTable), BorderLayout.CENTER);
-        p.add(tablePanel, BorderLayout.CENTER);
+        p.add(scroll(statisticsView), BorderLayout.CENTER);
         return p;
     }
 
@@ -175,19 +172,6 @@ public class MappingPanel extends JPanel {
         return p;
     }
 
-    private DefaultTableColumnModel createStatsColumnModel() {
-        DefaultTableColumnModel columnModel = new DefaultTableColumnModel();
-        columnModel.addColumn(new TableColumn(0));
-        columnModel.getColumn(0).setHeaderValue("Percent");
-        columnModel.getColumn(0).setMaxWidth(80);
-        columnModel.addColumn(new TableColumn(1));
-        columnModel.getColumn(1).setHeaderValue("Count");
-        columnModel.getColumn(1).setMaxWidth(80);
-        columnModel.addColumn(new TableColumn(2));
-        columnModel.getColumn(2).setHeaderValue("Value");
-        return columnModel;
-    }
-
     private JScrollPane scroll(JComponent content) {
         JScrollPane scroll = new JScrollPane(content);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -208,6 +192,11 @@ public class MappingPanel extends JPanel {
                 fieldList.clearSelection();
                 mappingList.clearSelection();
                 prepareCreateMappingButtons();
+            }
+
+            @Override
+            public void updatedStatistics(Statistics statistics) {
+                // todo: implement
             }
 
             @Override
@@ -273,8 +262,8 @@ public class MappingPanel extends JPanel {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 SourceVariable sourceVariable = (SourceVariable) variablesList.getSelectedValue();
-                if (sourceVariable != null) {
-                    sipModel.selectNode(sourceVariable.getNode());
+                if (sourceVariable != null && sourceVariable.hasStatistics()) {
+                    sipModel.setStatistics(sourceVariable.getStatistics());
                     constantField.setText("?");
                 }
             }

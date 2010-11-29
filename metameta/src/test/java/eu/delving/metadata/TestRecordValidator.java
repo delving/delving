@@ -1,7 +1,8 @@
-package eu.europeana.sip.core;
+package eu.delving.metadata;
 
 import eu.delving.metadata.MetadataException;
 import eu.delving.metadata.MetadataModelImpl;
+import eu.delving.metadata.RecordValidator;
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Before;

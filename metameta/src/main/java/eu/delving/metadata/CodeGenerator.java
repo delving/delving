@@ -24,7 +24,6 @@ package eu.delving.metadata;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Generate code snippets for field mappings
@@ -196,10 +195,12 @@ public class CodeGenerator {
     }
 
     private Set<String> getActualValues(AnalysisTree.Node node) {
-        Set<String> values = new TreeSet<String>();
-        for (Statistics.Counter counter : node.getStatistics().getCounters()) {
-            values.add(counter.getValue());
+        Histogram histogram = node.getStatistics().getHistogram();
+        if (histogram != null) {
+            return histogram.getValues();
         }
-        return values;
+        else {
+            return null;
+        }
     }
 }

@@ -29,7 +29,7 @@ import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordValidationException;
-import eu.europeana.sip.core.RecordValidator;
+import eu.delving.metadata.RecordValidator;
 import eu.europeana.sip.core.ToolCodeResource;
 import org.apache.log4j.Logger;
 

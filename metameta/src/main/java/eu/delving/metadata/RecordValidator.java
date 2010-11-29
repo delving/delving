@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 EDL FOUNDATION
+ * Copyright 2010 DELVING BV
  *
  *  Licensed under the EUPL, Version 1.0 or? as soon they
  *  will be approved by the European Commission - subsequent
@@ -19,14 +19,8 @@
  *  permissions and limitations under the Licence.
  */
 
-package eu.europeana.sip.core;
+package eu.delving.metadata;
 
-import eu.delving.metadata.FieldDefinition;
-import eu.delving.metadata.MetadataModel;
-import eu.delving.metadata.NamespaceDefinition;
-import eu.delving.metadata.Path;
-import eu.delving.metadata.RecordDefinition;
-import eu.delving.metadata.Tag;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -37,7 +31,6 @@ import org.dom4j.io.XMLWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -46,9 +39,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
- * Validate a record
- * <p/>
- * todo: move this class to the definitions module
+ * Parse, filter, validate a record
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
@@ -61,19 +52,13 @@ public class RecordValidator {
     };
     private Logger log = Logger.getLogger(getClass());
     private RecordDefinition recordDefinition;
-    private BitSet[] bitSet;
-    private boolean checkUniqueness;
+    private Uniqueness idUniqueness;
     private String context;
     private int contextBegin, contextEnd;
 
     public RecordValidator(MetadataModel metadataModel, boolean checkUniqueness) {
         this.recordDefinition = metadataModel.getRecordDefinition();
-        if (this.checkUniqueness = checkUniqueness) {
-            bitSet = new BitSet[PRIMES.length];
-            for (int walk = 0; walk < bitSet.length; walk++) {
-                bitSet[walk] = new BitSet(PRIMES[walk]);
-            }
-        }
+        this.idUniqueness = checkUniqueness ? new Uniqueness() : null;
         StringBuilder contextString = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n\n<validate\n");
         for (NamespaceDefinition namespaceDefinition : recordDefinition.namespaces) {
             contextString.append(String.format("xmlns:%s=\"%s\"\n", namespaceDefinition.prefix, namespaceDefinition.uri));
@@ -201,39 +186,11 @@ public class RecordValidator {
                 problems.add(String.format("Value for [%s] was [%s] which does not match regular expression [%s]", field.path, text, regex));
             }
         }
-        if (field.id && checkUniqueness) {
-            checkEntryUniqueness(text, field, problems);
-        }
-    }
-
-    private void checkEntryUniqueness(String text, FieldDefinition field, List<String> problems) {
-        int hashCode = text.hashCode();
-        boolean setEverywhere = true;
-        for (int walk = 0; walk < bitSet.length && setEverywhere; walk++) {
-            if (!getBit(hashCode, walk)) {
-                setEverywhere = false;
+        if (field.id && idUniqueness != null) {
+            if (idUniqueness.isRepeated(text)) {
+                problems.add(String.format("Identifier [%s] must be unique but the value [%s] appears more than once", field.path, text));
             }
         }
-        if (setEverywhere) {
-            problems.add(String.format("Identifier [%s] must be unique but the value [%s] appears more than once", field.path, text));
-        }
-        else {
-            for (int walk = 0; walk < bitSet.length; walk++) {
-                setBit(hashCode, walk);
-            }
-        }
-    }
-
-    private boolean getBit(int hashCode, int bitSetIndex) {
-        int offset = PRIMES[(bitSetIndex + 1) % PRIMES.length];
-        int bitNumber = Math.abs((hashCode + offset) % bitSet[bitSetIndex].size());
-        return bitSet[bitSetIndex].get(bitNumber);
-    }
-
-    private void setBit(int hashCode, int bitSetIndex) {
-        int offset = PRIMES[(bitSetIndex + 1) % PRIMES.length];
-        int bitNumber = Math.abs((hashCode + offset) % bitSet[bitSetIndex].size());
-        bitSet[bitSetIndex].set(bitNumber);
     }
 
     private String getOptionsString(FieldDefinition field) {

@@ -24,18 +24,19 @@ package eu.europeana.sip.gui;
 import eu.delving.metadata.AnalysisTree;
 import eu.delving.metadata.AnalysisTreeNode;
 import eu.delving.metadata.Path;
+import eu.delving.metadata.Statistics;
 import eu.delving.sip.FileStore;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTree;
-import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.event.TreeModelEvent;
@@ -58,6 +59,7 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 /**
  * A Graphical interface for analysis
@@ -75,6 +77,7 @@ public class AnalysisPanel extends JPanel {
     private JLabel recordCountLabel = new JLabel(String.format(RECORDS, 0), JLabel.CENTER);
     private JButton analyzeButton = new JButton("Analyze");
     private JLabel elementCountLabel = new JLabel(String.format(ELEMENTS_PROCESSED, 0L), JLabel.CENTER);
+    private JLabel statisticsView = new JLabel();
     private JButton abortButton = new JButton("Abort");
     private ConstantFieldPanel constantFieldPanel;
     private JTree statisticsJTree;
@@ -88,7 +91,7 @@ public class AnalysisPanel extends JPanel {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1;
-        
+
         gbc.weighty = 0.5;
 
         gbc.gridx = 0;
@@ -137,13 +140,7 @@ public class AnalysisPanel extends JPanel {
     private JPanel createStatisticsPanel() {
         JPanel p = new JPanel(new BorderLayout(5, 5));
         p.setBorder(BorderFactory.createTitledBorder("Statistics"));
-        JPanel tablePanel = new JPanel(new BorderLayout());
-        JTable statsTable = new JTable(sipModel.getStatisticsTableModel(), createStatsColumnModel());
-        statsTable.getTableHeader().setReorderingAllowed(false);
-        statsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tablePanel.add(statsTable.getTableHeader(), BorderLayout.NORTH);
-        tablePanel.add(scroll(statsTable), BorderLayout.CENTER);
-        p.add(tablePanel, BorderLayout.CENTER);
+        p.add(scroll(statisticsView), BorderLayout.CENTER);
         return p;
     }
 
@@ -209,6 +206,16 @@ public class AnalysisPanel extends JPanel {
             }
 
             @Override
+            public void updatedStatistics(Statistics statistics) {
+                if (statistics == null) {
+                    statisticsView.setText("<html><h3>No Statistics</h3>");
+                }
+                else {
+                    statisticsView.setText(statistics.toHtml());
+                }
+            }
+
+            @Override
             public void updatedRecordRoot(Path recordRoot, int recordCount) {
                 recordCountLabel.setText(String.format(RECORDS, recordCount));
             }
@@ -224,7 +231,7 @@ public class AnalysisPanel extends JPanel {
                 AnalysisTree.Node node = (AnalysisTree.Node) path.getLastPathComponent();
                 selectRecordRootButton.setEnabled(node.couldBeRecordRoot());
                 selectUniqueElementButton.setEnabled(!node.couldBeRecordRoot());
-                sipModel.selectNode(node);
+                sipModel.setStatistics(node.getStatistics());
             }
         });
         selectRecordRootButton.addActionListener(new ActionListener() {
