@@ -164,8 +164,8 @@ public class SipCreatorGUI extends JFrame {
         dataSetList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent event) {
-                DataSetListModel.Entry entry = (DataSetListModel.Entry) dataSetList.getSelectedValue();
-                boolean enable = entry != null && entry.getDataSetStore() != null;
+                if (event.getValueIsAdjusting()) return;
+                boolean enable = getSelectedDataSetStore() != null;
                 for (JButton button : controlButtons) {
                     button.setEnabled(enable);
                 }
@@ -188,10 +188,9 @@ public class SipCreatorGUI extends JFrame {
         analysis.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                int selected = dataSetList.getSelectedIndex();
-                if (selected >= 0) {
-                    DataSetListModel.Entry entry = dataSetListModel.getEntry(selected);
-                    sipModel.setDataSetStore(entry.getDataSetStore());
+                FileStore.DataSetStore store = getSelectedDataSetStore();
+                if (store != null) {
+                    sipModel.setDataSetStore(store);
                     analysisFrame.reveal();
                 }
             }
@@ -203,11 +202,10 @@ public class SipCreatorGUI extends JFrame {
         sourceDetailsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                int selected = dataSetList.getSelectedIndex();
-                if (selected >= 0) {
-                    DataSetListModel.Entry entry = dataSetListModel.getEntry(selected);
-                    sipModel.setDataSetStore(entry.getDataSetStore());
-                    constantsFrame.reveal(sipModel.getDataSetStore().getSpec());
+                FileStore.DataSetStore store = getSelectedDataSetStore();
+                if (store != null) {
+                    sipModel.setDataSetStore(store);
+                    constantsFrame.reveal(store.getSpec());
                 }
             }
         });
@@ -215,14 +213,13 @@ public class SipCreatorGUI extends JFrame {
         controlButtons.add(sourceDetailsButton);
 
         for (final String metadataPrefix : sipModel.getMetadataModel().getPrefixes()) {
-            JButton button = new JButton(String.format("<html>Edit '<strong>%s</strong>' Mapping", metadataPrefix));
+            JButton button = new JButton(String.format("Edit '%s' Mapping", metadataPrefix));
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent actionEvent) {
-                    int selected = dataSetList.getSelectedIndex();
-                    if (selected >= 0) {
-                        DataSetListModel.Entry entry = dataSetListModel.getEntry(selected);
-                        sipModel.setDataSetStore(entry.getDataSetStore());
+                    FileStore.DataSetStore store = getSelectedDataSetStore();
+                    if (store != null) {
+                        sipModel.setDataSetStore(store);
                         sipModel.setMetadataPrefix(metadataPrefix);
                         mappingFrame.reveal(metadataPrefix);
                     }
@@ -238,6 +235,11 @@ public class SipCreatorGUI extends JFrame {
         return p;
     }
 
+    private FileStore.DataSetStore getSelectedDataSetStore() {
+        int selected = dataSetList.getSelectedIndex();
+        return selected >= 0 ? dataSetListModel.getEntry(selected).getDataSetStore() : null;
+    }
+
     private class UploadAction extends AbstractAction {
 
         private UploadAction() {
@@ -246,43 +248,47 @@ public class SipCreatorGUI extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            ProgressMonitor progressMonitor = new ProgressMonitor(SwingUtilities.getRoot(SipCreatorGUI.this), "Uploading", "Uploading files for " + sipModel.getDataSetStore().getSpec(), 0, 100);
-            final ProgressListener progressListener = new ProgressListener.Adapter(progressMonitor, this);
-            sipModel.uploadFile(FileType.SOURCE_DETAILS, sipModel.getDataSetStore().getSourceDetailsFile(), progressListener, new FileUploader.Receiver() {
-                @Override
-                public void acceptResponse(DataSetResponse dataSetResponse) {
-                    switch (dataSetResponse) {
-                        case THANK_YOU:
-                        case GOT_IT_ALREADY:
-                            sipModel.uploadFile(FileType.SOURCE, sipModel.getDataSetStore().getSourceFile(), progressListener, new FileUploader.Receiver() {
-                                @Override
-                                public void acceptResponse(DataSetResponse dataSetResponse) {
-                                    switch (dataSetResponse) {
-                                        case THANK_YOU:
-                                        case GOT_IT_ALREADY:
-                                            Collection<File> mappingFiles = sipModel.getDataSetStore().getMappingFiles();
-                                            if (mappingFiles.size() > 1) {
-                                                throw new RuntimeException("Not yet ready for multiple mappings");
-                                            }
-                                            File mappingFile = mappingFiles.iterator().next();
-                                            sipModel.uploadFile(FileType.MAPPING, mappingFile, progressListener, new FileUploader.Receiver() {
-                                                @Override
-                                                public void acceptResponse(DataSetResponse dataSetResponse) {
-                                                    // todo: done
+            final FileStore.DataSetStore store = getSelectedDataSetStore();
+            if (store != null) {
+                sipModel.setDataSetStore(store);
+                ProgressMonitor progressMonitor = new ProgressMonitor(SwingUtilities.getRoot(SipCreatorGUI.this), "Uploading", "Uploading files for " + store.getSpec(), 0, 100);
+                final ProgressListener progressListener = new ProgressListener.Adapter(progressMonitor, this);
+                sipModel.uploadFile(FileType.SOURCE_DETAILS, store.getSourceDetailsFile(), progressListener, new FileUploader.Receiver() {
+                    @Override
+                    public void acceptResponse(DataSetResponse dataSetResponse) {
+                        switch (dataSetResponse) {
+                            case THANK_YOU:
+                            case GOT_IT_ALREADY:
+                                sipModel.uploadFile(FileType.SOURCE, store.getSourceFile(), progressListener, new FileUploader.Receiver() {
+                                    @Override
+                                    public void acceptResponse(DataSetResponse dataSetResponse) {
+                                        switch (dataSetResponse) {
+                                            case THANK_YOU:
+                                            case GOT_IT_ALREADY:
+                                                Collection<File> mappingFiles = store.getMappingFiles();
+                                                if (mappingFiles.size() > 1) {
+                                                    throw new RuntimeException("Not yet ready for multiple mappings");
                                                 }
-                                            });
-                                            break;
-                                        default:
-                                            break;
+                                                File mappingFile = mappingFiles.iterator().next();
+                                                sipModel.uploadFile(FileType.MAPPING, mappingFile, progressListener, new FileUploader.Receiver() {
+                                                    @Override
+                                                    public void acceptResponse(DataSetResponse dataSetResponse) {
+                                                        // todo: done
+                                                    }
+                                                });
+                                                break;
+                                            default:
+                                                break;
+                                        }
                                     }
-                                }
-                            });
-                            break;
-                        default:
-                            break;
+                                });
+                                break;
+                            default:
+                                break;
+                        }
                     }
-                }
-            });
+                });
+            }
         }
     }
 

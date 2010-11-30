@@ -150,7 +150,7 @@ public class DataSetController {
     @RequestMapping(value = "/dataset/submit/{dataSetSpec}/{fileType}/{fileName}", method = RequestMethod.GET)
     public
     @ResponseBody
-    DataSetResponse checkFile(
+    String checkFile(
             @PathVariable String dataSetSpec,
             @PathVariable String fileType,
             @PathVariable String fileName,
@@ -160,7 +160,7 @@ public class DataSetController {
             checkAccessKey(accessKey);
         }
         catch (AccessKeyException e) {
-            return DataSetResponse.ACCESS_KEY_FAILURE;
+            return DataSetResponse.ACCESS_KEY_FAILURE.toString();
         }
         try {
             FileType type = FileType.valueOf(fileType);
@@ -171,19 +171,19 @@ public class DataSetController {
             }
             switch (type) {
                 case SOURCE_DETAILS:
-                    return checkSourceDetails(dataSetSpec, hash);
+                    return checkSourceDetails(dataSetSpec, hash).toString();
                 case SOURCE:
-                    return checkSource(dataSetSpec, hash);
+                    return checkSource(dataSetSpec, hash).toString();
                 case MAPPING:
-                    return checkMapping(dataSetSpec, hash);
+                    return checkMapping(dataSetSpec, hash).toString();
                 default:
-                    return DataSetResponse.SYSTEM_ERROR;
+                    return DataSetResponse.SYSTEM_ERROR.toString();
             }
         }
         catch (Exception e) {
             log.error("Unable to submit", e);
         }
-        return DataSetResponse.SYSTEM_ERROR;
+        return DataSetResponse.SYSTEM_ERROR.toString();
     }
 
     @RequestMapping(value = "/dataset/submit/{dataSetSpec}/{fileType}/{fileName}", method = RequestMethod.POST)

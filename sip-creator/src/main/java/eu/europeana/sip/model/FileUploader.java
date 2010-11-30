@@ -87,11 +87,11 @@ public class FileUploader implements Runnable {
             String requestUrl = createRequestUrl();
             HttpGet httpGet = new HttpGet(requestUrl);
             HttpResponse response = httpClient.execute(httpGet);
-            DataSetResponse dataSetResponse = DataSetResponse.valueOf(EntityUtils.toString(response.getEntity()));
-            httpClient.getConnectionManager().shutdown();
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                 throw new IOException("Response not OK, but " + response.getStatusLine().getStatusCode());
             }
+            DataSetResponse dataSetResponse = DataSetResponse.valueOf(EntityUtils.toString(response.getEntity()));
+            httpClient.getConnectionManager().shutdown();
             return dataSetResponse;
         }
         catch (IOException e) {
