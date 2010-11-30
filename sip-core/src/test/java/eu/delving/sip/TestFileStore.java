@@ -50,8 +50,9 @@ import java.util.List;
 
 public class TestFileStore {
     private static final File TARGET = new File("target");
-    private static final File DIR = new File(TARGET, "file-store");
     private static final String SPEC = "spek";
+    private static final File DIR = new File(TARGET, "file-store");
+    private static final File SPEC_DIR = new File(DIR, SPEC);
     private Logger log = Logger.getLogger(getClass());
     private FileStore fileStore;
     public static final String METADATA_PREFIX = "abm";
@@ -140,7 +141,7 @@ public class TestFileStore {
         statistics.finish();
         stats.add(statistics);
         store.setStatistics(stats);
-        Assert.assertEquals("Should be one directory ", 1, new File(DIR, SPEC).listFiles().length);
+        Assert.assertEquals("Should be two files ", 2, new File(DIR, SPEC).listFiles().length);
         stats = fileStore.getDataSetStores().get(SPEC).getStatistics();
         Assert.assertEquals("Should be one stat", 1, stats.size());
         Assert.assertEquals("Path discrepancy", "/stat/path", stats.get(0).getPath().toString());
@@ -167,9 +168,10 @@ public class TestFileStore {
         mo.recordDiscarded();
         mo.recordNormalized();
         mo.recordNormalized();
-        Assert.assertEquals("Should be two files", 2, new File(DIR, SPEC).listFiles().length);
+        Assert.assertEquals("Should be one file", 1, SPEC_DIR.listFiles().length);
         mo.close(false);
         store.setRecordMapping(recordMapping);
+        Assert.assertEquals("Should be two files", 2, SPEC_DIR.listFiles().length);
         recordMapping = fileStore.getDataSetStores().get(SPEC).getRecordMapping(METADATA_PREFIX);
         Assert.assertEquals("Mapping should contain facts", 1, recordMapping.getRecordsDiscarded());
         Assert.assertEquals("Mapping should contain facts", 2, recordMapping.getRecordsNormalized());

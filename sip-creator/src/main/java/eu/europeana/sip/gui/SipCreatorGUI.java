@@ -205,7 +205,6 @@ public class SipCreatorGUI extends JFrame {
             p.add(button);
             mappingButtons.add(button);
         }
-
         return p;
     }
 
@@ -274,7 +273,7 @@ public class SipCreatorGUI extends JFrame {
                         problemHtml.append("</ul></html>");
                         html = problemHtml.toString();
                     }
-                    JOptionPane.showMessageDialog(SipCreatorGUI.this, html);
+                    JOptionPane.showMessageDialog(null, html);
                 }
             });
             if (exception != null) {

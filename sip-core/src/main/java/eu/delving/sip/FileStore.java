@@ -75,11 +75,11 @@ public interface FileStore {
 
         void delete() throws FileStoreException;
 
-        File getSourceDetailsFile() throws FileStoreException;
+        File getSourceDetailsFile();
 
-        File getSourceFile() throws FileStoreException;
+        File getSourceFile();
 
-        Collection<File> getMappingFiles() throws FileStoreException;
+        Collection<File> getMappingFiles();
     }
 
     public interface MappingOutput {

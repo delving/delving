@@ -44,7 +44,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -271,7 +271,7 @@ public class FileStoreImpl implements FileStore {
         @Override
         public RecordMapping getRecordMapping(String metadataPrefix) throws FileStoreException {
             RecordDefinition recordDefinition = metadataModel.getRecordDefinition(metadataPrefix);
-            File mappingFile = new File(directory, String.format(MAPPING_FILE_PATTERN, metadataPrefix));
+            File mappingFile = findMappingFile(directory, metadataPrefix);
             if (mappingFile.exists()) {
                 try {
                     FileInputStream is = new FileInputStream(mappingFile);
@@ -301,7 +301,7 @@ public class FileStoreImpl implements FileStore {
 
         @Override
         public SourceDetails getSourceDetails() throws FileStoreException {
-            File sourceDetailsFile = new File(directory, SOURCE_DETAILS_FILE_NAME);
+            File sourceDetailsFile = getSourceDetailsFile();
             SourceDetails details = null;
             if (sourceDetailsFile.exists()) {
                 try {
@@ -342,26 +342,18 @@ public class FileStoreImpl implements FileStore {
         }
 
         @Override
-        public File getSourceDetailsFile() throws FileStoreException {
-            File file = new File(directory, SOURCE_DETAILS_FILE_NAME);
-            if (!file.exists()) {
-                throw new FileStoreException("Source details file not found");
-            }
-            return file;
+        public File getSourceDetailsFile() {
+            return findSourceDetailsFile(directory);
         }
 
         @Override
-        public File getSourceFile() throws FileStoreException {
-            File[] sources = directory.listFiles(new SourceFileFilter());
-            if (sources.length != 1) {
-                throw new FileStoreException("Expected exactly one source directory");
-            }
-            return sources[0];
+        public File getSourceFile() {
+            return findSourceFile(directory);
         }
 
         @Override
-        public Collection<File> getMappingFiles() throws FileStoreException {
-            return Arrays.asList(directory.listFiles(new MappingFileFilter()));
+        public Collection<File> getMappingFiles() {
+            return findMappingFiles(directory);
         }
 
         @Override
@@ -473,26 +465,121 @@ public class FileStoreImpl implements FileStore {
         return stream;
     }
 
+    private File findSourceDetailsFile(File dir) {
+        File [] files = dir.listFiles(new SourceDetailsFileFilter());
+        switch (files.length) {
+            case 0:
+                return new File(dir, SOURCE_DETAILS_FILE_NAME);
+            case 1:
+                return files[0];
+            default:
+                for (File file : files) {
+                    if (Hasher.getHash(file) == null) {
+                        return file;
+                    }
+                }
+                return getMostRecent(files);
+        }
+    }
+
+    private File findSourceFile(File dir) {
+        File [] files = dir.listFiles(new SourceFileFilter());
+        switch (files.length) {
+            case 0:
+                return new File(dir, SOURCE_FILE_NAME);
+            case 1:
+                return files[0];
+            default:
+                for (File file : files) {
+                    if (Hasher.getHash(file) == null) {
+                        return file;
+                    }
+                }
+                return getMostRecent(files);
+        }
+    }
+
+    private Collection<File> findMappingFiles(File dir) {
+        List<File> mappingFiles = new ArrayList<File>();
+        File [] files = dir.listFiles(new MappingFileFilter());
+        Map<String, List<File>> map = new TreeMap<String, List<File>>();
+        for (File file : files) {
+            String prefix = getMetadataPrefix(file);
+            if (prefix == null) continue;
+            List<File> list = map.get(prefix);
+            if (list == null) {
+                map.put(prefix, list = new ArrayList<File>());
+            }
+            list.add(file);
+        }
+        for (Map.Entry<String, List<File>> entry : map.entrySet()) {
+            if (entry.getValue().size() == 1) {
+                mappingFiles.add(entry.getValue().get(0));
+            }
+            else {
+                mappingFiles.add(getMostRecent(entry.getValue().toArray(new File[entry.getValue().size()])));
+            }
+        }
+        return mappingFiles;
+    }
+
+    private File findMappingFile(File dir, String metadataPrefix) {
+        File mappingFile = null;
+        for (File file : findMappingFiles(dir)) {
+            String prefix = getMetadataPrefix(file);
+            if (prefix.equals(metadataPrefix)) {
+                mappingFile = file;
+            }
+        }
+        if (mappingFile == null) {
+            mappingFile = new File(dir, String.format(MAPPING_FILE_PATTERN, metadataPrefix));
+        }
+        return mappingFile;
+    }
+
+    private class SourceDetailsFileFilter implements FileFilter {
+        @Override
+        public boolean accept(File file) {
+            return file.isFile() && SOURCE_DETAILS_FILE_NAME.equals(Hasher.getName(file));
+        }
+    }
+
     private class SourceFileFilter implements FileFilter {
         @Override
         public boolean accept(File file) {
-            return file.isFile() && SOURCE_FILE_NAME.equals(getName(file));
+            return file.isFile() && SOURCE_FILE_NAME.equals(Hasher.getName(file));
         }
     }
 
     private class MappingFileFilter implements FileFilter {
         @Override
         public boolean accept(File file) {
-            return file.isFile() && file.getName().startsWith(MAPPING_FILE_PREFIX) && file.getName().endsWith(MAPPING_FILE_SUFFIX);
+            String name = Hasher.getName(file);
+            return file.isFile() && name.startsWith(MAPPING_FILE_PREFIX) && name.endsWith(MAPPING_FILE_SUFFIX);
         }
     }
 
-    private static String getName(File file) {
-        String name = file.getName();
-        int hashSeparator = name.indexOf("__");
-        if (hashSeparator > 0) {
-            name = name.substring(hashSeparator + 2);
+    private String getMetadataPrefix(File file) {
+        String name = Hasher.getName(file);
+        if (name.startsWith(MAPPING_FILE_PREFIX) && name.endsWith(MAPPING_FILE_SUFFIX)) {
+            name = name.substring(MAPPING_FILE_PREFIX.length());
+            name = name.substring(0, name.length() - MAPPING_FILE_SUFFIX.length());
+            return name;
         }
-        return name;
+        else {
+            return null;
+        }
+    }
+
+    private File getMostRecent(File [] files) {
+        long maxLastModified = 0;
+        File mostRecent = null;
+        for (File file : files) {
+            if (file.lastModified() > maxLastModified) {
+                maxLastModified = file.lastModified();
+                mostRecent = file;
+            }
+        }
+        return mostRecent;
     }
 }

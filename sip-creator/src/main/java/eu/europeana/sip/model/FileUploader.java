@@ -1,6 +1,5 @@
 package eu.europeana.sip.model;
 
-import eu.delving.sip.FileStoreException;
 import eu.delving.sip.FileType;
 import eu.delving.sip.Hasher;
 import eu.delving.sip.ProgressListener;
@@ -51,15 +50,8 @@ public class FileUploader implements Runnable {
         final int totalBlocks = (int) (file.length() / BLOCK_SIZE);
         progressListener.setTotal(totalBlocks);
         try {
-            int hashSeparator = file.getName().indexOf("__");
-            String hash;
-            if (hashSeparator > 0) {
-                hash = file.getName().substring(0, hashSeparator);
-            }
-            else {
-                hash = calculateHash(file);
-            }
-            uploadFile(hash);
+            file = Hasher.hashFile(file);
+            uploadFile();
         }
         catch (Exception e) {
             userNotifier.tellUser("Unable to upload file "+file.getAbsolutePath());
@@ -75,20 +67,14 @@ public class FileUploader implements Runnable {
         }
     }
 
-    private String calculateHash(File file) throws FileStoreException {
-        Hasher hasher = new Hasher();
-        hasher.digest(file);
-        return hasher.toString();
-    }
-
-    private void uploadFile(String hash) throws IOException {
+    private void uploadFile() throws IOException {
         HttpClient httpClient = new DefaultHttpClient();
         String postUrl = String.format(
                 "%s/submit/%s/%s/%s?accessKey=%s",
                 serverUrl,
                 dataSetSpec,
                 fileType,
-                hash,
+                file.getName(),
                 serverAccessKey
         );
         log.info("Posting to: " + postUrl);
