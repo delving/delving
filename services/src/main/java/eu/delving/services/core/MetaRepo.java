@@ -97,11 +97,9 @@ public interface MetaRepo {
         void save();
 
         void setSourceDetailsHash(String sourceHash);
-        String getSourceDetailsHash();
         void setSourceHash(String hash);
-        String getSourceHash();
         void setMappingHash(String metadataPrefix, String hash);
-        String getMappingHash(String metadataPrefix);
+        boolean hasHash(String hash);
 
         void parseRecords(InputStream inputStream) throws XMLStreamException, IOException;
         void setMapping(RecordMapping recordMapping);

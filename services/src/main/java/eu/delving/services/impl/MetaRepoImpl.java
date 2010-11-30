@@ -13,6 +13,7 @@ import eu.delving.metadata.MetadataNamespace;
 import eu.delving.metadata.NamespaceDefinition;
 import eu.delving.metadata.Path;
 import eu.delving.metadata.RecordMapping;
+import eu.delving.metadata.RecordValidator;
 import eu.delving.metadata.Tag;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.BadArgumentException;
@@ -23,7 +24,6 @@ import eu.delving.sip.ServiceAccessToken;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
-import eu.delving.metadata.RecordValidator;
 import eu.europeana.sip.core.ToolCodeResource;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -457,18 +457,8 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public String getSourceDetailsHash() {
-            return getNonemptyString(SOURCE_DETAILS_HASH);
-        }
-
-        @Override
         public void setSourceHash(String sourceHash) {
             object.put(SOURCE_HASH, sourceHash);
-        }
-
-        @Override
-        public String getSourceHash() {
-            return getNonemptyString(SOURCE_HASH);
         }
 
         @Override
@@ -477,8 +467,21 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public String getMappingHash(String metadataPrefix) {
-            return getNonemptyString(MAPPING_HASH_PREFIX + metadataPrefix);
+        public boolean hasHash(String hash) {
+            Set<String> hashes = new TreeSet<String>();
+            addHash(SOURCE_DETAILS_HASH, hashes);
+            addHash(SOURCE_HASH, hashes);
+            for (String metadataPrefix : metadataModel.getPrefixes()) {
+                addHash(MAPPING_HASH_PREFIX + metadataPrefix, hashes);
+            }
+            return hashes.contains(hash);
+        }
+
+        private void addHash(String hashAttribute, Set<String> hashes) {
+            String hash = (String) object.get(hashAttribute);
+            if (hash != null) {
+                hashes.add(hash);
+            }
         }
 
         @Override

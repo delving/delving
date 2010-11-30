@@ -1,15 +1,17 @@
 package eu.europeana.sip.model;
 
+import eu.delving.sip.DataSetResponse;
 import eu.delving.sip.FileType;
 import eu.delving.sip.Hasher;
 import eu.delving.sip.ProgressListener;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 import javax.swing.SwingUtilities;
@@ -51,11 +53,13 @@ public class FileUploader implements Runnable {
         progressListener.setTotal(totalBlocks);
         try {
             file = Hasher.hashFile(file);
-            uploadFile();
+            if (checkFile() == DataSetResponse.READY_TO_RECEIVE) {
+                uploadFile();
+            }
         }
         catch (Exception e) {
-            userNotifier.tellUser("Unable to upload file "+file.getAbsolutePath());
-            log.warn("Unable to upload file "+file.getAbsolutePath(), e);
+            userNotifier.tellUser("Unable to upload file " + file.getAbsolutePath());
+            log.warn("Unable to upload file " + file.getAbsolutePath(), e);
         }
         finally {
             SwingUtilities.invokeLater(new Runnable() {
@@ -67,9 +71,64 @@ public class FileUploader implements Runnable {
         }
     }
 
-    private void uploadFile() throws IOException {
-        HttpClient httpClient = new DefaultHttpClient();
-        String postUrl = String.format(
+    private DataSetResponse checkFile() {
+        try {
+            HttpClient httpClient = new DefaultHttpClient();
+            String requestUrl = createRequestUrl();
+            HttpGet httpGet = new HttpGet(requestUrl);
+            HttpResponse response = httpClient.execute(httpGet);
+            DataSetResponse dataSetResponse = DataSetResponse.valueOf(EntityUtils.toString(response.getEntity()));
+            httpClient.getConnectionManager().shutdown();
+            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                throw new IOException("Response not OK, but " + response.getStatusLine().getStatusCode());
+            }
+            return dataSetResponse;
+        }
+        catch (IOException e) {
+            log.error("Network problem", e);
+            return DataSetResponse.NEWORK_ERROR;
+        }
+        catch (Exception e) {
+            log.error("Network problem", e);
+            return DataSetResponse.NEWORK_ERROR;
+        }
+    }
+
+    private DataSetResponse uploadFile() {
+        try {
+            HttpClient httpClient = new DefaultHttpClient();
+            String requestUrl = createRequestUrl();
+            log.info("Posting to: " + requestUrl);
+            HttpPost httpPost = new HttpPost(requestUrl);
+            httpPost.setEntity(createEntity());
+            HttpResponse response = httpClient.execute(httpPost);
+            log.info("Response: " + response.getStatusLine());
+            DataSetResponse dataSetResponse = DataSetResponse.valueOf(EntityUtils.toString(response.getEntity()));
+            httpClient.getConnectionManager().shutdown();
+            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                throw new IOException("Response not OK, but " + response.getStatusLine().getStatusCode());
+            }
+            return dataSetResponse;
+        }
+        catch (IOException e) {
+            log.error("Network problem", e);
+            return DataSetResponse.NEWORK_ERROR;
+        }
+        catch (Exception e) {
+            log.error("Network problem", e);
+            return DataSetResponse.NEWORK_ERROR;
+        }
+
+    }
+
+    private FileEntity createEntity() {
+        FileEntity fileEntity = new FileEntity(file, fileType.getContentType());
+        fileEntity.setChunked(true);
+        return fileEntity;
+    }
+
+    private String createRequestUrl() {
+        return String.format(
                 "%s/submit/%s/%s/%s?accessKey=%s",
                 serverUrl,
                 dataSetSpec,
@@ -77,21 +136,6 @@ public class FileUploader implements Runnable {
                 file.getName(),
                 serverAccessKey
         );
-        log.info("Posting to: " + postUrl);
-        HttpPost httpPost = new HttpPost(postUrl);
-        FileEntity fileEntity = new FileEntity(file, fileType.getContentType());
-        fileEntity.setChunked(true);
-        httpPost.setEntity(fileEntity);
-        HttpResponse response = httpClient.execute(httpPost);
-        log.info("Response: " + response.getStatusLine());
-        HttpEntity resEntity = response.getEntity();
-        if (resEntity != null) {
-            resEntity.consumeContent();
-        }
-        httpClient.getConnectionManager().shutdown();
-        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-            throw new IOException("Response not OK");
-        }
     }
 
     private class FileEntity extends AbstractHttpEntity implements Cloneable {

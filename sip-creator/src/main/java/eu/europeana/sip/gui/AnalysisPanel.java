@@ -157,8 +157,14 @@ public class AnalysisPanel extends JPanel {
             @Override
             public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
                 setElementsProcessed(sipModel.getElementCount());
-                analyzeButton.setText(String.format(PERFORM_ANALYSIS, dataSetStore.getSpec()));
-                analyzeButton.setEnabled(true);
+                if (dataSetStore != null) {
+                    analyzeButton.setText(String.format(PERFORM_ANALYSIS, dataSetStore.getSpec()));
+                    analyzeButton.setEnabled(true);
+                }
+                else {
+                    analyzeButton.setText("Analyze");
+                    analyzeButton.setEnabled(false);
+                }
                 abortButton.setEnabled(false);
             }
 
