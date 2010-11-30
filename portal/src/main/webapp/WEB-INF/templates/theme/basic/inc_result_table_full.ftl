@@ -164,7 +164,7 @@
                         <#assign contributorArr = model.fullDoc.dcContributor />
                         <#if isNonEmpty(contributorArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'Contributor_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.searchfield.contributor' />:</th>
                                 <td><@simple_list model.fullDoc.dcContributor ';&#160;'/></td>
                             </tr>
                         </#if>
@@ -198,7 +198,7 @@
                         <#assign languageArr = result.fullDoc.dcLanguage />
                         <#if isNonEmpty(languageArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'languageDropDownList_t' />:</th>
+                                <th scope="row"><@spring.message '_portal.menu.languagedropdownlist' />:</th>
                                 <td><@simple_list languageArr ';&#160;'/></td>
                             </tr>
                         </#if>
@@ -207,10 +207,10 @@
                         <#assign descriptionArr = model.fullDoc.dcDescription />
                         <#if isNonEmpty(descriptionArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'Description_t' />:</th>
+                                <th scope="row"><@spring.message '_inc_result_table_full.description' />:</th>
                                 <td>
                                     <@simple_list_truncated descriptionArr "<br/>" "800"/>
-                                    <#--<span id="opener"><@spring.message 'More_t' /></span>-->
+                                    <#--<span id="opener"><@spring.message '_portal.ui.message.more' /></span>-->
                                     <#--<div class="dialog">-->
                                        <#--<@simple_list descriptionArr "<br/>"/> -->
                                     <#--</div>-->
@@ -221,7 +221,7 @@
                       <#-- SUBJECTS, TEMPORAL, SPATIAL  ----------------------------------------------------------------->
                         <#if isNonEmpty(arrsubj)>
                             <tr>
-                                <th scope="row"><@spring.message '_search.option.subject' />:</th>
+                                <th scope="row"><@spring.message '_search.field.subject' />:</th>
                                 <td><@simple_list arrsubj ';&#160;'/></td>
                             </tr>
                         </#if>
@@ -263,7 +263,7 @@
                      <#-- Europeana PROVIDER   -------------------------------------------------------------------------------->
                         <#if isNonEmpty(providerArr) >
                             <tr>
-                                <th scope="row"><@spring.message '_prompt.provider' />:</th>
+                                <th scope="row"><@spring.message '_search.field.provider' />:</th>
                                 <td>
                                 <#if isNonEmpty(result.fullDoc.europeanaProvider) && isNonEmpty(result.fullDoc.europeanaCountry)>
                                     ${result.fullDoc.europeanaProvider[0]} ;&#160; ${result.fullDoc.europeanaCountry[0]}
@@ -292,10 +292,10 @@
                             <#--href="#"-->
                             <#--class="fg-button ui-state-default fg-button-icon-left ui-corner-all"-->
                             <#--onclick="toggleObject('moremetadata');toggleObject('lesslink');toggleObject('morelink');return false;"-->
-                            <#--alt="<@spring.message 'More_t' />"-->
-                            <#--title="<@spring.message 'More_t' />"-->
+                            <#--alt="<@spring.message '_portal.ui.message.more' />"-->
+                            <#--title="<@spring.message '_portal.ui.message.more' />"-->
                         <#-->-->
-                            <#--<span class="ui-icon ui-icon-circle-plus"></span><@spring.message 'More_t' />-->
+                            <#--<span class="ui-icon ui-icon-circle-plus"></span><@spring.message '_portal.ui.message.more' />-->
                         <#--</a>-->
                     <#--</p>-->
 
@@ -304,10 +304,10 @@
                             <#--href="#"-->
                             <#--class="fg-button ui-state-default fg-button-icon-left ui-corner-all"-->
                             <#--onclick="toggleObject('lesslink');toggleObject('morelink');toggleObject('moremetadata'); return false;"-->
-                            <#--alt="<@spring.message 'Less_t' />"-->
-                            <#--title="<@spring.message 'Less_t' />"-->
+                            <#--alt="<@spring.message '_portal.ui.message.less' />"-->
+                            <#--title="<@spring.message '_portal.ui.message.less' />"-->
                         <#-->-->
-                            <#--<span class="ui-icon ui-icon-circle-minus"></span><@spring.message 'Less_t' />-->
+                            <#--<span class="ui-icon ui-icon-circle-minus"></span><@spring.message '_portal.ui.message.less' />-->
                         <#--</a>-->
                     <#--</p>-->
                     <#--<div class="clearfix"></div>-->
@@ -338,8 +338,8 @@
                                 <a
                                     href="/${portalName}/redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
                                     target="_blank"
-                                    alt="<@spring.message '_action.view.in.original.context' /> - <@spring.message 'OpensInNewWindow_t'/>"
-                                    title="<@spring.message '_action.view.in.original.context' /> - <@spring.message 'OpensInNewWindow_t'/>"
+                                    alt="<@spring.message '_action.view.in.original.context' /> - <@spring.message '_actionOpenInNewWindow'/>"
+                                    title="<@spring.message '_action.view.in.original.context' /> - <@spring.message '_actionOpenInNewWindow'/>"
                                     class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
                                 >
                                     <span class="ui-icon ui-icon-newwin"></span><@spring.message '_action.view.in.original.context' />

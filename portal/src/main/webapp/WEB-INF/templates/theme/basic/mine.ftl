@@ -57,12 +57,12 @@
                 <td>${user.userName}</td>
             </tr>
             <tr>
-              <td><h4><@spring.message '_prompt.email.address'/>:<h/4></td>
+              <td><h4><@spring.message '_mine.email.address'/>:<h/4></td>
               <td>${user.email}</td>
             </tr>
             <#if user.firstName??>
             <tr>
-              <td><h4><@spring.message 'FirstName_t'/>:</h4></td>
+              <td><h4><@spring.message '_mine.firstname'/>:</h4></td>
               <td>${user.firstName}</td>
             </tr>
             </#if>
@@ -74,13 +74,13 @@
             </#if>
             <#if user.registrationDate??>
             <tr>
-              <td><h4><@spring.message 'user.registration.date'/>:</h4></td>
+              <td><h4><@spring.message '_mine.user.registration.date'/>:</h4></td>
               <td>${user.registrationDate}</td>
             </tr>
             </#if>
             <#if user.lastLogin??>
             <tr>
-              <td><h4><@spring.message 'user.last.login.date'/>:</h4></td>
+              <td><h4><@spring.message '_mine.user.last.login.date'/>:</h4></td>
               <td>${user.lastLogin?string("yyyy-MM-dd HH:mm:ss")}</td>
             </tr>
             </#if>
@@ -141,7 +141,7 @@
                         </tr>
                     </#list>
                 <#else>
-                    <tr><td><@spring.message 'NoSavedSearches_t'/></td></tr>
+                    <tr><td><@spring.message '_mine.nosavedsearches'/></td></tr>
                 </#if>
             </table>
         </div>
@@ -196,7 +196,7 @@
 
                 <#--</#list>-->
             <#--<#else>-->
-                <#--<tr><td><@spring.message 'NoSavedTags_t'/></td></tr>-->
+                <#--<tr><td><@spring.message '_mine.nosavedtags'/></td></tr>-->
             <#--</#if>-->
         <#--</table>-->
 

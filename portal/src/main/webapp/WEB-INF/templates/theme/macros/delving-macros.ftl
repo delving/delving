@@ -85,7 +85,7 @@
             <title>${title}</title>
             <script type="text/javascript">
                 var locale = "${locale}";
-                var msgRequired = "<@spring.message 'RequiredField_t'/>";
+                var msgRequired = "<@spring.message '_register.requiredfield'/>";
                 var portalName = "/${portalName}";
                 var baseThemePath = "/${portalName}/${portalTheme}";
             </script>
@@ -178,7 +178,7 @@
 
 <#macro languageSelect>
 <select onchange="setLang(this.options[selectedIndex].value)" name="dd_lang" id="dd_lang">
-    <option value="Choose language" selected="selected"><@spring.message 'ChooseLanguage_t' /></option>
+    <option value="Choose language" selected="selected"><@spring.message '_menu.i18n.chooselanguage' /></option>
     <option value="en">
     English (eng)
     </option>
@@ -195,28 +195,28 @@
 <#macro loginFormModal>
 
 <div id="loginFormModal">
-<h2><@spring.message 'LogIn_t' /></h2>
+<h2><@spring.message '_mine.login' /></h2>
 
 <form name='f1' id="loginForm" action='j_spring_security_check' method='POST' accept-charset="UTF-8">
 <table>
     <tr>
-        <td><label for="j_username"><@spring.message '_prompt.email.address' /></label></td>
+        <td><label for="j_username"><@spring.message '_mine.email.address' /></label></td>
         <td><input type='text' id="j_username" name="j_username" value="" maxlength="50"></td>
     </tr>
     <tr>
-        <td><label for="j_password"><@spring.message "Password_t" /></label></td>
+        <td><label for="j_password"><@spring.message "_register.password" /></label></td>
         <td><input type='password' id="j_password" name='j_password' maxlength="50"/></td>
     </tr>
     <tr>
         <td>
-            <a href="/${portalName}/forgot-password.html"><@spring.message 'ForgotPassword_t' /></a>
+            <a href="/${portalName}/forgot-password.html"><@spring.message '_mine.forgotpassword' /></a>
         </td>
-        <td align="right"><input name="submit_login" type="submit" value="<@spring.message 'LogIn_t' />"/></td>
+        <td align="right"><input name="submit_login" type="submit" value="<@spring.message '_mine.login' />"/></td>
     </tr>
 </table>
 <#if errorMessage??>
 
-<strong><@spring.message 'Error_t' />: </strong> Inlog gegevens zijn niet juist
+<strong><@spring.message '_portal.ui.notification.error' />: </strong> Inlog gegevens zijn niet juist
 
 </#if>
 </div>
@@ -351,7 +351,7 @@
                 <#-- with labels -->
                 <#if !cell.creator[0]?matches(" ")><span><@spring.message '_search.field.creator' />: </span>${cell.creator}<br/></#if>
                 <#if !cell.year?matches(" ")><#if cell.year != "0000"><span><@spring.message '_search.field.date' />: </span>${cell.year}<br/></#if></#if>
-                <#if !cell.provider?matches(" ")><@spring.message '_prompt.provider' />: <span class="provider">${cell.provider}</span></#if>
+                <#if !cell.provider?matches(" ")><@spring.message '_search.field.provider' />: <span class="provider">${cell.provider}</span></#if>
                 </p>
         </td>
     </tr>
@@ -502,7 +502,7 @@
     <#if pagination.next>
         <#--<a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}&amp;view=${view}" alt="<@spring.message '_action.alt.next.page' />">-->
         <a href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}&amp;view=${view}" alt="<@spring.message '_action.alt.next.page' />">
-            <@spring.message 'Next_t' />
+            <@spring.message '_portal.ui.navigation.next' />
         </a>
     </#if>
 </#macro>
@@ -510,9 +510,9 @@
 <#macro resultBriefPaginationStyled>
         <div class="fg-buttonset fg-buttonset-multi">
 
-            <#--<@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}-->
+            <#--<@spring.message '_portal.ui.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}-->
 
-            <#--<@spring.message 'Page_t' />:-->
+            <#--<@spring.message '_portal.ui.navigation.page' />:-->
             <#list pagination.pageLinks as link>
             <#assign uiClassBorder = ""/>
             <#if link_index == 0>
@@ -557,7 +557,7 @@
                     class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}"
                     alt="<@spring.message '_action.alt.next.page' />"
                     >
-                    <span class="ui-icon ui-icon-circle-arrow-e"></span><@spring.message 'Next_t' />
+                    <span class="ui-icon ui-icon-circle-arrow-e"></span><@spring.message '_portal.ui.navigation.next' />
             </a>
         </div>
 </#macro>
@@ -601,7 +601,7 @@
             href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}&amp;view=${view}"
             alt="<@spring.message '_action.alt.next.page' />"
         >
-        <@spring.message 'Next_t' />
+        <@spring.message '_portal.ui.navigation.next' />
         </a>
     </li>
     </#if>
@@ -615,7 +615,7 @@
  -->
 <#macro resultBriefQueryBreadcrumbs>
 <#assign breadcrumbs = breadcrumbs/>
-    <@spring.message 'MatchesFor_t' />:
+    <@spring.message '_portal.ui.navigation.matchesfor' />:
         <#if !result.matchDoc??>
             <#list breadcrumbs as crumb>
                 <#if !crumb.last>
@@ -625,7 +625,7 @@
                 </#if>
             </#list>
         <#else>
-            <@spring.message 'ViewingRelatedItems_t' />
+            <@spring.message 'ViewingRelated_portal.ui.messages.items' />
             <#assign match = result.matchDoc/>
             <a href="${match.fullDocUrl()}">
                 <#if useCache="true">
@@ -645,7 +645,7 @@
 <#macro resultBriefQueryBreadcrumbsList>
 <#assign breadcrumbs = breadcrumbs/>
     <dl class="breadcrumbs">
-        <dt><@spring.message 'MatchesFor_t' />:</dt>
+        <dt><@spring.message '_portal.ui.navigation.matchesfor' />:</dt>
         <#if !result.matchDoc??>
             <#list breadcrumbs as crumb>
                 <#if !crumb.last>
@@ -656,7 +656,7 @@
             </#list>
         <#else>
             <dd>
-                <@spring.message 'ViewingRelatedItems_t' />
+                <@spring.message 'ViewingRelated_portal.ui.messages.items' />
                 <#assign match = result.matchDoc/>
                 <a href="${match.fullDocUrl}">
                     <#if useCache="true">
@@ -679,7 +679,7 @@
                 <#if user??>
                     <a id="saveQuery" href="#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message '_action.save.this.search'/></a>
                 <#else>
-                    <a href="#" onclick="highLight('a#login'); writeMessage('div#msg-save-search','<@spring.message 'login.required'/>'); return false" class="disabled"><@spring.message '_action.save.this.search'/></a>
+                    <a href="#" onclick="highLight('a#login'); writeMessage('div#msg-save-search','<@spring.message '_mine.user.notification.login.required'/>'); return false" class="disabled"><@spring.message '_action.save.this.search'/></a>
                 </#if>
             </p>
             <div id="msg-save-search" class="msg-hide"></div>
@@ -688,7 +688,7 @@
 
 <#macro resultsFullQueryBreadcrumbs>
     <#if pagination??>
-        <@spring.message 'MatchesFor_t' />:
+        <@spring.message '_portal.ui.navigation.matchesfor' />:
             <#if !query?starts_with("europeana_uri:")>
                 <#list pagination.breadcrumbs as crumb>
                     <#if !crumb.last>
@@ -698,7 +698,7 @@
                     </#if>
                 </#list>
             <#else>
-                    <@spring.message 'ViewingRelatedItems_t' />
+                    <@spring.message 'ViewingRelated_portal.ui.messages.items' />
                     <#assign match = result.fullDoc />
                     <#assign imgSrc = match.getAsString("europeana_object")/>
 
@@ -719,7 +719,7 @@
 <#macro resultsFullQueryBreadcrumbsList>
     <#if pagination??>
         <dl>
-            <dt><@spring.message 'MatchesFor_t' />:</dt>
+            <dt><@spring.message '_portal.ui.navigation.matchesfor' />:</dt>
             <#if !query?starts_with("europeana_uri:")>
                 <#list pagination.breadcrumbs as crumb>
                     <#if !crumb.last>
@@ -730,7 +730,7 @@
                 </#list>
             <#else>
                 <dd class="nobg">
-                    <@spring.message 'ViewingRelatedItems_t' />
+                    <@spring.message 'ViewingRelated_portal.ui.messages.items' />
                     <#assign match = result.fullDoc />
                     <#--todo review this. It seems wrong to display the image of the current full-doc instead of the original related item search-->
                     <a href="full-doc.html?&amp;uri=${match.id}">
@@ -775,7 +775,7 @@
         </a>
 
         <a href="${urlNext}" class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}" alt="<@spring.message '_action.alt.next.page' />">
-            <span class="ui-icon ui-icon-circle-arrow-e"></span><@spring.message 'Next_t' />
+            <span class="ui-icon ui-icon-circle-arrow-e"></span><@spring.message '_portal.ui.navigation.next' />
         </a>
 
         <#if pagination.returnToResults??>
@@ -838,7 +838,7 @@
     <#--<a class="<#if overlayActive>overlay</#if>"-->
        <#--href="/${portalName}/redirect.html?shownBy=${overlayUrl?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"-->
        <#--target="_blank"-->
-       <#--alt="<@spring.message '_action.view.in.original.context' /> <@spring.message 'OpensInNewWindow_t'/>"-->
+       <#--alt="<@spring.message '_action.view.in.original.context' /> <@spring.message '_actionOpenInNewWindow'/>"-->
     <#-->-->
     <#if useCache="true">
         <img src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
@@ -855,7 +855,7 @@
             src="${thumbnail}"
             onload="checkSize(this.id,'full',this.width);"
             onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"
-            alt="<@spring.message '_action.view.in.original.context' /> <@spring.message 'OpensInNewWindow_t'/>"
+            alt="<@spring.message '_action.view.in.original.context' /> <@spring.message '_actionOpenInNewWindow'/>"
         />
     </#if>
     <#--<#if useCache="true">-->
@@ -884,8 +884,8 @@
     <a
             href="/${portalName}/redirect.html?shownAt=${originalContextUrl?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
             target="_blank"
-            alt="<@spring.message '_action.view.in.original.context' /> - <@spring.message 'OpensInNewWindow_t'/>"
-            title="<@spring.message '_action.view.in.original.context' /> - <@spring.message 'OpensInNewWindow_t'/>"
+            alt="<@spring.message '_action.view.in.original.context' /> - <@spring.message '_actionOpenInNewWindow'/>"
+            title="<@spring.message '_action.view.in.original.context' /> - <@spring.message '_actionOpenInNewWindow'/>"
             class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
             style="float: none;;"
             >
@@ -977,13 +977,13 @@
 <#macro userBar>
 <ul>
     <#if !user??>
-        <li><a id="login" href="/${portalName}/login.html"><@spring.message 'LogIn_t'/></a></li>
+        <li><a id="login" href="/${portalName}/login.html"><@spring.message '_mine.login'/></a></li>
         <li><a id="register" href="/${portalName}/register-request.html"><@spring.message '_register.register'/></a></li>
     </#if>
     <#if user??>
     <li>
-        <@spring.message 'LoggedInAs_t' />: <strong>${user.userName?html}</strong> | <a
-            href="/${portalName}/logout.html"><@spring.message 'LogOut_t' /></a>
+        <@spring.message '_mine.loggedinas' />: <strong>${user.userName?html}</strong> | <a
+            href="/${portalName}/logout.html"><@spring.message '_mine.logout' /></a>
     </li>
     <#if user.savedItems??>
     <li>
@@ -1040,7 +1040,7 @@
  -->
 <#macro sortResults>
 <select id="sortOptions" name="sortBy" onchange="$('input#sortBy').val(this.value);$('form#form-sort').submit();">
-    <option value=""><@spring.message 'search.order.by' /></option>
+    <option value=""><@spring.message '_delving-macros.search.order.by' /></option>
     <option value="title" ><@spring.message '_metadata.dc.title' /></option>
     <option value="creator"><@spring.message '_metadata.dc.creator' /></option>
     <option value="YEAR"><@spring.message '_metadata.dc.date' /></option>

@@ -31,7 +31,7 @@
         <form id="forgotPasswordForm" name="forgotPasswordForm" action="forgot-password.html" method="POST" accept-charset="UTF-8">
             <table>
                 <tr>
-                    <td><label for="email"><@spring.message '_prompt.email.address' /></label></td>
+                    <td><label for="email"><@spring.message '_mine.email.address' /></label></td>
                     <td><input id="email" type="text" name="email" value="" maxlength="50"></td>
                 </tr>
                 <tr>
@@ -51,7 +51,7 @@
             <div class="ui-widget">
                 <div class="ui-state-error ui-corner-all" style="padding: 0pt 0.7em;">
                     <span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
-                    <@spring.message 'Error_t' />!<br/><@spring.message 'EmailFormatError_t' />.
+                    <@spring.message '_portal.ui.notification.error' />!<br/><@spring.message '_messages.error.emailformaterror' />.
                 </div>
             </div>
         </#if>
@@ -59,7 +59,7 @@
             <div class="ui-widget">
                 <div class="ui-state-error ui-corner-all" style="padding: 0pt 0.7em;">
                     <span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
-                    <@spring.message 'Error_t' />!<br/>EmailDoesntExist_t <!-- TODO add message -->
+                    <@spring.message '_portal.ui.notification.error' />!<br/>EmailDoesntExist_t <!-- TODO add message -->
                 </div>
             </div>
         </#if>

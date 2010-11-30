@@ -1,5 +1,5 @@
       <select onchange="setLang(this.options[selectedIndex].value)" name="dd_lang" id="dd_lang">
-          <option value="Choose language" selected="selected"><@spring.message 'ChooseLanguage_t' /></option>
+          <option value="Choose language" selected="selected"><@spring.message '_menu.i18n.chooselanguage' /></option>
           <option value="ca">Catal&#224; (ca)</option>
           <option value="bg">
               &#x0411;&#x044a;&#x043b;&#x0433;&#x0430;&#x0440;&#x0441;&#x043a;&#x0438; (bul)

@@ -2,7 +2,7 @@
 <h4><@spring.message '_action.refine.your.search' />:</h4>
 <noscript>
     <div class="attention">
-    <@spring.message 'NoScript_t' />
+    <@spring.message '_portal.ui.message.noscript' />
     </div>
 </noscript>
 <#--columsize is  used for the number of colums in the facet table. -->

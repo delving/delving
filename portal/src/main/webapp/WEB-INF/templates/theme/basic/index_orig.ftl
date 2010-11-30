@@ -21,7 +21,7 @@
     <div class="grid_12" id="search">
     <@simpleSearch/>
         <noscript>
-        <@spring.message 'NoScript_t' />
+        <@spring.message '_portal.ui.message.noscript' />
         </noscript>
     </div>
 

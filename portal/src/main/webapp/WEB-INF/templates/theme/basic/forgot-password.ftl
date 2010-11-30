@@ -16,18 +16,18 @@
 <section role="main" class="grid_4 prefix_4">
 
 <h2>
-    <@spring.message 'ForgotPassword_t' />
+    <@spring.message '_mine.forgotpassword' />
 </h2>
 
 <form action="forgot-password.html" method="POST" accept-charset="UTF-8">
     <table>
         <tr>
-            <td><label for="email"><@spring.message '_prompt.email.address' /></label></td>
+            <td><label for="email"><@spring.message '_mine.email.address' /></label></td>
             <td><input id="email" type="text" name="email" value="" maxlength="50"></td>
         </tr>
         <tr>
             <td></td>
-            <td><input id="submit_forgot" name="submit_login" type="submit" value="<@spring.message 'form.submit' />"/></td>
+            <td><input id="submit_forgot" name="submit_login" type="submit" value="<@spring.message '_portal.form.submit' />"/></td>
         </tr>
     </table>
 </form>
@@ -39,10 +39,10 @@
 </p>
 </#if>
 <#if state == "formatFailure">
-<@spring.message 'Error_t' />!<br/><@spring.message 'EmailFormatError_t' />.
+<@spring.message '_portal.ui.notification.error' />!<br/><@spring.message '_messages.error.emailformaterror' />.
 </#if>
 <#if state == "nonexistentFailure">
-<@spring.message 'Error_t' />!<br/>EmailDoesntExist_t <!-- TODO add message -->
+<@spring.message '_portal.ui.notification.error' />!<br/>EmailDoesntExist_t <!-- TODO add message -->
 </#if>
 
 </section>

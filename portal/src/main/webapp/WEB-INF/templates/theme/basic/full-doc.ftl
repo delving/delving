@@ -3,7 +3,7 @@
 <@addCustomAssigns/>
 <@addHeader "Norvegiana", "",["results.js","fancybox/jquery.fancybox-1.3.1.pack.js"],["fancybox/jquery.fancybox-1.3.1.css"]/>
 <script type="text/javascript">
-    var msgItemSaveSuccess = "<@spring.message 'ItemSaved_t'/>";
+    var msgItemSaveSuccess = "<@spring.message '_mine.itemsaved'/>";
     var msgItemSaveFail = "<@spring.message 'ItemSavedFailed_t'/>";
 </script>
 <section id="sidebar" class="grid_3" role="complementary">
@@ -94,11 +94,11 @@
             <#else>
                 <div class="related-links">
                     <#--<p>-->
-                        <#--<a href="/${portalName}/login.html" class="disabled" onclick="highLight('#mustlogin'); writeMessage('div#msg-save-item','<@spring.message 'login.required'/>'); return false;"><@spring.message '_action.add.tag' /></a>-->
+                        <#--<a href="/${portalName}/login.html" class="disabled" onclick="highLight('#mustlogin'); writeMessage('div#msg-save-item','<@spring.message '_mine.user.notification.login.required'/>'); return false;"><@spring.message '_action.add.tag' /></a>-->
                     <#--</p>-->
 
                     <p>
-                        <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); writeMessage('div#msg-save-item','<@spring.message 'login.required'/>'); return false;"><@spring.message 'SaveTo_action.personal.page' /></a>
+                        <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); writeMessage('div#msg-save-item','<@spring.message '_mine.user.notification.login.required'/>'); return false;"><@spring.message 'SaveTo_action.personal.page' /></a>
                     </p>
                 </div>
                 <div id="msg-save-item" class="msg-hide"></div>

@@ -40,7 +40,7 @@
                 </table>
 
             <#-- todo: ReImplement this after good solution wrt managing content of UserTags is found -->
-            <#--<div class="toggler-c"title="<@spring.message '_unused.usertags' />">-->
+            <#--<div class="toggler-c"title="<@spring.message '_portal.ui.message.usertags' />">-->
                 <#--<p>-->
                     <#--<#list model.fullDoc.europeanaUserTag as userTag>-->
                     <#--<a href="brief-doc.html?query=europeana_userTag:${userTag}&view=${view}">${userTag}</a><br/>-->
@@ -77,7 +77,7 @@
                 <h6><@spring.message '_action.share.with.friend' /></h6>
                 <form action="inc_related_content.ftl#" method="post" onsubmit='sendEmail("${result.fullDoc.id}"); return false;' id="form-sendtoafriend" accept-charset="UTF-8">
                     <label for="friendEmail"></label>
-                    <input type="text" name="friendEmail" class="required email text" id="friendEmail" maxlength="50" value="<@spring.message '_prompt.email.address' />"
+                    <input type="text" name="friendEmail" class="required email text" id="friendEmail" maxlength="50" value="<@spring.message '_mine.email.address' />"
                            onfocus="this.value=''"/>
                     <input type="submit" id="mailer" class="button" value="<@spring.message '_action.send' />"/>
 

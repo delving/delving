@@ -17,7 +17,7 @@
 
 <@addHeader "Norvegiana", "",["results.js"],[]/>
 <script type="text/javascript">
-    var msgSearchSaveSuccess = "<@spring.message '_success.search.saved'/>";
+    var msgSearchSaveSuccess = "<@spring.message '_portal.ui.message.success.search.saved'/>";
     var msgSearchSaveFail = "<@spring.message '_failure.search.saved'/>";
 </script>
 
@@ -31,7 +31,7 @@
 
     <h3><@spring.message '_action.refine.your.search' /></h3>
     <nav id="facetList">
-        <@resultBriefFacets "DATAPROVIDER",  "abm_content_prompt.provider", 2/>
+        <@resultBriefFacets "DATAPROVIDER",  "abm_content_search.field.provider", 2/>
         <@resultBriefFacets "COUNTY",  "_metadata.abm.county", 2/>
         <@resultBriefFacets "MUNICIPALITY",  "_metadata.abm.municipality", 2/>
         <#-- TODO: Create this facet -------------------------->
@@ -75,7 +75,7 @@
 
         <div id="result_count">
             <div class="inner">
-            <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
+            <@spring.message '_portal.ui.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}
             </div>
         </div>
     
@@ -110,7 +110,7 @@
             <@resultBriefList/>
         </#if>
     <#else>
-        <div id="no-result"><@spring.message 'NoItemsFound_t' /></div>
+        <div id="no-result"><@spring.message '_portal.ui.notification.noitemsfound' /></div>
     </#if>
     </div>
 

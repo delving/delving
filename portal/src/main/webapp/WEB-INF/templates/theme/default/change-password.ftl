@@ -24,7 +24,7 @@
 
 <div id="main" class="grid_12">
 
-    <h1><@spring.message 'ForgotPassword_t' /></h1>
+    <h1><@spring.message '_mine.forgotpassword' /></h1>
 
     <form id="regForm" action="change-password.html" method="post">
 
@@ -33,7 +33,7 @@
      <div class="grid_4">
         <fieldset id="pt1">
             <legend><span>Step </span>1. <span>: Email details</span> </legend>
-            <label for="email"><@spring.message '_prompt.email.address' /></label>
+            <label for="email"><@spring.message '_mine.email.address' /></label>
             <input type="text" id="email" name="email" disabled="true" tabindex="5"  value="${command.email}" style="background:#eaeaea;"/>
 
         </fieldset>
@@ -41,7 +41,7 @@
         <div class="grid_4 alpha">
         <fieldset id="pt2">
             <legend><span>Step </span>2. <span>: Password</span></legend>
-            <label for="password"><@spring.message 'Password_t' /></label>
+            <label for="password"><@spring.message '_register.password' /></label>
             <input type="password" id="password" name="password" tabindex="5"  value=""/>
             <@spring.bind "command.password" />
             <#list spring.status.errorMessages as error> <i>${error}</i> <br> </#list>

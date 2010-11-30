@@ -73,7 +73,7 @@
     <div id="query_breadcrumbs">
         <div class="inner">
         <dl>
-            <dt><@spring.message 'MatchesFor_t' />:</dt>
+            <dt><@spring.message '_portal.ui.navigation.matchesfor' />:</dt>
             <#if !result.matchDoc??>
                 <#list breadcrumbs as crumb>
                     <#if !crumb.last>
@@ -84,7 +84,7 @@
                 </#list>
             <#else>
                 <dd  class="nobg">
-                    <@spring.message 'ViewingRelatedItems_t' />
+                    <@spring.message 'ViewingRelated_portal.ui.messages.items' />
                     <#assign match = result.matchDoc/>
                     <a href="${match.fullDocUrl}">
                         <#if useCache="true"><img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
@@ -103,7 +103,7 @@
 
     <div id="objTypes">
         <div>
-        <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
+        <@spring.message '_portal.ui.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}
         </div>
         <@typeTabs_plain/>
         <@sortResults/><@viewSelect/>
@@ -165,9 +165,9 @@
 <#macro resultnav_styled>
         <div class="fg-buttonset fg-buttonset-multi">
 
-            <#--<@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}-->
+            <#--<@spring.message '_portal.ui.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}-->
 
-            <#--<@spring.message 'Page_t' />:-->
+            <#--<@spring.message '_portal.ui.navigation.page' />:-->
             <#list pagination.pageLinks as link>
             <#assign uiClassBorder = ""/>
             <#if link_index == 0>
@@ -212,7 +212,7 @@
                     class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}"
                     alt="<@spring.message '_action.alt.next.page' />"
                     >
-                    <span class="ui-icon ui-icon-circle-arrow-e"></span><@spring.message 'Next_t' />
+                    <span class="ui-icon ui-icon-circle-arrow-e"></span><@spring.message '_portal.ui.navigation.next' />
             </a>
         </div>
 </#macro>
@@ -223,8 +223,8 @@
 
 
             <ul>
-                <#--<li><@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}</li>
-                <li><@spring.message 'Page_t' />:</li>-->
+                <#--<li><@spring.message '_portal.ui.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}</li>
+                <li><@spring.message '_portal.ui.navigation.page' />:</li>-->
             <#list pagination.pageLinks as link>
                 <#assign uiClassBorder = ""/>
                 <#if link_index == 0>
@@ -268,7 +268,7 @@
                             alt="<@spring.message '_action.alt.next.page' />"
                             class="${uiClassStateNext}"
                             >
-                            <@spring.message 'Next_t' />
+                            <@spring.message '_portal.ui.navigation.next' />
                     </a>
                 </li>
             </ul>
@@ -281,19 +281,19 @@
 <#macro typeTabs_styled>
 
     <a href="${thisPage}?query=${query}&amp;view=${view}" class="fg-button ui-state-default ui-corner-all ${showAll}">
-        <@spring.message 'All_t' />
+        <@spring.message '_metadata.type.all' />
     </a>
     <a href="${thisPage}?query=${query}${textUrl!"&amp;qf=TYPE:TEXT"}&amp;tab=text&amp;view=${view}" class="fg-button ui-state-default ui-corner-all ${showText}">
-        <@spring.message 'Texts_t' /><@print_tab_count showAll showText textCount />
+        <@spring.message '_metadata.type.texts' /><@print_tab_count showAll showText textCount />
     </a>
     <a href="${thisPage}?query=${query}${imageUrl!"&amp;qf=TYPE:IMAGE"}&amp;tab=image&amp;view=${view}" class="fg-button ui-state-default ui-corner-all ${showImage}">
-        <@spring.message 'Images_t' /><@print_tab_count showAll showImage imageCount />
+        <@spring.message '_metadata.type.images' /><@print_tab_count showAll showImage imageCount />
     </a>
     <a href="${thisPage}?query=${query}${videoUrl!"&amp;qf=TYPE:VIDEO"}&amp;tab=video&amp;view=${view}" class="fg-button ui-state-default ui-corner-all ${showVideo}">
         <@spring.message '_action.videos' /><@print_tab_count showAll showVideo videoCount />
     </a>
     <a href="${thisPage}?query=${query}${audioUrl!"&amp;qf=TYPE:SOUND"}&amp;tab=sound&amp;view=${view}" class="fg-button ui-state-default ui-corner-all ${showSound}">
-        <@spring.message 'Sounds_t' /><@print_tab_count showAll showSound audioCount />
+        <@spring.message '_metadata.type.sounds' /><@print_tab_count showAll showSound audioCount />
     </a>
 
 </#macro>
@@ -303,17 +303,17 @@
     <ul>
         <li class="${showAll}">
             <a href="${thisPage}?query=${query}&amp;view=${view}">
-                <@spring.message 'All_t' />
+                <@spring.message '_metadata.type.all' />
             </a>
         </li>
         <li class="${showText}">
             <a href="${thisPage}?query=${query}${textUrl!"&amp;qf=TYPE:TEXT"}&amp;tab=text&amp;view=${view}">
-                <@spring.message 'Texts_t' /><@print_tab_count showAll showText textCount />
+                <@spring.message '_metadata.type.texts' /><@print_tab_count showAll showText textCount />
             </a>
         </li>
         <li class="${showImage}">
             <a href="${thisPage}?query=${query}${imageUrl!"&amp;qf=TYPE:IMAGE"}&amp;tab=image&amp;view=${view}">
-                <@spring.message 'Images_t' /><@print_tab_count showAll showImage imageCount />
+                <@spring.message '_metadata.type.images' /><@print_tab_count showAll showImage imageCount />
             </a>
         </li>
         <li class="${showVideo}">
@@ -323,7 +323,7 @@
         </li>
         <li class="${showSound}">
             <a href="${thisPage}?query=${query}${audioUrl!"&amp;qf=TYPE:SOUND"}&amp;tab=sound&amp;view=${view}">
-                <@spring.message 'Sounds_t' /><@print_tab_count showAll showSound audioCount />
+                <@spring.message '_metadata.type.sounds' /><@print_tab_count showAll showSound audioCount />
             </a>
         </li>
     </ul>

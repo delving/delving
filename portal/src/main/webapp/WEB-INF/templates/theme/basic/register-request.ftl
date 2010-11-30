@@ -21,7 +21,7 @@
 
     <table>
         <tr>
-            <td width="100"><label for="email"><@spring.message '_prompt.email.address' /></label></td>
+            <td width="100"><label for="email"><@spring.message '_mine.email.address' /></label></td>
             <td><input id="register_email" type='text' name='email' id="email" value='' accept-charset="UTF-8"></td>
         </tr>
         <tr>
@@ -41,11 +41,11 @@
 </#if>
 
 <#if state == "formatFailure">
-    <strong><@spring.message 'Error_t' />: </strong><@spring.message 'EmailFormatError_t' />.
+    <strong><@spring.message '_portal.ui.notification.error' />: </strong><@spring.message '_messages.error.emailformaterror' />.
 </#if>
 
 <#if state == "existenceFailure">
-    <strong><@spring.message 'Error_t' />: </strong><@spring.message 'EmailAlreadyRegistered_t' />.
+    <strong><@spring.message '_portal.ui.notification.error' />: </strong><@spring.message '_register-request.emailalreadyregistered' />.
 </#if>
 
 </section>

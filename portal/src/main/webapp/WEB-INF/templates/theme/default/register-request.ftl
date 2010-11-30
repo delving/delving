@@ -33,7 +33,7 @@
             <input type="hidden" name="formType" id="formType" value="Register"/>
             <table>
                 <tr>
-                    <td width="100"><label for="email"><@spring.message '_prompt.email.address' /></label></td>
+                    <td width="100"><label for="email"><@spring.message '_mine.email.address' /></label></td>
                     <td><input id="register_email" type='text' name='email' id="email" value='' accept-charset="UTF-8"></td>
                 </tr>
                 <tr>
@@ -53,7 +53,7 @@
             <div class="ui-widget">
                 <div class="ui-state-error ui-corner-all" style="padding: 0pt 0.7em;">
                     <span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
-                    <strong><@spring.message 'Error_t' />: </strong><@spring.message 'EmailFormatError_t' />.
+                    <strong><@spring.message '_portal.ui.notification.error' />: </strong><@spring.message '_messages.error.emailformaterror' />.
                 </div>
             </div>
         </#if>
@@ -61,7 +61,7 @@
             <div class="ui-widget">
                 <div class="ui-state-error ui-corner-all" style="padding: 0pt 0.7em;">
                     <span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
-                    <strong><@spring.message 'Error_t' />: </strong><@spring.message 'EmailAlreadyRegistered_t' />.
+                    <strong><@spring.message '_portal.ui.notification.error' />: </strong><@spring.message '_register-request.emailalreadyregistered' />.
                 </div>
             </div>
         </#if>

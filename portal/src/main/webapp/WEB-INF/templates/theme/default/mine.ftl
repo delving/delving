@@ -51,7 +51,7 @@
                             <td>${user.userName}</td>
                         </tr>
                         <tr>
-                          <td><h4><@spring.message '_prompt.email.address'/>:<h/4></td>
+                          <td><h4><@spring.message '_mine.email.address'/>:<h/4></td>
                           <td>${user.email}</td>
                         </tr>
                         <#if user.firstName??>
@@ -115,7 +115,7 @@
                                 </#list>
 
                             <#else>
-                                <tr><td><@spring.message 'NoSavedItems_t'/></td></tr>
+                                <tr><td><@spring.message 'NoSaved_portal.ui.messages.items'/></td></tr>
                             </#if>
                         </table>
                     </div>
@@ -133,7 +133,7 @@
                                     </tr>
                                 </#list>
                             <#else>
-                                <tr><td><@spring.message 'NoSavedSearches_t'/></td></tr>
+                                <tr><td><@spring.message '_mine.nosavedsearches'/></td></tr>
                             </#if>
                         </table>
                     </div>
@@ -187,7 +187,7 @@
 
                             </#list>
                         <#else>
-                            <tr><td><@spring.message 'NoSavedTags_t'/></td></tr>
+                            <tr><td><@spring.message '_mine.nosavedtags'/></td></tr>
                         </#if>
                     </table>
 
