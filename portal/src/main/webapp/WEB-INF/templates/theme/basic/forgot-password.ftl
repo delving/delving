@@ -27,7 +27,7 @@
         </tr>
         <tr>
             <td></td>
-            <td><input id="submit_forgot" name="submit_login" type="submit" value="<@spring.message '_portal.form.submit' />"/></td>
+            <td><input id="submit_forgot" name="submit_login" type="submit" value="<@spring.message '_action.form.submit' />"/></td>
         </tr>
     </table>
 </form>

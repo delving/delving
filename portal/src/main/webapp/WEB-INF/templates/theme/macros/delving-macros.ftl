@@ -510,7 +510,7 @@
 <#macro resultBriefPaginationStyled>
         <div class="fg-buttonset fg-buttonset-multi">
 
-            <#--<@spring.message '_portal.ui.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}-->
+            <#--<@spring.message '_portal.ui.navigation.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}-->
 
             <#--<@spring.message '_portal.ui.navigation.page' />:-->
             <#list pagination.pageLinks as link>
@@ -673,7 +673,7 @@
 <#macro resultsBriefUserActions>
 <#assign seq = briefDocs/>
     <#if seq?size &gt; 0>
-        <h4><@spring.message '_header.actions'/>:</h4>
+        <h4><@spring.message '_portal.ui.message.actions'/>:</h4>
             <#-- TODO: use a hidden form instead of hrefs to function without javascript? --> 
             <p class="linetop">
                 <#if user??>
@@ -838,7 +838,7 @@
     <#--<a class="<#if overlayActive>overlay</#if>"-->
        <#--href="/${portalName}/redirect.html?shownBy=${overlayUrl?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"-->
        <#--target="_blank"-->
-       <#--alt="<@spring.message '_action.view.in.original.context' /> <@spring.message '_actionOpenInNewWindow'/>"-->
+       <#--alt="<@spring.message '_action.view.in.original.context' /> <@spring.message '_action.OpenInNewWindow'/>"-->
     <#-->-->
     <#if useCache="true">
         <img src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
@@ -855,7 +855,7 @@
             src="${thumbnail}"
             onload="checkSize(this.id,'full',this.width);"
             onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"
-            alt="<@spring.message '_action.view.in.original.context' /> <@spring.message '_actionOpenInNewWindow'/>"
+            alt="<@spring.message '_action.view.in.original.context' /> <@spring.message '_action.OpenInNewWindow'/>"
         />
     </#if>
     <#--<#if useCache="true">-->
@@ -884,8 +884,8 @@
     <a
             href="/${portalName}/redirect.html?shownAt=${originalContextUrl?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
             target="_blank"
-            alt="<@spring.message '_action.view.in.original.context' /> - <@spring.message '_actionOpenInNewWindow'/>"
-            title="<@spring.message '_action.view.in.original.context' /> - <@spring.message '_actionOpenInNewWindow'/>"
+            alt="<@spring.message '_action.view.in.original.context' /> - <@spring.message '_action.OpenInNewWindow'/>"
+            title="<@spring.message '_action.view.in.original.context' /> - <@spring.message '_action.OpenInNewWindow'/>"
             class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
             style="float: none;;"
             >
@@ -1040,7 +1040,7 @@
  -->
 <#macro sortResults>
 <select id="sortOptions" name="sortBy" onchange="$('input#sortBy').val(this.value);$('form#form-sort').submit();">
-    <option value=""><@spring.message '_delving-macros.search.order.by' /></option>
+    <option value=""><@spring.message '_actions.search.order.by' /></option>
     <option value="title" ><@spring.message '_metadata.dc.title' /></option>
     <option value="creator"><@spring.message '_metadata.dc.creator' /></option>
     <option value="YEAR"><@spring.message '_metadata.dc.date' /></option>

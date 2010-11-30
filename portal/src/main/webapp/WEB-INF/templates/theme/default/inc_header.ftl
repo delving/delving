@@ -222,7 +222,7 @@
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/results.js"></script>
     <script type="text/javascript">
         var msgSearchSaveSuccess = "<@spring.message '_portal.ui.message.success.search.saved'/>";
-        var msgSearchSaveFail = "<@spring.message '_failure.search.saved'/>";
+        var msgSearchSaveFail = "<@spring.message '_portal.ui.notification.failure.search.saved'/>";
 
         $(document).ready(function() {
             $('div.toggler-c').toggleElements(

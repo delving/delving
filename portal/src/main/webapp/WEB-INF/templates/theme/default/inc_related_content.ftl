@@ -1,4 +1,4 @@
-        <h5><@spring.message '_header.relatedcontent' />:</h5>
+        <h5><@spring.message '_portal.ui.message.relatedcontent' />:</h5>
 
                 <table summary="related items" id="tbl-related-items" width="100%">
                     <#assign max=3/><!-- max shown in list -->
@@ -48,7 +48,7 @@
                 <#--</p>-->
             <#--</div>-->
 
-            <h5><@spring.message '_header.actions' />:</h5>
+            <h5><@spring.message '_portal.ui.message.actions' />:</h5>
             <#if user??>
 
                 <p class="linetop">

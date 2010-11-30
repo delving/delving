@@ -57,7 +57,7 @@
           </option>
           <option value="it">
           Italiano (ita)
-          <#--<@spring.message '_language_select.italian' />-->
+          <#--<@spring.message '_locale.it' />-->
           </option>
           <option value="lv">
           Latvie&#353;u (lav)

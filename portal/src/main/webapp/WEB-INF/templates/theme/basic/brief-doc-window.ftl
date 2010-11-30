@@ -18,7 +18,7 @@
 <@addHeader "Norvegiana", "",["results.js"],[]/>
 <script type="text/javascript">
     var msgSearchSaveSuccess = "<@spring.message '_portal.ui.message.success.search.saved'/>";
-    var msgSearchSaveFail = "<@spring.message '_failure.search.saved'/>";
+    var msgSearchSaveFail = "<@spring.message '_portal.ui.notification.failure.search.saved'/>";
 </script>
 
 <section class="grid_3" role="complementary">
@@ -75,7 +75,7 @@
 
         <div id="result_count">
             <div class="inner">
-            <@spring.message '_portal.ui.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}
+            <@spring.message '_portal.ui.navigation.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}
             </div>
         </div>
     

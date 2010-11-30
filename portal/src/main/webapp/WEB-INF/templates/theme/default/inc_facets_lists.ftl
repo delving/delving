@@ -102,7 +102,7 @@
         </#if>
     </#list>
     <#if seq?size &gt; 0>
-        <h4><@spring.message '_header.actions'/>:</h4>
+        <h4><@spring.message '_portal.ui.message.actions'/>:</h4>
         <div class="related-links">
             <p class="linetop">
                 <#if user??>

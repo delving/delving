@@ -1,6 +1,6 @@
 
 
-            <h5><@spring.message '_header.actions' />:</h5>
+            <h5><@spring.message '_portal.ui.message.actions' />:</h5>
 
 
         <#if addThisTrackingCode??>

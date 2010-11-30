@@ -103,7 +103,7 @@
 
     <div id="objTypes">
         <div>
-        <@spring.message '_portal.ui.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}
+        <@spring.message '_portal.ui.navigation.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}
         </div>
         <@typeTabs_plain/>
         <@sortResults/><@viewSelect/>
@@ -165,7 +165,7 @@
 <#macro resultnav_styled>
         <div class="fg-buttonset fg-buttonset-multi">
 
-            <#--<@spring.message '_portal.ui.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}-->
+            <#--<@spring.message '_portal.ui.navigation.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}-->
 
             <#--<@spring.message '_portal.ui.navigation.page' />:-->
             <#list pagination.pageLinks as link>
@@ -223,7 +223,7 @@
 
 
             <ul>
-                <#--<li><@spring.message '_portal.ui.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}</li>
+                <#--<li><@spring.message '_portal.ui.navigation.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}</li>
                 <li><@spring.message '_portal.ui.navigation.page' />:</li>-->
             <#list pagination.pageLinks as link>
                 <#assign uiClassBorder = ""/>
@@ -290,7 +290,7 @@
         <@spring.message '_metadata.type.images' /><@print_tab_count showAll showImage imageCount />
     </a>
     <a href="${thisPage}?query=${query}${videoUrl!"&amp;qf=TYPE:VIDEO"}&amp;tab=video&amp;view=${view}" class="fg-button ui-state-default ui-corner-all ${showVideo}">
-        <@spring.message '_action.videos' /><@print_tab_count showAll showVideo videoCount />
+        <@spring.message '_metadata.type.videos' /><@print_tab_count showAll showVideo videoCount />
     </a>
     <a href="${thisPage}?query=${query}${audioUrl!"&amp;qf=TYPE:SOUND"}&amp;tab=sound&amp;view=${view}" class="fg-button ui-state-default ui-corner-all ${showSound}">
         <@spring.message '_metadata.type.sounds' /><@print_tab_count showAll showSound audioCount />
@@ -318,7 +318,7 @@
         </li>
         <li class="${showVideo}">
             <a href="${thisPage}?query=${query}${videoUrl!"&amp;qf=TYPE:VIDEO"}&amp;tab=video&amp;view=${view}">
-                <@spring.message '_action.videos' /><@print_tab_count showAll showVideo videoCount />
+                <@spring.message '_metadata.type.videos' /><@print_tab_count showAll showVideo videoCount />
             </a>
         </li>
         <li class="${showSound}">

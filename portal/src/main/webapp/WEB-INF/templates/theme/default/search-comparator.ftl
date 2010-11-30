@@ -69,7 +69,7 @@
 
         <div id="objTypes">
             <div>
-            <@spring.message '_portal.ui.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}
+            <@spring.message '_portal.ui.navigation.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}
             </div>
             <#--<@typeTabs_plain/>-->
             <#--<@viewSelect/>-->
@@ -201,7 +201,7 @@
 <#macro resultnav_styled>
         <div class="fg-buttonset fg-buttonset-multi">
 
-            <#--<@spring.message '_portal.ui.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}-->
+            <#--<@spring.message '_portal.ui.navigation.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}-->
 
             <#--<@spring.message '_portal.ui.navigation.page' />:-->
             <#list pagination.pageLinks as link>

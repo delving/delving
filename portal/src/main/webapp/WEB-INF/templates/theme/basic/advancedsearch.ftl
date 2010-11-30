@@ -37,7 +37,7 @@
             </tr>
             <tr>
                 <td></td>
-                <td align="right"><@spring.message '_delving-macros.search.order.by'/>:</td>
+                <td align="right"><@spring.message '_actions.search.order.by'/>:</td>
                 <td>
                     <select name="sortBy" class="form_11">
                     <option selected="selected" value="">-</option>

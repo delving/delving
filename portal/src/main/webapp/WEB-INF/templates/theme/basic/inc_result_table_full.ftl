@@ -207,7 +207,7 @@
                         <#assign descriptionArr = model.fullDoc.dcDescription />
                         <#if isNonEmpty(descriptionArr)>
                             <tr>
-                                <th scope="row"><@spring.message '_inc_result_table_full.description' />:</th>
+                                <th scope="row"><@spring.message '_search.field.description' />:</th>
                                 <td>
                                     <@simple_list_truncated descriptionArr "<br/>" "800"/>
                                     <#--<span id="opener"><@spring.message '_portal.ui.message.more' /></span>-->
@@ -338,8 +338,8 @@
                                 <a
                                     href="/${portalName}/redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
                                     target="_blank"
-                                    alt="<@spring.message '_action.view.in.original.context' /> - <@spring.message '_actionOpenInNewWindow'/>"
-                                    title="<@spring.message '_action.view.in.original.context' /> - <@spring.message '_actionOpenInNewWindow'/>"
+                                    alt="<@spring.message '_action.view.in.original.context' /> - <@spring.message '_action.OpenInNewWindow'/>"
+                                    title="<@spring.message '_action.view.in.original.context' /> - <@spring.message '_action.OpenInNewWindow'/>"
                                     class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
                                 >
                                     <span class="ui-icon ui-icon-newwin"></span><@spring.message '_action.view.in.original.context' />
