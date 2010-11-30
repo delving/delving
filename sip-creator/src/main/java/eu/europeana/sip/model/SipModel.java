@@ -417,7 +417,7 @@ public class SipModel {
         ));
     }
 
-    public void uploadFile(FileType fileType, File file, ProgressListener progressListener) {
+    public void uploadFile(FileType fileType, File file, ProgressListener progressListener, FileUploader.Receiver receiver) {
         checkSwingThread();
         executor.execute(
                 new FileUploader(
@@ -427,7 +427,8 @@ public class SipModel {
                         serverUrl,
                         getServerAccessKey(),
                         userNotifier,
-                        progressListener
+                        progressListener,
+                        receiver
                 )
         );
     }

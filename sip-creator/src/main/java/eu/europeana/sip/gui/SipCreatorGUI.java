@@ -24,11 +24,15 @@ package eu.europeana.sip.gui;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.MetadataModelImpl;
 import eu.delving.sip.DataSetInfo;
+import eu.delving.sip.DataSetResponse;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.FileStoreImpl;
+import eu.delving.sip.FileType;
+import eu.delving.sip.ProgressListener;
 import eu.europeana.sip.core.RecordValidationException;
 import eu.europeana.sip.model.ConstantFieldModel;
+import eu.europeana.sip.model.FileUploader;
 import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.UserNotifier;
 import org.apache.log4j.Logger;
@@ -49,6 +53,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.ProgressMonitor;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -69,6 +74,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -205,7 +211,56 @@ public class SipCreatorGUI extends JFrame {
             p.add(button);
             mappingButtons.add(button);
         }
+        p.add(new JButton(new UploadAction()));
         return p;
+    }
+
+    private class UploadAction extends AbstractAction {
+
+        private UploadAction() {
+            super("Upload to Repository");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            ProgressMonitor progressMonitor = new ProgressMonitor(SwingUtilities.getRoot(SipCreatorGUI.this), "Uploading", "Uploading files for " + sipModel.getDataSetStore().getSpec(), 0, 100);
+            final ProgressListener progressListener = new ProgressListener.Adapter(progressMonitor, this);
+            sipModel.uploadFile(FileType.SOURCE_DETAILS, sipModel.getDataSetStore().getSourceDetailsFile(), progressListener, new FileUploader.Receiver() {
+                @Override
+                public void acceptResponse(DataSetResponse dataSetResponse) {
+                    switch (dataSetResponse) {
+                        case THANK_YOU:
+                        case GOT_IT_ALREADY:
+                            sipModel.uploadFile(FileType.SOURCE, sipModel.getDataSetStore().getSourceFile(), progressListener, new FileUploader.Receiver() {
+                                @Override
+                                public void acceptResponse(DataSetResponse dataSetResponse) {
+                                    switch (dataSetResponse) {
+                                        case THANK_YOU:
+                                        case GOT_IT_ALREADY:
+                                            Collection<File> mappingFiles = sipModel.getDataSetStore().getMappingFiles();
+                                            if (mappingFiles.size() > 1) {
+                                                throw new RuntimeException("Not yet ready for multiple mappings");
+                                            }
+                                            File mappingFile = mappingFiles.iterator().next();
+                                            sipModel.uploadFile(FileType.MAPPING, mappingFile, progressListener, new FileUploader.Receiver() {
+                                                @Override
+                                                public void acceptResponse(DataSetResponse dataSetResponse) {
+                                                    // todo: done
+                                                }
+                                            });
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+                            });
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            });
+        }
     }
 
     private JMenuBar createMenuBar() {

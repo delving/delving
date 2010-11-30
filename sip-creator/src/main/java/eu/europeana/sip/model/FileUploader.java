@@ -36,8 +36,13 @@ public class FileUploader implements Runnable {
     private String serverUrl, serverAccessKey;
     private UserNotifier userNotifier;
     private ProgressListener progressListener;
+    private Receiver receiver;
 
-    public FileUploader(String dataSetSpec, FileType fileType, File file, String serverUrl, String serverAccessKey, UserNotifier userNotifier, ProgressListener progressListener) {
+    public interface Receiver {
+        void acceptResponse(DataSetResponse dataSetResponse);
+    }
+
+    public FileUploader(String dataSetSpec, FileType fileType, File file, String serverUrl, String serverAccessKey, UserNotifier userNotifier, ProgressListener progressListener, Receiver receiver) {
         this.dataSetSpec = dataSetSpec;
         this.fileType = fileType;
         this.file = file;
@@ -45,16 +50,19 @@ public class FileUploader implements Runnable {
         this.serverAccessKey = serverAccessKey;
         this.userNotifier = userNotifier;
         this.progressListener = progressListener;
+        this.receiver = receiver;
     }
 
     @Override
     public void run() {
         final int totalBlocks = (int) (file.length() / BLOCK_SIZE);
         progressListener.setTotal(totalBlocks);
+        DataSetResponse response = DataSetResponse.SYSTEM_ERROR;
         try {
             file = Hasher.hashFile(file);
-            if (checkFile() == DataSetResponse.READY_TO_RECEIVE) {
-                uploadFile();
+            response = checkFile();
+            if (response == DataSetResponse.READY_TO_RECEIVE) {
+                response = uploadFile();
             }
         }
         catch (Exception e) {
@@ -62,9 +70,11 @@ public class FileUploader implements Runnable {
             log.warn("Unable to upload file " + file.getAbsolutePath(), e);
         }
         finally {
+            final DataSetResponse finalResponse = response;
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
+                    receiver.acceptResponse(finalResponse);
                     progressListener.finished();
                 }
             });
