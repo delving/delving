@@ -41,34 +41,28 @@ public class MappingModel {
     }
 
     public RecordMapping getRecordMapping() {
-        if (recordMapping == null) {
-            recordMapping = new RecordMapping();
-        }
         return recordMapping;
     }
 
     public void setConstant(String path, String value) {
+        if (recordMapping == null) return;
         if (value == null) {
-            getRecordMapping().constants.remove(path);
+            recordMapping.constants.remove(path);
         }
         else {
-            getRecordMapping().constants.put(path, value);
+            recordMapping.constants.put(path, value);
         }
         fireChangeEvent();
     }
 
     public void setMapping(String path, FieldMapping fieldMapping) {
+        if (recordMapping == null) return;
         if (fieldMapping == null) {
-            getRecordMapping().fieldMappings.remove(path);
+            recordMapping.fieldMappings.remove(path);
         }
         else {
-            getRecordMapping().fieldMappings.put(path, fieldMapping);
+            recordMapping.fieldMappings.put(path, fieldMapping);
         }
-        fireChangeEvent();
-    }
-
-    public void clearFieldMappings() {
-        getRecordMapping().fieldMappings.clear();
         fireChangeEvent();
     }
 
@@ -86,7 +80,7 @@ public class MappingModel {
 
     private void fireChangeEvent() {
         for (Listener listener : listeners) {
-            listener.mappingChanged(getRecordMapping());
+            listener.mappingChanged(recordMapping);
         }
     }
 

@@ -21,7 +21,6 @@
 
 package eu.delving.sip;
 
-import eu.delving.metadata.RecordDefinition;
 import eu.delving.metadata.RecordMapping;
 import eu.delving.metadata.SourceDetails;
 import eu.delving.metadata.Statistics;
@@ -31,7 +30,7 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * This interface describes how files are stored by the sip-creator
@@ -45,14 +44,18 @@ public interface FileStore {
 
     void setAppConfig(AppConfig appConfig) throws FileStoreException;
 
-    Set<String> getDataSetSpecs();
+    Map<String, DataSetStore> getDataSetStores();
 
-    DataSetStore getDataSetStore(String spec) throws FileStoreException;
-
-    DataSetStore createDataSetStore(String spec, File inputFile, ProgressListener progressListener) throws FileStoreException;
+    DataSetStore createDataSetStore(String spec) throws FileStoreException;
 
     public interface DataSetStore {
         String getSpec();
+
+        boolean hasSource();
+
+        void importFile(File inputFile, ProgressListener progressListener) throws FileStoreException;
+
+        void clearSource() throws FileStoreException;
 
         InputStream createXmlInputStream() throws FileStoreException;
 
@@ -60,7 +63,7 @@ public interface FileStore {
 
         void setStatistics(List<Statistics> statisticsList) throws FileStoreException;
 
-        RecordMapping getRecordMapping(RecordDefinition recordDefinition) throws FileStoreException;
+        RecordMapping getRecordMapping(String metadataPrefix) throws FileStoreException;
 
         void setRecordMapping(RecordMapping recordMapping) throws FileStoreException;
 
@@ -68,20 +71,20 @@ public interface FileStore {
 
         void setSourceDetails(SourceDetails details) throws FileStoreException;
 
-        MappingOutput createMappingOutput(RecordMapping recordMapping, File normalizedFile) throws FileStoreException;
+        MappingOutput createMappingOutput(RecordMapping recordMapping, File normalizedDirectory) throws FileStoreException;
 
         void delete() throws FileStoreException;
 
-        File getSourceDetailsFile() throws FileStoreException;
+        File getSourceDetailsFile();
 
-        File getSourceFile() throws FileStoreException;
+        File getSourceFile();
 
-        Collection<File> getMappingFiles() throws FileStoreException;
+        Collection<File> getMappingFiles();
     }
 
     public interface MappingOutput {
 
-        Writer getNormalizedWriter();
+        Writer getOutputWriter();
 
         Writer getDiscardedWriter();
 
@@ -93,11 +96,10 @@ public interface FileStore {
     }
 
     String APP_CONFIG_FILE_NAME = "app-config.xml";
-    String SOURCE_FILE_PREFIX = "source.";
-    String SOURCE_FILE_SUFFIX = ".xml.gz";
+    String SOURCE_FILE_NAME = "source.xml.gz";
     String STATISTICS_FILE_NAME = "statistics.ser";
     String SOURCE_DETAILS_FILE_NAME = "source-details.txt";
-    String MAPPING_FILE_PREFIX = "mapping.";
-    String DISCARDED_FILE_PREFIX = "discarded.";
-
+    String MAPPING_FILE_PATTERN = "mapping_%s.xml";
+    String MAPPING_FILE_PREFIX = "mapping_";
+    String MAPPING_FILE_SUFFIX = ".xml";
 }

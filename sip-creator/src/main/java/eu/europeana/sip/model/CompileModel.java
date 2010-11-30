@@ -29,7 +29,7 @@ import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordValidationException;
-import eu.europeana.sip.core.RecordValidator;
+import eu.delving.metadata.RecordValidator;
 import eu.europeana.sip.core.ToolCodeResource;
 import org.apache.log4j.Logger;
 
@@ -188,7 +188,12 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     private String getDisplayCode() {
         switch (type) {
             case RECORD:
-                return recordMapping.toDisplayCode(metadataModel.getRecordDefinition());
+                if (recordMapping != null) {
+                    return recordMapping.toDisplayCode(metadataModel.getRecordDefinition());
+                }
+                else {
+                    return "// no mapping";
+                }
             case FIELD:
                 if (selectedPath == null) {
                     return "// no code";

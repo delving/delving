@@ -1,3 +1,24 @@
+/*
+ * Copyright 2010 DELVING BV
+ *
+ *  Licensed under the EUPL, Version 1.0 or? as soon they
+ *  will be approved by the European Commission - subsequent
+ *  versions of the EUPL (the "Licence");
+ *  you may not use this work except in compliance with the
+ *  Licence.
+ *  You may obtain a copy of the Licence at:
+ *
+ *  http://ec.europa.eu/idabc/eupl
+ *
+ *  Unless required by applicable law or agreed to in
+ *  writing, software distributed under the Licence is
+ *  distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *  express or implied.
+ *  See the Licence for the specific language governing
+ *  permissions and limitations under the Licence.
+ */
+
 package eu.delving.services.core;
 
 import com.mongodb.DBObject;
@@ -75,8 +96,12 @@ public interface MetaRepo {
         MetadataFormat getMetadataFormat();
         void save();
 
-        String getSourceHash();
-        void parseRecords(String sourceHash, InputStream inputStream) throws XMLStreamException, IOException;
+        void setSourceDetailsHash(String sourceHash);
+        void setSourceHash(String hash);
+        void setMappingHash(String metadataPrefix, String hash);
+        boolean hasHash(String hash);
+
+        void parseRecords(InputStream inputStream) throws XMLStreamException, IOException;
         void setMapping(RecordMapping recordMapping);
 
         Map<String,Mapping> mappings() throws BadArgumentException;
@@ -96,7 +121,10 @@ public interface MetaRepo {
         String RECORDS_INDEXED = "rec_indexed";
         String DATA_SET_STATE = "state";
         String SOURCE_HASH = "source_hash";
+        String SOURCE_DETAILS_HASH = "source_details_hash";
+        String MAPPING_HASH_PREFIX = "mapping_hash_";
         String ERROR_MESSAGE = "error";
+
     }
 
     public enum DataSetState {
