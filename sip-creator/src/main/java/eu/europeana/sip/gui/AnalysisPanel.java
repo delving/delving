@@ -169,14 +169,19 @@ public class AnalysisPanel extends JPanel {
             }
 
             @Override
-            public void updatedStatistics(Statistics statistics) {
-                if (statistics == null) {
-                    statisticsView.setText("<html><h3>No Statistics</h3>");
-                }
-                else {
-                    statisticsView.setText(statistics.toHtml());
-                }
-                statisticsView.setCaretPosition(0);
+            public void updatedStatistics(final Statistics statistics) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (statistics == null) {
+                            statisticsView.setText("<html><h3>No Statistics</h3>");
+                        }
+                        else {
+                            statisticsView.setText(statistics.toHtml());
+                        }
+                        statisticsView.setCaretPosition(0);
+                    }
+                });
             }
 
             @Override
@@ -192,10 +197,15 @@ public class AnalysisPanel extends JPanel {
             @Override
             public void valueChanged(TreeSelectionEvent event) {
                 TreePath path = event.getPath();
-                AnalysisTree.Node node = (AnalysisTree.Node) path.getLastPathComponent();
+                final AnalysisTree.Node node = (AnalysisTree.Node) path.getLastPathComponent();
                 selectRecordRootButton.setEnabled(node.couldBeRecordRoot());
                 selectUniqueElementButton.setEnabled(!node.couldBeRecordRoot());
-                sipModel.setStatistics(node.getStatistics());
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        sipModel.setStatistics(node.getStatistics());
+                    }
+                });
             }
         });
         selectRecordRootButton.addActionListener(new ActionListener() {

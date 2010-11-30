@@ -36,11 +36,9 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
@@ -48,8 +46,6 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -198,14 +194,19 @@ public class MappingPanel extends JPanel {
             }
 
             @Override
-            public void updatedStatistics(Statistics statistics) {
-                if (statistics == null) {
-                    statisticsView.setText("<html><h3>No Statistics</h3>");
-                }
-                else {
-                    statisticsView.setText(statistics.toHtml());
-                }
-                statisticsView.setCaretPosition(0);
+            public void updatedStatistics(final Statistics statistics) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (statistics == null) {
+                            statisticsView.setText("<html><h3>No Statistics</h3>");
+                        }
+                        else {
+                            statisticsView.setText(statistics.toHtml());
+                        }
+                        statisticsView.setCaretPosition(0);
+                    }
+                });
             }
 
             @Override

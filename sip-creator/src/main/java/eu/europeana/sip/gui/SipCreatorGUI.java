@@ -181,7 +181,7 @@ public class SipCreatorGUI extends JFrame {
     private JComponent createControl() {
         JPanel p = new JPanel();
         p.setBorder(BorderFactory.createTitledBorder("Control"));
-        JButton sourceDetailsButton = new JButton("Edit Source Details");
+        JButton sourceDetailsButton = new JButton("Edit Constants");
         sourceDetailsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
