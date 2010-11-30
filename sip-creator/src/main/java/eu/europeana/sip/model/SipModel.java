@@ -235,9 +235,6 @@ public class SipModel {
                                 mappingModel.setRecordMapping(null);
                                 setStatisticsList(statistics);
                                 variableListModel.clear();
-                                if (getRecordRoot() != null) {
-                                    setRecordRootInternal(new Path(sourceDetails.get(SourceDetails.RECORD_PATH)), Integer.parseInt(sourceDetails.get(SourceDetails.RECORD_COUNT)));
-                                }
                                 AnalysisTree.setUniqueElement(analysisTreeModel, getUniqueElement());
                             }
                         });
@@ -264,10 +261,12 @@ public class SipModel {
                         @Override
                         public void run() {
                             constantFieldModel.setRecordMapping(recordMapping);
-                            variableListModel.clear();
                             mappingModel.setRecordMapping(recordMapping);
                             createMetadataParser(1);
                             if (recordMapping != null) {
+                                if (getRecordRoot() != null) {
+                                    setRecordRootInternal(new Path(sourceDetails.get(SourceDetails.RECORD_PATH)), Integer.parseInt(sourceDetails.get(SourceDetails.RECORD_COUNT)));
+                                }
                                 if (recordMapping.getNormalizeTime() == 0) {
                                     normalizeMessage(false, "Normalization not yet performed.");
                                 }

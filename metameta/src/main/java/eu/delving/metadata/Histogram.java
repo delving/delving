@@ -36,13 +36,14 @@ import java.util.TreeMap;
 
 public class Histogram implements Serializable {
     private static final DecimalFormat PERCENT = new DecimalFormat("#0.00%");
-    private int maxStorageSize;
+    private int maxStorageSize, maxSize;
     private int total;
     private int storageSize;
     private Map<String, Counter> counterMap = new TreeMap<String, Counter>();
 
-    public Histogram(int maxStorageSize) {
+    public Histogram(int maxStorageSize, int maxSize) {
         this.maxStorageSize = maxStorageSize;
+        this.maxSize = maxSize;
     }
 
     public void recordValue(String value) {
@@ -72,7 +73,7 @@ public class Histogram implements Serializable {
     }
 
     public boolean isStorageOverflow() {
-        return storageSize > maxStorageSize;
+        return storageSize > maxStorageSize || counterMap.size() > maxSize;
     }
 
     public class Counter implements Comparable<Counter>, Serializable {

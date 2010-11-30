@@ -195,18 +195,19 @@ public class MappingPanel extends JPanel {
 
             @Override
             public void updatedStatistics(final Statistics statistics) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (statistics == null) {
-                            statisticsView.setText("<html><h3>No Statistics</h3>");
-                        }
-                        else {
+                if (statistics == null) {
+                    statisticsView.setText("<html><h3>No Statistics</h3>");
+                }
+                else {
+                    statisticsView.setText("<html><h3>Fetching..</h3>");
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
                             statisticsView.setText(statistics.toHtml());
+                            statisticsView.setCaretPosition(0);
                         }
-                        statisticsView.setCaretPosition(0);
-                    }
-                });
+                    });
+                }
             }
 
             @Override
@@ -220,7 +221,7 @@ public class MappingPanel extends JPanel {
         createMappingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                FieldDefinition fieldDefinition = (FieldDefinition)fieldList.getSelectedValue();
+                FieldDefinition fieldDefinition = (FieldDefinition) fieldList.getSelectedValue();
                 if (fieldDefinition != null) {
                     sipModel.addFieldMapping(codeGenerator.createFieldMapping(fieldDefinition, createSelectedVariableList(), constantField.getText()));
                 }
@@ -271,10 +272,16 @@ public class MappingPanel extends JPanel {
         variablesList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                SourceVariable sourceVariable = (SourceVariable) variablesList.getSelectedValue();
+                if (e.getValueIsAdjusting()) return;
+                final SourceVariable sourceVariable = (SourceVariable) variablesList.getSelectedValue();
                 if (sourceVariable != null && sourceVariable.hasStatistics()) {
-                    sipModel.setStatistics(sourceVariable.getStatistics());
-                    constantField.setText("?");
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            sipModel.setStatistics(sourceVariable.getStatistics());
+                            constantField.setText("?");
+                        }
+                    });
                 }
             }
         });

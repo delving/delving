@@ -214,7 +214,9 @@ public class AnalysisPanel extends JPanel {
                 TreePath path = statisticsJTree.getSelectionPath();
                 AnalysisTreeNode node = (AnalysisTreeNode) path.getLastPathComponent();
                 Path recordRoot = node.getPath();
-                sipModel.setRecordRoot(recordRoot, node.getStatistics().getTotal());
+                if (recordRoot != null) {
+                    sipModel.setRecordRoot(recordRoot, node.getStatistics().getTotal());
+                }
             }
         });
         selectUniqueElementButton.addActionListener(new ActionListener() {
