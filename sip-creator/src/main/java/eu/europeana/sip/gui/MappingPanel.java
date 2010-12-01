@@ -330,7 +330,7 @@ public class MappingPanel extends JPanel {
                     createMappingButton.setText(CREATE);
                     createMappingButton.setEnabled(false);
                 }
-                List<FieldMapping> obvious = codeGenerator.createObviousMappings(sipModel.getUnmappedFields(), sipModel.getVariables(), sipModel.getConstantFieldModel().getDefinitions());
+                List<FieldMapping> obvious = codeGenerator.createObviousMappings(sipModel.getUnmappedFields(), sipModel.getVariables());
                 if (obvious.isEmpty()) {
                     obviousMappingDialog = null;
                     createObviousMappingButton.setEnabled(false);

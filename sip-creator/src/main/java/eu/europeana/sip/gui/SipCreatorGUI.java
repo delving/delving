@@ -31,7 +31,7 @@ import eu.delving.sip.FileStoreImpl;
 import eu.delving.sip.FileType;
 import eu.delving.sip.ProgressListener;
 import eu.europeana.sip.core.RecordValidationException;
-import eu.europeana.sip.model.ConstantFieldModel;
+import eu.europeana.sip.model.FactModel;
 import eu.europeana.sip.model.FileUploader;
 import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.UserNotifier;
@@ -93,7 +93,7 @@ public class SipCreatorGUI extends JFrame {
     private SipModel sipModel;
     private JLabel titleLabel = new JLabel(LOCAL_SETS, JLabel.CENTER);
     private MappingFrame mappingFrame;
-    private ConstantsFrame constantsFrame;
+    private FactsFrame factsFrame;
     private AnalysisFrame analysisFrame;
     private RepositoryConnection repositoryConnection;
     private DataSetListModel dataSetListModel = new DataSetListModel();
@@ -121,7 +121,7 @@ public class SipCreatorGUI extends JFrame {
             }
         });
         this.mappingFrame = new MappingFrame(sipModel);
-        this.constantsFrame = new ConstantsFrame(sipModel.getConstantFieldModel());
+        this.factsFrame = new FactsFrame(sipModel.getFactModel());
         this.analysisFrame = new AnalysisFrame(sipModel);
         setJMenuBar(createMenuBar());
         JPanel main = new JPanel(new BorderLayout(MARGIN, MARGIN));
@@ -198,19 +198,19 @@ public class SipCreatorGUI extends JFrame {
         p.add(analysis);
         controlButtons.add(analysis);
 
-        JButton sourceDetailsButton = new JButton("Edit Constants");
-        sourceDetailsButton.addActionListener(new ActionListener() {
+        JButton factsButton = new JButton("Edit Facts");
+        factsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 FileStore.DataSetStore store = getSelectedDataSetStore();
                 if (store != null) {
                     sipModel.setDataSetStore(store);
-                    constantsFrame.reveal(store.getSpec());
+                    factsFrame.reveal(store.getSpec());
                 }
             }
         });
-        p.add(sourceDetailsButton);
-        controlButtons.add(sourceDetailsButton);
+        p.add(factsButton);
+        controlButtons.add(factsButton);
 
         for (final String metadataPrefix : sipModel.getMetadataModel().getPrefixes()) {
             JButton button = new JButton(String.format("Edit '%s' Mapping", metadataPrefix));
@@ -250,10 +250,20 @@ public class SipCreatorGUI extends JFrame {
         public void actionPerformed(ActionEvent actionEvent) {
             final FileStore.DataSetStore store = getSelectedDataSetStore();
             if (store != null) {
+                try {
+                    if (!store.getFacts().isValid()) {
+                        sipModel.tellUser("Sorry, but the Facts are not yet valid");
+                        return;
+                    }
+                }
+                catch (FileStoreException e) {
+                    sipModel.tellUser("Unable to read Facts for this data set");
+                    return;
+                }
                 sipModel.setDataSetStore(store);
                 ProgressMonitor progressMonitor = new ProgressMonitor(SwingUtilities.getRoot(SipCreatorGUI.this), "Uploading", "Uploading files for " + store.getSpec(), 0, 100);
                 final ProgressListener progressListener = new ProgressListener.Adapter(progressMonitor, this);
-                sipModel.uploadFile(FileType.SOURCE_DETAILS, store.getSourceDetailsFile(), progressListener, new FileUploader.Receiver() {
+                sipModel.uploadFile(FileType.FACTS, store.getFactsFile(), progressListener, new FileUploader.Receiver() {
                     @Override
                     public void acceptResponse(DataSetResponse dataSetResponse) {
                         switch (dataSetResponse) {
@@ -429,11 +439,11 @@ public class SipCreatorGUI extends JFrame {
         }
     }
 
-    private class ConstantsFrame extends JFrame {
-        private final Dimension CONSTANTS_SIZE = new Dimension(760, 760);
+    private class FactsFrame extends JFrame {
+        private final Dimension FACTS_SIZE = new Dimension(760, 760);
 
-        public ConstantsFrame(ConstantFieldModel constantFieldModel) {
-            super("Constants");
+        public FactsFrame(FactModel factModel) {
+            super("Facts");
             JPanel bp = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             JButton hide = new JButton("Finished");
             hide.addActionListener(new ActionListener() {
@@ -443,19 +453,19 @@ public class SipCreatorGUI extends JFrame {
                 }
             });
             bp.add(hide);
-            ConstantFieldPanel fieldPanel = new ConstantFieldPanel(constantFieldModel);
+            FactPanel fieldPanel = new FactPanel(factModel);
             JPanel main = new JPanel(new BorderLayout(15, 15));
             main.add(fieldPanel, BorderLayout.CENTER);
             main.add(bp, BorderLayout.SOUTH);
             getContentPane().add(main);
             Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-            setSize(CONSTANTS_SIZE);
-            setLocation((screen.width - CONSTANTS_SIZE.width) / 2, (screen.height - CONSTANTS_SIZE.height) / 2);
+            setSize(FACTS_SIZE);
+            setLocation((screen.width - FACTS_SIZE.width) / 2, (screen.height - FACTS_SIZE.height) / 2);
             addWindowListener(new Reopener());
         }
 
         public void reveal(String dataSetSpec) {
-            setTitle(String.format("Constants for '%s'", dataSetSpec));
+            setTitle(String.format("Facts for '%s'", dataSetSpec));
             setVisible(true);
         }
     }

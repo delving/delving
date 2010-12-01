@@ -8,11 +8,11 @@ package eu.delving.sip;
 
 public enum FileType {
 
-    SOURCE_DETAILS(
-            "application/gzip"
+    FACTS(
+            "text/plain"
     ),
     SOURCE(
-            "text/plain"
+            "application/gzip"
     ),
     MAPPING(
             "text/xml"

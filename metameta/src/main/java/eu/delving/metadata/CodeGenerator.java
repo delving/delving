@@ -50,11 +50,11 @@ public class CodeGenerator {
         return fieldMapping;
     }
 
-    public List<FieldMapping> createObviousMappings(List<FieldDefinition> unmappedFieldDefinitions, List<SourceVariable> variables, List<ConstantInputDefinition> constantFieldDefinitions) {
+    public List<FieldMapping> createObviousMappings(List<FieldDefinition> unmappedFieldDefinitions, List<SourceVariable> variables) {
         List<FieldMapping> fieldMappings = new ArrayList<FieldMapping>();
         for (FieldDefinition fieldDefinition : unmappedFieldDefinitions) {
-            if (fieldDefinition.constant) {
-                FieldMapping fieldMapping = createObviousMappingFromConstant(fieldDefinition, constantFieldDefinitions);
+            if (fieldDefinition.factName != null) {
+                FieldMapping fieldMapping = createObviousMappingFromFact(fieldDefinition);
                 if (fieldMapping != null) {
                     fieldMappings.add(fieldMapping);
                 }
@@ -75,14 +75,11 @@ public class CodeGenerator {
         return fieldMappings;
     }
 
-    private FieldMapping createObviousMappingFromConstant(FieldDefinition fieldDefinition, List<ConstantInputDefinition> constantFieldDefinitions) {
+    private FieldMapping createObviousMappingFromFact(FieldDefinition fieldDefinition) {
         FieldMapping fieldMapping = new FieldMapping(fieldDefinition);
-        if (!fieldDefinition.constant) {
-            throw new IllegalArgumentException("Expected a constant");
-        }
-        for (ConstantInputDefinition cid : constantFieldDefinitions) {
-            if (cid.fieldDefinition == fieldDefinition) {
-                renderLineSimple(fieldDefinition, fieldMapping, cid.name);
+        for (FactDefinition factDefinition : Facts.definitions()) {
+            if (factDefinition.name.equals(fieldDefinition.factName)) {
+                renderLineSimple(fieldDefinition, fieldMapping, factDefinition.name);
             }
         }
         return fieldMapping.code == null ? null : fieldMapping;
@@ -90,9 +87,6 @@ public class CodeGenerator {
 
     private FieldMapping createObviousMappingFromVariable(FieldDefinition fieldDefinition, List<SourceVariable> variables) {
         FieldMapping fieldMapping = new FieldMapping(fieldDefinition);
-        if (fieldDefinition.constant) {
-            throw new IllegalArgumentException("Expected a variable");
-        }
         for (SourceVariable variable : variables) {
             String variableName = variable.getVariableName();
             String fieldName = fieldDefinition.getFieldNameString();

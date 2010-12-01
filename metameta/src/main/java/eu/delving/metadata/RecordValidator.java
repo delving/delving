@@ -168,7 +168,7 @@ public class RecordValidator {
     }
 
     private void validateField(String text, FieldDefinition field, List<String> problems) {
-        if (field.options != null && !field.valueMapped && !field.options.contains(text)) {
+        if (field.factDefinition != null && !field.valueMapped && field.factDefinition.options != null && !field.factDefinition.options.contains(text)) {
             String optionsString = getOptionsString(field);
             problems.add(String.format("Value for [%s] was [%s] which does not belong to [%s]", field.path, text, optionsString));
         }
@@ -195,7 +195,7 @@ public class RecordValidator {
 
     private String getOptionsString(FieldDefinition field) {
         StringBuilder enumString = new StringBuilder();
-        Iterator<String> walk = field.options.iterator();
+        Iterator<String> walk = field.factDefinition.options.iterator();
         while (walk.hasNext()) {
             enumString.append(walk.next());
             if (walk.hasNext()) {

@@ -21,8 +21,9 @@
 
 package eu.europeana.sip.gui;
 
-import eu.delving.metadata.ConstantInputDefinition;
-import eu.europeana.sip.model.ConstantFieldModel;
+import eu.delving.metadata.FactDefinition;
+import eu.delving.metadata.Facts;
+import eu.europeana.sip.model.FactModel;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
@@ -45,23 +46,23 @@ import java.awt.event.ItemListener;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class ConstantFieldPanel extends JPanel {
-    private ConstantFieldModel constantFieldModel;
+public class FactPanel extends JPanel {
+    private FactModel factModel;
     private FieldComponent[] fieldComponent;
 
-    public ConstantFieldPanel(ConstantFieldModel constantFieldModel) {
+    public FactPanel(FactModel factModel) {
         super(new SpringLayout());
-        setBorder(BorderFactory.createTitledBorder("Constant Fields"));
-        this.constantFieldModel = constantFieldModel;
-        constantFieldModel.addListener(new ModelAdapter());
+        setBorder(BorderFactory.createTitledBorder("Facts"));
+        this.factModel = factModel;
+        factModel.addListener(new ModelAdapter());
         refreshStructure();
     }
 
     private void refreshStructure() {
         removeAll();
-        fieldComponent = new FieldComponent[constantFieldModel.getDefinitions().size()];
+        fieldComponent = new FieldComponent[Facts.definitions().size()];
         int index = 0;
-        for (ConstantInputDefinition cid : constantFieldModel.getDefinitions()) {
+        for (FactDefinition cid : Facts.definitions()) {
             fieldComponent[index++] = new FieldComponent(cid);
         }
         LayoutUtil.makeCompactGrid(this, getComponentCount() / 2, 2, 5, 5, 5, 5);
@@ -75,13 +76,13 @@ public class ConstantFieldPanel extends JPanel {
     }
 
     private class FieldComponent {
-        private ConstantInputDefinition inputDefinition;
+        private FactDefinition factDefinition;
         private JTextField textField;
         private JComboBox comboBox;
 
-        private FieldComponent(ConstantInputDefinition inputDefinition) {
-            this.inputDefinition = inputDefinition;
-            if (inputDefinition.fieldDefinition == null || inputDefinition.fieldDefinition.options == null) {
+        private FieldComponent(FactDefinition factDefinition) {
+            this.factDefinition = factDefinition;
+            if (factDefinition.options == null) {
                 createTextField();
             }
             else {
@@ -90,7 +91,7 @@ public class ConstantFieldPanel extends JPanel {
         }
 
         private void createComboBox() {
-            comboBox = new JComboBox(inputDefinition.fieldDefinition.options.toArray());
+            comboBox = new JComboBox(factDefinition.options.toArray());
             comboBox.setSelectedIndex(-1);
             comboBox.addItemListener(new ItemListener() {
                 @Override
@@ -101,12 +102,12 @@ public class ConstantFieldPanel extends JPanel {
                     }
                 }
             });
-            JLabel label = new JLabel(inputDefinition.prompt, JLabel.RIGHT);
+            JLabel label = new JLabel(factDefinition.prompt, JLabel.RIGHT);
             label.setLabelFor(comboBox);
-            comboBox.setToolTipText(inputDefinition.toolTip);
-            label.setToolTipText(inputDefinition.toolTip);
-            ConstantFieldPanel.this.add(label);
-            ConstantFieldPanel.this.add(comboBox);
+            comboBox.setToolTipText(factDefinition.toolTip);
+            label.setToolTipText(factDefinition.toolTip);
+            FactPanel.this.add(label);
+            FactPanel.this.add(comboBox);
         }
 
         private void createTextField() {
@@ -127,28 +128,28 @@ public class ConstantFieldPanel extends JPanel {
                     setValue();
                 }
             });
-            if (inputDefinition.automatic != null && inputDefinition.automatic) {
+            if (factDefinition.automatic != null && factDefinition.automatic) {
                 textField.setEditable(false);
             }
-            JLabel label = new JLabel(inputDefinition.prompt, JLabel.RIGHT);
+            JLabel label = new JLabel(factDefinition.prompt, JLabel.RIGHT);
             label.setLabelFor(textField);
-            textField.setToolTipText(inputDefinition.toolTip);
-            label.setToolTipText(inputDefinition.toolTip);
-            ConstantFieldPanel.this.add(label);
-            ConstantFieldPanel.this.add(textField);
+            textField.setToolTipText(factDefinition.toolTip);
+            label.setToolTipText(factDefinition.toolTip);
+            FactPanel.this.add(label);
+            FactPanel.this.add(textField);
         }
 
         private void setValue() {
             if (textField != null) {
-                constantFieldModel.set(inputDefinition, textField.getText());
+                factModel.set(factDefinition, textField.getText());
             }
             else {
-                constantFieldModel.set(inputDefinition, comboBox.getSelectedItem().toString());
+                factModel.set(factDefinition, comboBox.getSelectedItem().toString());
             }
         }
 
         public void getValue() {
-            String text = constantFieldModel.get(inputDefinition);
+            String text = factModel.get(factDefinition);
             if (textField != null) {
                 textField.setText(text);
             }
@@ -158,14 +159,14 @@ public class ConstantFieldPanel extends JPanel {
         }
     }
 
-    private class ModelAdapter implements ConstantFieldModel.Listener {
+    private class ModelAdapter implements FactModel.Listener {
         @Override
-        public void updatedDefinitions(ConstantFieldModel constantFieldModel) {
+        public void updatedDefinitions(FactModel factModel) {
             refreshStructure();
         }
 
         @Override
-        public void updatedConstant(ConstantFieldModel constantFieldModel, boolean interactive) {
+        public void updatedFact(FactModel factModel, boolean interactive) {
             refreshContent();
         }
     }

@@ -21,13 +21,13 @@
 
 package eu.delving.sip;
 
+import eu.delving.metadata.Facts;
 import eu.delving.metadata.MappingModel;
 import eu.delving.metadata.MetadataException;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.MetadataModelImpl;
 import eu.delving.metadata.Path;
 import eu.delving.metadata.RecordMapping;
-import eu.delving.metadata.SourceDetails;
 import eu.delving.metadata.Statistics;
 import org.apache.log4j.Logger;
 import org.junit.After;
@@ -120,11 +120,11 @@ public class TestFileStore {
         log.info("Mapping created with prefix " + recordMapping.getPrefix());
         MappingModel mappingModel = new MappingModel();
         mappingModel.setRecordMapping(recordMapping);
-        mappingModel.setConstant("/some/path", "value");
+        mappingModel.setFact("/some/path", "value");
         fileStore.getDataSetStores().get(SPEC).setRecordMapping(recordMapping);
         Assert.assertEquals("Should be two files", 2, new File(DIR, SPEC).listFiles().length);
         recordMapping = fileStore.getDataSetStores().get(SPEC).getRecordMapping(METADATA_PREFIX);
-        Assert.assertEquals("Should have held constant", "value", recordMapping.getConstant("/some/path"));
+        Assert.assertEquals("Should have held fact", "value", recordMapping.getFact("/some/path"));
     }
 
     @Test
@@ -148,15 +148,15 @@ public class TestFileStore {
     }
 
     @Test
-    public void manipulateDetails() throws IOException, FileStoreException {
+    public void manipulateFacts() throws IOException, FileStoreException {
         FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC);
         store.importFile(sampleFile(), null);
-        SourceDetails sourceDetails = store.getSourceDetails();
-        Assert.assertEquals("source details should be empty", "", sourceDetails.get("recordPath"));
-        sourceDetails.set("recordPath", "Wingy");
-        store.setSourceDetails(sourceDetails);
-        sourceDetails = fileStore.getDataSetStores().get(SPEC).getSourceDetails();
-        Assert.assertEquals("source details should be restored", "Wingy", sourceDetails.get("recordPath"));
+        Facts facts = store.getFacts();
+        Assert.assertEquals("facts should be empty", "", facts.get("recordPath"));
+        facts.set("recordPath", "Wingy");
+        store.setFacts(facts);
+        facts = fileStore.getDataSetStores().get(SPEC).getFacts();
+        Assert.assertEquals("facts should be restored", "Wingy", facts.get("recordPath"));
     }
 
     @Test

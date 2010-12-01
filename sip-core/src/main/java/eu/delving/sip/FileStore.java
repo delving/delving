@@ -21,8 +21,8 @@
 
 package eu.delving.sip;
 
+import eu.delving.metadata.Facts;
 import eu.delving.metadata.RecordMapping;
-import eu.delving.metadata.SourceDetails;
 import eu.delving.metadata.Statistics;
 
 import java.io.File;
@@ -67,15 +67,15 @@ public interface FileStore {
 
         void setRecordMapping(RecordMapping recordMapping) throws FileStoreException;
 
-        SourceDetails getSourceDetails() throws FileStoreException;
+        Facts getFacts() throws FileStoreException;
 
-        void setSourceDetails(SourceDetails details) throws FileStoreException;
+        void setFacts(Facts facts) throws FileStoreException;
 
         MappingOutput createMappingOutput(RecordMapping recordMapping, File normalizedDirectory) throws FileStoreException;
 
         void delete() throws FileStoreException;
 
-        File getSourceDetailsFile();
+        File getFactsFile();
 
         File getSourceFile();
 
@@ -98,7 +98,7 @@ public interface FileStore {
     String APP_CONFIG_FILE_NAME = "app-config.xml";
     String SOURCE_FILE_NAME = "source.xml.gz";
     String STATISTICS_FILE_NAME = "statistics.ser";
-    String SOURCE_DETAILS_FILE_NAME = "source-details.txt";
+    String FACTS_FILE_NAME = "facts.txt";
     String MAPPING_FILE_PATTERN = "mapping_%s.xml";
     String MAPPING_FILE_PREFIX = "mapping_";
     String MAPPING_FILE_SUFFIX = ".xml";
