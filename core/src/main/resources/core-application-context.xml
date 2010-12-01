@@ -94,7 +94,6 @@
     </bean>
 
     <util:list id="includedMacros">
-        <value>delving-macros.ftl</value>
     </util:list>
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -205,7 +204,7 @@
             </props>
         </property>
         <property name="templateLoaderPaths"
-                  value="#{launchProperties['portal.freemarker.path']}, WEB-INF/templates/theme/macros/"/>
+                  value="#{launchProperties['portal.freemarker.path']}"/>
     </bean>
 
     <bean id="clickStreamLogger" class="eu.europeana.core.util.web.ClickStreamLoggerImpl"/>
