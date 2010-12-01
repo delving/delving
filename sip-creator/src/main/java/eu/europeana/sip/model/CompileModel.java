@@ -25,11 +25,11 @@ import eu.delving.metadata.FieldMapping;
 import eu.delving.metadata.MappingModel;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.RecordMapping;
+import eu.delving.metadata.RecordValidator;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordValidationException;
-import eu.delving.metadata.RecordValidator;
 import eu.europeana.sip.core.ToolCodeResource;
 import org.apache.log4j.Logger;
 
@@ -209,14 +209,9 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     private String getCompileCode() {
         switch (type) {
             case RECORD:
-                return recordMapping.toCompileCode(metadataModel.getRecordDefinition());
+                return recordMapping != null ? recordMapping.toCompileCode(metadataModel.getRecordDefinition()) : "";
             case FIELD:
-                if (selectedPath == null) {
-                    return "print 'nothing selected'";
-                }
-                else {
-                    return recordMapping.toCompileCode(metadataModel.getRecordDefinition(), selectedPath);
-                }
+                return selectedPath != null ? recordMapping.toCompileCode(metadataModel.getRecordDefinition(), selectedPath) : "";
             default:
                 throw new RuntimeException();
         }

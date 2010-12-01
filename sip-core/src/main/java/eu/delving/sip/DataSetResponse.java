@@ -8,8 +8,10 @@ package eu.delving.sip;
 
 public enum DataSetResponse {
     THANK_YOU,
-    SORRY_GOT_IT_ALREADY,
+    GOT_IT_ALREADY,
     DATA_SET_NOT_FOUND,
-    UNKNOWN_FILE_TYPE,
+    ACCESS_KEY_FAILURE,
+    READY_TO_RECEIVE,
+    NEWORK_ERROR,
     SYSTEM_ERROR
 }

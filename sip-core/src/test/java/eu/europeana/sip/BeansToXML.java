@@ -4,7 +4,6 @@ import eu.delving.metadata.ElementDefinition;
 import eu.delving.metadata.FieldDefinition;
 import eu.delving.metadata.RecordDefinition;
 import eu.europeana.sip.annotations.AnnotationProcessorImpl;
-import eu.europeana.sip.annotations.Europeana;
 import eu.europeana.sip.annotations.EuropeanaField;
 import eu.europeana.sip.beans.AllFieldBean;
 
@@ -74,7 +73,7 @@ public class BeansToXML {
             fd.briefDoc = bool(ef.europeana().briefDoc());
             fd.category = string(ef.europeana().category().toString());
             fd.compressed = bool(ef.solr().compressed());
-            fd.constant = bool(ef.europeana().constant());
+            fd.factName = ef.europeana().constant()? "?? fact name ??" : null;
             fd.converterPattern = string(ef.europeana().converter());
             fd.converterMultipleOutput = bool(ef.europeana().converterMultipleOutput());
             fd.defaultValue = string(ef.solr().defaultValue());
@@ -87,7 +86,6 @@ public class BeansToXML {
             fd.multivalued = bool(ef.solr().multivalued());
             fd.object = bool(ef.europeana().object());
             fd.omitNorms = bool(ef.solr().omitNorms());
-            fd.options = (ef.europeana().enumClass() == Europeana.NO_ENUM.class) ? null : getEnumValues(ef.europeana().enumClass());
             fd.regularExpression = string(ef.europeana().regularExpression());
             if (ef.solr().required()) {
                 fd.requiredGroup = fd.prefix+":"+fd.localName;

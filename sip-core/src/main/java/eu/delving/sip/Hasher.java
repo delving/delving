@@ -23,14 +23,10 @@ package eu.delving.sip;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.security.DigestException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 /**
  * This interface describes how files are stored by the sip-creator
@@ -39,9 +35,47 @@ import java.util.zip.GZIPOutputStream;
  */
 
 public class Hasher {
-
-    public static final int BLOCK_SIZE = 4096;
+    private static final String SEPARATOR = "__";
+    private static final int BLOCK_SIZE = 4096;
     private MessageDigest messageDigest;
+
+    public static String getName(File file) {
+        String fileName = file.getName();
+        int hashSeparator = fileName.indexOf(SEPARATOR);
+        if (hashSeparator > 0) {
+            fileName = fileName.substring(hashSeparator + 2);
+        }
+        return fileName;
+    }
+
+    public static String getHash(File file) {
+        return getHash(file.getName());
+    }
+
+    public static String getHash(String fileName) {
+        int hashSeparator = fileName.indexOf(SEPARATOR);
+        if (hashSeparator > 0) {
+            return fileName.substring(0, hashSeparator);
+        }
+        else {
+            return null;
+        }
+    }
+
+    public static File hashFile(File file) throws FileStoreException {
+        if (file.getName().contains(SEPARATOR)) {
+            return file;
+        }
+        else {
+            Hasher hasher = new Hasher();
+            hasher.digest(file);
+            File hashedFile = new File(file.getParentFile(), hasher.toString() + SEPARATOR + file.getName());
+            if (!file.renameTo(hashedFile)) {
+                throw new FileStoreException(String.format("Unable to rename %s to %s", file.getAbsolutePath(), hashedFile.getAbsolutePath()));
+            }
+            return hashedFile;
+        }
+    }
 
     public Hasher() {
         try {
@@ -52,7 +86,7 @@ public class Hasher {
         }
     }
 
-    public void digest(byte [] buffer, int bytes) {
+    public void digest(byte[] buffer, int bytes) {
         try {
             messageDigest.digest(buffer, 0, bytes);
         }
@@ -78,15 +112,6 @@ public class Hasher {
 
     public String toString() {
         return toHexadecimal(messageDigest.digest());
-    }
-
-    private static MessageDigest getDigest() {
-        try {
-            return MessageDigest.getInstance("MD5");
-        }
-        catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("MD5 not available??");
-        }
     }
 
     static final String HEXES = "0123456789ABCDEF";

@@ -43,41 +43,13 @@ public class RecordDefinition {
     @XStreamAsAttribute
     public String prefix;
 
-    public List<ConstantInputDefinition> constants;
-
     public List<NamespaceDefinition> namespaces;
 
     public ElementDefinition root;
 
     void initialize() throws MetadataException {
-        if (constants == null) {
-            throw new MetadataException("A record definition must have constants defined");
-        }
         root.setPaths(new Path());
-        for (ConstantInputDefinition constantInputDefinition : constants) {
-            if (constantInputDefinition.fieldPath == null) continue;
-            FieldDefinition fieldDefinition = getFieldDefinition(new Path(constantInputDefinition.fieldPath));
-            if (fieldDefinition == null) {
-                throw new MetadataException(String.format("Constant input %s has no corresponding path", constantInputDefinition.name));
-            }
-            if (!fieldDefinition.constant) {
-                throw new MetadataException(String.format("Constant input %s has path %s which is not to a constant", constantInputDefinition.name, constantInputDefinition.fieldPath));
-            }
-            constantInputDefinition.fieldDefinition = fieldDefinition;
-        }
-        List<FieldDefinition> constantFields = new ArrayList<FieldDefinition>();
-        root.getConstantFields(constantFields);
-        for (FieldDefinition fieldDefinition : constantFields) {
-            boolean found = false;
-            for (ConstantInputDefinition constantInputDefinition : constants) {
-                if (constantInputDefinition.fieldDefinition == fieldDefinition) {
-                    found = true;
-                }
-            }
-            if (!found) {
-                throw new MetadataException(String.format("Constant field %s has no corresponding constant input", fieldDefinition.path));
-            }
-        }
+        root.setFactDefinitions();
     }
 
     public List<FieldDefinition> getMappableFields() {

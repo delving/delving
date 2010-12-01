@@ -21,13 +21,13 @@
 
 package eu.delving.sip;
 
+import eu.delving.metadata.Facts;
 import eu.delving.metadata.MappingModel;
 import eu.delving.metadata.MetadataException;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.MetadataModelImpl;
 import eu.delving.metadata.Path;
 import eu.delving.metadata.RecordMapping;
-import eu.delving.metadata.SourceDetails;
 import eu.delving.metadata.Statistics;
 import org.apache.log4j.Logger;
 import org.junit.After;
@@ -50,8 +50,9 @@ import java.util.List;
 
 public class TestFileStore {
     private static final File TARGET = new File("target");
-    private static final File DIR = new File(TARGET, "file-store");
     private static final String SPEC = "spek";
+    private static final File DIR = new File(TARGET, "file-store");
+    private static final File SPEC_DIR = new File(DIR, SPEC);
     private Logger log = Logger.getLogger(getClass());
     private FileStore fileStore;
     public static final String METADATA_PREFIX = "abm";
@@ -119,11 +120,11 @@ public class TestFileStore {
         log.info("Mapping created with prefix " + recordMapping.getPrefix());
         MappingModel mappingModel = new MappingModel();
         mappingModel.setRecordMapping(recordMapping);
-        mappingModel.setConstant("/some/path", "value");
+        mappingModel.setFact("/some/path", "value");
         fileStore.getDataSetStores().get(SPEC).setRecordMapping(recordMapping);
         Assert.assertEquals("Should be two files", 2, new File(DIR, SPEC).listFiles().length);
         recordMapping = fileStore.getDataSetStores().get(SPEC).getRecordMapping(METADATA_PREFIX);
-        Assert.assertEquals("Should have held constant", "value", recordMapping.getConstant("/some/path"));
+        Assert.assertEquals("Should have held fact", "value", recordMapping.getFact("/some/path"));
     }
 
     @Test
@@ -140,22 +141,22 @@ public class TestFileStore {
         statistics.finish();
         stats.add(statistics);
         store.setStatistics(stats);
-        Assert.assertEquals("Should be one directory ", 1, new File(DIR, SPEC).listFiles().length);
+        Assert.assertEquals("Should be two files ", 2, new File(DIR, SPEC).listFiles().length);
         stats = fileStore.getDataSetStores().get(SPEC).getStatistics();
         Assert.assertEquals("Should be one stat", 1, stats.size());
         Assert.assertEquals("Path discrepancy", "/stat/path", stats.get(0).getPath().toString());
     }
 
     @Test
-    public void manipulateDetails() throws IOException, FileStoreException {
+    public void manipulateFacts() throws IOException, FileStoreException {
         FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC);
         store.importFile(sampleFile(), null);
-        SourceDetails sourceDetails = store.getSourceDetails();
-        Assert.assertEquals("source details should be empty", "", sourceDetails.get("recordPath"));
-        sourceDetails.set("recordPath", "Wingy");
-        store.setSourceDetails(sourceDetails);
-        sourceDetails = fileStore.getDataSetStores().get(SPEC).getSourceDetails();
-        Assert.assertEquals("source details should be restored", "Wingy", sourceDetails.get("recordPath"));
+        Facts facts = store.getFacts();
+        Assert.assertEquals("facts should be empty", "", facts.get("recordPath"));
+        facts.set("recordPath", "Wingy");
+        store.setFacts(facts);
+        facts = fileStore.getDataSetStores().get(SPEC).getFacts();
+        Assert.assertEquals("facts should be restored", "Wingy", facts.get("recordPath"));
     }
 
     @Test
@@ -167,9 +168,10 @@ public class TestFileStore {
         mo.recordDiscarded();
         mo.recordNormalized();
         mo.recordNormalized();
-        Assert.assertEquals("Should be two files", 2, new File(DIR, SPEC).listFiles().length);
+        Assert.assertEquals("Should be one file", 1, SPEC_DIR.listFiles().length);
         mo.close(false);
         store.setRecordMapping(recordMapping);
+        Assert.assertEquals("Should be two files", 2, SPEC_DIR.listFiles().length);
         recordMapping = fileStore.getDataSetStores().get(SPEC).getRecordMapping(METADATA_PREFIX);
         Assert.assertEquals("Mapping should contain facts", 1, recordMapping.getRecordsDiscarded());
         Assert.assertEquals("Mapping should contain facts", 2, recordMapping.getRecordsNormalized());

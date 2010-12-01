@@ -50,12 +50,11 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 /**
  * A Graphical interface for analysis
@@ -64,28 +63,25 @@ import java.awt.event.ActionListener;
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
 
-public class AnalysisPanel extends JPanel {
+public class AnalysisFactsPanel extends JPanel {
     private static final String ELEMENTS_PROCESSED = "%d Elements Processed";
-    private static final String RECORDS = "%d Records";
-    private static final String PERFORM_ANALYSIS = "Analyze %s";
-    private JButton selectRecordRootButton = new JButton("Select Record Root");
-    private JButton selectUniqueElementButton = new JButton("Select Unique Element");
-    private JLabel recordCountLabel = new JLabel(String.format(RECORDS, 0), JLabel.CENTER);
-    private JButton analyzeButton = new JButton("Analyze");
-    private JLabel elementCountLabel = new JLabel(String.format(ELEMENTS_PROCESSED, 0L), JLabel.CENTER);
+    private JButton selectRecordRootButton = new JButton("Select Record Root >> ");
+    private JButton selectUniqueElementButton = new JButton("Select Unique Element >> ");
+    private JButton reanalyzeButton = new JButton("Rerun the Analysis");
     private JEditorPane statisticsView = new JEditorPane();
-    private JButton abortButton = new JButton("Abort");
     private JTree statisticsJTree;
     private SipModel sipModel;
 
-    public AnalysisPanel(SipModel sipModel) {
+    public AnalysisFactsPanel(SipModel sipModel) {
         super(new BorderLayout(5, 5));
         this.sipModel = sipModel;
+        JPanel left = new JPanel(new GridLayout(0, 1, 5, 5));
+        left.add(createTreePanel());
+        left.add(createStatisticsPanel());
         JPanel center = new JPanel(new GridLayout(1, 0, 5, 5));
-        center.add(createTreePanel());
-        center.add(createStatisticsPanel());
+        center.add(left);
+        center.add(new FactPanel(sipModel.getFactModel()));
         add(center, BorderLayout.CENTER);
-        add(createAnalyzePanel(), BorderLayout.SOUTH);
         wireUp();
     }
 
@@ -96,16 +92,36 @@ public class AnalysisPanel extends JPanel {
         statisticsJTree.getModel().addTreeModelListener(new Expander());
         statisticsJTree.setCellRenderer(new AnalysisTreeCellRenderer());
         statisticsJTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        statisticsJTree.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent focusEvent) {
+                if (reanalyzeButton.isEnabled()) {
+                    if (sipModel.getAnalysisTreeModel().getChildCount(sipModel.getAnalysisTreeModel().getRoot()) == 0) {
+                        reanalyzeButton.setEnabled(false);
+                        performAnalysis();
+                    }
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent focusEvent) {
+            }
+        });
         p.add(scroll(statisticsJTree), BorderLayout.CENTER);
+        JPanel south = new JPanel(new GridLayout(0, 1));
+        south.add(reanalyzeButton);
+        south.add(createSelectButtonPanel());
+        p.add(south, BorderLayout.SOUTH);
+        return p;
+    }
+
+    private JPanel createSelectButtonPanel() {
         JPanel bp = new JPanel(new GridLayout(1, 0, 5, 5));
         selectRecordRootButton.setEnabled(false);
-        selectRecordRootButton.setForeground(Color.RED);
         bp.add(selectRecordRootButton);
-        selectUniqueElementButton.setForeground(Color.GREEN);
         selectUniqueElementButton.setEnabled(false);
         bp.add(selectUniqueElementButton);
-        p.add(bp, BorderLayout.SOUTH);
-        return p;
+        return bp;
     }
 
     private JPanel createStatisticsPanel() {
@@ -124,28 +140,8 @@ public class AnalysisPanel extends JPanel {
         return scroll;
     }
 
-    private JPanel createAnalyzePanel() {
-        JPanel p = new JPanel(new GridBagLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Analysis Process"));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.gridx = gbc.gridy = 0;
-        gbc.weightx = 0.25;
-        gbc.weighty = 1;
-        gbc.fill = GridBagConstraints.BOTH;
-        p.add(analyzeButton, gbc);
-        gbc.gridx++;
-        p.add(elementCountLabel, gbc);
-        gbc.gridx++;
-        p.add(recordCountLabel, gbc);
-        abortButton.setEnabled(false);
-        gbc.gridx++;
-        p.add(abortButton, gbc);
-        return p;
-    }
-
     private void setElementsProcessed(long count) {
-        elementCountLabel.setText(String.format(ELEMENTS_PROCESSED, count));
+        reanalyzeButton.setText(String.format(ELEMENTS_PROCESSED, count));
     }
 
     private void wireUp() {
@@ -156,26 +152,26 @@ public class AnalysisPanel extends JPanel {
 
             @Override
             public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
-                setElementsProcessed(sipModel.getElementCount());
-                analyzeButton.setText(String.format(PERFORM_ANALYSIS, dataSetStore.getSpec()));
-                analyzeButton.setEnabled(true);
-                abortButton.setEnabled(false);
             }
 
             @Override
-            public void updatedStatistics(Statistics statistics) {
-                if (statistics == null) {
-                    statisticsView.setText("<html><h3>No Statistics</h3>");
-                }
-                else {
-                    statisticsView.setText(statistics.toHtml());
-                }
-                statisticsView.setCaretPosition(0);
+            public void updatedStatistics(final Statistics statistics) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (statistics == null) {
+                            statisticsView.setText("<html><h3>No Statistics</h3>");
+                        }
+                        else {
+                            statisticsView.setText(statistics.toHtml());
+                        }
+                        statisticsView.setCaretPosition(0);
+                    }
+                });
             }
 
             @Override
             public void updatedRecordRoot(Path recordRoot, int recordCount) {
-                recordCountLabel.setText(String.format(RECORDS, recordCount));
             }
 
             @Override
@@ -186,10 +182,27 @@ public class AnalysisPanel extends JPanel {
             @Override
             public void valueChanged(TreeSelectionEvent event) {
                 TreePath path = event.getPath();
-                AnalysisTree.Node node = (AnalysisTree.Node) path.getLastPathComponent();
-                selectRecordRootButton.setEnabled(node.couldBeRecordRoot());
-                selectUniqueElementButton.setEnabled(!node.couldBeRecordRoot());
-                sipModel.setStatistics(node.getStatistics());
+                if (statisticsJTree.getSelectionModel().isPathSelected(path)) {
+                    final AnalysisTree.Node node = (AnalysisTree.Node) path.getLastPathComponent();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            selectRecordRootButton.setEnabled(node.couldBeRecordRoot());
+                            selectUniqueElementButton.setEnabled(!node.couldBeRecordRoot());
+                            sipModel.setStatistics(node.getStatistics());
+                        }
+                    });
+                }
+                else {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            selectRecordRootButton.setEnabled(false);
+                            selectUniqueElementButton.setEnabled(false);
+                            sipModel.setStatistics(null);
+                        }
+                    });
+                }
             }
         });
         selectRecordRootButton.addActionListener(new ActionListener() {
@@ -198,7 +211,9 @@ public class AnalysisPanel extends JPanel {
                 TreePath path = statisticsJTree.getSelectionPath();
                 AnalysisTreeNode node = (AnalysisTreeNode) path.getLastPathComponent();
                 Path recordRoot = node.getPath();
-                sipModel.setRecordRoot(recordRoot, node.getStatistics().getTotal());
+                if (recordRoot != null) {
+                    sipModel.setRecordRoot(recordRoot, node.getStatistics().getTotal());
+                }
             }
         });
         selectUniqueElementButton.addActionListener(new ActionListener() {
@@ -209,42 +224,37 @@ public class AnalysisPanel extends JPanel {
                 sipModel.setUniqueElement(node.getPath());
             }
         });
-        analyzeButton.addActionListener(new ActionListener() {
+        reanalyzeButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                analyzeButton.setEnabled(false);
-                abortButton.setEnabled(true);
-                sipModel.analyze(new SipModel.AnalysisListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                reanalyzeButton.setEnabled(false);
+                performAnalysis();
+            }
+        });
+    }
 
-                    @Override
-                    public void finished(boolean success) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                analyzeButton.setEnabled(true);
-                                abortButton.setEnabled(false);
-                                setElementsProcessed(sipModel.getElementCount());
-                            }
-                        });
-                    }
+    private void performAnalysis() {
+        sipModel.analyze(new SipModel.AnalysisListener() {
 
+            @Override
+            public void finished(boolean success) {
+                SwingUtilities.invokeLater(new Runnable() {
                     @Override
-                    public void analysisProgress(final long elementCount) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                setElementsProcessed(elementCount);
-                            }
-                        });
+                    public void run() {
+                        setElementsProcessed(sipModel.getElementCount());
+                        reanalyzeButton.setEnabled(true);
                     }
                 });
             }
-        });
-        abortButton.addActionListener(new ActionListener() {
+
             @Override
-            public void actionPerformed(ActionEvent e) {
-                sipModel.abortAnalyze();
-                analyzeButton.setEnabled(true);
+            public void analysisProgress(final long elementCount) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        setElementsProcessed(elementCount);
+                    }
+                });
             }
         });
     }
@@ -259,9 +269,11 @@ public class AnalysisPanel extends JPanel {
             label.setFont(node.getStatistics() != null ? getThickFont() : getNormalFont());
             if (node.isRecordRoot()) {
                 label.setForeground(Color.RED);
+                label.setText(String.format("%s << Record Root", node));
             }
-            else if (node.isUniqueElement()) {
-                label.setForeground(Color.GREEN);
+            if (node.isUniqueElement()) {
+                label.setForeground(Color.RED);
+                label.setText(String.format("%s << UniqueElement", node));
             }
             return label;
         }
