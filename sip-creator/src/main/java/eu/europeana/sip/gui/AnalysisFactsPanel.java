@@ -267,8 +267,13 @@ public class AnalysisFactsPanel extends JPanel {
             JLabel label = (JLabel) super.getTreeCellRendererComponent(jTree, value, selected, expanded, leaf, row, hasFocus);
             AnalysisTree.Node node = (AnalysisTree.Node) value;
             label.setFont(node.getStatistics() != null ? getThickFont() : getNormalFont());
-            if (node.isRecordRoot() || node.isUniqueElement()) {
+            if (node.isRecordRoot()) {
                 label.setForeground(Color.RED);
+                label.setText(String.format("%s << Record Root", node));
+            }
+            if (node.isUniqueElement()) {
+                label.setForeground(Color.RED);
+                label.setText(String.format("%s << UniqueElement", node));
             }
             return label;
         }

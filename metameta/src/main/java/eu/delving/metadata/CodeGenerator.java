@@ -51,6 +51,7 @@ public class CodeGenerator {
     }
 
     public List<FieldMapping> createObviousMappings(List<FieldDefinition> unmappedFieldDefinitions, List<SourceVariable> variables) {
+        // todo: unique element -> id is also obvious
         List<FieldMapping> fieldMappings = new ArrayList<FieldMapping>();
         for (FieldDefinition fieldDefinition : unmappedFieldDefinitions) {
             if (fieldDefinition.factName != null) {
