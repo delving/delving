@@ -18,7 +18,7 @@
 <@addHeader "Norvegiana", "",["results.js"],[]/>
 <script type="text/javascript">
     var msgSearchSaveSuccess = "<@spring.message '_portal.ui.message.success.search.saved'/>";
-    var msgSearchSaveFail = "<@spring.message '_portal.ui.notification.failure.search.saved'/>";
+    var msgSearchSaveFail = "<@spring.message '_mine.user.notification.failure.search.saved'/>";
 </script>
 
 <section class="grid_3" role="complementary">

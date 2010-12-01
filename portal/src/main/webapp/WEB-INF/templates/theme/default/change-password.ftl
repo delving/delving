@@ -41,12 +41,12 @@
         <div class="grid_4 alpha">
         <fieldset id="pt2">
             <legend><span>Step </span>2. <span>: Password</span></legend>
-            <label for="password"><@spring.message '_register.password' /></label>
+            <label for="password"><@spring.message '_mine.user.register.password' /></label>
             <input type="password" id="password" name="password" tabindex="5"  value=""/>
             <@spring.bind "command.password" />
             <#list spring.status.errorMessages as error> <i>${error}</i> <br> </#list>
 
-            <label for="password2"><@spring.message '_register.repeat.password' /></label>
+            <label for="password2"><@spring.message '_mine.user.register.repeat.password' /></label>
             <input type="password" id="password2" name="password2" tabindex="5"  value=""/>
             <@spring.bind "command.password2" />
             <#list spring.status.errorMessages as error> <i>${error}</i> <br> </#list>

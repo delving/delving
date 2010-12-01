@@ -24,7 +24,7 @@
         <td><input type='text' id="j_username" name="j_username" value="" maxlength="50"></td>
     </tr>
     <tr>
-        <td><label for="j_password"><@spring.message "_register.password" /></label></td>
+        <td><label for="j_password"><@spring.message "_mine.user.register.password" /></label></td>
         <td><input type='password' id="j_password" name='j_password' maxlength="50"/></td>
     </tr>
     <tr>

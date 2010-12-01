@@ -122,7 +122,7 @@
     <ul>
         <#if !user??>
             <li id="mustlogin"><a href="/${portalName}/login.html" onclick="takeMeBack();"><@spring.message '_mine.login'/></a></li>
-            <li><a href="/${portalName}/register-request.html?pId=${pageId}"><@spring.message '_register.register'/></a></li>
+            <li><a href="/${portalName}/register-request.html?pId=${pageId}"><@spring.message '_mine.user.register.register'/></a></li>
         </#if>
 
         <#if user??>
@@ -200,7 +200,7 @@
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/js_utilities.js"></script>
 
     <script type="text/javascript">
-        var msgRequired = "<@spring.message '_register.requiredfield'/>";
+        var msgRequired = "<@spring.message '_mine.user.register.requiredfield'/>";
         var portalName = "/${portalName}";
         var baseThemePath = "/${portalName}/${portalTheme}";
     </script>
@@ -222,7 +222,7 @@
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/results.js"></script>
     <script type="text/javascript">
         var msgSearchSaveSuccess = "<@spring.message '_portal.ui.message.success.search.saved'/>";
-        var msgSearchSaveFail = "<@spring.message '_portal.ui.notification.failure.search.saved'/>";
+        var msgSearchSaveFail = "<@spring.message '_mine.user.notification.failure.search.saved'/>";
 
         $(document).ready(function() {
             $('div.toggler-c').toggleElements(
@@ -273,9 +273,9 @@
     <script type="text/javascript">
         var msgItemSaveSuccess = "<@spring.message '_mine.itemsaved' />";
         var msgItemSaveFail = "<@spring.message '_mine.itemsavefailed' />";
-        var msgEmailSendSuccess = "<@spring.message '_messages.notification.emailsent' />";
-        var msgEmailSendFail = "<@spring.message '_messages.error.emailsendfailed' />";
-        var msgEmailValid = "<@spring.message '_register.entervalidemail' />";
+        var msgEmailSendSuccess = "<@spring.message '_mine.user.notification.emailsent' />";
+        var msgEmailSendFail = "<@spring.message '_mine.user.notification.emailsendfailed' />";
+        var msgEmailValid = "<@spring.message '_mine.user.register.entervalidemail' />";
     </script>
     </#if>
     <title>Delving - Search results</title>

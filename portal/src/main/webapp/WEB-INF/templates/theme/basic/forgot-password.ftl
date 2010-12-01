@@ -34,12 +34,12 @@
 
 <#if state == "success">
 <p id="forgotSuccess" class="success">
-<@spring.message '_register.email.has.been.sent' />: <span class="fg-gold">${email}</span>.
-<@spring.message '_register.please.follow.link' />.  <!-- TODO change message -->
+<@spring.message '_mine.user.register.email.has.been.sent' />: <span class="fg-gold">${email}</span>.
+<@spring.message '_mine.user.register.please.follow.link' />.  <!-- TODO change message -->
 </p>
 </#if>
 <#if state == "formatFailure">
-<@spring.message '_portal.ui.notification.error' />!<br/><@spring.message '_messages.error.emailformaterror' />.
+<@spring.message '_portal.ui.notification.error' />!<br/><@spring.message '_mine.user.notification.emailformaterror' />.
 </#if>
 <#if state == "nonexistentFailure">
 <@spring.message '_portal.ui.notification.error' />!<br/>EmailDoesntExist_t <!-- TODO add message -->

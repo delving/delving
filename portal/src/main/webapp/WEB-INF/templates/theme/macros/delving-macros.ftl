@@ -85,7 +85,7 @@
             <title>${title}</title>
             <script type="text/javascript">
                 var locale = "${locale}";
-                var msgRequired = "<@spring.message '_register.requiredfield'/>";
+                var msgRequired = "<@spring.message '_mine.user.register.requiredfield'/>";
                 var portalName = "/${portalName}";
                 var baseThemePath = "/${portalName}/${portalTheme}";
             </script>
@@ -178,7 +178,7 @@
 
 <#macro languageSelect>
 <select onchange="setLang(this.options[selectedIndex].value)" name="dd_lang" id="dd_lang">
-    <option value="Choose language" selected="selected"><@spring.message '_menu.i18n.chooselanguage' /></option>
+    <option value="Choose language" selected="selected"><@spring.message '_action.chooselanguage' /></option>
     <option value="en">
     English (eng)
     </option>
@@ -204,7 +204,7 @@
         <td><input type='text' id="j_username" name="j_username" value="" maxlength="50"></td>
     </tr>
     <tr>
-        <td><label for="j_password"><@spring.message "_register.password" /></label></td>
+        <td><label for="j_password"><@spring.message "_mine.user.register.password" /></label></td>
         <td><input type='password' id="j_password" name='j_password' maxlength="50"/></td>
     </tr>
     <tr>
@@ -978,7 +978,7 @@
 <ul>
     <#if !user??>
         <li><a id="login" href="/${portalName}/login.html"><@spring.message '_mine.login'/></a></li>
-        <li><a id="register" href="/${portalName}/register-request.html"><@spring.message '_register.register'/></a></li>
+        <li><a id="register" href="/${portalName}/register-request.html"><@spring.message '_mine.user.register.register'/></a></li>
     </#if>
     <#if user??>
     <li>
@@ -1040,7 +1040,7 @@
  -->
 <#macro sortResults>
 <select id="sortOptions" name="sortBy" onchange="$('input#sortBy').val(this.value);$('form#form-sort').submit();">
-    <option value=""><@spring.message '_actions.search.order.by' /></option>
+    <option value=""><@spring.message '_action.search.order.by' /></option>
     <option value="title" ><@spring.message '_metadata.dc.title' /></option>
     <option value="creator"><@spring.message '_metadata.dc.creator' /></option>
     <option value="YEAR"><@spring.message '_metadata.dc.date' /></option>
