@@ -13,6 +13,7 @@ import eu.delving.metadata.MetadataNamespace;
 import eu.delving.metadata.NamespaceDefinition;
 import eu.delving.metadata.Path;
 import eu.delving.metadata.RecordMapping;
+import eu.delving.metadata.RecordValidator;
 import eu.delving.metadata.Tag;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.BadArgumentException;
@@ -23,7 +24,6 @@ import eu.delving.sip.ServiceAccessToken;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
-import eu.europeana.sip.core.RecordValidator;
 import eu.europeana.sip.core.ToolCodeResource;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -392,10 +392,7 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public void parseRecords(String sourceHash, InputStream inputStream) throws XMLStreamException, IOException {
-            if (getSourceHash().equals(sourceHash)) {
-                throw new RuntimeException("Should be checking for equal hash before parse");
-            }
+        public void parseRecords(InputStream inputStream) throws XMLStreamException, IOException {
             records().drop();
             object.put(SOURCE_HASH, "");
             saveObject();
@@ -411,7 +408,6 @@ public class MetaRepoImpl implements MetaRepo {
                 records().insert(record);
             }
             object.put(NAMESPACES, parser.getNamespaces());
-            object.put(SOURCE_HASH, sourceHash);
             saveObject();
         }
 
@@ -456,12 +452,36 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public String getSourceHash() {
-            String hash = (String) object.get(SOURCE_HASH);
-            if (hash == null) {
-                hash = "";
+        public void setSourceDetailsHash(String sourceHash) {
+            object.put(SOURCE_HASH, sourceHash);
+        }
+
+        @Override
+        public void setSourceHash(String sourceHash) {
+            object.put(SOURCE_HASH, sourceHash);
+        }
+
+        @Override
+        public void setMappingHash(String metadataPrefix, String hash) {
+            object.put(MAPPING_HASH_PREFIX + metadataPrefix, hash);
+        }
+
+        @Override
+        public boolean hasHash(String hash) {
+            Set<String> hashes = new TreeSet<String>();
+            addHash(SOURCE_DETAILS_HASH, hashes);
+            addHash(SOURCE_HASH, hashes);
+            for (String metadataPrefix : metadataModel.getPrefixes()) {
+                addHash(MAPPING_HASH_PREFIX + metadataPrefix, hashes);
             }
-            return hash;
+            return hashes.contains(hash);
+        }
+
+        private void addHash(String hashAttribute, Set<String> hashes) {
+            String hash = (String) object.get(hashAttribute);
+            if (hash != null) {
+                hashes.add(hash);
+            }
         }
 
         @Override
@@ -564,6 +584,14 @@ public class MetaRepoImpl implements MetaRepo {
         private void saveObject() {
             DBCollection collection = db().getCollection(DATASETS_COLLECTION);
             collection.save(object);
+        }
+
+        private String getNonemptyString(String key) {
+            String s = (String) object.get(key);
+            if (s == null) {
+                s = "";
+            }
+            return s;
         }
     }
 
@@ -754,7 +782,7 @@ public class MetaRepoImpl implements MetaRepo {
 
         @Override
         public RecordMapping getRecordMapping() throws MetadataException {
-            return RecordMapping.read((String) object.get(RECORD_MAPPING), metadataModel.getRecordDefinition());
+            return RecordMapping.read((String) object.get(RECORD_MAPPING), metadataModel);
         }
 
         @Override

@@ -60,9 +60,6 @@ public class RecordMapping {
     @XStreamAlias("field-mappings")
     Map<String, FieldMapping> fieldMappings = new HashMap<String, FieldMapping>();
 
-    public RecordMapping() {
-    }
-
     public RecordMapping(String prefix) {
         this.prefix = prefix;
     }
@@ -327,14 +324,16 @@ public class RecordMapping {
         return stream().toXML(mapping);
     }
 
-    public static RecordMapping read(InputStream is, RecordDefinition recordDefinition) throws MetadataException {
+    public static RecordMapping read(InputStream is, MetadataModel metadataModel) throws MetadataException {
         RecordMapping recordMapping = (RecordMapping) stream().fromXML(is);
+        RecordDefinition recordDefinition = metadataModel.getRecordDefinition(recordMapping.prefix);
         recordMapping.apply(recordDefinition);
         return recordMapping;
     }
 
-    public static RecordMapping read(String string, RecordDefinition recordDefinition) throws MetadataException {
+    public static RecordMapping read(String string, MetadataModel metadataModel) throws MetadataException {
         RecordMapping recordMapping = (RecordMapping) stream().fromXML(string);
+        RecordDefinition recordDefinition = metadataModel.getRecordDefinition(recordMapping.prefix);
         recordMapping.apply(recordDefinition);
         return recordMapping;
     }

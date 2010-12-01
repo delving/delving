@@ -82,6 +82,14 @@ public class SourceVariable implements Comparable<SourceVariable> {
         }
     }
 
+    public boolean hasStatistics() {
+        return node != null && node.getStatistics() != null;
+    }
+
+    public Statistics getStatistics() {
+        return node.getStatistics();
+    }
+
     public static class Filter {
         private static final String PLAIN_ASCII =
                 "AaEeIiOoUu"    // grave

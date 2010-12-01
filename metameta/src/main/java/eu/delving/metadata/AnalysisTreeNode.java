@@ -60,10 +60,6 @@ public class AnalysisTreeNode implements AnalysisTree.Node, Serializable {
         this.tag = statistics.getPath().peek();
     }
 
-    public void setTag(Tag tag) {
-        this.tag = tag;
-    }
-
     public void setStatistics(Statistics statistics) {
         this.statistics = statistics;
     }
@@ -131,7 +127,7 @@ public class AnalysisTreeNode implements AnalysisTree.Node, Serializable {
 
     @Override
     public boolean couldBeRecordRoot() {
-        return statistics != null && statistics.isEmpty();
+        return statistics != null && !statistics.hasValues();
     }
 
     @Override
@@ -189,13 +185,13 @@ public class AnalysisTreeNode implements AnalysisTree.Node, Serializable {
 
     @Override
     public boolean getAllowsChildren() {
-        return statistics != null && statistics.isEmpty();
+        return statistics != null && !statistics.hasValues();
 //        return !children.isEmpty();
     }
 
     @Override
     public boolean isLeaf() {
-        return statistics != null && !statistics.isEmpty();
+        return statistics != null && statistics.hasValues();
     }
 
     @Override

@@ -21,6 +21,8 @@
 
 package eu.delving.metadata;
 
+import java.util.Set;
+
 /**
  * An interface which gives access to the record definition
  *
@@ -29,5 +31,6 @@ package eu.delving.metadata;
 
 public interface MetadataModel {
     RecordDefinition getRecordDefinition();
+    Set<String> getPrefixes();
     RecordDefinition getRecordDefinition(String prefix);
 }

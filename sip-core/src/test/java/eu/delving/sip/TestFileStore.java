@@ -26,7 +26,6 @@ import eu.delving.metadata.MetadataException;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.MetadataModelImpl;
 import eu.delving.metadata.Path;
-import eu.delving.metadata.RecordDefinition;
 import eu.delving.metadata.RecordMapping;
 import eu.delving.metadata.SourceDetails;
 import eu.delving.metadata.Statistics;
@@ -51,43 +50,46 @@ import java.util.List;
 
 public class TestFileStore {
     private static final File TARGET = new File("target");
-    private static final File DIR = new File(TARGET, "file-store");
     private static final String SPEC = "spek";
+    private static final File DIR = new File(TARGET, "file-store");
+    private static final File SPEC_DIR = new File(DIR, SPEC);
     private Logger log = Logger.getLogger(getClass());
     private FileStore fileStore;
+    public static final String METADATA_PREFIX = "abm";
 
     @Before
-    public void createStore() throws FileStoreException {
+    public void createStore() throws FileStoreException, IOException, MetadataException {
         if (!TARGET.exists()) {
             throw new RuntimeException("Target directory " + TARGET.getAbsolutePath() + " not found");
         }
         if (DIR.exists()) {
-            deleteFiles();
+            delete(DIR);
         }
-        else {
-            if (!DIR.mkdirs()) {
-                throw new RuntimeException("Unable to create directory " + DIR.getAbsolutePath());
-            }
+        if (!DIR.mkdirs()) {
+            throw new RuntimeException("Unable to create directory " + DIR.getAbsolutePath());
         }
-        this.fileStore = new FileStoreImpl(DIR);
+        this.fileStore = new FileStoreImpl(DIR, getMetadataModel());
     }
 
     @After
     public void deleteStore() {
         if (DIR.exists()) {
-            deleteFiles();
+            delete(DIR);
         }
     }
 
     @Test
     public void createDelete() throws IOException, FileStoreException {
-        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, sampleFile(), null);
+        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC);
+        Assert.assertFalse(store.hasSource());
+        store.importFile(sampleFile(), null);
+        Assert.assertTrue(store.hasSource());
         Assert.assertEquals("Should be one file", 1, DIR.listFiles().length);
-        Assert.assertEquals("Should be one sped", 1, fileStore.getDataSetSpecs().size());
+        Assert.assertEquals("Should be one spec", 1, fileStore.getDataSetStores().size());
         Assert.assertEquals("Should be one file", 1, new File(DIR, SPEC).listFiles().length);
         log.info("Created " + new File(DIR, SPEC).listFiles()[0].getAbsolutePath());
         InputStream inputStream = sampleInputStream();
-        InputStream storedStream = fileStore.getDataSetStore(SPEC).createXmlInputStream();
+        InputStream storedStream = fileStore.getDataSetStores().get(SPEC).createXmlInputStream();
         int input = 0, stored;
         while (input != -1) {
             input = inputStream.read();
@@ -110,24 +112,25 @@ public class TestFileStore {
 
     @Test
     public void manipulateMapping() throws IOException, FileStoreException, MetadataException {
-        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, sampleFile(), null);
+        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC);
+        store.importFile(sampleFile(), null);
         Assert.assertEquals("Spec should be the same", SPEC, store.getSpec());
-        RecordDefinition recordDefinition = getRecordDefinition();
-        RecordMapping recordMapping = store.getRecordMapping(recordDefinition);
-        Assert.assertEquals("Prefixes should be the same", recordDefinition.prefix, recordMapping.getPrefix());
-        log.info("Mapping created with prefix "+recordMapping.getPrefix());
+        RecordMapping recordMapping = store.getRecordMapping(METADATA_PREFIX);
+        Assert.assertEquals("Prefixes should be the same", METADATA_PREFIX, recordMapping.getPrefix());
+        log.info("Mapping created with prefix " + recordMapping.getPrefix());
         MappingModel mappingModel = new MappingModel();
         mappingModel.setRecordMapping(recordMapping);
         mappingModel.setConstant("/some/path", "value");
-        fileStore.getDataSetStore(SPEC).setRecordMapping(recordMapping);
+        fileStore.getDataSetStores().get(SPEC).setRecordMapping(recordMapping);
         Assert.assertEquals("Should be two files", 2, new File(DIR, SPEC).listFiles().length);
-        recordMapping = fileStore.getDataSetStore(SPEC).getRecordMapping(recordDefinition);
+        recordMapping = fileStore.getDataSetStores().get(SPEC).getRecordMapping(METADATA_PREFIX);
         Assert.assertEquals("Should have held constant", "value", recordMapping.getConstant("/some/path"));
     }
 
     @Test
     public void manipulateStatistics() throws IOException, FileStoreException {
-        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, sampleFile(), null);
+        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC);
+        store.importFile(sampleFile(), null);
         List<Statistics> stats = store.getStatistics();
         Assert.assertEquals("Should be one files", 1, new File(DIR, SPEC).listFiles().length);
         Assert.assertNull("No stats should be here", stats);
@@ -135,51 +138,53 @@ public class TestFileStore {
         Statistics statistics = new Statistics(new Path("/stat/path"));
         statistics.recordOccurrence();
         statistics.recordValue("booger");
+        statistics.finish();
         stats.add(statistics);
         store.setStatistics(stats);
-        Assert.assertEquals("Should be two files", 2, new File(DIR, SPEC).listFiles().length);
-        stats = fileStore.getDataSetStore(SPEC).getStatistics();
+        Assert.assertEquals("Should be two files ", 2, new File(DIR, SPEC).listFiles().length);
+        stats = fileStore.getDataSetStores().get(SPEC).getStatistics();
         Assert.assertEquals("Should be one stat", 1, stats.size());
         Assert.assertEquals("Path discrepancy", "/stat/path", stats.get(0).getPath().toString());
     }
 
     @Test
     public void manipulateDetails() throws IOException, FileStoreException {
-        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, sampleFile(), null);
+        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC);
+        store.importFile(sampleFile(), null);
         SourceDetails sourceDetails = store.getSourceDetails();
         Assert.assertEquals("source details should be empty", "", sourceDetails.get("recordPath"));
         sourceDetails.set("recordPath", "Wingy");
         store.setSourceDetails(sourceDetails);
-        sourceDetails = fileStore.getDataSetStore(SPEC).getSourceDetails();
+        sourceDetails = fileStore.getDataSetStores().get(SPEC).getSourceDetails();
         Assert.assertEquals("source details should be restored", "Wingy", sourceDetails.get("recordPath"));
     }
 
     @Test
     public void pretendNormalize() throws IOException, FileStoreException, MetadataException {
-        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, sampleFile(), null);
-        RecordDefinition recordDefinition = getRecordDefinition();
-        RecordMapping recordMapping = store.getRecordMapping(recordDefinition);
+        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC);
+        store.importFile(sampleFile(), null);
+        RecordMapping recordMapping = store.getRecordMapping(METADATA_PREFIX);
         FileStore.MappingOutput mo = store.createMappingOutput(recordMapping, null);
-        mo.getDiscardedWriter().write("Hello");
         mo.recordDiscarded();
         mo.recordNormalized();
         mo.recordNormalized();
-        Assert.assertEquals("Should be two files", 2, new File(DIR, SPEC).listFiles().length);
+        Assert.assertEquals("Should be one file", 1, SPEC_DIR.listFiles().length);
         mo.close(false);
         store.setRecordMapping(recordMapping);
-        recordMapping = fileStore.getDataSetStore(SPEC).getRecordMapping(recordDefinition);
+        Assert.assertEquals("Should be two files", 2, SPEC_DIR.listFiles().length);
+        recordMapping = fileStore.getDataSetStores().get(SPEC).getRecordMapping(METADATA_PREFIX);
         Assert.assertEquals("Mapping should contain facts", 1, recordMapping.getRecordsDiscarded());
         Assert.assertEquals("Mapping should contain facts", 2, recordMapping.getRecordsNormalized());
     }
 
-    private RecordDefinition getRecordDefinition() throws IOException, MetadataException {
-        return getMetadataModel().getRecordDefinition();
-    }
-
+//    private RecordDefinition getRecordDefinition() throws IOException, MetadataException {
+//        return getMetadataModel().getRecordDefinition();
+//    }
+//
     private MetadataModel getMetadataModel() throws IOException, MetadataException {
         MetadataModelImpl metadataModel = new MetadataModelImpl();
         metadataModel.setRecordDefinitionResources(Arrays.asList("/abm-record-definition.xml"));
-        metadataModel.setDefaultPrefix("abm");
+        metadataModel.setDefaultPrefix(METADATA_PREFIX);
         return metadataModel;
     }
 
@@ -191,20 +196,14 @@ public class TestFileStore {
         return getClass().getResource("/sample-input.xml").openStream();
     }
 
-    private void deleteFiles() {
-        for (File dir : DIR.listFiles()) {
-            if (dir.isDirectory()) {
-                for (File file : dir.listFiles()) {
-                    if (!file.delete()) {
-                        throw new RuntimeException("File " + file.getAbsolutePath() + " could not be deleted");
-                    }
-                }
-            }
-            if (!dir.delete()) {
-                throw new RuntimeException("File " + dir.getAbsolutePath() + " could not be deleted");
+    private void delete(File file) {
+        if (file.isDirectory()) {
+            for (File sub : file.listFiles()) {
+                delete(sub);
             }
         }
+        if (!file.delete()) {
+            throw new RuntimeException(String.format("Unable to delete %s", file.getAbsolutePath()));
+        }
     }
-
-
 }

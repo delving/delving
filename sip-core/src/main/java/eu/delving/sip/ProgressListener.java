@@ -44,6 +44,7 @@ public interface ProgressListener {
         private long lastProgress;
         private ProgressMonitor progressMonitor;
         private Action launchAction;
+        private Runnable finishedRunnable;
 
         public Adapter(ProgressMonitor progressMonitor, Action launchAction) {
             this.progressMonitor = progressMonitor;
@@ -51,6 +52,11 @@ public interface ProgressListener {
             if (launchAction != null) {
                 launchAction.setEnabled(false);
             }
+        }
+
+        public Adapter(ProgressMonitor progressMonitor, Runnable finishedRunnable) {
+            this.progressMonitor = progressMonitor;
+            this.finishedRunnable = finishedRunnable;
         }
 
         @Override
@@ -90,7 +96,10 @@ public interface ProgressListener {
                 public void run() {
                     progressMonitor.close();
                     if (launchAction != null) {
-                    launchAction.setEnabled(true);
+                        launchAction.setEnabled(true);
+                    }
+                    if (finishedRunnable != null) {
+                        finishedRunnable.run();
                     }
                 }
             });
