@@ -86,7 +86,7 @@ public class RecordValidator {
             return "Invalid";
         }
         out.getBuffer().delete(0, contextBegin);
-        out.getBuffer().delete(out.getBuffer().length() - contextEnd, out.getBuffer().length());
+        out.getBuffer().delete(out.getBuffer().length() - contextEnd, out.getBuffer().length()); // todo: java.lang.StringIndexOutOfBoundsException: String index out of range: -2 
         return out.toString();
     }
 

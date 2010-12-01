@@ -230,7 +230,7 @@ public class SipModel {
                             public void run() {
                                 SipModel.this.facts = facts;
                                 factModel.clear();
-                                factModel.setFacts(facts);
+                                factModel.setFacts(facts, dataSetStore.getSpec());
                                 mappingModel.setRecordMapping(null);
                                 setStatisticsList(statistics);
                                 variableListModel.clear();
@@ -443,7 +443,7 @@ public class SipModel {
 
     public void setUniqueElement(Path uniqueElement) {
         facts.set(Facts.UNIQUE_ELEMENT_PATH, uniqueElement.toString());
-        factModel.setFacts(facts);
+        factModel.setFacts(facts, dataSetStore.getSpec());
         executor.execute(new FactsSetter(facts));
         AnalysisTree.setUniqueElement(analysisTreeModel, uniqueElement);
     }
@@ -468,7 +468,7 @@ public class SipModel {
         createMetadataParser(1);
         facts.set(Facts.RECORD_PATH, recordRoot.toString());
         facts.set(Facts.RECORD_COUNT, String.valueOf(recordCount));
-        factModel.setFacts(facts);
+        factModel.setFacts(facts, dataSetStore.getSpec());
         executor.execute(new FactsSetter(facts));
     }
 
@@ -704,11 +704,6 @@ public class SipModel {
     }
 
     private class FactModelAdapter implements FactModel.Listener {
-        @Override
-        public void updatedDefinitions(FactModel factModel) {
-            // do nothing
-        }
-
         @Override
         public void updatedFact(FactModel factModel, boolean interactive) {
             if (interactive) {

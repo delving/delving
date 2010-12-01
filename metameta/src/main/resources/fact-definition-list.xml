@@ -1,28 +1,9 @@
 <?xml version="1.0"?>
 <fact-definition-list>
-    <fact-definition name="name">
-        <prompt>Name</prompt>
-        <toolTip>The name given to this data set</toolTip>
-    </fact-definition>
-    <fact-definition name="description">
-        <prompt>Description</prompt>
-        <toolTip>Describe the collection for reference</toolTip>
-    </fact-definition>
-    <fact-definition name="provider">
-        <prompt>Provider</prompt>
-        <toolTip>Who provides?</toolTip>
-    </fact-definition>
-    <fact-definition name="namespacePrefix">
-        <prompt>Prefix</prompt>
-        <toolTip>The prefix to denote this namespace</toolTip>
-    </fact-definition>
-    <fact-definition name="namespaceUri">
-        <prompt>URI</prompt>
-        <toolTip>The URI to denote this namespace</toolTip>
-    </fact-definition>
-    <fact-definition name="namespaceSchema">
-        <prompt>Schema</prompt>
-        <toolTip>The schema to denote this namespace</toolTip>
+    <fact-definition name="spec">
+        <prompt>Data Set Spec</prompt>
+        <toolTip>The reference identifier of this data set</toolTip>
+        <automatic>true</automatic>
     </fact-definition>
     <fact-definition name="recordPath">
         <prompt>Record Path</prompt>
@@ -35,21 +16,20 @@
         <automatic>true</automatic>
     </fact-definition>
     <fact-definition name="uniqueElementPath">
-        <prompt>Unique Element Path</prompt>
+        <prompt>Unique Element</prompt>
         <toolTip>This path indicates where to find the unique element within the record.</toolTip>
         <automatic>true</automatic>
     </fact-definition>
-    <fact-definition name="collectionName">
-        <prompt>Collection Name</prompt>
-        <toolTip>What shall it be called?</toolTip>
+    <fact-definition name="name">
+        <prompt>Name</prompt>
+        <toolTip>The name given to this data set</toolTip>
     </fact-definition>
-    <fact-definition name="collectionId">
-        <prompt>Collection ID</prompt>
-        <toolTip>This becomes part of the resolvable URL for all items</toolTip>
-    </fact-definition>
-    <fact-definition name="collectionTitle">
-        <prompt>Collection Title</prompt>
-        <toolTip>What shall it be called?</toolTip>
+    <fact-definition name="namespacePrefix">
+        <prompt>Prefix</prompt>
+        <toolTip>The prefix to denote this namespace</toolTip>
+        <options>
+            <string>raw</string>
+        </options>
     </fact-definition>
     <fact-definition name="language">
         <prompt>Language</prompt>

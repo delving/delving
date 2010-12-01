@@ -31,7 +31,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -66,7 +65,7 @@ public class FactPanel extends JPanel {
             fieldComponent[index++] = new FieldComponent(cid);
         }
         LayoutUtil.makeCompactGrid(this, getComponentCount() / 2, 2, 5, 5, 5, 5);
-        setPreferredSize(new Dimension(400, 400));
+//        setPreferredSize(new Dimension(400, 400));
     }
 
     public void refreshContent() {
@@ -160,11 +159,6 @@ public class FactPanel extends JPanel {
     }
 
     private class ModelAdapter implements FactModel.Listener {
-        @Override
-        public void updatedDefinitions(FactModel factModel) {
-            refreshStructure();
-        }
-
         @Override
         public void updatedFact(FactModel factModel, boolean interactive) {
             refreshContent();

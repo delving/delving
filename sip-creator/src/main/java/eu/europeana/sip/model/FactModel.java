@@ -40,11 +40,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class FactModel {
     private Map<String, String> factMap = new LinkedHashMap<String, String>();
 
-    public void setFacts(Facts facts) {
+    public void setFacts(Facts facts, String spec) {
         boolean changed = false;
         for (FactDefinition factDefinition : Facts.definitions()) {
             String oldValue = get(factDefinition);
             String newValue = facts.get(factDefinition.name);
+            if ("spec".equals(factDefinition.name)) {
+                newValue = spec;
+            }
             if (!oldValue.equals(newValue)) {
                 if (put(factDefinition, newValue)) {
                     changed = true;
@@ -126,8 +129,6 @@ public class FactModel {
     }
 
     public interface Listener {
-        void updatedDefinitions(FactModel factModel);
-
         void updatedFact(FactModel factModel, boolean interactive);
     }
 

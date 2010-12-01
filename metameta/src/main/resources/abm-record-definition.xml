@@ -583,7 +583,7 @@
         </field>
         <field prefix="europeana" localName="collectionName">
             <fullDoc>true</fullDoc>
-            <factName>collectionName</factName>
+            <factName>name</factName>
             <category>ESE_PLUS</category>
             <fieldType>text</fieldType>
             <stored>true</stored>
@@ -593,7 +593,7 @@
         </field>
         <field prefix="europeana" localName="collectionTitle">
             <fullDoc>true</fullDoc>
-            <factName>collectionTitle</factName>
+            <factName>name</factName>
             <category>ESE_PLUS</category>
             <fieldType>text</fieldType>
             <stored>true</stored>
