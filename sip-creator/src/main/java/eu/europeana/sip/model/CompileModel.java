@@ -209,19 +209,9 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     private String getCompileCode() {
         switch (type) {
             case RECORD:
-                if (recordMapping != null) {
-                    return recordMapping.toCompileCode(metadataModel.getRecordDefinition());
-                }
-                else {
-                    return "print 'No record mapping'";
-                }
+                return recordMapping != null ? recordMapping.toCompileCode(metadataModel.getRecordDefinition()) : "";
             case FIELD:
-                if (selectedPath == null) {
-                    return "print 'No mapping selected'";
-                }
-                else {
-                    return recordMapping.toCompileCode(metadataModel.getRecordDefinition(), selectedPath);
-                }
+                return selectedPath != null ? recordMapping.toCompileCode(metadataModel.getRecordDefinition(), selectedPath) : "";
             default:
                 throw new RuntimeException();
         }

@@ -41,10 +41,7 @@ import javax.swing.ProgressMonitor;
 import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 
 /**
@@ -61,25 +58,14 @@ public class NormalizationPanel extends JPanel {
     private JLabel normalizeMessageLabel = new JLabel("?", JLabel.CENTER);
 
     public NormalizationPanel(SipModel sipModel) {
-        super(new GridBagLayout());
+        super(new BorderLayout(5, 5));
         this.sipModel = sipModel;
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.gridy = 0;
-        gbc.weightx = 0.333;
-        gbc.weighty = 0.99;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.gridx = gbc.gridy = 0;
-        add(new RecordPanel(sipModel, sipModel.getRecordCompileModel()), gbc);
-        gbc.gridx++;
-        add(createCodePanel(), gbc);
-        gbc.gridx++;
-        add(createOutputPanel(), gbc);
-        gbc.weighty = 0.01;
-        gbc.gridwidth = 3;
-        gbc.gridx = 0;
-        gbc.gridy++;
-        add(createNormalizePanel(), gbc);
+        JPanel center = new JPanel(new GridLayout(1, 0, 5, 5));
+        center.add(new RecordPanel(sipModel, sipModel.getRecordCompileModel()));
+        center.add(createCodePanel());
+        center.add(createOutputPanel());
+        add(center, BorderLayout.CENTER);
+        add(createNormalizePanel(), BorderLayout.SOUTH);
         wireUp();
     }
 

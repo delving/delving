@@ -28,14 +28,12 @@ import eu.delving.metadata.Statistics;
 import eu.delving.sip.FileStore;
 import eu.europeana.sip.model.SipModel;
 
-import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
@@ -55,6 +53,8 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 /**
  * A Graphical interface for analysis
@@ -89,10 +89,24 @@ public class AnalysisFactsPanel extends JPanel {
         JPanel p = new JPanel(new BorderLayout(5, 5));
         p.setBorder(BorderFactory.createTitledBorder("Document Structure"));
         statisticsJTree = new JTree(sipModel.getAnalysisTreeModel());
-        statisticsJTree.add(createPopupMenu());
         statisticsJTree.getModel().addTreeModelListener(new Expander());
         statisticsJTree.setCellRenderer(new AnalysisTreeCellRenderer());
         statisticsJTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        statisticsJTree.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent focusEvent) {
+                if (reanalyzeButton.isEnabled()) {
+                    if (sipModel.getAnalysisTreeModel().getChildCount(sipModel.getAnalysisTreeModel().getRoot()) == 0) {
+                        reanalyzeButton.setEnabled(false);
+                        performAnalysis();
+                    }
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent focusEvent) {
+            }
+        });
         p.add(scroll(statisticsJTree), BorderLayout.CENTER);
         JPanel south = new JPanel(new GridLayout(0, 1));
         south.add(reanalyzeButton);
@@ -104,48 +118,10 @@ public class AnalysisFactsPanel extends JPanel {
     private JPanel createSelectButtonPanel() {
         JPanel bp = new JPanel(new GridLayout(1, 0, 5, 5));
         selectRecordRootButton.setEnabled(false);
-        selectRecordRootButton.setForeground(Color.RED);
         bp.add(selectRecordRootButton);
-        selectUniqueElementButton.setForeground(Color.GREEN);
         selectUniqueElementButton.setEnabled(false);
         bp.add(selectUniqueElementButton);
         return bp;
-    }
-
-    private JPopupMenu createPopupMenu() {
-        final JPopupMenu menu = new JPopupMenu();
-        menu.add(new AbstractAction("Rerun the Analysis") {
-
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                this.setEnabled(false);
-                sipModel.analyze(new SipModel.AnalysisListener() {
-
-                    @Override
-                    public void finished(boolean success) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                menu.setEnabled(true);
-                                setElementsProcessed(sipModel.getElementCount());
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void analysisProgress(final long elementCount) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                setElementsProcessed(elementCount);
-                            }
-                        });
-                    }
-                });
-//                sipModel.abortAnalyze(); todo: who is gonna do it? a ProgressMoitor?
-            }
-        });
-        return menu;
     }
 
     private JPanel createStatisticsPanel() {
@@ -251,26 +227,32 @@ public class AnalysisFactsPanel extends JPanel {
         reanalyzeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                sipModel.analyze(new SipModel.AnalysisListener() {
+                reanalyzeButton.setEnabled(false);
+                performAnalysis();
+            }
+        });
+    }
 
+    private void performAnalysis() {
+        sipModel.analyze(new SipModel.AnalysisListener() {
+
+            @Override
+            public void finished(boolean success) {
+                SwingUtilities.invokeLater(new Runnable() {
                     @Override
-                    public void finished(boolean success) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                setElementsProcessed(sipModel.getElementCount());
-                            }
-                        });
+                    public void run() {
+                        setElementsProcessed(sipModel.getElementCount());
+                        reanalyzeButton.setEnabled(true);
                     }
+                });
+            }
 
+            @Override
+            public void analysisProgress(final long elementCount) {
+                SwingUtilities.invokeLater(new Runnable() {
                     @Override
-                    public void analysisProgress(final long elementCount) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                setElementsProcessed(elementCount);
-                            }
-                        });
+                    public void run() {
+                        setElementsProcessed(elementCount);
                     }
                 });
             }
@@ -285,11 +267,8 @@ public class AnalysisFactsPanel extends JPanel {
             JLabel label = (JLabel) super.getTreeCellRendererComponent(jTree, value, selected, expanded, leaf, row, hasFocus);
             AnalysisTree.Node node = (AnalysisTree.Node) value;
             label.setFont(node.getStatistics() != null ? getThickFont() : getNormalFont());
-            if (node.isRecordRoot()) {
+            if (node.isRecordRoot() || node.isUniqueElement()) {
                 label.setForeground(Color.RED);
-            }
-            else if (node.isUniqueElement()) {
-                label.setForeground(Color.GREEN);
             }
             return label;
         }

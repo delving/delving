@@ -45,9 +45,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -79,45 +77,18 @@ public class RefinementPanel extends JPanel {
     }
 
     private JPanel createLeftSide() {
-        JPanel p = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.BOTH;
-        // input panel
-        gbc.gridx = gbc.gridy = 0;
-        gbc.weightx = 1; 
-        gbc.weighty = 0.95;
-        p.add(createFieldMappingListPanel(), gbc);
-        gbc.gridy++;
-        gbc.weighty = 0.05;
-        p.add(removeMappingButton, gbc);
+        JPanel p = new JPanel(new BorderLayout(5,5));
+        p.add(createFieldMappingListPanel(), BorderLayout.CENTER);
+        p.add(removeMappingButton, BorderLayout.SOUTH);
         p.setPreferredSize(new Dimension(600, 800));
         return p;
     }
 
     private JPanel createRightSide() {
-        JPanel p = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.BOTH;
-        // record panel
-        gbc.gridheight = 1;
-        gbc.weightx = 1;
-        gbc.weighty = 0.3;
-        gbc.gridy = gbc.gridx = 0;
-        p.add(new RecordPanel(sipModel, sipModel.getFieldCompileModel()), gbc);
-        // value map button
-        gbc.gridy++;
-        gbc.weighty = 0.05;
-        valueMappingButton.setEnabled(false);
-        p.add(valueMappingButton, gbc);
-        // code panel
-        gbc.gridy++;
-        gbc.weighty = 0.3;
-        p.add(createGroovyPanel(), gbc);
-        // output panel
-        gbc.gridy++;
-        p.add(createOutputPanel(), gbc);
+        JPanel p = new JPanel(new GridLayout(0, 1, 5, 5));
+        p.add(new RecordPanel(sipModel, sipModel.getFieldCompileModel()));
+        p.add(createGroovyPanel());
+        p.add(createOutputPanel());
         p.setPreferredSize(new Dimension(600, 800));
         return p;
     }
@@ -202,7 +173,8 @@ public class RefinementPanel extends JPanel {
         p.setBorder(BorderFactory.createTitledBorder("Groovy Code"));
         groovyCodeArea = new JTextArea(sipModel.getFieldCompileModel().getCodeDocument());
         JScrollPane scroll = new JScrollPane(groovyCodeArea);
-        p.add(scroll);
+        p.add(scroll, BorderLayout.CENTER);
+        p.add(valueMappingButton, BorderLayout.SOUTH);
         return p;
     }
 

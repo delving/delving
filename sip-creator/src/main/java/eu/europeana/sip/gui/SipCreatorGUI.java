@@ -179,7 +179,7 @@ public class SipCreatorGUI extends JFrame {
         JPanel p = new JPanel();
         p.setBorder(BorderFactory.createTitledBorder("Control"));
 
-        JButton analysis = new JButton("Analysis Facts");
+        JButton analysis = new JButton("Analysis & Facts");
         analysis.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -384,7 +384,7 @@ public class SipCreatorGUI extends JFrame {
         private SipModel sipModel;
 
         private AnalysisFactsFrame(SipModel sipModel) throws HeadlessException {
-            super(SipCreatorGUI.this, "Analysis Facts", true);
+            super(SipCreatorGUI.this, "Analysis & Facts", true);
             this.sipModel = sipModel;
             getContentPane().add(new AnalysisFactsPanel(sipModel));
             getContentPane().add(createFinishedPanel(this), BorderLayout.SOUTH);
@@ -394,7 +394,7 @@ public class SipCreatorGUI extends JFrame {
         }
 
         public void reveal() {
-            setTitle(String.format("Analysis Facts of '%s'", sipModel.getDataSetStore().getSpec()));
+            setTitle(String.format("Analysis & Facts for '%s'", sipModel.getDataSetStore().getSpec()));
             setVisible(true);
         }
     }

@@ -208,6 +208,14 @@ public class AnalysisTreeNode implements AnalysisTree.Node, Serializable {
         if (tag == null) {
             return "?";
         }
-        return tag.toString();
+        else if (recordRoot) {
+            return String.format("Record Root [ %s ]", tag);
+        }
+        else if (uniqueElement) {
+            return String.format("Unique Element [ %s ]", tag);
+        }
+        else {
+            return tag.toString();
+        }
     }
 }
