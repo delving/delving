@@ -139,7 +139,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
         { for (set <- dataSets) yield
           <set>
             <setSpec>{set.getSpec}</setSpec>
-            <setName>{set.getName}</setName>
+            <setName>{set.getDetails.getName}</setName>
           </set>
         }
       </ListSets>

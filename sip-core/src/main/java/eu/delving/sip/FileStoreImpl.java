@@ -179,7 +179,7 @@ public class FileStoreImpl implements FileStore {
                             break;
                         }
                     }
-                    hasher.digest(buffer, bytesRead);
+                    hasher.update(buffer, bytesRead);
                 }
                 if (progressListener != null) progressListener.finished();
                 inputStream.close();

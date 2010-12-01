@@ -28,6 +28,11 @@ package eu.delving.metadata;
  */
 
 public enum MetadataNamespace {
+    RAW(
+            "raw",
+            "http://delving.eu/namespaces/raw",
+            "http://delving.eu/namespaces/raw/schema.xsd"
+    ),
     DC(
             "dc",
             "http://purl.org/dc/elements/1.1/",

@@ -2,9 +2,11 @@ package eu.delving.services.controller;
 
 import eu.delving.metadata.Facts;
 import eu.delving.metadata.MetadataModel;
+import eu.delving.metadata.MetadataNamespace;
 import eu.delving.metadata.Path;
 import eu.delving.metadata.RecordMapping;
 import eu.delving.services.core.MetaRepo;
+import eu.delving.services.core.MetaRepoException;
 import eu.delving.services.exceptions.AccessKeyException;
 import eu.delving.services.exceptions.BadArgumentException;
 import eu.delving.sip.DataSetInfo;
@@ -78,14 +80,14 @@ public class DataSetController {
     }
 
     @RequestMapping("/administrator/dataset")
-    public ModelAndView secureListAll() throws BadArgumentException, AccessKeyException {
+    public ModelAndView secureListAll() throws BadArgumentException, AccessKeyException, MetaRepoException {
         return view(metaRepo.getDataSets());
     }
 
     @RequestMapping("/dataset")
     public ModelAndView listAll(
             @RequestParam(required = false) String accessKey
-    ) throws BadArgumentException, AccessKeyException {
+    ) throws BadArgumentException, AccessKeyException, MetaRepoException {
         checkAccessKey(accessKey);
         return view(metaRepo.getDataSets());
     }
@@ -94,7 +96,7 @@ public class DataSetController {
     public ModelAndView secureIndexingControl(
             @PathVariable String dataSetSpec,
             @RequestParam(required = false) Boolean enable
-    ) throws BadArgumentException, IOException, SolrServerException {
+    ) throws BadArgumentException, IOException, SolrServerException, MetaRepoException {
         return indexingControlInternal(dataSetSpec, enable);
     }
 
@@ -103,18 +105,18 @@ public class DataSetController {
             @PathVariable String dataSetSpec,
             @RequestParam(required = false) Boolean enable,
             @RequestParam(required = false) String accessKey
-    ) throws BadArgumentException, IOException, SolrServerException, AccessKeyException {
+    ) throws BadArgumentException, IOException, SolrServerException, AccessKeyException, MetaRepoException {
         checkAccessKey(accessKey);
         return indexingControlInternal(dataSetSpec, enable);
     }
 
-    private ModelAndView indexingControlInternal(String dataSetSpec, Boolean enable) throws BadArgumentException, SolrServerException, IOException {
+    private ModelAndView indexingControlInternal(String dataSetSpec, Boolean enable) throws BadArgumentException, SolrServerException, IOException, MetaRepoException {
         MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
         if (dataSet == null) {
             throw new BadArgumentException(String.format("String %s does not exist", dataSetSpec));
         }
+        MetaRepo.DataSetState oldState = dataSet.getState();
         if (enable != null) {
-            MetaRepo.DataSetState oldState = dataSet.getState();
             switch (dataSet.getState()) {
                 case INDEXING:
                 case ENABLED:
@@ -164,7 +166,7 @@ public class DataSetController {
         }
         try {
             FileType type = FileType.valueOf(fileType);
-            log.info(String.format("submit type %s for %s: %s", type, dataSetSpec, fileName));
+            log.info(String.format("check type %s for %s: %s", type, dataSetSpec, fileName));
             String hash = Hasher.getHash(fileName);
             if (hash == null) {
                 throw new RuntimeException("No hash available for file name " + fileName);
@@ -189,7 +191,7 @@ public class DataSetController {
     @RequestMapping(value = "/dataset/submit/{dataSetSpec}/{fileType}/{fileName}", method = RequestMethod.POST)
     public
     @ResponseBody
-    DataSetResponse submitFile(
+    String acceptFile(
             @PathVariable String dataSetSpec,
             @PathVariable String fileType,
             @PathVariable String fileName,
@@ -200,30 +202,30 @@ public class DataSetController {
             checkAccessKey(accessKey);
         }
         catch (AccessKeyException e) {
-            return DataSetResponse.ACCESS_KEY_FAILURE;
+            return DataSetResponse.ACCESS_KEY_FAILURE.toString();
         }
         try {
             FileType type = FileType.valueOf(fileType);
-            log.info(String.format("submit type %s for %s: %s", type, dataSetSpec, fileName));
+            log.info(String.format("accept type %s for %s: %s", type, dataSetSpec, fileName));
             String hash = Hasher.getHash(fileName);
             if (hash == null) {
                 throw new RuntimeException("No hash available for file name " + fileName);
             }
             switch (type) {
                 case FACTS:
-                    return receiveFacts(Facts.read(inputStream), dataSetSpec, hash);
+                    return receiveFacts(Facts.read(inputStream), dataSetSpec, hash).toString();
                 case SOURCE:
-                    return receiveSource(new GZIPInputStream(inputStream), dataSetSpec, hash);
+                    return receiveSource(new GZIPInputStream(inputStream), dataSetSpec, hash).toString();
                 case MAPPING:
-                    return receiveMapping(RecordMapping.read(inputStream, metadataModel), dataSetSpec, hash);
+                    return receiveMapping(RecordMapping.read(inputStream, metadataModel), dataSetSpec, hash).toString();
                 default:
-                    return DataSetResponse.SYSTEM_ERROR;
+                    return DataSetResponse.SYSTEM_ERROR.toString();
             }
         }
         catch (Exception e) {
             log.error("Unable to submit", e);
         }
-        return DataSetResponse.SYSTEM_ERROR;
+        return DataSetResponse.SYSTEM_ERROR.toString();
     }
 
     private DataSetResponse receiveMapping(RecordMapping recordMapping, String dataSetSpec, String hash) {
@@ -236,6 +238,7 @@ public class DataSetController {
                 return DataSetResponse.GOT_IT_ALREADY;
             }
             dataSet.setMapping(recordMapping);
+            dataSet.setMappingHash(recordMapping.getPrefix(), hash);
             dataSet.save();
             return DataSetResponse.THANK_YOU;
         }
@@ -273,7 +276,8 @@ public class DataSetController {
             if (dataSet.hasHash(hash)) {
                 return DataSetResponse.GOT_IT_ALREADY;
             }
-            dataSet.parseRecords(new GZIPInputStream(inputStream));
+            dataSet.parseRecords(inputStream);
+            dataSet.setSourceHash(hash);
             dataSet.save();
             return DataSetResponse.THANK_YOU;
         }
@@ -306,7 +310,7 @@ public class DataSetController {
         try {
             MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
             if (dataSet == null) {
-                return DataSetResponse.READY_TO_RECEIVE;
+                dataSet = metaRepo.createDataSet(dataSetSpec);
             }
             if (dataSet.hasHash(hash)) {
                 return DataSetResponse.GOT_IT_ALREADY;
@@ -330,20 +334,27 @@ public class DataSetController {
             if (dataSet.hasHash(hash)) {
                 return DataSetResponse.GOT_IT_ALREADY;
             }
-            dataSet.setName(facts.get("name"));
-            dataSet.setProviderName(facts.get("provider"));
-            dataSet.setDescription(facts.get("description"));
-            dataSet.getMetadataFormat().setPrefix(facts.get("prefix"));
-            dataSet.getMetadataFormat().setNamespace(facts.get("URI"));
-            dataSet.getMetadataFormat().setSchema(facts.get("schema"));
-            dataSet.getMetadataFormat().setAccessKeyRequired(true);
-            dataSet.setRecordRoot(new Path(facts.get("recordRoot")));
-            dataSet.setUniqueElement(new Path(facts.get("uniqueElement")));
+            MetaRepo.Details details = dataSet.createDetails();
+            details.setName(facts.get("name"));
+            details.setProviderName(facts.get("provider"));
+            details.setDescription(facts.get("name"));
+            String prefix = facts.get("namespacePrefix");
+            for (MetadataNamespace metadataNamespace : MetadataNamespace.values()) {
+                if (metadataNamespace.getPrefix().equals(prefix)) {
+                    details.getMetadataFormat().setPrefix(prefix);
+                    details.getMetadataFormat().setNamespace(metadataNamespace.getUri());
+                    details.getMetadataFormat().setSchema(metadataNamespace.getSchema());
+                    details.getMetadataFormat().setAccessKeyRequired(true);
+                    break;
+                }
+            }
+            details.setRecordRoot(new Path(facts.getRecordRootPath()));
+            details.setUniqueElement(new Path(facts.getUniqueElementPath()));
             dataSet.setFactsHash(hash);
             dataSet.save();
             return DataSetResponse.THANK_YOU;
         }
-        catch (BadArgumentException e) {
+        catch (Exception e) {
             log.error("Unable to receive facts", e);
             return DataSetResponse.SYSTEM_ERROR;
         }
@@ -360,14 +371,14 @@ public class DataSetController {
         }
     }
 
-    private ModelAndView view(MetaRepo.DataSet dataSet) {
+    private ModelAndView view(MetaRepo.DataSet dataSet) throws MetaRepoException {
         if (dataSet == null) {
             throw new RuntimeException("DataSet not found!"); // todo: better solution
         }
         return new ModelAndView("dataSetXmlView", BindingResult.MODEL_KEY_PREFIX + "dataset", getInfo(dataSet));
     }
 
-    private ModelAndView view(Collection<? extends MetaRepo.DataSet> dataSetList) {
+    private ModelAndView view(Collection<? extends MetaRepo.DataSet> dataSetList) throws MetaRepoException {
         List<DataSetInfo> list = new ArrayList<DataSetInfo>();
         for (MetaRepo.DataSet dataSet : dataSetList) {
             list.add(getInfo(dataSet));
@@ -375,14 +386,14 @@ public class DataSetController {
         return new ModelAndView("dataSetXmlView", BindingResult.MODEL_KEY_PREFIX + "list", list);
     }
 
-    private DataSetInfo getInfo(MetaRepo.DataSet dataSet) {
+    private DataSetInfo getInfo(MetaRepo.DataSet dataSet) throws MetaRepoException {
         DataSetInfo info = new DataSetInfo();
         info.spec = dataSet.getSpec();
-        info.name = dataSet.getName();
         info.state = dataSet.getState().toString();
-        info.recordsIndexed = dataSet.getRecordsIndexed();
         info.recordCount = dataSet.getRecordCount();
         info.errorMessage = dataSet.getErrorMessage();
+        info.recordsIndexed = dataSet.getRecordsIndexed();
+        info.name = dataSet.getDetails().getName();
         return info;
     }
 }

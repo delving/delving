@@ -24,7 +24,6 @@ package eu.delving.sip;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.security.DigestException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -68,8 +67,8 @@ public class Hasher {
         }
         else {
             Hasher hasher = new Hasher();
-            hasher.digest(file);
-            File hashedFile = new File(file.getParentFile(), hasher.toString() + SEPARATOR + file.getName());
+            hasher.update(file);
+            File hashedFile = new File(file.getParentFile(), hasher.getHash() + SEPARATOR + file.getName());
             if (!file.renameTo(hashedFile)) {
                 throw new FileStoreException(String.format("Unable to rename %s to %s", file.getAbsolutePath(), hashedFile.getAbsolutePath()));
             }
@@ -86,22 +85,17 @@ public class Hasher {
         }
     }
 
-    public void digest(byte[] buffer, int bytes) {
-        try {
-            messageDigest.digest(buffer, 0, bytes);
-        }
-        catch (DigestException e) {
-            throw new RuntimeException("Digest config problem", e);
-        }
+    public void update(byte[] buffer, int bytes) {
+        messageDigest.update(buffer, 0, bytes);
     }
 
-    public void digest(File inputFile) throws FileStoreException {
+    public void update(File inputFile) throws FileStoreException {
         try {
             InputStream inputStream = new FileInputStream(inputFile);
             byte[] buffer = new byte[BLOCK_SIZE];
             int bytesRead;
             while (-1 != (bytesRead = inputStream.read(buffer))) {
-                digest(buffer, bytesRead);
+                update(buffer, bytesRead);
             }
             inputStream.close();
         }
@@ -110,8 +104,12 @@ public class Hasher {
         }
     }
 
-    public String toString() {
+    public String getHash() {
         return toHexadecimal(messageDigest.digest());
+    }
+
+    public String toString() {
+        return getHash();
     }
 
     static final String HEXES = "0123456789ABCDEF";

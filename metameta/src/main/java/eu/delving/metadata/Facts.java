@@ -23,9 +23,9 @@ import java.util.TreeSet;
  */
 
 public class Facts {
-    public static final String RECORD_PATH = "recordPath";
-    public static final String UNIQUE_ELEMENT_PATH = "uniqueElementPath";
-    public static final String RECORD_COUNT = "recordCount";
+    private static final String RECORD_ROOT_PATH = "recordRootPath";
+    private static final String UNIQUE_ELEMENT_PATH = "uniqueElementPath";
+    private static final String RECORD_COUNT = "recordCount";
 
     private Map<String, String> map = new TreeMap<String, String>();
 
@@ -50,6 +50,30 @@ public class Facts {
             map.put(name, value = "");
         }
         return value;
+    }
+
+    public String getRecordRootPath() {
+        return get(RECORD_ROOT_PATH);
+    }
+
+    public void setRecordRootPath(String value) {
+        set(RECORD_ROOT_PATH, value);
+    }
+
+    public String getRecordCount() {
+        return get(RECORD_COUNT);
+    }
+
+    public void setRecordCount(String value) {
+        set(RECORD_COUNT, value);
+    }
+
+    public String getUniqueElementPath() {
+        return get(UNIQUE_ELEMENT_PATH);
+    }
+
+    public void setUniqueElementPath(String value) {
+        set(UNIQUE_ELEMENT_PATH, value);
     }
 
     public boolean isValid() {

@@ -263,7 +263,7 @@ public class SipModel {
                             createMetadataParser(1);
                             if (recordMapping != null) {
                                 if (getRecordRoot() != null) {
-                                    setRecordRootInternal(new Path(facts.get(Facts.RECORD_PATH)), Integer.parseInt(facts.get(Facts.RECORD_COUNT)));
+                                    setRecordRootInternal(new Path(facts.getRecordRootPath()), Integer.parseInt(facts.getRecordCount()));
                                 }
                                 if (recordMapping.getNormalizeTime() == 0) {
                                     normalizeMessage(false, "Normalization not yet performed.");
@@ -435,39 +435,39 @@ public class SipModel {
     }
 
     public Path getUniqueElement() {
-        if (facts == null || facts.get(Facts.UNIQUE_ELEMENT_PATH).isEmpty()) {
+        if (facts == null || facts.getUniqueElementPath().isEmpty()) {
             return null;
         }
-        return new Path(getFacts().get(Facts.UNIQUE_ELEMENT_PATH));
+        return new Path(getFacts().getUniqueElementPath());
     }
 
     public void setUniqueElement(Path uniqueElement) {
-        facts.set(Facts.UNIQUE_ELEMENT_PATH, uniqueElement.toString());
+        facts.setUniqueElementPath(uniqueElement.toString());
         factModel.setFacts(facts, dataSetStore.getSpec());
         executor.execute(new FactsSetter(facts));
         AnalysisTree.setUniqueElement(analysisTreeModel, uniqueElement);
     }
 
     public Path getRecordRoot() {
-        if (facts == null || facts.get(Facts.RECORD_PATH).isEmpty()) {
+        if (facts == null || facts.getRecordRootPath().isEmpty()) {
             return null;
         }
-        return new Path(getFacts().get(Facts.RECORD_PATH));
+        return new Path(getFacts().getRecordRootPath());
     }
 
     public int getRecordCount() {
-        if (facts == null || facts.get(Facts.RECORD_COUNT).isEmpty()) {
+        if (facts == null || facts.getRecordCount().isEmpty()) {
             return 0;
         }
-        return Integer.parseInt(getFacts().get(Facts.RECORD_COUNT));
+        return Integer.parseInt(getFacts().getRecordCount());
     }
 
     public void setRecordRoot(Path recordRoot, int recordCount) {
         checkSwingThread();
         setRecordRootInternal(recordRoot, recordCount);
         createMetadataParser(1);
-        facts.set(Facts.RECORD_PATH, recordRoot.toString());
-        facts.set(Facts.RECORD_COUNT, String.valueOf(recordCount));
+        facts.setRecordRootPath(recordRoot.toString());
+        facts.setRecordCount(String.valueOf(recordCount));
         factModel.setFacts(facts, dataSetStore.getSpec());
         executor.execute(new FactsSetter(facts));
     }
