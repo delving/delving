@@ -23,7 +23,8 @@ package eu.delving.metadata;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
+
 
 /**
  * An XStream approach for replacing the annotated beans.
@@ -31,17 +32,22 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-@XStreamAlias("constant-input")
-public class ConstantInputDefinition {
+@XStreamAlias("fact-definition")
+public class FactDefinition {
 
     @XStreamAsAttribute
     public String name;
 
     public String prompt;
     public String toolTip;
-    public String fieldPath;
-    public Boolean automatic; 
+    public Boolean automatic;
+    public java.util.List<String> options;
 
-    @XStreamOmitField
-    public FieldDefinition fieldDefinition;
+    @XStreamAlias("fact-definition-list")
+    public static class List {
+
+        @XStreamImplicit
+        public java.util.List<FactDefinition> factDefinitions;
+
+    }
 }

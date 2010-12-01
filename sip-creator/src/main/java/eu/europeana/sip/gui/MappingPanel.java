@@ -36,11 +36,9 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
@@ -48,15 +46,11 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -73,7 +67,7 @@ import java.util.List;
 
 public class MappingPanel extends JPanel {
     private static final String CREATE = "Create mapping";
-    private static final String CREATE_FOR = "<html><center>Create mapping for<br><b>%s</b>";
+    private static final String CREATE_FOR = "Create mapping for '%s'";
     private static final Dimension PREFERRED_SIZE = new Dimension(300, 700);
     private SipModel sipModel;
     private CodeGenerator codeGenerator = new CodeGenerator();
@@ -86,21 +80,12 @@ public class MappingPanel extends JPanel {
     private JEditorPane statisticsView = new JEditorPane();
 
     public MappingPanel(SipModel sipModel) {
-        super(new GridBagLayout());
+        super(new GridLayout(2, 2, 5, 5));
         this.sipModel = sipModel;
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.gridx = gbc.gridy = 0;
-        gbc.weightx = gbc.weighty = 1;
-        add(createInputPanel(), gbc);
-        gbc.gridx++;
-        add(createFieldsPanel(), gbc);
-        gbc.gridx = 0;
-        gbc.gridy++;
-        add(createStatisticsPanel(), gbc);
-        gbc.gridx++;
-        add(createFieldMappingListPanel(), gbc);
+        add(createInputPanel());
+        add(createFieldsPanel());
+        add(createStatisticsPanel());
+        add(createFieldMappingListPanel());
         wireUp();
     }
 
@@ -153,25 +138,18 @@ public class MappingPanel extends JPanel {
         mappingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         mappingList.setCellRenderer(new FieldMappingListModel.CellRenderer());
         p.add(scroll(mappingList), BorderLayout.CENTER);
-        p.add(createButtonPanel(), BorderLayout.EAST);
+        p.add(createButtonPanel(), BorderLayout.SOUTH);
         return p;
     }
 
     private JPanel createButtonPanel() {
-        JPanel p = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(20, 5, 20, 5);
-        gbc.gridy = gbc.gridx = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        JPanel p = new JPanel(new GridLayout(0, 1, 5, 5));
         createMappingButton.setEnabled(false);
-        p.add(createMappingButton, gbc);
-        gbc.gridy++;
+        p.add(createMappingButton);
         createObviousMappingButton.setEnabled(false);
-        p.add(createObviousMappingButton, gbc);
-        gbc.gridy++;
+        p.add(createObviousMappingButton);
         removeMappingButton.setEnabled(false);
-        p.add(removeMappingButton, gbc);
-//        p.setPreferredSize(new Dimension(250, 300));
+        p.add(removeMappingButton);
         return p;
     }
 
@@ -198,14 +176,14 @@ public class MappingPanel extends JPanel {
             }
 
             @Override
-            public void updatedStatistics(Statistics statistics) {
+            public void updatedStatistics(final Statistics statistics) {
                 if (statistics == null) {
                     statisticsView.setText("<html><h3>No Statistics</h3>");
                 }
                 else {
                     statisticsView.setText(statistics.toHtml());
+                    statisticsView.setCaretPosition(0);
                 }
-                statisticsView.setCaretPosition(0);
             }
 
             @Override
@@ -219,7 +197,7 @@ public class MappingPanel extends JPanel {
         createMappingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                FieldDefinition fieldDefinition = (FieldDefinition)fieldList.getSelectedValue();
+                FieldDefinition fieldDefinition = (FieldDefinition) fieldList.getSelectedValue();
                 if (fieldDefinition != null) {
                     sipModel.addFieldMapping(codeGenerator.createFieldMapping(fieldDefinition, createSelectedVariableList(), constantField.getText()));
                 }
@@ -270,10 +248,16 @@ public class MappingPanel extends JPanel {
         variablesList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                SourceVariable sourceVariable = (SourceVariable) variablesList.getSelectedValue();
+                if (e.getValueIsAdjusting()) return;
+                final SourceVariable sourceVariable = (SourceVariable) variablesList.getSelectedValue();
                 if (sourceVariable != null && sourceVariable.hasStatistics()) {
-                    sipModel.setStatistics(sourceVariable.getStatistics());
-                    constantField.setText("?");
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            sipModel.setStatistics(sourceVariable.getStatistics());
+                            constantField.setText("?");
+                        }
+                    });
                 }
             }
         });
@@ -322,7 +306,7 @@ public class MappingPanel extends JPanel {
                     createMappingButton.setText(CREATE);
                     createMappingButton.setEnabled(false);
                 }
-                List<FieldMapping> obvious = codeGenerator.createObviousMappings(sipModel.getUnmappedFields(), sipModel.getVariables(), sipModel.getConstantFieldModel().getDefinitions());
+                List<FieldMapping> obvious = codeGenerator.createObviousMappings(sipModel.getUnmappedFields(), sipModel.getVariables());
                 if (obvious.isEmpty()) {
                     obviousMappingDialog = null;
                     createObviousMappingButton.setEnabled(false);

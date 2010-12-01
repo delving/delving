@@ -452,8 +452,8 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public void setSourceDetailsHash(String sourceHash) {
-            object.put(SOURCE_HASH, sourceHash);
+        public void setFactsHash(String sourceHash) {
+            object.put(FACTS_HASH, sourceHash);
         }
 
         @Override
@@ -469,7 +469,7 @@ public class MetaRepoImpl implements MetaRepo {
         @Override
         public boolean hasHash(String hash) {
             Set<String> hashes = new TreeSet<String>();
-            addHash(SOURCE_DETAILS_HASH, hashes);
+            addHash(FACTS_HASH, hashes);
             addHash(SOURCE_HASH, hashes);
             for (String metadataPrefix : metadataModel.getPrefixes()) {
                 addHash(MAPPING_HASH_PREFIX + metadataPrefix, hashes);

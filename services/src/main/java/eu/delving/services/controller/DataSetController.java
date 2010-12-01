@@ -1,9 +1,9 @@
 package eu.delving.services.controller;
 
+import eu.delving.metadata.Facts;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.Path;
 import eu.delving.metadata.RecordMapping;
-import eu.delving.metadata.SourceDetails;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.AccessKeyException;
 import eu.delving.services.exceptions.BadArgumentException;
@@ -150,7 +150,7 @@ public class DataSetController {
     @RequestMapping(value = "/dataset/submit/{dataSetSpec}/{fileType}/{fileName}", method = RequestMethod.GET)
     public
     @ResponseBody
-    DataSetResponse checkFile(
+    String checkFile(
             @PathVariable String dataSetSpec,
             @PathVariable String fileType,
             @PathVariable String fileName,
@@ -160,7 +160,7 @@ public class DataSetController {
             checkAccessKey(accessKey);
         }
         catch (AccessKeyException e) {
-            return DataSetResponse.ACCESS_KEY_FAILURE;
+            return DataSetResponse.ACCESS_KEY_FAILURE.toString();
         }
         try {
             FileType type = FileType.valueOf(fileType);
@@ -170,20 +170,20 @@ public class DataSetController {
                 throw new RuntimeException("No hash available for file name " + fileName);
             }
             switch (type) {
-                case SOURCE_DETAILS:
-                    return checkSourceDetails(dataSetSpec, hash);
+                case FACTS:
+                    return checkFacts(dataSetSpec, hash).toString();
                 case SOURCE:
-                    return checkSource(dataSetSpec, hash);
+                    return checkSource(dataSetSpec, hash).toString();
                 case MAPPING:
-                    return checkMapping(dataSetSpec, hash);
+                    return checkMapping(dataSetSpec, hash).toString();
                 default:
-                    return DataSetResponse.SYSTEM_ERROR;
+                    return DataSetResponse.SYSTEM_ERROR.toString();
             }
         }
         catch (Exception e) {
             log.error("Unable to submit", e);
         }
-        return DataSetResponse.SYSTEM_ERROR;
+        return DataSetResponse.SYSTEM_ERROR.toString();
     }
 
     @RequestMapping(value = "/dataset/submit/{dataSetSpec}/{fileType}/{fileName}", method = RequestMethod.POST)
@@ -210,8 +210,8 @@ public class DataSetController {
                 throw new RuntimeException("No hash available for file name " + fileName);
             }
             switch (type) {
-                case SOURCE_DETAILS:
-                    return receiveSourceDetails(SourceDetails.read(inputStream), dataSetSpec, hash);
+                case FACTS:
+                    return receiveFacts(Facts.read(inputStream), dataSetSpec, hash);
                 case SOURCE:
                     return receiveSource(new GZIPInputStream(inputStream), dataSetSpec, hash);
                 case MAPPING:
@@ -302,7 +302,7 @@ public class DataSetController {
         }
     }
 
-    private DataSetResponse checkSourceDetails(String dataSetSpec, String hash) {
+    private DataSetResponse checkFacts(String dataSetSpec, String hash) {
         try {
             MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
             if (dataSet == null) {
@@ -316,12 +316,12 @@ public class DataSetController {
             }
         }
         catch (BadArgumentException e) {
-            log.error("Unable to check source details", e);
+            log.error("Unable to check facts", e);
             return DataSetResponse.SYSTEM_ERROR;
         }
     }
 
-    private DataSetResponse receiveSourceDetails(SourceDetails details, String dataSetSpec, String hash) {
+    private DataSetResponse receiveFacts(Facts facts, String dataSetSpec, String hash) {
         try {
             MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
             if (dataSet == null) {
@@ -330,21 +330,21 @@ public class DataSetController {
             if (dataSet.hasHash(hash)) {
                 return DataSetResponse.GOT_IT_ALREADY;
             }
-            dataSet.setName(details.get("name"));
-            dataSet.setProviderName(details.get("provider"));
-            dataSet.setDescription(details.get("description"));
-            dataSet.getMetadataFormat().setPrefix(details.get("prefix"));
-            dataSet.getMetadataFormat().setNamespace(details.get("URI"));
-            dataSet.getMetadataFormat().setSchema(details.get("schema"));
+            dataSet.setName(facts.get("name"));
+            dataSet.setProviderName(facts.get("provider"));
+            dataSet.setDescription(facts.get("description"));
+            dataSet.getMetadataFormat().setPrefix(facts.get("prefix"));
+            dataSet.getMetadataFormat().setNamespace(facts.get("URI"));
+            dataSet.getMetadataFormat().setSchema(facts.get("schema"));
             dataSet.getMetadataFormat().setAccessKeyRequired(true);
-            dataSet.setRecordRoot(new Path(details.get("recordRoot")));
-            dataSet.setUniqueElement(new Path(details.get("uniqueElement")));
-            dataSet.setSourceDetailsHash(hash);
+            dataSet.setRecordRoot(new Path(facts.get("recordRoot")));
+            dataSet.setUniqueElement(new Path(facts.get("uniqueElement")));
+            dataSet.setFactsHash(hash);
             dataSet.save();
             return DataSetResponse.THANK_YOU;
         }
         catch (BadArgumentException e) {
-            log.error("Unable to receive source details", e);
+            log.error("Unable to receive facts", e);
             return DataSetResponse.SYSTEM_ERROR;
         }
     }

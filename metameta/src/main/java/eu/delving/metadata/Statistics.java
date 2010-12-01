@@ -101,8 +101,8 @@ public class Statistics implements Comparable<Statistics>, Serializable {
     }
 
     private class ValueStats implements Serializable {
-        RandomSample randomSample = new RandomSample(100);
-        Histogram histogram = new Histogram(100000);
+        RandomSample randomSample = new RandomSample(200);
+        Histogram histogram = new Histogram(600000, 500);
         Uniqueness uniqueness = new Uniqueness();
         boolean uniqueValues;
 
@@ -140,7 +140,7 @@ public class Statistics implements Comparable<Statistics>, Serializable {
             if (lazyHtml == null) {
                 StringBuilder html = new StringBuilder(String.format("<html><h3>Path: %s</h3>", path));
                 if (uniqueValues) {
-                    html.append(String.format("<p><strong>%d</strong> unique values, here are some random samples:</p><br>", total));
+                    html.append(String.format("<p>All values are unique, and there are <strong>%d</strong>, so here are some random samples:</p><br>", total));
                     html.append("<ul>");
                     for (String value : randomSample.getValues()) {
                         html.append(String.format("<li>'<strong>%s</strong>'</li>", value));

@@ -101,17 +101,25 @@ public class ElementDefinition {
         return null;
     }
 
-    public void getConstantFields(List<FieldDefinition> constantFields) {
+    public void setFactDefinitions() throws MetadataException {
         if (fields != null) {
             for (FieldDefinition fieldDefinition : fields) {
-                if (fieldDefinition.constant) {
-                    constantFields.add(fieldDefinition);
+                if (fieldDefinition.factName != null) {
+                    for (FactDefinition factDefinition : Facts.definitions()) {
+                        if (fieldDefinition.factName.equals(factDefinition.name)) {
+                            fieldDefinition.factDefinition = factDefinition;
+                            break;
+                        }
+                    }
+                    if (fieldDefinition.factDefinition == null) {
+                        throw new MetadataException(String.format("Record Definition %s requires fact %s", prefix, fieldDefinition.factName));
+                    }
                 }
             }
         }
         if (elements != null) {
             for (ElementDefinition elementDefinition : elements) {
-                elementDefinition.getConstantFields(fields);
+                elementDefinition.setFactDefinitions();
             }
         }
     }

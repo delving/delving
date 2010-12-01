@@ -22,6 +22,7 @@
 package eu.europeana.sip.model;
 
 import eu.delving.metadata.AnalysisTree;
+import eu.delving.metadata.Facts;
 import eu.delving.metadata.FieldDefinition;
 import eu.delving.metadata.FieldMapping;
 import eu.delving.metadata.MappingModel;
@@ -29,7 +30,6 @@ import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.Path;
 import eu.delving.metadata.RecordMapping;
 import eu.delving.metadata.RecordValidator;
-import eu.delving.metadata.SourceDetails;
 import eu.delving.metadata.SourceVariable;
 import eu.delving.metadata.Statistics;
 import eu.delving.sip.AppConfig;
@@ -74,7 +74,7 @@ public class SipModel {
     private MetadataModel metadataModel;
     private AppConfig appConfig;
     private FileStore.DataSetStore dataSetStore;
-    private SourceDetails sourceDetails;
+    private Facts facts;
     private UserNotifier userNotifier;
     private List<Statistics> statisticsList;
     private AnalysisParser analysisParser;
@@ -85,7 +85,7 @@ public class SipModel {
     private CompileModel fieldCompileModel;
     private MetadataParser metadataParser;
     private MetadataRecord metadataRecord;
-    private ConstantFieldModel constantFieldModel = new ConstantFieldModel();
+    private FactModel factModel = new FactModel();
     private FieldMappingListModel fieldMappingListModel;
     private MappingModel mappingModel = new MappingModel();
     private MappingSaveTimer mappingSaveTimer = new MappingSaveTimer();
@@ -133,8 +133,7 @@ public class SipModel {
         parseListeners.add(recordCompileModel);
         parseListeners.add(fieldCompileModel);
         fieldMappingListModel = new FieldMappingListModel();
-        constantFieldModel.setRecordDefinition(metadataModel.getRecordDefinition());
-        constantFieldModel.addListener(new ConstantFieldModelAdapter());
+        factModel.addListener(new FactModelAdapter());
         mappingModel.addListener(fieldMappingListModel);
         mappingModel.addListener(recordCompileModel);
         mappingModel.addListener(fieldCompileModel);
@@ -171,8 +170,8 @@ public class SipModel {
         });
     }
 
-    public ConstantFieldModel getConstantFieldModel() {
-        return constantFieldModel;
+    public FactModel getFactModel() {
+        return factModel;
     }
 
     public String getServerAccessKey() {
@@ -225,19 +224,16 @@ public class SipModel {
                 public void run() {
                     try {
                         final List<Statistics> statistics = dataSetStore.getStatistics();
-                        final SourceDetails sourceDetails = dataSetStore.getSourceDetails();
+                        final Facts facts = dataSetStore.getFacts();
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                SipModel.this.sourceDetails = sourceDetails;
-                                constantFieldModel.clear();
-                                constantFieldModel.setSourceDetails(sourceDetails);
+                                SipModel.this.facts = facts;
+                                factModel.clear();
+                                factModel.setFacts(facts, dataSetStore.getSpec());
                                 mappingModel.setRecordMapping(null);
                                 setStatisticsList(statistics);
                                 variableListModel.clear();
-                                if (getRecordRoot() != null) {
-                                    setRecordRootInternal(new Path(sourceDetails.get(SourceDetails.RECORD_PATH)), Integer.parseInt(sourceDetails.get(SourceDetails.RECORD_COUNT)));
-                                }
                                 AnalysisTree.setUniqueElement(analysisTreeModel, getUniqueElement());
                             }
                         });
@@ -263,11 +259,12 @@ public class SipModel {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            constantFieldModel.setRecordMapping(recordMapping);
-                            variableListModel.clear();
                             mappingModel.setRecordMapping(recordMapping);
                             createMetadataParser(1);
                             if (recordMapping != null) {
+                                if (getRecordRoot() != null) {
+                                    setRecordRootInternal(new Path(facts.get(Facts.RECORD_PATH)), Integer.parseInt(facts.get(Facts.RECORD_COUNT)));
+                                }
                                 if (recordMapping.getNormalizeTime() == 0) {
                                     normalizeMessage(false, "Normalization not yet performed.");
                                 }
@@ -306,7 +303,7 @@ public class SipModel {
 //                RecordMapping recordMapping = recordCompileModel.getRecordMapping();
 //                recordMapping.setCode(templateCode, fieldMap);
 //                setRecordRootInternal(recordMapping.recordRoot);
-//                recordMapping.getConstantFieldModel().clear();
+//                recordMapping.getFactModel().clear();
 //                createMetadataParser(1);
 //                for (UpdateListener updateListener : updateListeners) {
 //                    updateListener.templateApplied();
@@ -360,8 +357,8 @@ public class SipModel {
         return serverUrl;
     }
 
-    public SourceDetails getSourceDetails() {
-        return sourceDetails;
+    public Facts getFacts() {
+        return facts;
     }
 
     public void normalize(boolean discardInvalid, boolean storeNormalizedFile, ProgressListener progressListener) {
@@ -438,41 +435,41 @@ public class SipModel {
     }
 
     public Path getUniqueElement() {
-        if (sourceDetails == null || sourceDetails.get(SourceDetails.UNIQUE_ELEMENT_PATH).isEmpty()) {
+        if (facts == null || facts.get(Facts.UNIQUE_ELEMENT_PATH).isEmpty()) {
             return null;
         }
-        return new Path(getSourceDetails().get(SourceDetails.UNIQUE_ELEMENT_PATH));
+        return new Path(getFacts().get(Facts.UNIQUE_ELEMENT_PATH));
     }
 
     public void setUniqueElement(Path uniqueElement) {
-        sourceDetails.set(SourceDetails.UNIQUE_ELEMENT_PATH, uniqueElement.toString());
-        constantFieldModel.setSourceDetails(sourceDetails);
-        executor.execute(new SourceDetailsSetter(sourceDetails));
+        facts.set(Facts.UNIQUE_ELEMENT_PATH, uniqueElement.toString());
+        factModel.setFacts(facts, dataSetStore.getSpec());
+        executor.execute(new FactsSetter(facts));
         AnalysisTree.setUniqueElement(analysisTreeModel, uniqueElement);
     }
 
     public Path getRecordRoot() {
-        if (sourceDetails == null || sourceDetails.get(SourceDetails.RECORD_PATH).isEmpty()) {
+        if (facts == null || facts.get(Facts.RECORD_PATH).isEmpty()) {
             return null;
         }
-        return new Path(getSourceDetails().get(SourceDetails.RECORD_PATH));
+        return new Path(getFacts().get(Facts.RECORD_PATH));
     }
 
     public int getRecordCount() {
-        if (sourceDetails == null || sourceDetails.get(SourceDetails.RECORD_COUNT).isEmpty()) {
+        if (facts == null || facts.get(Facts.RECORD_COUNT).isEmpty()) {
             return 0;
         }
-        return Integer.parseInt(getSourceDetails().get(SourceDetails.RECORD_COUNT));
+        return Integer.parseInt(getFacts().get(Facts.RECORD_COUNT));
     }
 
     public void setRecordRoot(Path recordRoot, int recordCount) {
         checkSwingThread();
         setRecordRootInternal(recordRoot, recordCount);
         createMetadataParser(1);
-        sourceDetails.set(SourceDetails.RECORD_PATH, recordRoot.toString());
-        sourceDetails.set(SourceDetails.RECORD_COUNT, String.valueOf(recordCount));
-        constantFieldModel.setSourceDetails(sourceDetails);
-        executor.execute(new SourceDetailsSetter(sourceDetails));
+        facts.set(Facts.RECORD_PATH, recordRoot.toString());
+        facts.set(Facts.RECORD_COUNT, String.valueOf(recordCount));
+        factModel.setFacts(facts, dataSetStore.getSpec());
+        executor.execute(new FactsSetter(facts));
     }
 
     public long getElementCount() {
@@ -674,6 +671,7 @@ public class SipModel {
             try {
                 RecordMapping recordMapping = mappingModel.getRecordMapping();
                 if (recordMapping != null) {
+                    factModel.fillRecordMapping(recordMapping);
                     dataSetStore.setRecordMapping(recordMapping);
                     log.info("Mapping saved!");
                 }
@@ -705,40 +703,35 @@ public class SipModel {
         }
     }
 
-    private class ConstantFieldModelAdapter implements ConstantFieldModel.Listener {
+    private class FactModelAdapter implements FactModel.Listener {
         @Override
-        public void updatedDefinitions(ConstantFieldModel constantFieldModel) {
-            // do nothing
-        }
-
-        @Override
-        public void updatedConstant(ConstantFieldModel constantFieldModel, boolean interactive) {
+        public void updatedFact(FactModel factModel, boolean interactive) {
             if (interactive) {
                 RecordMapping recordMapping = getMappingModel().getRecordMapping();
-                if (recordMapping != null && constantFieldModel.fillRecordMapping(recordMapping)) {
+                if (recordMapping != null && factModel.fillRecordMapping(recordMapping)) {
                     mappingSaveTimer.mappingChanged(recordMapping);
                 }
-                if (constantFieldModel.fillSourceDetails(sourceDetails)) {
-                    executor.execute(new SourceDetailsSetter(sourceDetails));
+                if (factModel.fillFacts(facts)) {
+                    executor.execute(new FactsSetter(facts));
                 }
             }
         }
     }
 
-    private class SourceDetailsSetter implements Runnable {
-        private SourceDetails details;
+    private class FactsSetter implements Runnable {
+        private Facts facts;
 
-        private SourceDetailsSetter(SourceDetails details) {
-            this.details = details;
+        private FactsSetter(Facts facts) {
+            this.facts = facts;
         }
 
         @Override
         public void run() {
             try {
-                dataSetStore.setSourceDetails(details);
+                dataSetStore.setFacts(facts);
             }
             catch (FileStoreException e) {
-                userNotifier.tellUser("Unable to save source details", e);
+                userNotifier.tellUser("Unable to save facts", e);
             }
         }
     }

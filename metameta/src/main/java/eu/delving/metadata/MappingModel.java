@@ -44,13 +44,13 @@ public class MappingModel {
         return recordMapping;
     }
 
-    public void setConstant(String path, String value) {
+    public void setFact(String path, String value) {
         if (recordMapping == null) return;
         if (value == null) {
-            recordMapping.constants.remove(path);
+            recordMapping.facts.remove(path);
         }
         else {
-            recordMapping.constants.put(path, value);
+            recordMapping.facts.put(path, value);
         }
         fireChangeEvent();
     }

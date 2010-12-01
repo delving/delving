@@ -59,26 +59,29 @@ public class RecordValidator {
     public RecordValidator(MetadataModel metadataModel, boolean checkUniqueness) {
         this.recordDefinition = metadataModel.getRecordDefinition();
         this.idUniqueness = checkUniqueness ? new Uniqueness() : null;
-        StringBuilder contextString = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n\n<validate\n");
+        StringBuilder contextString = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<validate\n");
         for (NamespaceDefinition namespaceDefinition : recordDefinition.namespaces) {
             contextString.append(String.format("xmlns:%s=\"%s\"\n", namespaceDefinition.prefix, namespaceDefinition.uri));
         }
         contextString.append(">\n%s</validate>\n");
         this.context = contextString.toString();
         this.contextBegin = this.context.indexOf("%s");
-        this.contextEnd = this.context.length() - (this.contextBegin + 2);
+        int afterPercentS = contextBegin + 2;
+        this.contextEnd = this.context.length() - afterPercentS;
     }
 
     public String validateRecord(String recordString, List<String> problems) {
+        if (!recordString.contains("<")) {
+            return recordString;
+        }
         String contextualizedRecord = String.format(context, recordString);
         StringWriter out = new StringWriter();
         try {
             Document document = DocumentHelper.parseText(contextualizedRecord);
-            Map<Path,Counter> counters= new TreeMap<Path,Counter>();
+            Map<Path, Counter> counters = new TreeMap<Path, Counter>();
             validateDocument(document, problems, new TreeSet<String>(), counters);
             validateCardinalities(counters, problems);
-            OutputFormat format = OutputFormat.createPrettyPrint();
-            XMLWriter writer = new XMLWriter(out, format);
+            XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());
             writer.write(document);
         }
         catch (Exception e) {
@@ -101,8 +104,8 @@ public class RecordValidator {
                 problems.add(String.format("Single-valued field [%s] has more than one value", field.path));
             }
         }
-        for (Map.Entry<Path,Counter> entry : counters.entrySet()) {
-            FieldDefinition field = recordDefinition.getFieldDefinition(entry.getKey()) ;
+        for (Map.Entry<Path, Counter> entry : counters.entrySet()) {
+            FieldDefinition field = recordDefinition.getFieldDefinition(entry.getKey());
             if (field.requiredGroup != null) {
                 requiredGroupMap.put(field.requiredGroup, true);
             }
@@ -114,7 +117,7 @@ public class RecordValidator {
         }
     }
 
-    private void validateDocument(Document document, List<String> problems, Set<String> entries, Map<Path,Counter> counters) {
+    private void validateDocument(Document document, List<String> problems, Set<String> entries, Map<Path, Counter> counters) {
         Element validateElement = document.getRootElement();
         Element recordElement = validateElement.element("record");
         if (recordElement == null) {
@@ -124,7 +127,7 @@ public class RecordValidator {
         validateElement(recordElement, new Path(), problems, entries, counters);
     }
 
-    private boolean validateElement(Element element, Path path, List<String> problems, Set<String> entries, Map<Path,Counter> counters) {
+    private boolean validateElement(Element element, Path path, List<String> problems, Set<String> entries, Map<Path, Counter> counters) {
         path.push(Tag.create(element.getNamespacePrefix(), element.getName()));
         boolean hasElements = false;
         Iterator walk = element.elementIterator();
@@ -145,7 +148,7 @@ public class RecordValidator {
         return false;
     }
 
-    private boolean validatePath(String text, Path path, List<String> problems, Set<String> entries, Map<Path,Counter> counters) {
+    private boolean validatePath(String text, Path path, List<String> problems, Set<String> entries, Map<Path, Counter> counters) {
         FieldDefinition field = recordDefinition.getFieldDefinition(path);
         if (field == null) {
             problems.add(String.format("No field definition found for path [%s]", path));
@@ -168,7 +171,7 @@ public class RecordValidator {
     }
 
     private void validateField(String text, FieldDefinition field, List<String> problems) {
-        if (field.options != null && !field.valueMapped && !field.options.contains(text)) {
+        if (field.factDefinition != null && !field.valueMapped && field.factDefinition.options != null && !field.factDefinition.options.contains(text)) {
             String optionsString = getOptionsString(field);
             problems.add(String.format("Value for [%s] was [%s] which does not belong to [%s]", field.path, text, optionsString));
         }
@@ -195,7 +198,7 @@ public class RecordValidator {
 
     private String getOptionsString(FieldDefinition field) {
         StringBuilder enumString = new StringBuilder();
-        Iterator<String> walk = field.options.iterator();
+        Iterator<String> walk = field.factDefinition.options.iterator();
         while (walk.hasNext()) {
             enumString.append(walk.next());
             if (walk.hasNext()) {

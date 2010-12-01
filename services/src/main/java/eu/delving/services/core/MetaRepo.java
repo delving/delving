@@ -96,7 +96,7 @@ public interface MetaRepo {
         MetadataFormat getMetadataFormat();
         void save();
 
-        void setSourceDetailsHash(String sourceHash);
+        void setFactsHash(String sourceHash);
         void setSourceHash(String hash);
         void setMappingHash(String metadataPrefix, String hash);
         boolean hasHash(String hash);
@@ -121,7 +121,7 @@ public interface MetaRepo {
         String RECORDS_INDEXED = "rec_indexed";
         String DATA_SET_STATE = "state";
         String SOURCE_HASH = "source_hash";
-        String SOURCE_DETAILS_HASH = "source_details_hash";
+        String FACTS_HASH = "facts_hash";
         String MAPPING_HASH_PREFIX = "mapping_hash_";
         String ERROR_MESSAGE = "error";
 

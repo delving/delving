@@ -31,7 +31,6 @@ import eu.delving.sip.FileStoreImpl;
 import eu.delving.sip.FileType;
 import eu.delving.sip.ProgressListener;
 import eu.europeana.sip.core.RecordValidationException;
-import eu.europeana.sip.model.ConstantFieldModel;
 import eu.europeana.sip.model.FileUploader;
 import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.UserNotifier;
@@ -43,6 +42,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -69,8 +69,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,17 +85,17 @@ import java.util.List;
 public class SipCreatorGUI extends JFrame {
     private static final String LOCAL_SETS = "Local Data Sets";
     private static final String LOCAL_AND_REMOTE_SETS = "Local and Remote Data Sets";
-    private static final Dimension SIZE = new Dimension(800, 600);
+    private static final Dimension SIZE = new Dimension(1024-60, 768-60);
     private static final int MARGIN = 15;
     private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel;
     private JLabel titleLabel = new JLabel(LOCAL_SETS, JLabel.CENTER);
     private MappingFrame mappingFrame;
-    private ConstantsFrame constantsFrame;
+    private AnalysisFactsFrame analysisFactsFrame;
     private RepositoryConnection repositoryConnection;
     private DataSetListModel dataSetListModel = new DataSetListModel();
     private JList dataSetList = new JList(dataSetListModel);
-    private List<JButton> mappingButtons = new ArrayList<JButton>();
+    private List<JButton> controlButtons = new ArrayList<JButton>();
 
     public SipCreatorGUI(File fileStoreDirectory, String serverUrl) throws FileStoreException {
         super("Delving SIP Creator");
@@ -120,7 +118,7 @@ public class SipCreatorGUI extends JFrame {
             }
         });
         this.mappingFrame = new MappingFrame(sipModel);
-        this.constantsFrame = new ConstantsFrame(sipModel.getConstantFieldModel());
+        this.analysisFactsFrame = new AnalysisFactsFrame(sipModel);
         setJMenuBar(createMenuBar());
         JPanel main = new JPanel(new BorderLayout(MARGIN, MARGIN));
         main.setBorder(BorderFactory.createEmptyBorder(MARGIN, MARGIN, MARGIN, MARGIN));
@@ -141,9 +139,8 @@ public class SipCreatorGUI extends JFrame {
         getContentPane().add(main, BorderLayout.CENTER);
         main.add(createList(), BorderLayout.CENTER);
         main.add(createControl(), BorderLayout.SOUTH);
-        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         setSize(SIZE);
-        setLocation((screen.width - SIZE.width) / 2, (screen.height - SIZE.height) / 2);
+        setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - SIZE.width) / 2, (Toolkit.getDefaultToolkit().getScreenSize().height - SIZE.height) / 2);
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -152,7 +149,7 @@ public class SipCreatorGUI extends JFrame {
                 }
             }
         });
-        for (JButton button : mappingButtons) {
+        for (JButton button : controlButtons) {
             button.setEnabled(false);
         }
     }
@@ -162,9 +159,9 @@ public class SipCreatorGUI extends JFrame {
         dataSetList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent event) {
-                DataSetListModel.Entry entry = (DataSetListModel.Entry) dataSetList.getSelectedValue();
-                boolean enable = entry != null && entry.getDataSetStore() != null;
-                for (JButton button : mappingButtons) {
+                if (event.getValueIsAdjusting()) return;
+                boolean enable = getSelectedDataSetStore() != null;
+                for (JButton button : controlButtons) {
                     button.setEnabled(enable);
                 }
             }
@@ -181,38 +178,47 @@ public class SipCreatorGUI extends JFrame {
     private JComponent createControl() {
         JPanel p = new JPanel();
         p.setBorder(BorderFactory.createTitledBorder("Control"));
-        JButton sourceDetailsButton = new JButton("Edit Source Details");
-        sourceDetailsButton.addActionListener(new ActionListener() {
+
+        JButton analysis = new JButton("Analysis & Facts");
+        analysis.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                int selected = dataSetList.getSelectedIndex();
-                if (selected >= 0) {
-                    DataSetListModel.Entry entry = dataSetListModel.getEntry(selected);
-                    sipModel.setDataSetStore(entry.getDataSetStore());
-                    constantsFrame.show(sipModel.getDataSetStore().getSpec());
+                FileStore.DataSetStore store = getSelectedDataSetStore();
+                if (store != null) {
+                    sipModel.setDataSetStore(store);
+                    analysisFactsFrame.reveal();
                 }
             }
         });
-        p.add(sourceDetailsButton);
+        p.add(analysis);
+        controlButtons.add(analysis);
+
         for (final String metadataPrefix : sipModel.getMetadataModel().getPrefixes()) {
-            JButton button = new JButton(String.format("<html>Edit '<strong>%s</strong>' Mapping", metadataPrefix));
+            JButton button = new JButton(String.format("Edit '%s' Mapping", metadataPrefix));
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent actionEvent) {
-                    int selected = dataSetList.getSelectedIndex();
-                    if (selected >= 0) {
-                        DataSetListModel.Entry entry = dataSetListModel.getEntry(selected);
-                        sipModel.setDataSetStore(entry.getDataSetStore());
+                    FileStore.DataSetStore store = getSelectedDataSetStore();
+                    if (store != null) {
+                        sipModel.setDataSetStore(store);
                         sipModel.setMetadataPrefix(metadataPrefix);
-                        mappingFrame.show(metadataPrefix);
+                        mappingFrame.reveal(metadataPrefix);
                     }
                 }
             });
             p.add(button);
-            mappingButtons.add(button);
+            controlButtons.add(button);
         }
-        p.add(new JButton(new UploadAction()));
+
+        JButton uploadButton = new JButton(new UploadAction());
+        p.add(uploadButton);
+        controlButtons.add(uploadButton);
         return p;
+    }
+
+    private FileStore.DataSetStore getSelectedDataSetStore() {
+        int selected = dataSetList.getSelectedIndex();
+        return selected >= 0 ? dataSetListModel.getEntry(selected).getDataSetStore() : null;
     }
 
     private class UploadAction extends AbstractAction {
@@ -223,43 +229,57 @@ public class SipCreatorGUI extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            ProgressMonitor progressMonitor = new ProgressMonitor(SwingUtilities.getRoot(SipCreatorGUI.this), "Uploading", "Uploading files for " + sipModel.getDataSetStore().getSpec(), 0, 100);
-            final ProgressListener progressListener = new ProgressListener.Adapter(progressMonitor, this);
-            sipModel.uploadFile(FileType.SOURCE_DETAILS, sipModel.getDataSetStore().getSourceDetailsFile(), progressListener, new FileUploader.Receiver() {
-                @Override
-                public void acceptResponse(DataSetResponse dataSetResponse) {
-                    switch (dataSetResponse) {
-                        case THANK_YOU:
-                        case GOT_IT_ALREADY:
-                            sipModel.uploadFile(FileType.SOURCE, sipModel.getDataSetStore().getSourceFile(), progressListener, new FileUploader.Receiver() {
-                                @Override
-                                public void acceptResponse(DataSetResponse dataSetResponse) {
-                                    switch (dataSetResponse) {
-                                        case THANK_YOU:
-                                        case GOT_IT_ALREADY:
-                                            Collection<File> mappingFiles = sipModel.getDataSetStore().getMappingFiles();
-                                            if (mappingFiles.size() > 1) {
-                                                throw new RuntimeException("Not yet ready for multiple mappings");
-                                            }
-                                            File mappingFile = mappingFiles.iterator().next();
-                                            sipModel.uploadFile(FileType.MAPPING, mappingFile, progressListener, new FileUploader.Receiver() {
-                                                @Override
-                                                public void acceptResponse(DataSetResponse dataSetResponse) {
-                                                    // todo: done
-                                                }
-                                            });
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                }
-                            });
-                            break;
-                        default:
-                            break;
+            final FileStore.DataSetStore store = getSelectedDataSetStore();
+            if (store != null) {
+                try {
+                    if (!store.getFacts().isValid()) {
+                        sipModel.tellUser("Sorry, but the Facts are not yet valid");
+                        return;
                     }
                 }
-            });
+                catch (FileStoreException e) {
+                    sipModel.tellUser("Unable to read Facts for this data set");
+                    return;
+                }
+                sipModel.setDataSetStore(store);
+                ProgressMonitor progressMonitor = new ProgressMonitor(SwingUtilities.getRoot(SipCreatorGUI.this), "Uploading", "Uploading files for " + store.getSpec(), 0, 100);
+                final ProgressListener progressListener = new ProgressListener.Adapter(progressMonitor, this);
+                sipModel.uploadFile(FileType.FACTS, store.getFactsFile(), progressListener, new FileUploader.Receiver() {
+                    @Override
+                    public void acceptResponse(DataSetResponse dataSetResponse) {
+                        switch (dataSetResponse) {
+                            case THANK_YOU:
+                            case GOT_IT_ALREADY:
+                                sipModel.uploadFile(FileType.SOURCE, store.getSourceFile(), progressListener, new FileUploader.Receiver() {
+                                    @Override
+                                    public void acceptResponse(DataSetResponse dataSetResponse) {
+                                        switch (dataSetResponse) {
+                                            case THANK_YOU:
+                                            case GOT_IT_ALREADY:
+                                                Collection<File> mappingFiles = store.getMappingFiles();
+                                                if (mappingFiles.size() > 1) {
+                                                    throw new RuntimeException("Not yet ready for multiple mappings");
+                                                }
+                                                File mappingFile = mappingFiles.iterator().next();
+                                                sipModel.uploadFile(FileType.MAPPING, mappingFile, progressListener, new FileUploader.Receiver() {
+                                                    @Override
+                                                    public void acceptResponse(DataSetResponse dataSetResponse) {
+                                                        // todo: done
+                                                    }
+                                                });
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                    }
+                                });
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                });
+            }
         }
     }
 
@@ -360,63 +380,61 @@ public class SipCreatorGUI extends JFrame {
         }
     }
 
-    private class MappingFrame extends JFrame {
+    private class AnalysisFactsFrame extends JDialog {
+        private SipModel sipModel;
+
+        private AnalysisFactsFrame(SipModel sipModel) throws HeadlessException {
+            super(SipCreatorGUI.this, "Analysis & Facts", true);
+            this.sipModel = sipModel;
+            getContentPane().add(new AnalysisFactsPanel(sipModel));
+            getContentPane().add(createFinishedPanel(this), BorderLayout.SOUTH);
+//            setSize(Toolkit.getDefaultToolkit().getScreenSize());
+            setSize(SIZE);
+            setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - SIZE.width) / 2, (Toolkit.getDefaultToolkit().getScreenSize().height - SIZE.height) / 2);
+        }
+
+        public void reveal() {
+            setTitle(String.format("Analysis & Facts for '%s'", sipModel.getDataSetStore().getSpec()));
+            setVisible(true);
+        }
+    }
+
+    private class MappingFrame extends JDialog {
         private SipModel sipModel;
 
         private MappingFrame(SipModel sipModel) throws HeadlessException {
-            super("Mapping");
+            super(SipCreatorGUI.this, "Mapping", true);
             this.sipModel = sipModel;
             JTabbedPane tabs = new JTabbedPane();
-            tabs.addTab("Analysis", new AnalysisPanel(sipModel));
             tabs.addTab("Mapping", new MappingPanel(sipModel));
             tabs.addTab("Refinement", new RefinementPanel(sipModel));
             tabs.addTab("Normalization", new NormalizationPanel(sipModel));
             getContentPane().add(tabs, BorderLayout.CENTER);
-            setSize(Toolkit.getDefaultToolkit().getScreenSize());
-            addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosing(WindowEvent windowEvent) {
-                    SipCreatorGUI.this.setVisible(true);
-                }
-            });
+            getContentPane().add(createFinishedPanel(this), BorderLayout.SOUTH);
+            setSize(SIZE);
+            setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - SIZE.width) / 2, (Toolkit.getDefaultToolkit().getScreenSize().height - SIZE.height) / 2);
+//            setSize(Toolkit.getDefaultToolkit().getScreenSize());
 //        MappingTemplateMenu mappingTemplateMenu = new MappingTemplateMenu(this, sipModel);
 //        bar.add(mappingTemplateMenu);
         }
 
-        public void show(String prefix) {
+        public void reveal(String prefix) {
             setTitle(String.format("Mapping '%s' of '%s'", prefix, sipModel.getDataSetStore().getSpec()));
             setVisible(true);
         }
     }
 
-    private class ConstantsFrame extends JFrame {
-        private final Dimension CONSTANTS_SIZE = new Dimension(760, 760);
-
-        public ConstantsFrame(ConstantFieldModel constantFieldModel) {
-            super("Constants");
-            JPanel bp = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-            JButton hide = new JButton("Finished");
-            hide.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent actionEvent) {
-                    setVisible(false);
-                }
-            });
-            bp.add(hide);
-            ConstantFieldPanel fieldPanel = new ConstantFieldPanel(constantFieldModel);
-            JPanel main = new JPanel(new BorderLayout(15, 15));
-            main.add(fieldPanel, BorderLayout.CENTER);
-            main.add(bp, BorderLayout.SOUTH);
-            getContentPane().add(main);
-            Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-            setSize(CONSTANTS_SIZE);
-            setLocation((screen.width - CONSTANTS_SIZE.width) / 2, (screen.height - CONSTANTS_SIZE.height) / 2);
-        }
-
-        public void show(String dataSetSpec) {
-            setTitle(String.format("Constants for '%s'", dataSetSpec));
-            setVisible(true);
-        }
+    private JPanel createFinishedPanel(final JDialog frame) {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton hide = new JButton("Finished");
+        hide.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                frame.setVisible(false);
+            }
+        });
+        panel.add(hide);
+        return panel;
     }
 
     public static void main(final String[] args) throws ClassNotFoundException {

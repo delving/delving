@@ -201,7 +201,7 @@ public class ValueMapDialog extends JDialog {
 
     private class EditorModel extends AbstractListModel implements ComboBoxModel {
         private static final String COPY_VERBATIM = "";
-        private List<String> values = new ArrayList<String>(fieldMapping.getFieldDefinition().options);
+        private List<String> values = new ArrayList<String>(fieldMapping.getFieldDefinition().factDefinition.options);
         private Object selectedItem = COPY_VERBATIM;
 
         @Override

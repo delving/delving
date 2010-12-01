@@ -49,7 +49,7 @@ public class FieldDefinition implements Comparable<FieldDefinition> {
     public boolean object = false;
     public boolean type = false;
     public String requiredGroup;
-    public boolean constant = false;
+    public String factName;
     public String category;
     public String converterPattern;
     public boolean converterMultipleOutput = false;
@@ -66,11 +66,13 @@ public class FieldDefinition implements Comparable<FieldDefinition> {
     public boolean termOffsets = true;
     public boolean omitNorms = true;
     public String defaultValue = "";
-    public List<String> options;
     public List<String> toCopyField;
 
     @XStreamOmitField
     public Path path;
+
+    @XStreamOmitField
+    public FactDefinition factDefinition;
 
     private Tag tag;
 
