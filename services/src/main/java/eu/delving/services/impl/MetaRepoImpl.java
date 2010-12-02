@@ -405,7 +405,11 @@ public class MetaRepoImpl implements MetaRepo {
 
         @Override
         public int getRecordsIndexed() {
-            return (Integer) object.get(RECORDS_INDEXED);
+            Object obj = object.get(RECORDS_INDEXED);
+            if (obj == null) {
+                return 0;
+            }
+            return (Integer) obj;
         }
 
         @Override
