@@ -54,11 +54,11 @@ public class RecordValidator {
     public RecordValidator(MetadataModel metadataModel, boolean checkUniqueness) {
         this.recordDefinition = metadataModel.getRecordDefinition();
         this.idUniqueness = checkUniqueness ? new Uniqueness() : null;
-        StringBuilder contextString = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<record\n");
+        StringBuilder contextString = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<validate\n");
         for (NamespaceDefinition namespaceDefinition : recordDefinition.namespaces) {
             contextString.append(String.format("xmlns:%s=\"%s\"\n", namespaceDefinition.prefix, namespaceDefinition.uri));
         }
-        contextString.append(">\n%s</record>\n");
+        contextString.append(">\n%s</validate>\n");
         this.context = contextString.toString();
         this.contextBegin = this.context.indexOf("%s");
         int afterPercentS = contextBegin + 2;
@@ -117,10 +117,11 @@ public class RecordValidator {
     }
 
     private void validateDocument(Document document, List<String> problems, Set<String> entries, Map<Path, Counter> counters) {
-        Element recordElement = document.getRootElement();
-        if (!recordElement.getQName().getName().equals("record")) {
-            throw new RuntimeException("Root element should be 'record'");
+        Element rootElement = document.getRootElement();
+        if (!rootElement.getQName().getName().equals("validate")) {
+            throw new RuntimeException("Root element should be 'validate'");
         }
+        Element recordElement = rootElement.element("record");
         validateElement(recordElement, new Path(), problems, entries, counters);
     }
 

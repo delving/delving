@@ -57,11 +57,13 @@ public class TestRecordValidator {
         problems.clear();
     }
 
-    private String toString(List<String> lines) {
+    private String toString(List<String> lines, boolean wrap) {
         StringBuilder out = new StringBuilder();
+        if (wrap) out.append("<record>\n");
         for (String line : lines) {
             out.append(line.trim()).append('\n');
         }
+        if (wrap) out.append("</record>\n");
         return out.toString();
     }
 
@@ -72,8 +74,8 @@ public class TestRecordValidator {
             expectList.addAll(validFields);
             inputList.addAll(validFields);
         }
-        String expect = toString(expectList);
-        String input = toString(inputList);
+        String expect = toString(expectList, true);
+        String input = toString(inputList, true);
         log.info("input:\n" + input);
         String validated = recordValidator.validateRecord(input, problems);
         for (String problem : problems) {
@@ -81,7 +83,7 @@ public class TestRecordValidator {
         }
         Assert.assertTrue("Problems", problems.isEmpty());
         List<String> validatedList = new ArrayList<String>(Arrays.asList(validated.trim().split("\n")));
-        validated = toString(validatedList);
+        validated = toString(validatedList, false);
         log.info("validated:\n" + validated);
         assertEquals(
                 message,
@@ -95,7 +97,7 @@ public class TestRecordValidator {
         if (includeRequired) {
             inputList.addAll(validFields);
         }
-        String input = toString(inputList);
+        String input = toString(inputList, true);
         log.info("input:\n" + input);
         recordValidator.validateRecord(input, problems);
         Assert.assertFalse("Expected problems", problems.isEmpty());

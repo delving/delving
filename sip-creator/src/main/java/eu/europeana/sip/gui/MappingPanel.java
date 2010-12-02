@@ -203,7 +203,9 @@ public class MappingPanel extends JPanel {
                 }
                 variablesList.clearSelection();
                 fieldList.clearSelection();
-                mappingList.setSelectedIndex(mappingList.getModel().getSize() - 1);
+                int index = mappingList.getModel().getSize() - 1;
+                mappingList.setSelectedIndex(index);
+                mappingList.ensureIndexIsVisible(index);
 //                prepareCreateMappingButtons();
             }
         });
