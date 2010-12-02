@@ -24,6 +24,7 @@ package eu.europeana.sip.xml;
 import eu.delving.metadata.MetadataNamespace;
 import eu.delving.metadata.Path;
 import eu.delving.metadata.RecordMapping;
+import eu.delving.metadata.RecordValidator;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.ProgressListener;
@@ -31,7 +32,6 @@ import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordValidationException;
-import eu.delving.metadata.RecordValidator;
 import eu.europeana.sip.core.ToolCodeResource;
 import eu.europeana.sip.model.SipModel;
 
@@ -57,7 +57,6 @@ public class Normalizer implements Runnable {
     private File normalizedFile;
     private ProgressListener progressListener;
     private Listener listener;
-    private volatile boolean running = true;
 
     public interface Listener {
         void invalidInput(MappingException exception);
@@ -87,6 +86,7 @@ public class Normalizer implements Runnable {
 
     public void run() {
         FileStore.MappingOutput fileSetOutput = null;
+        boolean store = normalizedFile != null;
         try {
             RecordMapping recordMapping = sipModel.getMappingModel().getRecordMapping();
             if (recordMapping == null) {
@@ -94,7 +94,7 @@ public class Normalizer implements Runnable {
             }
             ToolCodeResource toolCodeResource = new ToolCodeResource();
             fileSetOutput = sipModel.getDataSetStore().createMappingOutput(recordMapping, normalizedFile);
-            if (normalizedFile != null) {
+            if (store) {
                 Writer out = fileSetOutput.getOutputWriter();
                 out.write("<?xml version='1.0' encoding='UTF-8'?>\n");
                 out.write("<metadata");
@@ -104,16 +104,17 @@ public class Normalizer implements Runnable {
                 out.write(">\n");
             }
             MappingRunner mappingRunner = new MappingRunner(toolCodeResource.getCode() + recordMapping.toCompileCode(sipModel.getMetadataModel().getRecordDefinition()));
-            MetadataParser parser = new MetadataParser(sipModel.getDataSetStore().createXmlInputStream(), recordRoot, recordCount, progressListener);
+            ProgressAdapter progressAdapter = new ProgressAdapter(progressListener);
+            MetadataParser parser = new MetadataParser(sipModel.getDataSetStore().createXmlInputStream(), recordRoot, recordCount, progressAdapter);
             RecordValidator recordValidator = new RecordValidator(sipModel.getMetadataModel(), true);
             MetadataRecord record;
-            while ((record = parser.nextRecord()) != null && running) {
+            while ((record = parser.nextRecord()) != null && progressAdapter.running) {
                 try {
                     String output = mappingRunner.runMapping(record);
                     List<String> problems = new ArrayList<String>();
                     String validated = recordValidator.validateRecord(output, problems);
                     if (problems.isEmpty()) {
-                        if (normalizedFile != null) {
+                        if (store) {
                             fileSetOutput.getOutputWriter().write(validated);
                         }
                         fileSetOutput.recordNormalized();
@@ -123,56 +124,61 @@ public class Normalizer implements Runnable {
                     }
                 }
                 catch (MappingException e) {
-                    if (discardInvalid && fileSetOutput.getDiscardedWriter() != null) {
-                        try {
-                            fileSetOutput.getDiscardedWriter().write(record.toString());
-                            e.printStackTrace(new PrintWriter(fileSetOutput.getDiscardedWriter()));
-                            fileSetOutput.getDiscardedWriter().write("\n========================================\n");
-                            fileSetOutput.recordDiscarded();
-                        }
-                        catch (IOException e1) {
-                            sipModel.tellUser("Unable to write discarded record", e1);
+                    if (discardInvalid) {
+                        if (store) {
+                            try {
+                                fileSetOutput.getDiscardedWriter().write(record.toString());
+                                e.printStackTrace(new PrintWriter(fileSetOutput.getDiscardedWriter()));
+                                fileSetOutput.getDiscardedWriter().write("\n========================================\n");
+                                fileSetOutput.recordDiscarded();
+                            }
+                            catch (IOException e1) {
+                                sipModel.tellUser("Unable to write discarded record", e1);
+                            }
                         }
                     }
                     else {
                         sipModel.tellUser("Problem normalizing " + record.toString(), e);
                         listener.invalidInput(e);
-                        fileSetOutput.close(true);
-                        running = false;
+                        if (store) {
+                            fileSetOutput.close(true);
+                        }
+                        progressAdapter.running = false;
                     }
                 }
                 catch (RecordValidationException e) {
-                    if (discardInvalid && fileSetOutput.getDiscardedWriter() != null) {
-                        try {
-                            fileSetOutput.getDiscardedWriter().write(record.toString());
-                            e.printStackTrace(new PrintWriter(fileSetOutput.getDiscardedWriter()));
-                            fileSetOutput.getDiscardedWriter().write("\n========================================\n");
-                            fileSetOutput.recordDiscarded();
-                        }
-                        catch (IOException e1) {
-                            sipModel.tellUser("Unable to write discarded record", e1);
+                    if (discardInvalid) {
+                        if (store) {
+                            try {
+                                fileSetOutput.getDiscardedWriter().write(record.toString());
+                                e.printStackTrace(new PrintWriter(fileSetOutput.getDiscardedWriter()));
+                                fileSetOutput.getDiscardedWriter().write("\n========================================\n");
+                                fileSetOutput.recordDiscarded();
+                            }
+                            catch (IOException e1) {
+                                sipModel.tellUser("Unable to write discarded record", e1);
+                            }
                         }
                     }
                     else {
                         sipModel.tellUser("Invalid output record", e);
                         listener.invalidOutput(e);
-                        fileSetOutput.close(true);
-                        running = false;
+                        if (store) {
+                            fileSetOutput.close(true);
+                        }
+                        progressAdapter.running = false;
                     }
                 }
                 catch (Exception e) {
                     sipModel.tellUser("Problem writing output", e);
-                    running = false;
+                    progressAdapter.running = false;
                 }
             }
-            if (normalizedFile != null) {
+            if (store) {
                 fileSetOutput.getOutputWriter().write("</metadata>\n");
             }
-            fileSetOutput.close(!running);
-            if (!running) {
-                progressListener.finished();
-            }
-            listener.finished(running);
+            fileSetOutput.close(!progressAdapter.running);
+            listener.finished(progressAdapter.running);
         }
         catch (XMLStreamException e) {
             throw new RuntimeException("XML Problem", e);
@@ -200,7 +206,31 @@ public class Normalizer implements Runnable {
         writer.write(String.format(" xmlns:%s=\"%s\"", namespace.getPrefix(), namespace.getUri()));
     }
 
-    public void abort() {
-        running = false;
+    private class ProgressAdapter implements ProgressListener {
+        private volatile boolean running = true;
+        private ProgressListener progressListener;
+
+        private ProgressAdapter(ProgressListener progressListener) {
+            this.progressListener = progressListener;
+        }
+
+        @Override
+        public void setTotal(int total) {
+            progressListener.setTotal(total);
+        }
+
+        @Override
+        public boolean setProgress(int progress) {
+            boolean proceed = progressListener.setProgress(progress);
+            if (!proceed) {
+                running = false;
+            }
+            return running && proceed;
+        }
+
+        @Override
+        public void finished() {
+            progressListener.finished();
+        }
     }
 }

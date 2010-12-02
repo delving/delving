@@ -195,6 +195,18 @@ public class SipModel {
         executor.execute(new AppConfigSetter());
     }
 
+    public String getNormalizeDirectory() {
+        return appConfig.getNormalizeDirectory();
+    }
+
+    public void setNormalizeDirectory(File directory) {
+        if (!directory.isDirectory()) {
+            directory = directory.getParentFile();
+        }
+        appConfig.setNormalizeDirectory(directory.getAbsolutePath());
+        executor.execute(new AppConfigSetter());
+    }
+
     public FileStore.DataSetStore getDataSetStore() {
         return dataSetStore;
     }
@@ -361,19 +373,15 @@ public class SipModel {
         return facts;
     }
 
-    public void normalize(boolean discardInvalid, boolean storeNormalizedFile, ProgressListener progressListener) {
+    public void normalize(File normalizeDirectory, boolean discardInvalid, ProgressListener progressListener) {
         checkSwingThread();
-        File normalizedFile = null;
-        if (storeNormalizedFile) {
-            // todo: file chooser
-        }
         normalizeMessage(false, "Normalizing and validating...");
         executor.execute(new Normalizer(
                 this,
                 getRecordRoot(),
                 getRecordCount(),
                 discardInvalid,
-                normalizedFile,
+                normalizeDirectory,
                 progressListener,
                 new Normalizer.Listener() {
                     @Override

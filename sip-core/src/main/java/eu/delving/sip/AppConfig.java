@@ -34,6 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class AppConfig {
     private String accessKey;
     private String recentDirectory;
+    private String normalizeDirectory;
 
     public String getAccessKey() {
         if (accessKey == null) {
@@ -53,7 +54,18 @@ public class AppConfig {
         return recentDirectory;
     }
 
-    public void setRecentDirectory(String recentDirectory) {
-        this.recentDirectory = recentDirectory;
+    public void setRecentDirectory(String directory) {
+        this.recentDirectory = directory;
+    }
+
+    public String getNormalizeDirectory() {
+        if (normalizeDirectory == null) {
+            normalizeDirectory = System.getProperty("user.home");
+        }
+        return normalizeDirectory;
+    }
+
+    public void setNormalizeDirectory(String directory) {
+        this.normalizeDirectory = directory;
     }
 }

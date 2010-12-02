@@ -33,16 +33,19 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.io.File;
 
 /**
  * Turn diverse source xml data into standardized output for import into the europeana portal database and search
@@ -56,6 +59,7 @@ public class NormalizationPanel extends JPanel {
     private JCheckBox discardInvalidBox = new JCheckBox("Discard Invalid Records");
     private JCheckBox storeNormalizedBox = new JCheckBox("Store Normalized XML");
     private JLabel normalizeMessageLabel = new JLabel("?", JLabel.CENTER);
+    private JFileChooser chooser = new JFileChooser("Normalized Data Output Directory");
 
     public NormalizationPanel(SipModel sipModel) {
         super(new BorderLayout(5, 5));
@@ -140,8 +144,59 @@ public class NormalizationPanel extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            ProgressMonitor progressMonitor = new ProgressMonitor(SwingUtilities.getRoot(NormalizationPanel.this), "Normalizing", "Normalizing  " + sipModel.getDataSetStore().getSpec(), 0, 100);
-            sipModel.normalize(discardInvalidBox.isSelected(), storeNormalizedBox.isSelected(), new ProgressListener.Adapter(progressMonitor, this));
+            if (storeNormalizedBox.isSelected()) {
+                File normalizeDirectory = new File(sipModel.getNormalizeDirectory());
+                chooser.setCurrentDirectory(normalizeDirectory);
+                chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                chooser.setFileFilter(new FileFilter() {
+                    @Override
+                    public boolean accept(File file) {
+                        return file.isDirectory();
+                    }
+
+                    @Override
+                    public String getDescription() {
+                        return "Directories";
+                    }
+                });
+                chooser.setMultiSelectionEnabled(false);
+                int choiceMade = chooser.showOpenDialog(NormalizationPanel.this);
+                if (choiceMade == JFileChooser.APPROVE_OPTION) {
+                    normalizeDirectory = chooser.getSelectedFile();
+                    sipModel.setNormalizeDirectory(normalizeDirectory);
+                    normalizeTo(normalizeDirectory);
+                }
+            }
+            else {
+                normalizeTo(null);
+            }
+        }
+
+        private void normalizeTo(File normalizeDirectory) {
+            String message;
+            if (normalizeDirectory != null) {
+                message = String.format(
+                        "<html><h3>Transforming the raw data of '%s' into '%s' format</h3><br>" +
+                                "Writing to %s ",
+                        sipModel.getDataSetStore().getSpec(),
+                        sipModel.getMappingModel().getRecordMapping().getPrefix(),
+                        normalizeDirectory
+                );
+            }
+            else {
+                message = String.format(
+                        "<html><h3>Transforming the raw data of '%s' into '%s' format</h3>",
+                        sipModel.getDataSetStore().getSpec(),
+                        sipModel.getMappingModel().getRecordMapping().getPrefix()
+                );
+            }
+            ProgressMonitor progressMonitor = new ProgressMonitor(
+                    SwingUtilities.getRoot(NormalizationPanel.this),
+                    "<html><h2>Normalizing</h2>",
+                    message,
+                    0,100
+            );
+            sipModel.normalize(normalizeDirectory, discardInvalidBox.isSelected(), new ProgressListener.Adapter(progressMonitor, this));
         }
     };
 }
