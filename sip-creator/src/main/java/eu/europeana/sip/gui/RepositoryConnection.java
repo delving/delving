@@ -109,6 +109,7 @@ public class RepositoryConnection {
                 });
             }
             catch (final Exception e) {
+                periodicListFetchTimer.stop();
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -151,6 +152,7 @@ public class RepositoryConnection {
                 });
             }
             catch (final Exception e) {
+                periodicListFetchTimer.stop();
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {

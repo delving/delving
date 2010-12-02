@@ -43,6 +43,7 @@ public class MongoObjectParser {
         for (MetadataNamespace ns : MetadataNamespace.values()) {
             this.namespaces.put(ns.getPrefix(), ns.getUri());
         }
+        this.namespaces.put(metadataPrefix, namespaceUri);
     }
 
     @SuppressWarnings("unchecked")
@@ -76,11 +77,8 @@ public class MongoObjectParser {
                         }
                         String prefix = input.getPrefix();
                         String uri = input.getNamespaceURI();
-                        if (prefix != null) {
+                        if (prefix != null && !prefix.isEmpty()) {
                             namespaces.put(prefix, uri);
-                        }
-                        else {
-                            namespaces.put(metadataPrefix, namespaceUri); // todo: set it up as the default namespace
                         }
                         contentBuffer.append("<").append(input.getPrefixedName());
                         if (input.getAttributeCount() > 0) {

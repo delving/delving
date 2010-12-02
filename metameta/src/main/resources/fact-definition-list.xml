@@ -5,7 +5,7 @@
         <toolTip>The reference identifier of this data set</toolTip>
         <automatic>true</automatic>
     </fact-definition>
-    <fact-definition name="recordPath">
+    <fact-definition name="recordRootPath">
         <prompt>Record Path</prompt>
         <toolTip>This path indicates where the record boundaries are in the input XML.</toolTip>
         <automatic>true</automatic>
@@ -660,6 +660,10 @@
     <fact-definition name="rights">
         <prompt>Rights</prompt>
         <toolTip>What can you do with it?</toolTip>
+        <options>
+            <string>Unknown</string>
+            <string>Creative Commons</string>
+        </options>
     </fact-definition>
     <fact-definition name="type">
         <prompt>Type</prompt>

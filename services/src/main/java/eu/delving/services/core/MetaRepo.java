@@ -31,8 +31,6 @@ import eu.delving.services.exceptions.CannotDisseminateFormatException;
 import eu.delving.services.exceptions.NoRecordsMatchException;
 import org.bson.types.ObjectId;
 
-import javax.xml.stream.XMLStreamException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Date;
@@ -60,9 +58,9 @@ public interface MetaRepo {
 
     void incrementRecordCount(String spec, int increment);
 
-    Set<? extends MetadataFormat> getMetadataFormats() throws BadArgumentException;
+    Set<? extends MetadataFormat> getMetadataFormats() throws BadArgumentException, MetaRepoException;
 
-    Set<? extends MetadataFormat> getMetadataFormats(String id, String accessKey) throws BadArgumentException, CannotDisseminateFormatException;
+    Set<? extends MetadataFormat> getMetadataFormats(String id, String accessKey) throws BadArgumentException, CannotDisseminateFormatException, MetaRepoException;
 
     HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String accessKey) throws NoRecordsMatchException, BadArgumentException;
 
@@ -70,61 +68,73 @@ public interface MetaRepo {
 
     void removeExpiredHarvestSteps();
 
-    Record getRecord(String identifier, String metadataFormat, String accessKey) throws CannotDisseminateFormatException, BadArgumentException;
+    Record getRecord(String identifier, String metadataFormat, String accessKey) throws CannotDisseminateFormatException, BadArgumentException, MetaRepoException;
 
     MetaConfig getMetaRepoConfig();
 
     public interface DataSet {
         String getSpec();
+        boolean hasHash(String hash);
+
+        boolean hasDetails();
+        Details createDetails();
+        Details getDetails() throws MetaRepoException;
+        void setFactsHash(String sourceHash);
+        DBObject getNamespaces();
+
+        DataSetState getState();
+        String getErrorMessage();
+        void setState(DataSetState dataSetState);
+        void setErrorState(String message);
+
+        void parseRecords(InputStream inputStream) throws MetaRepoException;
+        void setSourceHash(String hash);
+
+        void setMapping(RecordMapping recordMapping);
+        void setMappingHash(String metadataPrefix, String hash);
+
+        int getRecordsIndexed();
+        void setRecordsIndexed(int count);
+
+        Map<String,Mapping> mappings() throws BadArgumentException;
+        int getRecordCount();
+        Record fetch(ObjectId id, String metadataPrefix, String accessKey) throws BadArgumentException, CannotDisseminateFormatException, MetaRepoException;
+        List<? extends Record> records(String prefix, int start, int count, Date from, Date until, String accessKey) throws CannotDisseminateFormatException, BadArgumentException, MetaRepoException;
+
+        void save();
+
+        String SPEC = "spec";
+        String NAMESPACES = "namespaces";
+        String MAPPINGS = "mappings";
+        String MAPPING_HASH_PREFIX = "mapping_hash_";
+        String SOURCE_HASH = "source_hash";
+        String FACTS_HASH = "facts_hash";
+        String ERROR_MESSAGE = "error";
+        String DATA_SET_STATE = "state";
+        String RECORDS_INDEXED = "rec_indexed";
+        String DETAILS = "details";
+    }
+
+    public interface Details {
         String getName();
         void setName(String value);
         String getProviderName();
         void setProviderName(String value);
         String getDescription();
         void setDescription(String value);
-        DBObject getNamespaces();
         Path getRecordRoot();
         void setRecordRoot(Path path);
         Path getUniqueElement();
         void setUniqueElement(Path path);
-        int getRecordsIndexed();
-        void setRecordsIndexed(int count);
-        DataSetState getState();
-        String getErrorMessage();
-        void setState(DataSetState dataSetState);
-        void setErrorState(String message);
         MetadataFormat getMetadataFormat();
-        void save();
 
-        void setFactsHash(String sourceHash);
-        void setSourceHash(String hash);
-        void setMappingHash(String metadataPrefix, String hash);
-        boolean hasHash(String hash);
 
-        void parseRecords(InputStream inputStream) throws XMLStreamException, IOException;
-        void setMapping(RecordMapping recordMapping);
-
-        Map<String,Mapping> mappings() throws BadArgumentException;
-        int getRecordCount();
-        Record fetch(ObjectId id, String metadataPrefix, String accessKey) throws BadArgumentException, CannotDisseminateFormatException;
-        List<? extends Record> records(String prefix, int start, int count, Date from, Date until, String accessKey) throws CannotDisseminateFormatException, BadArgumentException;
-
-        String SPEC = "spec";
         String NAME = "name";
         String PROVIDER_NAME = "provider_name";
         String DESCRIPTION = "description";
-        String NAMESPACES = "namespaces";
         String RECORD_ROOT = "rec_root";
         String UNIQUE_ELEMENT = "unique_element";
         String METADATA_FORMAT = "metadata_format";
-        String MAPPINGS = "mappings";
-        String RECORDS_INDEXED = "rec_indexed";
-        String DATA_SET_STATE = "state";
-        String SOURCE_HASH = "source_hash";
-        String FACTS_HASH = "facts_hash";
-        String MAPPING_HASH_PREFIX = "mapping_hash_";
-        String ERROR_MESSAGE = "error";
-
     }
 
     public enum DataSetState {
@@ -152,7 +162,7 @@ public interface MetaRepo {
         Date getExpiration();
         int getListSize();
         int getCursor();
-        List<? extends Record> getRecords() throws CannotDisseminateFormatException, BadArgumentException;
+        List<? extends Record> getRecords() throws CannotDisseminateFormatException, BadArgumentException, MetaRepoException;
         PmhRequest getPmhRequest();
         DBObject getNamespaces();
         boolean hasNext();

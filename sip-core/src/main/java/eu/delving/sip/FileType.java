@@ -12,7 +12,7 @@ public enum FileType {
             "text/plain"
     ),
     SOURCE(
-            "application/gzip"
+            "application/x-gzip"
     ),
     MAPPING(
             "text/xml"

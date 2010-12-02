@@ -184,12 +184,6 @@ public class DataSetListModel extends AbstractListModel {
         private DefaultListCellRenderer renderer = new DefaultListCellRenderer();
 
         public Cell() {
-            p.setBorder(
-                    BorderFactory.createCompoundBorder(
-                            BorderFactory.createEmptyBorder(5, 5, 5, 5),
-                            BorderFactory.createRaisedBevelBorder()
-                    )
-            );
             p.add(renderer);
         }
 
@@ -197,10 +191,22 @@ public class DataSetListModel extends AbstractListModel {
         public Component getListCellRendererComponent(JList jList, Object o, int i, boolean selected, boolean hasFocus) {
             renderer.getListCellRendererComponent(jList, o, i, selected, false);
             if (selected) {
+                p.setBorder(
+                        BorderFactory.createCompoundBorder(
+                                BorderFactory.createEmptyBorder(5, 5, 5, 5),
+                                BorderFactory.createLoweredBevelBorder()
+                        )
+                );
                 renderer.setForeground(Color.BLACK);
                 renderer.setBackground(Color.WHITE);
             }
             else {
+                p.setBorder(
+                        BorderFactory.createCompoundBorder(
+                                BorderFactory.createEmptyBorder(5, 5, 5, 5),
+                                BorderFactory.createRaisedBevelBorder()
+                        )
+                );
                 renderer.setForeground(Color.BLACK);
                 renderer.setBackground(p.getBackground());
             }

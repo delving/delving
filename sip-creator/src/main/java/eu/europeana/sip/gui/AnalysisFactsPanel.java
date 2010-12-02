@@ -46,7 +46,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -75,6 +74,7 @@ public class AnalysisFactsPanel extends JPanel {
     public AnalysisFactsPanel(SipModel sipModel) {
         super(new BorderLayout(5, 5));
         this.sipModel = sipModel;
+        this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         JPanel left = new JPanel(new GridLayout(0, 1, 5, 5));
         left.add(createTreePanel());
         left.add(createStatisticsPanel());
@@ -266,14 +266,14 @@ public class AnalysisFactsPanel extends JPanel {
         public Component getTreeCellRendererComponent(JTree jTree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
             JLabel label = (JLabel) super.getTreeCellRendererComponent(jTree, value, selected, expanded, leaf, row, hasFocus);
             AnalysisTree.Node node = (AnalysisTree.Node) value;
-            label.setFont(node.getStatistics() != null ? getThickFont() : getNormalFont());
+            label.setFont(getNormalFont());
             if (node.isRecordRoot()) {
-                label.setForeground(Color.RED);
-                label.setText(String.format("%s << Record Root", node));
+                label.setFont(getThickFont());
+                label.setText(String.format("%s : Record Root", node));
             }
             if (node.isUniqueElement()) {
-                label.setForeground(Color.RED);
-                label.setText(String.format("%s << UniqueElement", node));
+                label.setFont(getThickFont());
+                label.setText(String.format("%s : Unique Element", node));
             }
             return label;
         }

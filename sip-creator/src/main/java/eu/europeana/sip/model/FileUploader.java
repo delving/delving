@@ -60,9 +60,15 @@ public class FileUploader implements Runnable {
         DataSetResponse response = DataSetResponse.SYSTEM_ERROR;
         try {
             file = Hasher.hashFile(file);
+            log.info("Checking "+file);
             response = checkFile();
             if (response == DataSetResponse.READY_TO_RECEIVE) {
+                log.info("Server is ready to receive "+file);
                 response = uploadFile();
+                log.info("Upload response "+response);
+            }
+            else {
+                log.info("Check response "+response);
             }
         }
         catch (Exception e) {
@@ -88,18 +94,15 @@ public class FileUploader implements Runnable {
             HttpGet httpGet = new HttpGet(requestUrl);
             HttpResponse response = httpClient.execute(httpGet);
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-                throw new IOException("Response not OK, but " + response.getStatusLine().getStatusCode());
+                throw new IOException(String.format("<html>Response to <br>%s<br> not OK,<br> but instead %s", requestUrl, response.getStatusLine()));
             }
             DataSetResponse dataSetResponse = DataSetResponse.valueOf(EntityUtils.toString(response.getEntity()));
             httpClient.getConnectionManager().shutdown();
             return dataSetResponse;
         }
-        catch (IOException e) {
-            log.error("Network problem", e);
-            return DataSetResponse.NEWORK_ERROR;
-        }
         catch (Exception e) {
             log.error("Network problem", e);
+            userNotifier.tellUser("Sorry there was a network problem", e); // todo: not only network
             return DataSetResponse.NEWORK_ERROR;
         }
     }

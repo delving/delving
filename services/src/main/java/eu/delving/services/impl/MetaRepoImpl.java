@@ -16,6 +16,7 @@ import eu.delving.metadata.RecordMapping;
 import eu.delving.metadata.RecordValidator;
 import eu.delving.metadata.Tag;
 import eu.delving.services.core.MetaRepo;
+import eu.delving.services.core.MetaRepoException;
 import eu.delving.services.exceptions.BadArgumentException;
 import eu.delving.services.exceptions.BadResumptionTokenException;
 import eu.delving.services.exceptions.CannotDisseminateFormatException;
@@ -36,7 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.xml.stream.XMLStreamException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -111,7 +111,9 @@ public class MetaRepoImpl implements MetaRepo {
         DBCursor cursor = collection.find();
         while (cursor.hasNext()) {
             DBObject object = cursor.next();
-            sets.add(new DataSetImpl(object));
+            DataSetImpl dataSet = new DataSetImpl(object);
+            if (!dataSet.hasDetails()) continue; // todo: add to query
+            sets.add(dataSet);
         }
         return sets;
     }
@@ -155,10 +157,10 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public Set<MetadataFormat> getMetadataFormats() throws BadArgumentException {
+    public Set<MetadataFormat> getMetadataFormats() throws BadArgumentException, MetaRepoException {
         Set<MetadataFormat> set = new TreeSet<MetadataFormat>();
         for (DataSet dataSet : getDataSets()) {
-            set.add(dataSet.getMetadataFormat());
+            set.add(dataSet.getDetails().getMetadataFormat());
             for (Mapping mapping : dataSet.mappings().values()) {
                 set.add(mapping.getMetadataFormat());
             }
@@ -167,13 +169,13 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public Set<MetadataFormat> getMetadataFormats(String id, String accessKey) throws BadArgumentException, CannotDisseminateFormatException {
+    public Set<MetadataFormat> getMetadataFormats(String id, String accessKey) throws BadArgumentException, CannotDisseminateFormatException, MetaRepoException {
         Set<MetadataFormat> set = new TreeSet<MetadataFormat>();
         ObjectId objectId = new ObjectId(id);
         for (DataSet dataSet : getDataSets()) {
-            Record record = dataSet.fetch(objectId, dataSet.getMetadataFormat().getPrefix(), accessKey);
+            Record record = dataSet.fetch(objectId, dataSet.getDetails().getMetadataFormat().getPrefix(), accessKey);
             if (record != null) {
-                set.add(dataSet.getMetadataFormat());
+                set.add(dataSet.getDetails().getMetadataFormat());
                 for (Mapping mapping : dataSet.mappings().values()) {
                     set.add(mapping.getMetadataFormat());
                 }
@@ -257,12 +259,12 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public Record getRecord(String identifier, String metadataPrefix, String accessKey) throws CannotDisseminateFormatException, BadArgumentException {
+    public Record getRecord(String identifier, String metadataPrefix, String accessKey) throws CannotDisseminateFormatException, BadArgumentException, MetaRepoException {
         RecordIdentifier recordIdentifier = createIdentifier(identifier);
         return fetch(recordIdentifier, metadataPrefix, accessKey);
     }
 
-    public Record fetch(RecordIdentifier identifier, String metadataPrefix, String accessKey) throws CannotDisseminateFormatException, BadArgumentException {
+    public Record fetch(RecordIdentifier identifier, String metadataPrefix, String accessKey) throws CannotDisseminateFormatException, BadArgumentException, MetaRepoException {
         DataSet dataSet = getDataSet(identifier.collectionId);
         if (dataSet == null) {
             throw new BadArgumentException(String.format("Do data set for identifier [%s]", identifier.collectionId));
@@ -278,18 +280,9 @@ public class MetaRepoImpl implements MetaRepo {
     private class DataSetImpl implements DataSet {
         private DBObject object;
         private DBCollection recColl;
-        private MetadataFormat metadataFormat;
 
         private DataSetImpl(DBObject object) throws BadArgumentException {
             this.object = object;
-            if (object.get(METADATA_FORMAT) != null) {
-                this.metadataFormat = new MetadataFormatImpl((DBObject) object.get(METADATA_FORMAT));
-            }
-            else {
-                DBObject formatObject = new BasicDBObject();
-                object.put(METADATA_FORMAT, formatObject);
-                this.metadataFormat = new MetadataFormatImpl(formatObject);
-            }
         }
 
         private DBCollection records() {
@@ -305,68 +298,8 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public String getName() {
-            return (String) object.get(NAME);
-        }
-
-        @Override
-        public void setName(String value) {
-            object.put(NAME, value);
-        }
-
-        @Override
-        public String getProviderName() {
-            return (String) object.get(PROVIDER_NAME);
-        }
-
-        @Override
-        public void setProviderName(String value) {
-            object.put(PROVIDER_NAME, value);
-        }
-
-        @Override
-        public String getDescription() {
-            return (String) object.get(DESCRIPTION);
-        }
-
-        @Override
-        public void setDescription(String value) {
-            object.put(DESCRIPTION, value);
-        }
-
-        @Override
         public DBObject getNamespaces() {
             return (DBObject) object.get(NAMESPACES);
-        }
-
-        @Override
-        public Path getRecordRoot() {
-            return new Path((String) (object.get(RECORD_ROOT)));
-        }
-
-        @Override
-        public void setRecordRoot(Path path) {
-            object.put(RECORD_ROOT, path.toString());
-        }
-
-        @Override
-        public int getRecordsIndexed() {
-            return (Integer) object.get(RECORDS_INDEXED);
-        }
-
-        @Override
-        public void setRecordsIndexed(int count) {
-            object.put(RECORDS_INDEXED, count);
-        }
-
-        @Override
-        public Path getUniqueElement() {
-            return new Path((String) (object.get(UNIQUE_ELEMENT)));
-        }
-
-        @Override
-        public void setUniqueElement(Path path) {
-            object.put(UNIQUE_ELEMENT, path.toString());
         }
 
         @Override
@@ -392,22 +325,31 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public void parseRecords(InputStream inputStream) throws XMLStreamException, IOException {
+        public void parseRecords(InputStream inputStream) throws MetaRepoException {
             records().drop();
             object.put(SOURCE_HASH, "");
             saveObject();
-            MongoObjectParser parser = new MongoObjectParser(
-                    inputStream,
-                    getRecordRoot(),
-                    getUniqueElement(),
-                    getMetadataFormat().getPrefix(),
-                    getMetadataFormat().getNamespace()
-            );
-            DBObject record;
-            while ((record = parser.nextRecord()) != null) {
-                records().insert(record);
+            try {
+                Details details = getDetails();
+                MongoObjectParser parser = new MongoObjectParser(
+                        inputStream,
+                        details.getRecordRoot(),
+                        details.getUniqueElement(),
+                        details.getMetadataFormat().getPrefix(),
+                        details.getMetadataFormat().getNamespace()
+                );
+                DBObject record;
+                while ((record = parser.nextRecord()) != null) {
+                    records().insert(record);
+                }
+                object.put(NAMESPACES, parser.getNamespaces());
             }
-            object.put(NAMESPACES, parser.getNamespaces());
+            catch (MetaRepoException e) {
+                throw e;
+            }
+            catch (Exception e) {
+                throw new MetaRepoException("Unable to parse records", e);
+            }
             saveObject();
         }
 
@@ -442,11 +384,6 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public MetadataFormat getMetadataFormat() {
-            return metadataFormat;
-        }
-
-        @Override
         public void save() {
             saveObject();
         }
@@ -467,6 +404,20 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
+        public int getRecordsIndexed() {
+            Object obj = object.get(RECORDS_INDEXED);
+            if (obj == null) {
+                return 0;
+            }
+            return (Integer) obj;
+        }
+
+        @Override
+        public void setRecordsIndexed(int count) {
+            object.put(RECORDS_INDEXED, count);
+        }
+
+        @Override
         public boolean hasHash(String hash) {
             Set<String> hashes = new TreeSet<String>();
             addHash(FACTS_HASH, hashes);
@@ -475,6 +426,27 @@ public class MetaRepoImpl implements MetaRepo {
                 addHash(MAPPING_HASH_PREFIX + metadataPrefix, hashes);
             }
             return hashes.contains(hash);
+        }
+
+        @Override
+        public boolean hasDetails() {
+            return object.get(DETAILS) != null;
+        }
+
+        @Override
+        public Details createDetails() {
+            DBObject detailsObject = new BasicDBObject();
+            object.put(DETAILS, detailsObject);
+            return new DetailsImpl(detailsObject);
+        }
+
+        @Override
+        public Details getDetails() throws MetaRepoException {
+            Object detailsObject = object.get(DETAILS);
+            if (detailsObject == null) {
+                throw new MetaRepoException("No Details found");
+            }
+            return new DetailsImpl((DBObject) detailsObject);
         }
 
         private void addHash(String hashAttribute, Set<String> hashes) {
@@ -508,13 +480,13 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public Record fetch(ObjectId id, String prefix, String accessKey) throws BadArgumentException, CannotDisseminateFormatException { // if prefix is passed in, mapping can be done
+        public Record fetch(ObjectId id, String prefix, String accessKey) throws BadArgumentException, CannotDisseminateFormatException, MetaRepoException { // if prefix is passed in, mapping can be done
             DBObject object = new BasicDBObject(MONGO_ID, id);
             DBObject rawRecord = records().findOne(object);
             if (rawRecord != null) {
                 Mapping mapping = getMapping(prefix, accessKey);
                 List<RecordImpl> list = new ArrayList<RecordImpl>();
-                list.add(new RecordImpl(records().findOne(object), getMetadataFormat().getPrefix(), getNamespaces()));
+                list.add(new RecordImpl(records().findOne(object), getDetails().getMetadataFormat().getPrefix(), getNamespaces()));
                 if (mapping != null) {
                     Map<String, String> namespaces = new TreeMap<String, String>();
                     DBObject namespacesObject = getNamespaces();
@@ -529,13 +501,13 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public List<? extends Record> records(String prefix, int start, int count, Date from, Date until, String accessKey) throws CannotDisseminateFormatException, BadArgumentException {
+        public List<? extends Record> records(String prefix, int start, int count, Date from, Date until, String accessKey) throws CannotDisseminateFormatException, BadArgumentException, MetaRepoException {
             Mapping mapping = getMapping(prefix, accessKey);
             List<RecordImpl> list = new ArrayList<RecordImpl>();
             DBCursor cursor = createCursor(from, until).skip(start).limit(count);
             while (cursor.hasNext()) {
                 DBObject object = cursor.next();
-                list.add(new RecordImpl(object, getMetadataFormat().getPrefix(), getNamespaces()));
+                list.add(new RecordImpl(object, getDetails().getMetadataFormat().getPrefix(), getNamespaces()));
             }
             if (mapping != null) {
                 Map<String, String> namespaces = new TreeMap<String, String>();
@@ -548,11 +520,11 @@ public class MetaRepoImpl implements MetaRepo {
             return list;
         }
 
-        private Mapping getMapping(String prefix, String accessKey) throws CannotDisseminateFormatException, BadArgumentException {
+        private Mapping getMapping(String prefix, String accessKey) throws CannotDisseminateFormatException, BadArgumentException, MetaRepoException {
             Mapping mapping;
-            if (getMetadataFormat().getPrefix().equals(prefix)) {
+            if (getDetails().getMetadataFormat().getPrefix().equals(prefix)) {
                 mapping = null;
-                if (getMetadataFormat().isAccessKeyRequired() && !serviceAccessToken.checkKey(accessKey)) {
+                if (getDetails().getMetadataFormat().isAccessKeyRequired() && !serviceAccessToken.checkKey(accessKey)) {
                     log.warn("Access key violation for raw format " + prefix);
                     throw new CannotDisseminateFormatException(String.format("Raw metadata format requires access key, but %s is not valid", accessKey));
                 }
@@ -593,6 +565,79 @@ public class MetaRepoImpl implements MetaRepo {
             }
             return s;
         }
+    }
+
+    private class DetailsImpl implements Details {
+        private DBObject object;
+        private MetadataFormat metadataFormat;
+
+        private DetailsImpl(DBObject object) {
+            this.object = object;
+        }
+
+        @Override
+        public MetadataFormat getMetadataFormat() {
+            if (metadataFormat == null) {
+                DBObject metadataObject = (DBObject) object.get(METADATA_FORMAT);
+                if (metadataObject == null) {
+                    object.put(METADATA_FORMAT, metadataObject = new BasicDBObject());
+                }
+                metadataFormat = new MetadataFormatImpl(metadataObject);
+            }
+            return metadataFormat;
+        }
+
+        @Override
+        public Path getRecordRoot() {
+            return new Path((String) (object.get(RECORD_ROOT)));
+        }
+
+        @Override
+        public void setRecordRoot(Path path) {
+            object.put(RECORD_ROOT, path.toString());
+        }
+
+        @Override
+        public Path getUniqueElement() {
+            return new Path((String) (object.get(UNIQUE_ELEMENT)));
+        }
+
+        @Override
+        public void setUniqueElement(Path path) {
+            object.put(UNIQUE_ELEMENT, path.toString());
+        }
+
+        @Override
+        public String getName() {
+            return (String) object.get(NAME);
+        }
+
+        @Override
+        public void setName(String value) {
+            object.put(NAME, value);
+        }
+
+        @Override
+        public String getProviderName() {
+            return (String) object.get(PROVIDER_NAME);
+        }
+
+        @Override
+        public void setProviderName(String value) {
+            object.put(PROVIDER_NAME, value);
+        }
+
+        @Override
+        public String getDescription() {
+            return (String) object.get(DESCRIPTION);
+        }
+
+        @Override
+        public void setDescription(String value) {
+            object.put(DESCRIPTION, value);
+        }
+
+
     }
 
     private interface MappingInternal {
@@ -800,7 +845,7 @@ public class MetaRepoImpl implements MetaRepo {
                 while (walk.hasNext()) {
                     Record record = walk.next();
                     try {
-                        MetadataRecord metadataRecord = factory.fromXml(record.getXmlString(dataSet.getMetadataFormat().getPrefix()));
+                        MetadataRecord metadataRecord = factory.fromXml(record.getXmlString(dataSet.getDetails().getMetadataFormat().getPrefix()));
                         String recordString = mappingRunner.runMapping(metadataRecord);
                         List<String> problems = new ArrayList<String>();
                         String validated = recordValidator.validateRecord(recordString, problems);
@@ -821,6 +866,9 @@ public class MetaRepoImpl implements MetaRepo {
                     }
                     catch (XMLStreamException e) {
                         log.warn("Unable to map record!", e);
+                    }
+                    catch (MetaRepoException e) {
+                        e.printStackTrace();  // todo: something
                     }
                 }
                 if (invalidCount > 0) {
@@ -848,15 +896,8 @@ public class MetaRepoImpl implements MetaRepo {
     private static class MetadataFormatImpl implements MetadataFormat, Comparable<MetadataFormat> {
         private DBObject object;
 
-        private MetadataFormatImpl(DBObject object) throws BadArgumentException {
+        private MetadataFormatImpl(DBObject object) {
             this.object = object;
-            if (object == null) {
-                throw new BadArgumentException("MetdataFormat object missing!");
-            }
-            String prefix = (String) object.get(PREFIX);
-            if (prefix == null || prefix.isEmpty()) {
-                throw new BadArgumentException("MetdataFormat with no prefix!");
-            }
         }
 
         @Override
@@ -866,6 +907,9 @@ public class MetaRepoImpl implements MetaRepo {
 
         @Override
         public void setPrefix(String value) {
+            if (value.isEmpty()) {
+                throw new IllegalArgumentException("Empty prefix");
+            }
             object.put(PREFIX, value);
         }
 
@@ -1003,7 +1047,7 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public List<? extends Record> getRecords() throws CannotDisseminateFormatException, BadArgumentException {
+        public List<? extends Record> getRecords() throws CannotDisseminateFormatException, BadArgumentException, MetaRepoException {
             PmhRequest request = getPmhRequest();
             DataSet dataSet = getDataSet(request.getSet());
             if (dataSet == null) {

@@ -85,7 +85,7 @@ import java.util.List;
 public class SipCreatorGUI extends JFrame {
     private static final String LOCAL_SETS = "Local Data Sets";
     private static final String LOCAL_AND_REMOTE_SETS = "Local and Remote Data Sets";
-    private static final Dimension SIZE = new Dimension(1024-60, 768-60);
+    private static final Dimension SIZE = new Dimension(1024 - 60, 768 - 60);
     private static final int MARGIN = 15;
     private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel;
@@ -257,24 +257,28 @@ public class SipCreatorGUI extends JFrame {
                                             case THANK_YOU:
                                             case GOT_IT_ALREADY:
                                                 Collection<File> mappingFiles = store.getMappingFiles();
-                                                if (mappingFiles.size() > 1) {
-                                                    throw new RuntimeException("Not yet ready for multiple mappings");
-                                                }
-                                                File mappingFile = mappingFiles.iterator().next();
-                                                sipModel.uploadFile(FileType.MAPPING, mappingFile, progressListener, new FileUploader.Receiver() {
-                                                    @Override
-                                                    public void acceptResponse(DataSetResponse dataSetResponse) {
-                                                        // todo: done
+                                                if (!mappingFiles.isEmpty()) {
+                                                    if (mappingFiles.size() > 1) {
+                                                        throw new RuntimeException("Not yet ready for multiple mappings");
                                                     }
-                                                });
+                                                    File mappingFile = mappingFiles.iterator().next();
+                                                    sipModel.uploadFile(FileType.MAPPING, mappingFile, progressListener, new FileUploader.Receiver() {
+                                                        @Override
+                                                        public void acceptResponse(DataSetResponse dataSetResponse) {
+                                                            // todo: done
+                                                        }
+                                                    });
+                                                }
                                                 break;
                                             default:
+                                                sipModel.tellUser("Response: " + dataSetResponse); // todo
                                                 break;
                                         }
                                     }
                                 });
                                 break;
                             default:
+                                sipModel.tellUser("Response: " + dataSetResponse); // todo
                                 break;
                         }
                     }
