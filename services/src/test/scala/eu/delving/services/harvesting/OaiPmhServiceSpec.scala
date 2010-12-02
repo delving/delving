@@ -10,8 +10,8 @@ import eu.delving.services.impl.MetaRepoImpl
 import org.scalatest.{PrivateMethodTester, Spec}
 import collection.mutable.HashMap
 import eu.delving.services.core.MetaRepo.PmhVerb
-import java.util.{Date, Map}
 import eu.delving.services.exceptions.BadArgumentException
+import eu.delving.services.core.MetaRepoImpl
 
 /**
  *

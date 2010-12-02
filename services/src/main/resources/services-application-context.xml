@@ -35,9 +35,9 @@
 
     <bean id="mongo" class="com.mongodb.Mongo"/>
 
-    <bean id="metaRepoConfig" class="eu.delving.services.impl.MetaConfigImpl"/>
+    <bean id="metaRepoConfig" class="eu.delving.services.core.MetaConfigImpl"/>
 
-    <bean id="metadataRepository" class="eu.delving.services.impl.MetaRepoImpl">
+    <bean id="metadataRepository" class="eu.delving.services.core.MetaRepoImpl">
         <property name="responseListSize" value="#{launchProperties['services.pmh.responseListSize']}"/>
         <property name="harvestStepSecondsToLive" value="180"/>
     </bean>
@@ -54,11 +54,11 @@
         <property name="repeatInterval" value="#{launchProperties['services.pmh.harvestStepCleanupDelay']}"/>
     </bean>
 
-    <bean id="harvindexer" class="eu.delving.services.indexing.Harvindexer">
+    <bean id="harvindexer" class="eu.delving.services.core.Harvindexer">
         <property name="chunkSize" value="#{launchProperties['solr.chunkSize']}"/>
     </bean>
 
-    <bean id="indexJobRunner" class="eu.delving.services.indexing.IndexJobRunner"/>
+    <bean id="indexJobRunner" class="eu.delving.services.core.IndexJobRunner"/>
 
     <bean id="indexTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
         <property name="jobDetail">

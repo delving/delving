@@ -19,7 +19,7 @@
  *  permissions and limitations under the Licence.
  */
 
-package eu.delving.services.core;
+package eu.delving.services.exceptions;
 
 /**
  * Something went wrong with the MetaRepo
@@ -27,12 +27,12 @@ package eu.delving.services.core;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class MetaRepoException extends Exception {
-    public MetaRepoException(String s) {
+public class MappingNotFoundException extends Exception {
+    public MappingNotFoundException(String s) {
         super(s);
     }
 
-    public MetaRepoException(String s, Throwable throwable) {
+    public MappingNotFoundException(String s, Throwable throwable) {
         super(s, throwable);
     }
 }

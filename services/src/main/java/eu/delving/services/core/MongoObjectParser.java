@@ -1,11 +1,10 @@
-package eu.delving.services.impl;
+package eu.delving.services.core;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import eu.delving.metadata.MetadataNamespace;
 import eu.delving.metadata.Path;
 import eu.delving.metadata.Tag;
-import eu.delving.services.core.MetaRepo;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 

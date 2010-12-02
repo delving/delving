@@ -6,25 +6,25 @@ package eu.delving.services.exceptions;
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
  */
 
-public class ImportException extends Exception {
+public class HarvindexingException extends Exception {
     private static final long serialVersionUID = 957621372671543988L;
     private int recordNumber = -1;
 
-    public ImportException(String message, int recordNumber) {
+    public HarvindexingException(String message, int recordNumber) {
         super(message);
         this.recordNumber = recordNumber;
     }
 
-    public ImportException(String message, Throwable cause, int recordNumber) {
+    public HarvindexingException(String message, Throwable cause, int recordNumber) {
         super(message, cause);
         this.recordNumber = recordNumber;
     }
 
-    public ImportException(String message) {
+    public HarvindexingException(String message) {
         super(message);
     }
 
-    public ImportException(String message, Throwable cause) {
+    public HarvindexingException(String message, Throwable cause) {
         super(message, cause);
     }
 

@@ -1,7 +1,7 @@
 package eu.delving.services.controller;
 
+import eu.delving.services.core.Harvindexer;
 import eu.delving.services.core.MetaRepo;
-import eu.delving.services.indexing.Harvindexer;
 import eu.delving.services.util.MockContentLoader;
 import eu.europeana.core.database.ConsoleDao;
 import eu.europeana.core.database.domain.EuropeanaCollection;

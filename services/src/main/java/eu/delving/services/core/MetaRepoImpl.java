@@ -1,4 +1,4 @@
-package eu.delving.services.impl;
+package eu.delving.services.core;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -15,12 +15,13 @@ import eu.delving.metadata.Path;
 import eu.delving.metadata.RecordMapping;
 import eu.delving.metadata.RecordValidator;
 import eu.delving.metadata.Tag;
-import eu.delving.services.core.MetaRepo;
-import eu.delving.services.core.MetaRepoException;
+import eu.delving.services.exceptions.AccessKeyException;
 import eu.delving.services.exceptions.BadArgumentException;
-import eu.delving.services.exceptions.BadResumptionTokenException;
-import eu.delving.services.exceptions.CannotDisseminateFormatException;
-import eu.delving.services.exceptions.NoRecordsMatchException;
+import eu.delving.services.exceptions.DataSetNotFoundException;
+import eu.delving.services.exceptions.MappingNotFoundException;
+import eu.delving.services.exceptions.MetaRepoSystemException;
+import eu.delving.services.exceptions.RecordParseException;
+import eu.delving.services.exceptions.ResumptionTokenNotFoundException;
 import eu.delving.sip.ServiceAccessToken;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
@@ -95,7 +96,7 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public DataSet createDataSet(String spec) throws BadArgumentException {
+    public DataSet createDataSet(String spec) {
         DBObject object = new BasicDBObject();
         object.put(DataSet.SPEC, spec);
         object.put(DataSet.DATA_SET_STATE, DataSetState.EMPTY.toString());
@@ -105,7 +106,7 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public synchronized Collection<? extends DataSet> getDataSets() throws BadArgumentException {
+    public synchronized Collection<? extends DataSet> getDataSets() {
         List<DataSetImpl> sets = new ArrayList<DataSetImpl>();
         DBCollection collection = db().getCollection(DATASETS_COLLECTION);
         DBCursor cursor = collection.find();
@@ -119,7 +120,7 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public DataSet getDataSet(String spec) throws BadArgumentException {
+    public DataSet getDataSet(String spec) {
         DBCollection collection = db().getCollection(DATASETS_COLLECTION);
         DBObject object = collection.findOne(new BasicDBObject(DataSet.SPEC, spec));
         if (object == null) {
@@ -129,7 +130,7 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public DataSet getFirstDataSet(DataSetState dataSetState) throws BadArgumentException {
+    public DataSet getFirstDataSet(DataSetState dataSetState) {
         DBCollection collection = db().getCollection(DATASETS_COLLECTION);
         DBObject object = collection.findOne(new BasicDBObject(DataSet.DATA_SET_STATE, dataSetState.toString()));
         if (object == null) {
@@ -157,7 +158,7 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public Set<MetadataFormat> getMetadataFormats() throws BadArgumentException, MetaRepoException {
+    public Set<MetadataFormat> getMetadataFormats() {
         Set<MetadataFormat> set = new TreeSet<MetadataFormat>();
         for (DataSet dataSet : getDataSets()) {
             set.add(dataSet.getDetails().getMetadataFormat());
@@ -169,7 +170,7 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public Set<MetadataFormat> getMetadataFormats(String id, String accessKey) throws BadArgumentException, CannotDisseminateFormatException, MetaRepoException {
+    public Set<MetadataFormat> getMetadataFormats(String id, String accessKey) throws MappingNotFoundException, AccessKeyException {
         Set<MetadataFormat> set = new TreeSet<MetadataFormat>();
         ObjectId objectId = new ObjectId(id);
         for (DataSet dataSet : getDataSets()) {
@@ -185,7 +186,7 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String accessKey) throws NoRecordsMatchException, BadArgumentException {
+    public HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String accessKey) throws DataSetNotFoundException {
         DBCollection steps = db().getCollection(HARVEST_STEPS_COLLECTION);
         DBObject req = new BasicDBObject();
         req.put(PmhRequest.VERB, verb.toString());
@@ -198,7 +199,7 @@ public class MetaRepoImpl implements MetaRepo {
         if (dataSet == null) {
             String errorMessage = String.format("Cannot find set [%s]", set);
             log.error(errorMessage);
-            throw new NoRecordsMatchException(errorMessage);
+            throw new DataSetNotFoundException(errorMessage);
         }
         firstStep.put(HarvestStep.LIST_SIZE, dataSet.getRecordCount());
         firstStep.put(HarvestStep.NAMESPACES, dataSet.getNamespaces());
@@ -210,20 +211,20 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public HarvestStep getHarvestStep(String resumptionToken) throws NoRecordsMatchException, BadArgumentException, BadResumptionTokenException {
+    public HarvestStep getHarvestStep(String resumptionToken) throws ResumptionTokenNotFoundException, DataSetNotFoundException {
         ObjectId objectId;
         // otherwise a illegal resumptionToken from the mongodb perspective throws a general exception
         try {
             objectId = new ObjectId(resumptionToken);
         }
         catch (Exception e) {
-            throw new BadResumptionTokenException("Unable to find resumptionToken: " + resumptionToken);
+            throw new ResumptionTokenNotFoundException("Unable to find resumptionToken: " + resumptionToken);
         }
         DBCollection steps = db().getCollection(HARVEST_STEPS_COLLECTION);
         DBObject query = new BasicDBObject(MONGO_ID, objectId);
         DBObject step = steps.findOne(query);
         if (step == null) {
-            throw new BadResumptionTokenException("Unable to find resumptionToken: " + resumptionToken);
+            throw new ResumptionTokenNotFoundException("Unable to find resumptionToken: " + resumptionToken);
         }
         return createHarvestStep(step, steps);
     }
@@ -236,14 +237,14 @@ public class MetaRepoImpl implements MetaRepo {
         steps.remove(query);
     }
 
-    private HarvestStep createHarvestStep(DBObject step, DBCollection steps) throws NoRecordsMatchException, BadArgumentException {
+    private HarvestStep createHarvestStep(DBObject step, DBCollection steps) throws DataSetNotFoundException {
         HarvestStepImpl harvestStep = new HarvestStepImpl(step);
         String set = harvestStep.getPmhRequest().getSet();
         DataSet dataSet = getDataSet(set);
         if (dataSet == null) {
             String errorMessage = String.format("Cannot find set [%s]", set);
             log.error(errorMessage);
-            throw new NoRecordsMatchException(errorMessage);
+            throw new DataSetNotFoundException(errorMessage);
         }
         if (harvestStep.getListSize() > harvestStep.getCursor() + responseListSize) {
             DBObject nextStep = new BasicDBObject(HarvestStep.PMH_REQUEST, step.get(HarvestStep.PMH_REQUEST));
@@ -259,15 +260,15 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public Record getRecord(String identifier, String metadataPrefix, String accessKey) throws CannotDisseminateFormatException, BadArgumentException, MetaRepoException {
+    public Record getRecord(String identifier, String metadataPrefix, String accessKey) throws BadArgumentException, DataSetNotFoundException, MappingNotFoundException, AccessKeyException {
         RecordIdentifier recordIdentifier = createIdentifier(identifier);
         return fetch(recordIdentifier, metadataPrefix, accessKey);
     }
 
-    public Record fetch(RecordIdentifier identifier, String metadataPrefix, String accessKey) throws CannotDisseminateFormatException, BadArgumentException, MetaRepoException {
+    public Record fetch(RecordIdentifier identifier, String metadataPrefix, String accessKey) throws DataSetNotFoundException, MappingNotFoundException, AccessKeyException {
         DataSet dataSet = getDataSet(identifier.collectionId);
         if (dataSet == null) {
-            throw new BadArgumentException(String.format("Do data set for identifier [%s]", identifier.collectionId));
+            throw new DataSetNotFoundException(String.format("Do data set for identifier [%s]", identifier.collectionId));
         }
         return dataSet.fetch(identifier.objectId, metadataPrefix, accessKey);
     }
@@ -281,7 +282,7 @@ public class MetaRepoImpl implements MetaRepo {
         private DBObject object;
         private DBCollection recColl;
 
-        private DataSetImpl(DBObject object) throws BadArgumentException {
+        private DataSetImpl(DBObject object) {
             this.object = object;
         }
 
@@ -325,7 +326,7 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public void parseRecords(InputStream inputStream) throws MetaRepoException {
+        public void parseRecords(InputStream inputStream) throws RecordParseException {
             records().drop();
             object.put(SOURCE_HASH, "");
             saveObject();
@@ -344,11 +345,8 @@ public class MetaRepoImpl implements MetaRepo {
                 }
                 object.put(NAMESPACES, parser.getNamespaces());
             }
-            catch (MetaRepoException e) {
-                throw e;
-            }
             catch (Exception e) {
-                throw new MetaRepoException("Unable to parse records", e);
+                throw new RecordParseException("Unable to parse records", e);
             }
             saveObject();
         }
@@ -441,10 +439,10 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public Details getDetails() throws MetaRepoException {
+        public Details getDetails() {
             Object detailsObject = object.get(DETAILS);
             if (detailsObject == null) {
-                throw new MetaRepoException("No Details found");
+                throw new MetaRepoSystemException("No Details found");
             }
             return new DetailsImpl((DBObject) detailsObject);
         }
@@ -457,7 +455,7 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public Map<String, Mapping> mappings() throws BadArgumentException {
+        public Map<String, Mapping> mappings() {
             Map<String, Mapping> mappingMap = new TreeMap<String, Mapping>();
             DBObject mappingsObject = (DBObject) object.get(MAPPINGS);
             if (mappingsObject != null) {
@@ -480,7 +478,7 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public Record fetch(ObjectId id, String prefix, String accessKey) throws BadArgumentException, CannotDisseminateFormatException, MetaRepoException { // if prefix is passed in, mapping can be done
+        public Record fetch(ObjectId id, String prefix, String accessKey) throws MappingNotFoundException, AccessKeyException { // if prefix is passed in, mapping can be done
             DBObject object = new BasicDBObject(MONGO_ID, id);
             DBObject rawRecord = records().findOne(object);
             if (rawRecord != null) {
@@ -501,7 +499,7 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public List<? extends Record> records(String prefix, int start, int count, Date from, Date until, String accessKey) throws CannotDisseminateFormatException, BadArgumentException, MetaRepoException {
+        public List<? extends Record> records(String prefix, int start, int count, Date from, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException {
             Mapping mapping = getMapping(prefix, accessKey);
             List<RecordImpl> list = new ArrayList<RecordImpl>();
             DBCursor cursor = createCursor(from, until).skip(start).limit(count);
@@ -520,23 +518,23 @@ public class MetaRepoImpl implements MetaRepo {
             return list;
         }
 
-        private Mapping getMapping(String prefix, String accessKey) throws CannotDisseminateFormatException, BadArgumentException, MetaRepoException {
+        private Mapping getMapping(String prefix, String accessKey) throws AccessKeyException, MappingNotFoundException {
             Mapping mapping;
             if (getDetails().getMetadataFormat().getPrefix().equals(prefix)) {
                 mapping = null;
                 if (getDetails().getMetadataFormat().isAccessKeyRequired() && !serviceAccessToken.checkKey(accessKey)) {
                     log.warn("Access key violation for raw format " + prefix);
-                    throw new CannotDisseminateFormatException(String.format("Raw metadata format requires access key, but %s is not valid", accessKey));
+                    throw new AccessKeyException(String.format("Raw metadata format requires access key, but %s is not valid", accessKey));
                 }
             }
             else {
                 mapping = mappings().get(prefix);
                 if (mapping == null) {
-                    throw new CannotDisseminateFormatException(String.format("No mapping found to prefix %s", prefix));
+                    throw new MappingNotFoundException(String.format("No mapping found to prefix %s", prefix));
                 }
                 if (mapping.getMetadataFormat().isAccessKeyRequired() && !serviceAccessToken.checkKey(accessKey)) {
                     log.warn("Access key violation for mapped format " + prefix);
-                    throw new CannotDisseminateFormatException(String.format("Mapping to metadata format requires access key, but %s is not valid", accessKey));
+                    throw new AccessKeyException(String.format("Mapping to metadata format requires access key, but %s is not valid", accessKey));
                 }
             }
             return mapping;
@@ -641,7 +639,7 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     private interface MappingInternal {
-        void map(List<? extends Record> records, Map<String, String> namespaces) throws CannotDisseminateFormatException;
+        void map(List<? extends Record> records, Map<String, String> namespaces) throws MappingNotFoundException;
     }
 
     // for now we pretend that we have an ESE mapping
@@ -679,7 +677,7 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public void map(List<? extends Record> records, Map<String, String> namespaces) throws CannotDisseminateFormatException {
+        public void map(List<? extends Record> records, Map<String, String> namespaces) throws MappingNotFoundException {
             mappingInternal.map(records, namespaces);
             Iterator<? extends Record> recordWalk = records.iterator();
             while (recordWalk.hasNext()) {
@@ -814,7 +812,7 @@ public class MetaRepoImpl implements MetaRepo {
         private RecordValidator recordValidator = new RecordValidator(metadataModel, false);
         private MappingRunner mappingRunner;
 
-        private MappingImpl(DataSetImpl dataSet, DBObject object) throws BadArgumentException {
+        private MappingImpl(DataSetImpl dataSet, DBObject object) {
             this.dataSet = dataSet;
             this.object = object;
             this.metadataFormat = new MetadataFormatImpl((DBObject) object.get(FORMAT));
@@ -826,8 +824,13 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public RecordMapping getRecordMapping() throws MetadataException {
-            return RecordMapping.read((String) object.get(RECORD_MAPPING), metadataModel);
+        public RecordMapping getRecordMapping(){
+            try {
+                return RecordMapping.read((String) object.get(RECORD_MAPPING), metadataModel);
+            }
+            catch (MetadataException e) {
+                throw new MetaRepoSystemException("Cannot read recor mapping", e);
+            }
         }
 
         @Override
@@ -836,7 +839,7 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public void map(List<? extends Record> records, Map<String, String> namespaces) throws CannotDisseminateFormatException {
+        public void map(List<? extends Record> records, Map<String, String> namespaces) throws MappingNotFoundException {
             try {
                 MappingRunner mappingRunner = getMappingRunner();
                 MetadataRecord.Factory factory = new MetadataRecord.Factory(namespaces);
@@ -867,9 +870,6 @@ public class MetaRepoImpl implements MetaRepo {
                     catch (XMLStreamException e) {
                         log.warn("Unable to map record!", e);
                     }
-                    catch (MetaRepoException e) {
-                        e.printStackTrace();  // todo: something
-                    }
                 }
                 if (invalidCount > 0) {
                     log.info(String.format("%d invalid records discarded", invalidCount));
@@ -877,7 +877,7 @@ public class MetaRepoImpl implements MetaRepo {
             }
             catch (MetadataException e) {
                 log.error("Metadata exception!", e);
-                throw new CannotDisseminateFormatException("Internal Problem");
+                throw new MetaRepoSystemException("Unable to read metadata mapping", e);
             }
             // todo break here if mapping is consistently invalidating all records.
         }
@@ -989,19 +989,19 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public String getXmlString() throws CannotDisseminateFormatException {
+        public String getXmlString() throws MappingNotFoundException {
             return getXmlString(defaultPrefix);
         }
 
         // todo determine if the right format is returned after on-the-fly mapping
 
         @Override
-        public String getXmlString(String metadataPrefix) throws CannotDisseminateFormatException {
+        public String getXmlString(String metadataPrefix) throws MappingNotFoundException {
             String x = (String) object.get(metadataPrefix);
             if (x == null) {
                 String errorMessage = String.format("No record with prefix [%s]", metadataPrefix);
                 log.error(errorMessage);
-                throw new CannotDisseminateFormatException(errorMessage);
+                throw new MappingNotFoundException(errorMessage);
             }
             return x;
         }
@@ -1047,11 +1047,11 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public List<? extends Record> getRecords() throws CannotDisseminateFormatException, BadArgumentException, MetaRepoException {
+        public List<? extends Record> getRecords() throws DataSetNotFoundException, MappingNotFoundException, AccessKeyException {
             PmhRequest request = getPmhRequest();
             DataSet dataSet = getDataSet(request.getSet());
             if (dataSet == null) {
-                throw new BadArgumentException("No data set found by the name " + request.getSet());
+                throw new DataSetNotFoundException("No data set found by the name " + request.getSet());
             }
             String accessKey = (String) object.get(ACCESS_KEY);
             return dataSet.records(request.getMetadataPrefix(), getCursor(), responseListSize, request.getFrom(), request.getUntil(), accessKey);

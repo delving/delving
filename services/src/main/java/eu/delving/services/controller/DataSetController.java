@@ -6,9 +6,8 @@ import eu.delving.metadata.MetadataNamespace;
 import eu.delving.metadata.Path;
 import eu.delving.metadata.RecordMapping;
 import eu.delving.services.core.MetaRepo;
-import eu.delving.services.core.MetaRepoException;
 import eu.delving.services.exceptions.AccessKeyException;
-import eu.delving.services.exceptions.BadArgumentException;
+import eu.delving.services.exceptions.DataSetNotFoundException;
 import eu.delving.sip.DataSetInfo;
 import eu.delving.sip.DataSetResponse;
 import eu.delving.sip.FileType;
@@ -80,14 +79,14 @@ public class DataSetController {
     }
 
     @RequestMapping("/administrator/dataset")
-    public ModelAndView secureListAll() throws BadArgumentException, AccessKeyException, MetaRepoException {
+    public ModelAndView secureListAll() throws AccessKeyException {
         return view(metaRepo.getDataSets());
     }
 
     @RequestMapping("/dataset")
     public ModelAndView listAll(
             @RequestParam(required = false) String accessKey
-    ) throws BadArgumentException, AccessKeyException, MetaRepoException {
+    ) throws AccessKeyException {
         checkAccessKey(accessKey);
         return view(metaRepo.getDataSets());
     }
@@ -96,7 +95,7 @@ public class DataSetController {
     public ModelAndView secureIndexingControl(
             @PathVariable String dataSetSpec,
             @RequestParam(required = false) Boolean enable
-    ) throws BadArgumentException, IOException, SolrServerException, MetaRepoException {
+    ) throws IOException, SolrServerException, DataSetNotFoundException {
         return indexingControlInternal(dataSetSpec, enable);
     }
 
@@ -105,15 +104,15 @@ public class DataSetController {
             @PathVariable String dataSetSpec,
             @RequestParam(required = false) Boolean enable,
             @RequestParam(required = false) String accessKey
-    ) throws BadArgumentException, IOException, SolrServerException, AccessKeyException, MetaRepoException {
+    ) throws IOException, SolrServerException, AccessKeyException, DataSetNotFoundException {
         checkAccessKey(accessKey);
         return indexingControlInternal(dataSetSpec, enable);
     }
 
-    private ModelAndView indexingControlInternal(String dataSetSpec, Boolean enable) throws BadArgumentException, SolrServerException, IOException, MetaRepoException {
+    private ModelAndView indexingControlInternal(String dataSetSpec, Boolean enable) throws SolrServerException, IOException, DataSetNotFoundException {
         MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
         if (dataSet == null) {
-            throw new BadArgumentException(String.format("String %s does not exist", dataSetSpec));
+            throw new DataSetNotFoundException(String.format("String %s does not exist", dataSetSpec));
         }
         MetaRepo.DataSetState oldState = dataSet.getState();
         if (enable != null) {
@@ -229,41 +228,29 @@ public class DataSetController {
     }
 
     private DataSetResponse receiveMapping(RecordMapping recordMapping, String dataSetSpec, String hash) {
-        try {
-            MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
-            if (dataSet == null) {
-                return DataSetResponse.DATA_SET_NOT_FOUND;
-            }
-            if (dataSet.hasHash(hash)) {
-                return DataSetResponse.GOT_IT_ALREADY;
-            }
-            dataSet.setMapping(recordMapping);
-            dataSet.setMappingHash(recordMapping.getPrefix(), hash);
-            dataSet.save();
-            return DataSetResponse.THANK_YOU;
+        MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
+        if (dataSet == null) {
+            return DataSetResponse.DATA_SET_NOT_FOUND;
         }
-        catch (BadArgumentException e) {
-            log.error("Unable to receive mapping", e);
-            return DataSetResponse.SYSTEM_ERROR;
+        if (dataSet.hasHash(hash)) {
+            return DataSetResponse.GOT_IT_ALREADY;
         }
+        dataSet.setMapping(recordMapping);
+        dataSet.setMappingHash(recordMapping.getPrefix(), hash);
+        dataSet.save();
+        return DataSetResponse.THANK_YOU;
     }
 
     private DataSetResponse checkMapping(String dataSetSpec, String hash) {
-        try {
-            MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
-            if (dataSet == null) {
-                return DataSetResponse.DATA_SET_NOT_FOUND;
-            }
-            if (dataSet.hasHash(hash)) {
-                return DataSetResponse.GOT_IT_ALREADY;
-            }
-            else {
-                return DataSetResponse.READY_TO_RECEIVE;
-            }
+        MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
+        if (dataSet == null) {
+            return DataSetResponse.DATA_SET_NOT_FOUND;
         }
-        catch (BadArgumentException e) {
-            log.error("Unable to check mapping", e);
-            return DataSetResponse.SYSTEM_ERROR;
+        if (dataSet.hasHash(hash)) {
+            return DataSetResponse.GOT_IT_ALREADY;
+        }
+        else {
+            return DataSetResponse.READY_TO_RECEIVE;
         }
     }
 
@@ -307,21 +294,15 @@ public class DataSetController {
     }
 
     private DataSetResponse checkFacts(String dataSetSpec, String hash) {
-        try {
-            MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
-            if (dataSet == null) {
-                dataSet = metaRepo.createDataSet(dataSetSpec);
-            }
-            if (dataSet.hasHash(hash)) {
-                return DataSetResponse.GOT_IT_ALREADY;
-            }
-            else {
-                return DataSetResponse.READY_TO_RECEIVE;
-            }
+        MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
+        if (dataSet == null) {
+            dataSet = metaRepo.createDataSet(dataSetSpec);
         }
-        catch (BadArgumentException e) {
-            log.error("Unable to check facts", e);
-            return DataSetResponse.SYSTEM_ERROR;
+        if (dataSet.hasHash(hash)) {
+            return DataSetResponse.GOT_IT_ALREADY;
+        }
+        else {
+            return DataSetResponse.READY_TO_RECEIVE;
         }
     }
 
@@ -371,14 +352,14 @@ public class DataSetController {
         }
     }
 
-    private ModelAndView view(MetaRepo.DataSet dataSet) throws MetaRepoException {
+    private ModelAndView view(MetaRepo.DataSet dataSet) throws DataSetNotFoundException {
         if (dataSet == null) {
-            throw new RuntimeException("DataSet not found!"); // todo: better solution
+            throw new DataSetNotFoundException("Data Set was null");
         }
         return new ModelAndView("dataSetXmlView", BindingResult.MODEL_KEY_PREFIX + "dataset", getInfo(dataSet));
     }
 
-    private ModelAndView view(Collection<? extends MetaRepo.DataSet> dataSetList) throws MetaRepoException {
+    private ModelAndView view(Collection<? extends MetaRepo.DataSet> dataSetList) {
         List<DataSetInfo> list = new ArrayList<DataSetInfo>();
         for (MetaRepo.DataSet dataSet : dataSetList) {
             list.add(getInfo(dataSet));
@@ -386,7 +367,7 @@ public class DataSetController {
         return new ModelAndView("dataSetXmlView", BindingResult.MODEL_KEY_PREFIX + "list", list);
     }
 
-    private DataSetInfo getInfo(MetaRepo.DataSet dataSet) throws MetaRepoException {
+    private DataSetInfo getInfo(MetaRepo.DataSet dataSet) {
         DataSetInfo info = new DataSetInfo();
         info.spec = dataSet.getSpec();
         info.state = dataSet.getState().toString();
