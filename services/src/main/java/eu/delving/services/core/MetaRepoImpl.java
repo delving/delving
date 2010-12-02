@@ -174,7 +174,7 @@ public class MetaRepoImpl implements MetaRepo {
         Set<MetadataFormat> set = new TreeSet<MetadataFormat>();
         ObjectId objectId = new ObjectId(id);
         for (DataSet dataSet : getDataSets()) {
-            Record record = dataSet.fetch(objectId, dataSet.getDetails().getMetadataFormat().getPrefix(), accessKey);
+            Record record = dataSet.getRecord(objectId, dataSet.getDetails().getMetadataFormat().getPrefix(), accessKey);
             if (record != null) {
                 set.add(dataSet.getDetails().getMetadataFormat());
                 for (Mapping mapping : dataSet.mappings().values()) {
@@ -270,7 +270,7 @@ public class MetaRepoImpl implements MetaRepo {
         if (dataSet == null) {
             throw new DataSetNotFoundException(String.format("Do data set for identifier [%s]", identifier.collectionId));
         }
-        return dataSet.fetch(identifier.objectId, metadataPrefix, accessKey);
+        return dataSet.getRecord(identifier.objectId, metadataPrefix, accessKey);
     }
 
     @Override
@@ -478,7 +478,7 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public Record fetch(ObjectId id, String prefix, String accessKey) throws MappingNotFoundException, AccessKeyException { // if prefix is passed in, mapping can be done
+        public Record getRecord(ObjectId id, String prefix, String accessKey) throws MappingNotFoundException, AccessKeyException { // if prefix is passed in, mapping can be done
             DBObject object = new BasicDBObject(MONGO_ID, id);
             DBObject rawRecord = records().findOne(object);
             if (rawRecord != null) {
@@ -491,7 +491,7 @@ public class MetaRepoImpl implements MetaRepo {
                     for (String nsPrefix : namespacesObject.keySet()) {
                         namespaces.put(nsPrefix, (String) namespacesObject.get(nsPrefix));
                     }
-                    ((MappingInternal) mapping).map(list, namespaces);
+                    ((MappingInternal) mapping).executeMapping(list, namespaces);
                 }
                 return list.isEmpty() ? null : list.get(0);
             }
@@ -499,7 +499,7 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public List<? extends Record> records(String prefix, int start, int count, Date from, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException {
+        public List<? extends Record> getRecords(String prefix, int start, int count, Date from, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException {
             Mapping mapping = getMapping(prefix, accessKey);
             List<RecordImpl> list = new ArrayList<RecordImpl>();
             DBCursor cursor = createCursor(from, until).skip(start).limit(count);
@@ -513,7 +513,7 @@ public class MetaRepoImpl implements MetaRepo {
                 for (String nsPrefix : namespacesObject.keySet()) {
                     namespaces.put(nsPrefix, (String) namespacesObject.get(nsPrefix));
                 }
-                ((MappingInternal) mapping).map(list, namespaces);
+                ((MappingInternal) mapping).executeMapping(list, namespaces);
             }
             return list;
         }
@@ -556,13 +556,6 @@ public class MetaRepoImpl implements MetaRepo {
             collection.save(object);
         }
 
-        private String getNonemptyString(String key) {
-            String s = (String) object.get(key);
-            if (s == null) {
-                s = "";
-            }
-            return s;
-        }
     }
 
     private class DetailsImpl implements Details {
@@ -639,7 +632,7 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     private interface MappingInternal {
-        void map(List<? extends Record> records, Map<String, String> namespaces) throws MappingNotFoundException;
+        void executeMapping(List<? extends Record> records, Map<String, String> namespaces) throws MappingNotFoundException;
     }
 
     // for now we pretend that we have an ESE mapping
@@ -677,8 +670,8 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public void map(List<? extends Record> records, Map<String, String> namespaces) throws MappingNotFoundException {
-            mappingInternal.map(records, namespaces);
+        public void executeMapping(List<? extends Record> records, Map<String, String> namespaces) throws MappingNotFoundException {
+            mappingInternal.executeMapping(records, namespaces);
             Iterator<? extends Record> recordWalk = records.iterator();
             while (recordWalk.hasNext()) {
                 Record record = recordWalk.next();
@@ -839,7 +832,7 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public void map(List<? extends Record> records, Map<String, String> namespaces) throws MappingNotFoundException {
+        public void executeMapping(List<? extends Record> records, Map<String, String> namespaces) throws MappingNotFoundException {
             try {
                 MappingRunner mappingRunner = getMappingRunner();
                 MetadataRecord.Factory factory = new MetadataRecord.Factory(namespaces);
@@ -1054,7 +1047,7 @@ public class MetaRepoImpl implements MetaRepo {
                 throw new DataSetNotFoundException("No data set found by the name " + request.getSet());
             }
             String accessKey = (String) object.get(ACCESS_KEY);
-            return dataSet.records(request.getMetadataPrefix(), getCursor(), responseListSize, request.getFrom(), request.getUntil(), accessKey);
+            return dataSet.getRecords(request.getMetadataPrefix(), getCursor(), responseListSize, request.getFrom(), request.getUntil(), accessKey);
         }
 
         @Override

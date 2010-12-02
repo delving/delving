@@ -294,38 +294,32 @@ public class SipModel {
         });
     }
 
-//    public String getMappingTemplate() {
-//        return recordCompileModel.getRecordMapping().getCodeForTemplate();
-//    }
-//
-//    public void loadMappingTemplate(File file) {
-//        if (recordCompileModel.getRecordMapping().fieldMappings == null) {
-//            userNotifier.tellUser("Record must be empty to use a template.");
-//        }
-//        else {
-//            try {
-//                BufferedReader in = new BufferedReader(new FileReader(file));
-//                StringBuilder out = new StringBuilder();
-//                String line;
-//                while ((line = in.readLine()) != null) {
-//                    out.append(line).append('\n');
-//                }
-//                in.close();
-//                String templateCode = out.toString();
-//                RecordMapping recordMapping = recordCompileModel.getRecordMapping();
-//                recordMapping.setCode(templateCode, fieldMap);
-//                setRecordRootInternal(recordMapping.recordRoot);
-//                recordMapping.getFactModel().clear();
-//                createMetadataParser(1);
-//                for (UpdateListener updateListener : updateListeners) {
-//                    updateListener.templateApplied();
-//                }
-//            }
-//            catch (IOException e) {
-//                userNotifier.tellUser("Unable to load template", e);
-//            }
-//        }
-//    }
+    public void saveAsTemplate(final String name) {
+        try {
+            fileStore.setTemplate(name, mappingModel.getRecordMapping());
+        }
+        catch (FileStoreException e) {
+            tellUser("Unable to store template", e);
+        }
+    }
+
+    public void applyTemplate(RecordMapping template) {
+        if (!mappingModel.getRecordMapping().getFieldMappings().isEmpty()) {
+            userNotifier.tellUser("Record must be empty to use a template.");
+        }
+        else {
+            try {
+                mappingModel.getRecordMapping().getFieldMappings().addAll(template.getFieldMappings());
+                createMetadataParser(1);
+                for (UpdateListener updateListener : updateListeners) {
+                    updateListener.templateApplied();
+                }
+            }
+            catch (Exception e) {
+                userNotifier.tellUser("Unable to load template", e);
+            }
+        }
+    }
 
     public void analyze(final AnalysisListener listener) {
         checkSwingThread();

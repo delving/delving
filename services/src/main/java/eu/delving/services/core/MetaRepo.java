@@ -99,8 +99,8 @@ public interface MetaRepo {
 
         Map<String,Mapping> mappings();
         int getRecordCount();
-        Record fetch(ObjectId id, String metadataPrefix, String accessKey) throws MappingNotFoundException, AccessKeyException;
-        List<? extends Record> records(String prefix, int start, int count, Date from, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException;
+        Record getRecord(ObjectId id, String metadataPrefix, String accessKey) throws MappingNotFoundException, AccessKeyException;
+        List<? extends Record> getRecords(String prefix, int start, int count, Date from, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException;
 
         void save();
 

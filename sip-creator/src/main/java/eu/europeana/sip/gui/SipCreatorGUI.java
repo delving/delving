@@ -417,9 +417,14 @@ public class SipCreatorGUI extends JFrame {
             getContentPane().add(createFinishedPanel(this), BorderLayout.SOUTH);
             setSize(SIZE);
             setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - SIZE.width) / 2, (Toolkit.getDefaultToolkit().getScreenSize().height - SIZE.height) / 2);
-//            setSize(Toolkit.getDefaultToolkit().getScreenSize());
-//        MappingTemplateMenu mappingTemplateMenu = new MappingTemplateMenu(this, sipModel);
-//        bar.add(mappingTemplateMenu);
+            setJMenuBar(createMappingMenuBar());
+        }
+
+        private JMenuBar createMappingMenuBar() {
+            JMenuBar bar = new JMenuBar();
+            MappingTemplateMenu mappingTemplateMenu = new MappingTemplateMenu(this, sipModel);
+            bar.add(mappingTemplateMenu);
+            return bar;
         }
 
         public void reveal(String prefix) {
