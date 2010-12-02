@@ -294,14 +294,17 @@ public class Harvindexer {
                             path.push(Tag.create(xml.getName().getPrefix(), xml.getName().getLocalPart()));
                             FieldDefinition fieldDefinition = getFieldDefinition(path, recordCount);
                             String text = xml.getElementText();
-                            if (fieldDefinition.id) {
-                                europeanaId.setEuropeanaUri(text);
-                            }
-                            else if (fieldDefinition.type) {
-                                DocType.get(text); // checking if it matches one of them
-                                SolrInputField objectField = solrInputDocument.getField("europeana_type");
-                                if (objectField != null) {
-                                    break;
+                            FieldDefinition.Validation validation = fieldDefinition.validation;
+                            if (validation != null) {
+                                if (validation.id) {
+                                    europeanaId.setEuropeanaUri(text);
+                                }
+                                else if (validation.type) {
+                                    DocType.get(text); // checking if it matches one of them
+                                    SolrInputField objectField = solrInputDocument.getField("europeana_type");
+                                    if (objectField != null) {
+                                        break;
+                                    }
                                 }
                             }
                             if (text.length() > 10000) {

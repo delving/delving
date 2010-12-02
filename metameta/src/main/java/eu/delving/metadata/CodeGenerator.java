@@ -121,7 +121,8 @@ public class CodeGenerator {
             }
         }
         else {
-            if (fieldDefinition.validation.factDefinition != null &&
+            if (fieldDefinition.validation != null &&
+                    fieldDefinition.validation.factDefinition != null &&
                     fieldDefinition.validation.factDefinition.options != null &&
                     node.getStatistics().getHistogramValues() != null) {
                 renderValueMapLine(fieldDefinition, fieldMapping, node, variable);
