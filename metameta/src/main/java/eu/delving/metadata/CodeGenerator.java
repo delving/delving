@@ -54,7 +54,7 @@ public class CodeGenerator {
         // todo: unique element -> id is also obvious
         List<FieldMapping> fieldMappings = new ArrayList<FieldMapping>();
         for (FieldDefinition fieldDefinition : unmappedFieldDefinitions) {
-            if (fieldDefinition.factName != null) {
+            if (fieldDefinition.validation != null && fieldDefinition.validation.factName != null) {
                 FieldMapping fieldMapping = createObviousMappingFromFact(fieldDefinition);
                 if (fieldMapping != null) {
                     fieldMappings.add(fieldMapping);
@@ -79,7 +79,7 @@ public class CodeGenerator {
     private FieldMapping createObviousMappingFromFact(FieldDefinition fieldDefinition) {
         FieldMapping fieldMapping = new FieldMapping(fieldDefinition);
         for (FactDefinition factDefinition : Facts.definitions()) {
-            if (factDefinition.name.equals(fieldDefinition.factName)) {
+            if (factDefinition.name.equals(fieldDefinition.validation.factName)) {
                 renderLineSimple(fieldDefinition, fieldMapping, factDefinition.name);
             }
         }
@@ -99,7 +99,7 @@ public class CodeGenerator {
     }
 
     private void generateCopyCode(FieldDefinition fieldDefinition, AnalysisTree.Node node, FieldMapping fieldMapping) {
-        if (fieldDefinition.multivalued) {
+        if (fieldDefinition.validation != null && fieldDefinition.validation.multivalued) {
             startEachBlock(fieldMapping, node.getVariableName());
             renderLine(fieldDefinition, node, fieldMapping, "it");
             endBlock(fieldMapping);
@@ -110,8 +110,8 @@ public class CodeGenerator {
     }
 
     private void renderLine(FieldDefinition fieldDefinition, AnalysisTree.Node node, FieldMapping fieldMapping, String variable) {
-        if (fieldDefinition.converterPattern != null) {
-            if (fieldDefinition.converterMultipleOutput) {
+        if (fieldDefinition.validation != null && fieldDefinition.validation.converter != null) {
+            if (fieldDefinition.validation.converter.multipleOutput) {
                 startForPartInConvert(fieldDefinition, fieldMapping, variable);
                 renderLineSimple(fieldDefinition, fieldMapping, "part");
                 endBlock(fieldMapping);
@@ -121,7 +121,9 @@ public class CodeGenerator {
             }
         }
         else {
-            if (fieldDefinition.valueMapped) {
+            if (fieldDefinition.validation.factDefinition != null &&
+                    fieldDefinition.validation.factDefinition.options != null &&
+                    node.getStatistics().getHistogramValues() != null) {
                 renderValueMapLine(fieldDefinition, fieldMapping, node, variable);
             }
             else {
@@ -135,7 +137,7 @@ public class CodeGenerator {
                 String.format(
                         "for (part in %s) {",
                         String.format(
-                                fieldDefinition.converterPattern,
+                                fieldDefinition.validation.converter.pattern,
                                 variable
                         )
                 )
@@ -143,8 +145,8 @@ public class CodeGenerator {
     }
 
     private void renderLineSelect(FieldDefinition fieldDefinition, FieldMapping fieldMapping, String variable) {
-        if (fieldDefinition.converterPattern != null) {
-            variable = String.format(fieldDefinition.converterPattern, variable);
+        if (fieldDefinition.validation.converter.pattern != null) {
+            variable = String.format(fieldDefinition.validation.converter.pattern, variable);
         }
         fieldMapping.addCodeLine(
                 String.format(

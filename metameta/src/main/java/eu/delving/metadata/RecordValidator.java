@@ -45,11 +45,6 @@ import java.util.TreeSet;
  */
 
 public class RecordValidator {
-    private static final int[] PRIMES = {
-            4105001, 4105019, 4105033, 4105069,
-            4105091, 4105093, 4105103, 4105111,
-            4105151, 4105169, 4105181, 4105183,
-    };
     private Logger log = Logger.getLogger(getClass());
     private RecordDefinition recordDefinition;
     private Uniqueness idUniqueness;
@@ -59,11 +54,11 @@ public class RecordValidator {
     public RecordValidator(MetadataModel metadataModel, boolean checkUniqueness) {
         this.recordDefinition = metadataModel.getRecordDefinition();
         this.idUniqueness = checkUniqueness ? new Uniqueness() : null;
-        StringBuilder contextString = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<validate\n");
+        StringBuilder contextString = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<record\n");
         for (NamespaceDefinition namespaceDefinition : recordDefinition.namespaces) {
             contextString.append(String.format("xmlns:%s=\"%s\"\n", namespaceDefinition.prefix, namespaceDefinition.uri));
         }
-        contextString.append(">\n%s</validate>\n");
+        contextString.append(">\n%s</record>\n");
         this.context = contextString.toString();
         this.contextBegin = this.context.indexOf("%s");
         int afterPercentS = contextBegin + 2;
@@ -95,19 +90,23 @@ public class RecordValidator {
 
     private void validateCardinalities(Map<Path, Counter> counters, List<String> problems) {
         Map<String, Boolean> requiredGroupMap = new TreeMap<String, Boolean>();
-        for (FieldDefinition field : recordDefinition.getMappableFields()) {
-            if (field.requiredGroup != null) {
-                requiredGroupMap.put(field.requiredGroup, false);
-            }
-            Counter counter = counters.get(field.path);
-            if (!field.multivalued && counter != null && counter.count > 1) {
-                problems.add(String.format("Single-valued field [%s] has more than one value", field.path));
+        for (FieldDefinition fieldDefinition : recordDefinition.getMappableFields()) {
+            if (fieldDefinition.validation != null) {
+                if (fieldDefinition.validation.requiredGroup != null) {
+                    requiredGroupMap.put(fieldDefinition.validation.requiredGroup, false);
+                }
+                Counter counter = counters.get(fieldDefinition.path);
+                if (!fieldDefinition.validation.multivalued && counter != null && counter.count > 1) {
+                    problems.add(String.format("Single-valued field [%s] has more than one value", fieldDefinition.path));
+                }
             }
         }
         for (Map.Entry<Path, Counter> entry : counters.entrySet()) {
-            FieldDefinition field = recordDefinition.getFieldDefinition(entry.getKey());
-            if (field.requiredGroup != null) {
-                requiredGroupMap.put(field.requiredGroup, true);
+            FieldDefinition fieldDefinition = recordDefinition.getFieldDefinition(entry.getKey());
+            if (fieldDefinition.validation != null) {
+                if (fieldDefinition.validation.requiredGroup != null) {
+                    requiredGroupMap.put(fieldDefinition.validation.requiredGroup, true);
+                }
             }
         }
         for (Map.Entry<String, Boolean> entry : requiredGroupMap.entrySet()) {
@@ -118,11 +117,9 @@ public class RecordValidator {
     }
 
     private void validateDocument(Document document, List<String> problems, Set<String> entries, Map<Path, Counter> counters) {
-        Element validateElement = document.getRootElement();
-        Element recordElement = validateElement.element("record");
-        if (recordElement == null) {
-            problems.add("Problem: Missing record element");
-            return;
+        Element recordElement = document.getRootElement();
+        if (!recordElement.getQName().getName().equals("record")) {
+            throw new RuntimeException("Root element should be 'record'");
         }
         validateElement(recordElement, new Path(), problems, entries, counters);
     }
@@ -170,35 +167,32 @@ public class RecordValidator {
         }
     }
 
-    private void validateField(String text, FieldDefinition field, List<String> problems) {
-        if (field.factDefinition != null && !field.valueMapped && field.factDefinition.options != null && !field.factDefinition.options.contains(text)) {
-            String optionsString = getOptionsString(field);
-            problems.add(String.format("Value for [%s] was [%s] which does not belong to [%s]", field.path, text, optionsString));
-        }
-        if (field.url) {
-            try {
-                new URL(text);
+    private void validateField(String text, FieldDefinition fieldDefinition, List<String> problems) {
+        FieldDefinition.Validation validation = fieldDefinition.validation;
+        if (validation != null) {
+            if (validation.factDefinition != null && validation.factDefinition.options != null && !validation.factDefinition.options.contains(text)) {
+                String optionsString = getOptionsString(fieldDefinition);
+                problems.add(String.format("Value for [%s] was [%s] which does not belong to [%s]", fieldDefinition.path, text, optionsString));
             }
-            catch (MalformedURLException e) {
-                problems.add(String.format("URL value for [%s] was [%s] which is malformed", field.path, text));
+            if (validation.url) {
+                try {
+                    new URL(text);
+                }
+                catch (MalformedURLException e) {
+                    problems.add(String.format("URL value for [%s] was [%s] which is malformed", fieldDefinition.path, text));
+                }
             }
-        }
-        String regex = field.regularExpression;
-        if (regex != null) {
-            if (!text.matches(regex)) {
-                problems.add(String.format("Value for [%s] was [%s] which does not match regular expression [%s]", field.path, text, regex));
-            }
-        }
-        if (field.id && idUniqueness != null) {
-            if (idUniqueness.isRepeated(text)) {
-                problems.add(String.format("Identifier [%s] must be unique but the value [%s] appears more than once", field.path, text));
+            if (validation.id && idUniqueness != null) {
+                if (idUniqueness.isRepeated(text)) {
+                    problems.add(String.format("Identifier [%s] must be unique but the value [%s] appears more than once", fieldDefinition.path, text));
+                }
             }
         }
     }
 
-    private String getOptionsString(FieldDefinition field) {
+    private String getOptionsString(FieldDefinition fieldDefinition) {
         StringBuilder enumString = new StringBuilder();
-        Iterator<String> walk = field.factDefinition.options.iterator();
+        Iterator<String> walk = fieldDefinition.validation.factDefinition.options.iterator();
         while (walk.hasNext()) {
             enumString.append(walk.next());
             if (walk.hasNext()) {

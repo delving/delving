@@ -661,8 +661,8 @@
         <prompt>Rights</prompt>
         <toolTip>What can you do with it?</toolTip>
         <options>
-            <string>Unknown</string>
-            <string>Creative Commons</string>
+            <string>UNKNOWN</string>
+            <string>CREATIVE_COMMONS</string>
         </options>
     </fact-definition>
     <fact-definition name="type">
