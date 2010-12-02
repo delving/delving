@@ -140,7 +140,7 @@ public class Statistics implements Comparable<Statistics>, Serializable {
             if (lazyHtml == null) {
                 StringBuilder html = new StringBuilder(String.format("<html><h3>Path: %s</h3>", path));
                 if (uniqueValues) {
-                    html.append(String.format("<p>All values are unique, and there are <strong>%d</strong>, so here are some random samples:</p><br>", total));
+                    html.append(String.format("<p>All values are unique, and there are <strong>%d</strong>, so here are some random samples:</p>", total));
                     html.append("<ul>");
                     for (String value : randomSample.getValues()) {
                         html.append(String.format("<li>'<strong>%s</strong>'</li>", value));
@@ -153,18 +153,18 @@ public class Statistics implements Comparable<Statistics>, Serializable {
                         html.append(String.format("<p>There is a single value '<strong>%s</strong>' apppearing <strong>%d</strong> times.</p>", counter.getValue(), counter.getCount()));
                     }
                     else {
-                        html.append(String.format("<p>There are <strong>%d</strong> different values, in descending order of frequency.</p><br>", histogram.getSize()));
+                        html.append(String.format("<p>There are <strong>%d</strong> different values, in descending order of frequency.</p>", histogram.getSize()));
                         List<Histogram.Counter> counterList = new ArrayList<Histogram.Counter>(histogram.getCounters());
                         Collections.sort(counterList);
-                        html.append("<ul>");
+                        html.append("<table cellpadding=30px><tr><td><table cellpadding=4px>");
                         for (Histogram.Counter counter : counterList) {
-                            html.append(String.format("<li>'<strong>%s</strong>' : %d or %s</li>", counter.getValue(), counter.getCount(), counter.getPercentage()));
+                            html.append(String.format("<tr></td><td>%d</td><td>%s</td><td><strong>%s</strong></tr>", counter.getCount(), counter.getPercentage(), counter.getValue()));
                         }
-                        html.append("</ul>");
+                        html.append("</table></td></tr></table>");
                     }
                 }
                 else {
-                    html.append(String.format("<p><strong>%d</strong> values, too large a list to mantain, so here are some random samples:</p><br>", total));
+                    html.append(String.format("There are more than <p><strong>%d</strong> different values, too large a list to mantain, so here are some random samples:</p>", total));
                     html.append("<ul>");
                     for (String value : randomSample.getValues()) {
                         html.append(String.format("<li>'<strong>%s</strong>'</li>", value));
