@@ -660,6 +660,10 @@
     <fact-definition name="rights">
         <prompt>Rights</prompt>
         <toolTip>What can you do with it?</toolTip>
+        <options>
+            <string>Unknown</string>
+            <string>Creative Commons</string>
+        </options>
     </fact-definition>
     <fact-definition name="type">
         <prompt>Type</prompt>
