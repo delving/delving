@@ -29,49 +29,43 @@
 <h1>${portalDisplayName}</h1>
 
 <#switch queryProblem>
-    <#case 'MATCH_ALL_DOCS'>
-    <div class="ui-widget ui-error">
-        *:* invalid query<br/>
-    </div>
-    <div class="ui-widget ui-info"><strong>Please</strong> try another search.</div>
-    <#break>
     <#case 'RECORD_NOT_FOUND'>
        <div class="ui-widget ui-error">
-       <strong>Alert:</strong> Unable to find the requested Europeana Record. <strong>Please</strong> try another search.
+       <@spring.message '_portal.ui.notification.recordNotFound'/>
        </div>
      <#break>
      <#case 'RECORD_REVOKED'>
         <div class="ui-widget ui-info">
-        <strong>Attention:</strong> This item has been withdrawn by the provider. <strong>Please</strong> try another search.
+            <@spring.message '_portal.ui.notification.recordRevoked'/>
         </div>
     <#break>
     <#case 'RECORD_NOT_INDEXED'>
         <div class="ui-widget ui-info">
-        <strong>Attention:</strong> Requested Europeana Record is yet indexed. <strong>Please</strong> try another search.
+            <@spring.message '_portal.ui.notification.recordNotIndexed'/>
         </div>
     <#break>
     <#case 'TOKEN_EXPIRED'>
     <#case 'UNKNOWN_TOKEN'>
         <div class="ui-widget ui-info">
-        The link you used to complete registration is invalid or has expired.
-        Please <a href="/${portalName}/login.html">register your email again</a> to finish registration.
+        <@spring.message '_portal.ui.notification.registrationIsExpired'/>
+        <@spring.message '_portal.ui.notification.pleaseRegisterAgain'/>
         </div>
     <#break>
     <#case 'MALFORMED_URL'>
         <div class="ui-widget ui-error">
-        Unable to fullfill your request due to malformed query parameters.
-        <strong>Please</strong> try another search.
+        <@spring.message '_portal.ui.notification.malformedQuery'/>
+        <@spring.message '_portal.ui.notification.tryAnotherSearch'/>
         </div>
     <#break>
     <#case 'SOLR_UNREACHABLE'>
         <div class="ui-widget ui-error">
-            <strong>Alert:</strong> Unable to get a response from the Search Engine. <strong>Please</strong> try another search later.
+        <@spring.message '_portal.ui.notification.solrUnreachable'/>
         </div>
     <#break>
     <#default>
         <div class="ui-widget ui-info">
-            Something went wrong! An email has been sent to inform our technical staff.
-            <strong>Please</strong> try another search.
+            <@spring.message '_portal.ui.notification.generalErrorMessage'/>
+            <@spring.message '_portal.ui.notification.tryAnotherSearch'/>
         </div>
         <#if debug>
             <div class="yui-u first">
