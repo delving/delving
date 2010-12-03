@@ -6,7 +6,6 @@ import org.springframework.mock.web.MockHttpServletRequest
 import java.lang.String
 import collection.immutable.List
 import scala.collection.JavaConversions._
-import eu.delving.services.impl.MetaRepoImpl
 import org.scalatest.{PrivateMethodTester, Spec}
 import collection.mutable.HashMap
 import eu.delving.services.core.MetaRepo.PmhVerb
