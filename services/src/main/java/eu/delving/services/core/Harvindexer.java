@@ -347,6 +347,9 @@ public class Harvindexer {
                         else if (isMetadataElement(xml)) {
                             isInMetadataBlock = false;
                         }
+                        else if (isInMetadataBlock) {
+                            path.pop();
+                        }
                         break;
 
                     case XMLStreamConstants.END_DOCUMENT:

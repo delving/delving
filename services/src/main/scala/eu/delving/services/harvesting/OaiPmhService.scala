@@ -307,7 +307,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
     val recordAsString = record.getXmlString(metadataPrefix).replaceAll("<[/]{0,1}(br|BR)>", "<br/>").replaceAll("&((?!amp;))","&amp;$1")
     // todo get the record separator for rendering from somewhere
     val response = try {
-      val elem = XML.loadString("<record>\n" + {recordAsString} + "</record>")
+      val elem = XML.loadString(recordAsString)
       <record>
         <header>
           <identifier>{set}:{record.getIdentifier}</identifier>
