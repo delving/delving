@@ -127,6 +127,7 @@ public class DataSetController {
                     }
                     break;
                 case UPLOADED:
+                case EMPTY:
                 case ERROR:
                 case DISABLED:
                     if (enable) {
