@@ -281,14 +281,12 @@ public class Harvindexer {
                         }
                         else if (isRecordElement(xml) && isInMetadataBlock) {
                             path.push(Tag.create(xml.getName().getPrefix(), xml.getName().getLocalPart()));
-                            log.info("record element: "+path);
                             europeanaId = new EuropeanaId(collection);
                             solrInputDocument = new SolrInputDocument();
                             solrInputDocument.addField("delving_pmhId", pmhId);
                         }
                         else if (europeanaId != null) {
                             path.push(Tag.create(xml.getName().getPrefix(), xml.getName().getLocalPart()));
-                            log.info("eid not null: "+path);
                             FieldDefinition fieldDefinition = getFieldDefinition(path, recordCount);
                             String text = xml.getElementText();
                             FieldDefinition.Validation validation = fieldDefinition.validation;
@@ -309,11 +307,14 @@ public class Harvindexer {
                             }
                             // language being ignored if (language != null) {...}
                             solrInputDocument.addField(fieldDefinition.getFieldNameString(), text);
+                            if (xml.isEndElement()) {
+                                path.pop();
+                            }
                         }
                         break;
 
                     case XMLStreamConstants.END_ELEMENT:
-                        if (isRecordElement(xml) && isInMetadataBlock && europeanaId != null) {
+                         if (isRecordElement(xml) && isInMetadataBlock && europeanaId != null) {
                             isInMetadataBlock = false;
                             if (recordCount > 0 && recordCount % 500 == 0) {
                                 log.info(String.format("imported %d records in %s", recordCount, DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - startTime)));
@@ -347,8 +348,9 @@ public class Harvindexer {
                         else if (isMetadataElement(xml)) {
                             isInMetadataBlock = false;
                         }
-                        else if (isInMetadataBlock) {
+                        if (europeanaId != null) {
                             path.pop();
+                            log.info("eid not null end: "+path);
                         }
                         break;
 
