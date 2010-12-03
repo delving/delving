@@ -91,12 +91,7 @@ public class FieldDefinition implements Comparable<FieldDefinition> {
     }
 
     public String getPrefix() {
-        if (facetPrefix != null) {
-            return facetPrefix;
-        }
-        else {
-            return tag.getPrefix();
-        }
+        return tag.getPrefix();
     }
 
     public String getLocalName() {
