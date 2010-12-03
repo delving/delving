@@ -6,6 +6,7 @@ import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.Path;
 import eu.delving.metadata.Tag;
 import eu.delving.services.exceptions.HarvindexingException;
+import eu.delving.sip.DataSetState;
 import eu.delving.sip.ServiceAccessToken;
 import eu.europeana.core.database.ConsoleDao;
 import eu.europeana.core.database.UserDao;
@@ -204,7 +205,7 @@ public class Harvindexer {
             if (dataSet == null) {
                 throw new RuntimeException("Expected to find data set for " + collection.getName());
             }
-            dataSet.setState(MetaRepo.DataSetState.ENABLED);
+            dataSet.setState(DataSetState.ENABLED);
             dataSet.save();
         }
 
@@ -241,7 +242,7 @@ public class Harvindexer {
                     throw new RuntimeException("Data set not found!");
                 }
                 log.info(String.format("Indexed %d of %d records", dataSet.getRecordsIndexed(), dataSet.getRecordCount()));
-                if (dataSet.getState() != MetaRepo.DataSetState.INDEXING) {
+                if (dataSet.getState() != DataSetState.INDEXING) {
                     break;
                 }
             }
@@ -275,16 +276,19 @@ public class Harvindexer {
                         else if (isMetadataElement(xml)) {
                             isInMetadataBlock = true;
                         }
+                        else if (isResumptionToken(xml)) {
+                            resumptionToken = xml.getElementText();
+                        }
                         else if (isRecordElement(xml) && isInMetadataBlock) {
+                            path.push(Tag.create(xml.getName().getPrefix(), xml.getName().getLocalPart()));
+                            log.info("record element: "+path);
                             europeanaId = new EuropeanaId(collection);
                             solrInputDocument = new SolrInputDocument();
                             solrInputDocument.addField("delving_pmhId", pmhId);
                         }
-                        else if (isResumptionToken(xml)) {
-                            resumptionToken = xml.getElementText();
-                        }
                         else if (europeanaId != null) {
                             path.push(Tag.create(xml.getName().getPrefix(), xml.getName().getLocalPart()));
+                            log.info("eid not null: "+path);
                             FieldDefinition fieldDefinition = getFieldDefinition(path, recordCount);
                             String text = xml.getElementText();
                             FieldDefinition.Validation validation = fieldDefinition.validation;
@@ -338,6 +342,7 @@ public class Harvindexer {
                             consoleDao.saveEuropeanaId(europeanaId);
                             europeanaId = null;
                             solrInputDocument = null;
+                            path.pop();
                         }
                         else if (isMetadataElement(xml)) {
                             isInMetadataBlock = false;

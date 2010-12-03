@@ -10,6 +10,7 @@ import eu.delving.services.exceptions.AccessKeyException;
 import eu.delving.services.exceptions.DataSetNotFoundException;
 import eu.delving.sip.DataSetInfo;
 import eu.delving.sip.DataSetResponse;
+import eu.delving.sip.DataSetState;
 import eu.delving.sip.FileType;
 import eu.delving.sip.Hasher;
 import eu.delving.sip.ServiceAccessToken;
@@ -114,14 +115,14 @@ public class DataSetController {
         if (dataSet == null) {
             throw new DataSetNotFoundException(String.format("String %s does not exist", dataSetSpec));
         }
-        MetaRepo.DataSetState oldState = dataSet.getState();
+        DataSetState oldState = dataSet.getState();
         if (enable != null) {
             switch (dataSet.getState()) {
                 case INDEXING:
                 case ENABLED:
                 case QUEUED:
                     if (!enable) {
-                        dataSet.setState(MetaRepo.DataSetState.DISABLED);
+                        dataSet.setState(DataSetState.DISABLED);
                         dataSet.setRecordsIndexed(0);
                         solrServer.deleteByQuery("europeana_collectionName:" + dataSet.getSpec());
                     }
@@ -131,7 +132,7 @@ public class DataSetController {
                 case ERROR:
                 case DISABLED:
                     if (enable) {
-                        dataSet.setState(MetaRepo.DataSetState.QUEUED);
+                        dataSet.setState(DataSetState.QUEUED);
                     }
                     break;
             }

@@ -55,9 +55,10 @@ public class DataSetListModel extends AbstractListModel {
         entry.setDataSetStore(dataSetStore);
     }
 
-    public void setDataSetInfo(DataSetInfo dataSetInfo) {
+    public Entry setDataSetInfo(DataSetInfo dataSetInfo) {
         Entry entry = getEntry(dataSetInfo.spec);
         entry.setDataSetInfo(dataSetInfo);
+        return entry;
     }
 
     public Entry getEntry(int i) {

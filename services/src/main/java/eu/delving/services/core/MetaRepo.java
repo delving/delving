@@ -30,6 +30,7 @@ import eu.delving.services.exceptions.DataSetNotFoundException;
 import eu.delving.services.exceptions.MappingNotFoundException;
 import eu.delving.services.exceptions.RecordParseException;
 import eu.delving.services.exceptions.ResumptionTokenNotFoundException;
+import eu.delving.sip.DataSetState;
 import org.bson.types.ObjectId;
 
 import java.io.InputStream;
@@ -136,25 +137,6 @@ public interface MetaRepo {
         String RECORD_ROOT = "rec_root";
         String UNIQUE_ELEMENT = "unique_element";
         String METADATA_FORMAT = "metadata_format";
-    }
-
-    public enum DataSetState {
-        EMPTY,
-        DISABLED,
-        UPLOADED,
-        QUEUED,
-        INDEXING,
-        ENABLED,
-        ERROR;
-
-        public static DataSetState get(String string) {
-            for (DataSetState t : values()) {
-                if (t.toString().equalsIgnoreCase(string)) {
-                    return t;
-                }
-            }
-            throw new IllegalArgumentException("Did not recognize DataSetState: [" + string + "]");
-        }
     }
 
     public interface HarvestStep {

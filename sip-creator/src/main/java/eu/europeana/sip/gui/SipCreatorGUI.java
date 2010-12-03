@@ -24,25 +24,21 @@ package eu.europeana.sip.gui;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.MetadataModelImpl;
 import eu.delving.sip.DataSetInfo;
-import eu.delving.sip.DataSetResponse;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.FileStoreImpl;
-import eu.delving.sip.FileType;
-import eu.delving.sip.ProgressListener;
 import eu.europeana.sip.core.RecordValidationException;
-import eu.europeana.sip.model.FileUploader;
 import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.UserNotifier;
 import org.apache.log4j.Logger;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -51,9 +47,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.ListSelectionModel;
-import javax.swing.ProgressMonitor;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -61,18 +55,13 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -90,12 +79,10 @@ public class SipCreatorGUI extends JFrame {
     private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel;
     private JLabel titleLabel = new JLabel(LOCAL_SETS, JLabel.CENTER);
-    private MappingFrame mappingFrame;
-    private AnalysisFactsFrame analysisFactsFrame;
-    private RepositoryConnection repositoryConnection;
+    private MetaRepoClient metaRepoClient;
     private DataSetListModel dataSetListModel = new DataSetListModel();
     private JList dataSetList = new JList(dataSetListModel);
-    private List<JButton> controlButtons = new ArrayList<JButton>();
+    private DataSetActions dataSetActions;
 
     public SipCreatorGUI(File fileStoreDirectory, String serverUrl) throws FileStoreException {
         super("Delving SIP Creator");
@@ -103,22 +90,23 @@ public class SipCreatorGUI extends JFrame {
         MetadataModel metadataModel = loadMetadataModel();
         FileStore fileStore = new FileStoreImpl(fileStoreDirectory, metadataModel);
         this.sipModel = new SipModel(fileStore, metadataModel, new PopupExceptionHandler(), serverUrl);
-        this.repositoryConnection = new RepositoryConnection(sipModel, new RepositoryConnection.Listener() {
+        this.metaRepoClient = new MetaRepoClient(sipModel, new MetaRepoClient.Listener() {
 
             @Override
             public void setInfo(DataSetInfo dataSetInfo) {
                 dataSetListModel.setDataSetInfo(dataSetInfo);
+                dataSetActions.setDataSetInfo(dataSetInfo);
             }
 
             @Override
             public void setList(List<DataSetInfo> list) {
-                for (DataSetInfo info : list) {
-                    dataSetListModel.setDataSetInfo(info);
+                for (DataSetInfo dataSetInfo : list) {
+                    dataSetListModel.setDataSetInfo(dataSetInfo);
+                    dataSetActions.setDataSetInfo(dataSetInfo);
                 }
             }
         });
-        this.mappingFrame = new MappingFrame(sipModel);
-        this.analysisFactsFrame = new AnalysisFactsFrame(sipModel);
+        dataSetActions = new DataSetActions(this, sipModel, metaRepoClient);
         setJMenuBar(createMenuBar());
         JPanel main = new JPanel(new BorderLayout(MARGIN, MARGIN));
         main.setBorder(BorderFactory.createEmptyBorder(MARGIN, MARGIN, MARGIN, MARGIN));
@@ -138,7 +126,7 @@ public class SipCreatorGUI extends JFrame {
         getContentPane().add(north, BorderLayout.NORTH);
         getContentPane().add(main, BorderLayout.CENTER);
         main.add(createList(), BorderLayout.CENTER);
-        main.add(createControl(), BorderLayout.SOUTH);
+        main.add(createSouth(), BorderLayout.SOUTH);
         setSize(SIZE);
         setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - SIZE.width) / 2, (Toolkit.getDefaultToolkit().getScreenSize().height - SIZE.height) / 2);
         SwingUtilities.invokeLater(new Runnable() {
@@ -149,9 +137,15 @@ public class SipCreatorGUI extends JFrame {
                 }
             }
         });
-        for (JButton button : controlButtons) {
-            button.setEnabled(false);
+        dataSetActions.setEntry(null);
+    }
+
+    private JPanel createSouth() {
+        JPanel p = new JPanel();
+        for (Action action : dataSetActions.getActions()) {
+            p.add(new JButton(action));
         }
+        return p;
     }
 
     private JComponent createList() {
@@ -160,10 +154,9 @@ public class SipCreatorGUI extends JFrame {
             @Override
             public void valueChanged(ListSelectionEvent event) {
                 if (event.getValueIsAdjusting()) return;
-                boolean enable = getSelectedDataSetStore() != null;
-                for (JButton button : controlButtons) {
-                    button.setEnabled(enable);
-                }
+                int selected = dataSetList.getSelectedIndex();
+                DataSetListModel.Entry selectedEntry = selected >= 0 ? dataSetListModel.getEntry(selected) : null;
+                dataSetActions.setEntry(selectedEntry);
             }
         });
         dataSetList.setCellRenderer(new DataSetListModel.Cell());
@@ -173,118 +166,6 @@ public class SipCreatorGUI extends JFrame {
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         return scroll;
-    }
-
-    private JComponent createControl() {
-        JPanel p = new JPanel();
-        p.setBorder(BorderFactory.createTitledBorder("Control"));
-
-        JButton analysis = new JButton("Analysis & Facts");
-        analysis.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                FileStore.DataSetStore store = getSelectedDataSetStore();
-                if (store != null) {
-                    sipModel.setDataSetStore(store);
-                    analysisFactsFrame.reveal();
-                }
-            }
-        });
-        p.add(analysis);
-        controlButtons.add(analysis);
-
-        for (final String metadataPrefix : sipModel.getMetadataModel().getPrefixes()) {
-            JButton button = new JButton(String.format("Edit '%s' Mapping", metadataPrefix));
-            button.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent actionEvent) {
-                    FileStore.DataSetStore store = getSelectedDataSetStore();
-                    if (store != null) {
-                        sipModel.setDataSetStore(store);
-                        sipModel.setMetadataPrefix(metadataPrefix);
-                        mappingFrame.reveal(metadataPrefix);
-                    }
-                }
-            });
-            p.add(button);
-            controlButtons.add(button);
-        }
-
-        JButton uploadButton = new JButton(new UploadAction());
-        p.add(uploadButton);
-        controlButtons.add(uploadButton);
-        return p;
-    }
-
-    private FileStore.DataSetStore getSelectedDataSetStore() {
-        int selected = dataSetList.getSelectedIndex();
-        return selected >= 0 ? dataSetListModel.getEntry(selected).getDataSetStore() : null;
-    }
-
-    private class UploadAction extends AbstractAction {
-
-        private UploadAction() {
-            super("Upload to Repository");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent actionEvent) {
-            final FileStore.DataSetStore store = getSelectedDataSetStore();
-            if (store != null) {
-                try {
-                    if (!store.getFacts().isValid()) {
-                        sipModel.tellUser("Sorry, but the Facts are not yet valid");
-                        return;
-                    }
-                }
-                catch (FileStoreException e) {
-                    sipModel.tellUser("Unable to read Facts for this data set");
-                    return;
-                }
-                sipModel.setDataSetStore(store);
-                ProgressMonitor progressMonitor = new ProgressMonitor(SwingUtilities.getRoot(SipCreatorGUI.this), "Uploading", "Uploading files for " + store.getSpec(), 0, 100);
-                final ProgressListener progressListener = new ProgressListener.Adapter(progressMonitor, this);
-                sipModel.uploadFile(FileType.FACTS, store.getFactsFile(), progressListener, new FileUploader.Receiver() {
-                    @Override
-                    public void acceptResponse(DataSetResponse dataSetResponse) {
-                        switch (dataSetResponse) {
-                            case THANK_YOU:
-                            case GOT_IT_ALREADY:
-                                sipModel.uploadFile(FileType.SOURCE, store.getSourceFile(), progressListener, new FileUploader.Receiver() {
-                                    @Override
-                                    public void acceptResponse(DataSetResponse dataSetResponse) {
-                                        switch (dataSetResponse) {
-                                            case THANK_YOU:
-                                            case GOT_IT_ALREADY:
-                                                Collection<File> mappingFiles = store.getMappingFiles();
-                                                if (!mappingFiles.isEmpty()) {
-                                                    if (mappingFiles.size() > 1) {
-                                                        throw new RuntimeException("Not yet ready for multiple mappings");
-                                                    }
-                                                    File mappingFile = mappingFiles.iterator().next();
-                                                    sipModel.uploadFile(FileType.MAPPING, mappingFile, progressListener, new FileUploader.Receiver() {
-                                                        @Override
-                                                        public void acceptResponse(DataSetResponse dataSetResponse) {
-                                                            // todo: done
-                                                        }
-                                                    });
-                                                }
-                                                break;
-                                            default:
-                                                sipModel.tellUser("Response: " + dataSetResponse); // todo
-                                                break;
-                                        }
-                                    }
-                                });
-                                break;
-                            default:
-                                sipModel.tellUser("Response: " + dataSetResponse); // todo
-                                break;
-                        }
-                    }
-                });
-            }
-        }
     }
 
     private JMenuBar createMenuBar() {
@@ -297,6 +178,20 @@ public class SipCreatorGUI extends JFrame {
                 }
             }
         }));
+        bar.add(createRepositoryMenu());
+        bar.add(createActionMenu());
+        return bar;
+    }
+
+    private JMenu createActionMenu() {
+        JMenu actions = new JMenu("Actions");
+        for (Action action : dataSetActions.getActions()) {
+            actions.add(action);
+        }
+        return actions;
+    }
+
+    private JMenu createRepositoryMenu() {
         JMenu repository = new JMenu("Repository");
         repository.add(new AccessKeyAction());
         JCheckBoxMenuItem connect = new JCheckBoxMenuItem("Connect");
@@ -304,7 +199,7 @@ public class SipCreatorGUI extends JFrame {
             @Override
             public void itemStateChanged(ItemEvent itemEvent) {
                 boolean enabled = itemEvent.getStateChange() == ItemEvent.SELECTED;
-                repositoryConnection.enablePolling(enabled);
+                metaRepoClient.enablePolling(enabled);
                 if (!enabled) {
                     dataSetListModel.clear();
                     for (FileStore.DataSetStore dataSetStore : sipModel.getFileStore().getDataSetStores().values()) {
@@ -312,11 +207,11 @@ public class SipCreatorGUI extends JFrame {
                     }
                 }
                 titleLabel.setText(enabled ? LOCAL_AND_REMOTE_SETS : LOCAL_SETS);
+                dataSetList.clearSelection();
             }
         });
         repository.add(connect);
-        bar.add(repository);
-        return bar;
+        return repository;
     }
 
     private MetadataModel loadMetadataModel() {
@@ -382,68 +277,6 @@ public class SipCreatorGUI extends JFrame {
                 sipModel.setServerAccessKey(accessKey);
             }
         }
-    }
-
-    private class AnalysisFactsFrame extends JDialog {
-        private SipModel sipModel;
-
-        private AnalysisFactsFrame(SipModel sipModel) throws HeadlessException {
-            super(SipCreatorGUI.this, "Analysis & Facts", true);
-            this.sipModel = sipModel;
-            getContentPane().add(new AnalysisFactsPanel(sipModel));
-            getContentPane().add(createFinishedPanel(this), BorderLayout.SOUTH);
-//            setSize(Toolkit.getDefaultToolkit().getScreenSize());
-            setSize(SIZE);
-            setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - SIZE.width) / 2, (Toolkit.getDefaultToolkit().getScreenSize().height - SIZE.height) / 2);
-        }
-
-        public void reveal() {
-            setTitle(String.format("Analysis & Facts for '%s'", sipModel.getDataSetStore().getSpec()));
-            setVisible(true);
-        }
-    }
-
-    private class MappingFrame extends JDialog {
-        private SipModel sipModel;
-
-        private MappingFrame(SipModel sipModel) throws HeadlessException {
-            super(SipCreatorGUI.this, "Mapping", true);
-            this.sipModel = sipModel;
-            JTabbedPane tabs = new JTabbedPane();
-            tabs.addTab("Mapping", new MappingPanel(sipModel));
-            tabs.addTab("Refinement", new RefinementPanel(sipModel));
-            tabs.addTab("Normalization", new NormalizationPanel(sipModel));
-            getContentPane().add(tabs, BorderLayout.CENTER);
-            getContentPane().add(createFinishedPanel(this), BorderLayout.SOUTH);
-            setSize(SIZE);
-            setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - SIZE.width) / 2, (Toolkit.getDefaultToolkit().getScreenSize().height - SIZE.height) / 2);
-            setJMenuBar(createMappingMenuBar());
-        }
-
-        private JMenuBar createMappingMenuBar() {
-            JMenuBar bar = new JMenuBar();
-            MappingTemplateMenu mappingTemplateMenu = new MappingTemplateMenu(this, sipModel);
-            bar.add(mappingTemplateMenu);
-            return bar;
-        }
-
-        public void reveal(String prefix) {
-            setTitle(String.format("Mapping '%s' of '%s'", prefix, sipModel.getDataSetStore().getSpec()));
-            setVisible(true);
-        }
-    }
-
-    private JPanel createFinishedPanel(final JDialog frame) {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton hide = new JButton("Finished");
-        hide.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                frame.setVisible(false);
-            }
-        });
-        panel.add(hide);
-        return panel;
     }
 
     public static void main(final String[] args) throws ClassNotFoundException {

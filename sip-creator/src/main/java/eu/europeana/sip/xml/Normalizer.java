@@ -133,12 +133,12 @@ public class Normalizer implements Runnable {
                                 fileSetOutput.recordDiscarded();
                             }
                             catch (IOException e1) {
-                                sipModel.tellUser("Unable to write discarded record", e1);
+                                sipModel.getUserNotifier().tellUser("Unable to write discarded record", e1);
                             }
                         }
                     }
                     else {
-                        sipModel.tellUser("Problem normalizing " + record.toString(), e);
+                        sipModel.getUserNotifier().tellUser("Problem normalizing " + record.toString(), e);
                         listener.invalidInput(e);
                         if (store) {
                             fileSetOutput.close(true);
@@ -156,12 +156,12 @@ public class Normalizer implements Runnable {
                                 fileSetOutput.recordDiscarded();
                             }
                             catch (IOException e1) {
-                                sipModel.tellUser("Unable to write discarded record", e1);
+                                sipModel.getUserNotifier().tellUser("Unable to write discarded record", e1);
                             }
                         }
                     }
                     else {
-                        sipModel.tellUser("Invalid output record", e);
+                        sipModel.getUserNotifier().tellUser("Invalid output record", e);
                         listener.invalidOutput(e);
                         if (store) {
                             fileSetOutput.close(true);
@@ -170,7 +170,7 @@ public class Normalizer implements Runnable {
                     }
                 }
                 catch (Exception e) {
-                    sipModel.tellUser("Problem writing output", e);
+                    sipModel.getUserNotifier().tellUser("Problem writing output", e);
                     progressAdapter.running = false;
                 }
             }

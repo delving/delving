@@ -22,6 +22,7 @@ import eu.delving.services.exceptions.MappingNotFoundException;
 import eu.delving.services.exceptions.MetaRepoSystemException;
 import eu.delving.services.exceptions.RecordParseException;
 import eu.delving.services.exceptions.ResumptionTokenNotFoundException;
+import eu.delving.sip.DataSetState;
 import eu.delving.sip.ServiceAccessToken;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
@@ -879,8 +880,8 @@ public class MetaRepoImpl implements MetaRepo {
             if (mappingRunner == null) {
                 ToolCodeResource toolCodeResource = new ToolCodeResource();
                 RecordMapping recordMapping = getRecordMapping();
-                recordMapping.toCompileCode(metadataModel.getRecordDefinition());
-                mappingRunner = new MappingRunner(toolCodeResource.getCode() + getRecordMapping());
+                String compileCode = recordMapping.toCompileCode(metadataModel.getRecordDefinition());
+                mappingRunner = new MappingRunner(toolCodeResource.getCode() + compileCode);
             }
             return mappingRunner;
         }

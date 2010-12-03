@@ -26,7 +26,7 @@ import java.util.Date;
 public class MongoObjectParser {
     private XMLStreamReader2 input;
     private Path recordRoot, uniqueElement;
-    private String metadataPrefix, namespaceUri;
+    private String metadataPrefix;
     private Path path = new Path();
     private DBObject namespaces = new BasicDBObject();
 
@@ -34,7 +34,6 @@ public class MongoObjectParser {
         this.recordRoot = recordRoot;
         this.uniqueElement = uniqueElement;
         this.metadataPrefix = metadataPrefix;
-        this.namespaceUri = namespaceUri;
         XMLInputFactory2 xmlif = (XMLInputFactory2) XMLInputFactory2.newInstance();
         xmlif.configureForSpeed();
         Source source = new StreamSource(inputStream, "UTF-8");
