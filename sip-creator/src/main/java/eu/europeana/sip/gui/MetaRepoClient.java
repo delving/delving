@@ -39,6 +39,7 @@ public class MetaRepoClient {
     public interface Listener {
         void setInfo(DataSetInfo dataSetInfo);
         void setList(List<DataSetInfo> list);
+        void disconnected();
     }
 
     public MetaRepoClient(SipModel sipModel, Listener listener) {
@@ -126,6 +127,7 @@ public class MetaRepoClient {
                     @Override
                     public void run() {
                         sipModel.getUserNotifier().tellUser("Access to list failed with this key", e);
+                        listener.disconnected();
                     }
                 });
             }

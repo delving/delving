@@ -80,6 +80,7 @@ public class SipCreatorGUI extends JFrame {
     private SipModel sipModel;
     private JLabel titleLabel = new JLabel(LOCAL_SETS, JLabel.CENTER);
     private MetaRepoClient metaRepoClient;
+    private JCheckBoxMenuItem connectedBox = new JCheckBoxMenuItem("Connect");
     private DataSetListModel dataSetListModel = new DataSetListModel();
     private JList dataSetList = new JList(dataSetListModel);
     private DataSetActions dataSetActions;
@@ -104,6 +105,11 @@ public class SipCreatorGUI extends JFrame {
                     dataSetListModel.setDataSetInfo(dataSetInfo);
                     dataSetActions.setDataSetInfo(dataSetInfo);
                 }
+            }
+
+            @Override
+            public void disconnected() {
+                connectedBox.setSelected(false);
             }
         });
         dataSetActions = new DataSetActions(this, sipModel, metaRepoClient);
@@ -194,8 +200,7 @@ public class SipCreatorGUI extends JFrame {
     private JMenu createRepositoryMenu() {
         JMenu repository = new JMenu("Repository");
         repository.add(new AccessKeyAction());
-        JCheckBoxMenuItem connect = new JCheckBoxMenuItem("Connect");
-        connect.addItemListener(new ItemListener() {
+        connectedBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent itemEvent) {
                 boolean enabled = itemEvent.getStateChange() == ItemEvent.SELECTED;
@@ -210,7 +215,7 @@ public class SipCreatorGUI extends JFrame {
                 dataSetList.clearSelection();
             }
         });
-        repository.add(connect);
+        repository.add(connectedBox);
         return repository;
     }
 
