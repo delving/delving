@@ -24,6 +24,9 @@ import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.SolrInputField;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -170,9 +173,11 @@ public class Harvindexer {
         public void run() {
             log.info("Importing " + collection);
             try {
-                solrServer.deleteByQuery("europeana_collectionName:" + collection.getName());
-                solrServer.commit();
+                DateTime now = new DateTime();
+                DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
                 importPmh(collection);
+                solrServer.deleteByQuery("europeana_collectionName:" + collection.getName() + " AND timestamp:[* TO " + fmt.print(now) + "]");
+//                solrServer.commit(); // now you don't have to
                 if (thread != null) {
                     log.info("Finished importing " + collection);
                     collection = consoleDao.updateCollectionCounters(collection.getId());
