@@ -17,7 +17,7 @@
 <div role="main" class="grid_12 login-register">
 
 
-                <h2><@spring.message 'Register_t' /></h2>
+                <h2><@spring.message '_mine.user.register.register' /></h2>
 
 
                 <form id="regForm" action="/${portalName}/register.html" method="post">
@@ -29,10 +29,10 @@
                     <fieldset id="pt1">
 
                         <legend><span>Step </span>1. <span>: Email details</span> </legend>
-                        <h3><@spring.message 'EmailAddress_t' />.</h3>
-                        <div class="help"><@spring.message 'EmailUse_t' />.</div>
+                        <h3><@spring.message '_mine.email.address' />.</h3>
+                        <div class="help"><@spring.message '_mine.user.register.emailuse' />.</div>
                         <!--<strong class="error">An email address is required!</strong>-->
-                        <label for="email"><@spring.message 'EmailAddress_t' /></label>
+                        <label for="email"><@spring.message '_mine.email.address' /></label>
                         <input type="text" id="email" name="email" disabled="true" tabindex="5"  value="${command.email}" style="background:#eaeaea;"/>
 
                     </fieldset>
@@ -43,8 +43,8 @@
 
 
                         <legend><span>Step </span>2. <span>: Login details</span></legend>
-                        <h3><@spring.message 'UserNameChoose_t' />.</h3>
-                        <div class="help"><@spring.message 'UserNameExplain_t' />.</div>
+                        <h3><@spring.message '_mine.user.register.username.choose' />.</h3>
+                        <div class="help"><@spring.message '_mine.user.register.username.explain' />.</div>
                         <label for="userName">Username</label>
                         <@spring.formInput "command.userName"/>
                         <@spring.bind "command.userName" />
@@ -57,15 +57,15 @@
                     <fieldset id="pt3">
 
                         <legend><span>Step </span>3. <span>: Password</span></legend>
-                        <h3><@spring.message 'PasswordChoose_t' />.</h3>
-                        <div class="help"><@spring.message 'PasswordExplain_t' />.</div>
+                        <h3><@spring.message '_mine.user.register.password.choose' />.</h3>
+                        <div class="help"><@spring.message '_mine.user.register.password.explain' />.</div>
 
-                        <label for="password"><@spring.message 'Password_t' /></label>
+                        <label for="password"><@spring.message '_mine.user.register.password' /></label>
                         <@spring.formPasswordInput "command.password"/>
                         <@spring.bind "command.password" />
                         <#list spring.status.errorMessages as error> <i>${error}</i> <br> </#list>
 
-                        <label for="password2"><@spring.message 'RepeatPassword_t' /></label>
+                        <label for="password2"><@spring.message '_mine.user.register.repeat.password' /></label>
                         <@spring.formPasswordInput "command.password2"/>
                         <@spring.bind "command.password2" />
                         <#list spring.status.errorMessages as error> <i>${error}</i> <br> </#list>
@@ -78,14 +78,14 @@
                         <legend><span>Step </span>4. <span>: Submit form</span></legend>
                         <#--<h3>Agree</h3>-->
                         <#-- todo: rewrite this with proper spring bindings -->
-                        <#--<label for="disclaimer"><@spring.message 'MyCodeOfConduct_t' /></label>-->
-                        <div id="disclaimer-texts" class="help"><@spring.message 'MyCodeOfConduct_t' /></div>
+                        <#--<label for="disclaimer"><@spring.message '_mine.user.register.mycodeofconduct' /></label>-->
+                        <div id="disclaimer-texts" class="help"><@spring.message '_mine.user.register.mycodeofconduct' /></div>
                         <p>
                         <@formCheckbox "command.disclaimer"/>
                         <br />
                         <#list spring.status.errorMessages as error> <i>${error}</i> <br> </#list>
 
-                        <input id="submit_registration" type="submit" name="submit_registration" tabindex="6" value="<@spring.message 'FinishRegistration_t' /> &raquo;" class="button"/>
+                        <input id="submit_registration" type="submit" name="submit_registration" tabindex="6" value="<@spring.message '_mine.user.register.finishregistration' /> &raquo;" class="button"/>
                         </p>
                     </fieldset>
                     </div>
@@ -106,6 +106,6 @@
     <#--<#if spring.status.value>checked="checked"</#if>-->
     ${attributes}
     <@spring.closeTag/>
-    <@spring.message 'IAgree_t'/>
+    <@spring.message '_mine.user.register.iagree'/>
     </div>
 </#macro>

@@ -25,7 +25,7 @@
 <div id="main" class="grid_9">
 
 
-    <h1 id="register_success"><@spring.message "registrationSucceed_t" /></h1>
+    <h1 id="register_success"><@spring.message "_mine.user.registration.notification.succeed" /></h1>
 
     <!--<p>You are now a culture vulture.</p>-->
 
@@ -36,7 +36,7 @@
          <label for="j_username">Username</label>
          <input type="text" id="j_username" name="j_username" value="${command.email}"/>
 
-         <label for="j_password"><@spring.message 'Password_t' /></label>
+         <label for="j_password"><@spring.message '_mine.user.register.password' /></label>
          <input type="password" id="j_password" name="j_password" value="${command.password}"/>
 
          <#-- _spring_security_remember_me should always be true.

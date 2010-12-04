@@ -17,19 +17,19 @@
 
 <@addHeader "Delving", "",["results.js"],[]/>
 <script type="text/javascript">
-    var msgSearchSaveSuccess = "<@spring.message 'SearchSaved_t'/>";
-    var msgSearchSaveFail = "<@spring.message 'SearchSavedFailed_t'/>";
+    var msgSearchSaveSuccess = "<@spring.message '_portal.ui.message.success.search.saved'/>";
+    var msgSearchSaveFail = "<@spring.message '_mine.user.notification.failure.search.saved'/>";
 </script>
 
 <section class="grid_3" role="complementary">
-    <h3 class="header"><@spring.message 'RefineYourSearch_t' /></h3>
+    <h3 class="header"><@spring.message '_action.refine.your.search' /></h3>
     <nav id="facetList">
-        <@resultBriefFacets "DATAPROVIDER",  "Provider_t", 1/>
+        <@resultBriefFacets "DATAPROVIDER",  "_facet.by.provider", 1/>
 
         <#-- TODO: Create this facet -------------------------->
         <#-- Norvegiana: Add "by About Person" ---------------->
         <#----------------------------------------------------->
-        <@resultBriefFacets "DCTYPE",  "dc_type_t", 2/>
+        <@resultBriefFacets "DCTYPE",  "_metadata.dc.type", 2/>
     </nav>
 
     <nav id="userActions">
@@ -49,7 +49,7 @@
 
         <div id="result_count">
             <div class="inner">
-            <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
+            <@spring.message '_portal.ui.navigation.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}
             </div>
         </div>
     
@@ -84,7 +84,7 @@
             <@resultBriefList/>
         </#if>
     <#else>
-        <div id="no-result"><@spring.message 'NoItemsFound_t' /></div>
+        <div id="no-result"><@spring.message '_portal.ui.notification.noitemsfound' /></div>
     </#if>
     </div>
 

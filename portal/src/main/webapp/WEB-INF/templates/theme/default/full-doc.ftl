@@ -51,7 +51,7 @@
        <div class="inner">
             <#if pagination??>
                 <dl>
-                    <dt><@spring.message 'MatchesFor_t' />:</dt>
+                    <dt><@spring.message '_portal.ui.navigation.matchesfor' />:</dt>
                     <#if !query?starts_with("europeana_uri:")>
                         <#list pagination.breadcrumbs as crumb>
                             <#if !crumb.last>
@@ -62,7 +62,7 @@
                         </#list>
                     <#else>
                         <dd class="nobg">
-                            <@spring.message 'ViewingRelatedItems_t' />
+                            <@spring.message '_portal.ui.viewingrelateditems' />
                             <#assign match = result.fullDoc />
                             <#--todo review this. It seems wrong to display the image of the current full-doc instead of the original related item search-->
                             <a href="full-doc.html?&amp;uri=${match.id}">
@@ -110,24 +110,24 @@
         <a
         href="${urlPrevious}"
         class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}"
-        alt="<@spring.message 'AltPreviousPage_t' />"
+        alt="<@spring.message '_action.alt.previous.page' />"
         >
-       <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message 'Previous_t' />
+       <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message '_action.previous' />
         </a>
         <a
             href="${urlNext}"
             class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}"
-            alt="<@spring.message 'AltNextPage_t' />"
+            alt="<@spring.message '_action.alt.next.page' />"
             >
-            <span class="ui-icon ui-icon-circle-arrow-e"></span><@spring.message 'Next_t' />
+            <span class="ui-icon ui-icon-circle-arrow-e"></span><@spring.message '_portal.ui.navigation.next' />
         </a>
 
         <#if pagination.returnToResults??>
             <a
                     class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
                     href="${pagination.returnToResults?html}"
-                     alt="<@spring.message 'ReturnToResults_t' />"/>
-               <span class="ui-icon ui-icon-circle-arrow-n"></span><@spring.message 'ReturnToResults_t' />
+                     alt="<@spring.message '_action.return.to.results' />"/>
+               <span class="ui-icon ui-icon-circle-arrow-n"></span><@spring.message '_action.return.to.results' />
             </a>
         <#else>
         &#160;

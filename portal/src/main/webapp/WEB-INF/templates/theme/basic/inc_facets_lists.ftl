@@ -1,9 +1,9 @@
 <#compress>
 <#assign next = nextQueryFacets>
-<h4><@spring.message 'RefineYourSearch_t' />:</h4>
+<h4><@spring.message '_action.refine.your.search' />:</h4>
 <noscript>
     <div class="attention">
-    <@spring.message 'NoScript_t' />
+    <@spring.message '_portal.ui.message.noscript' />
     </div>
 </noscript>
 <#--columsize is  used for the number of colums in the facet table. -->
@@ -15,56 +15,56 @@
             <#case "LANGUAGE">
                 <#if facet.links?size &gt; 0>
                    <#if facet.selected><#assign togglerClass="toggler-c-opened"/></#if>
-                   <div class="toggler-c ${togglerClass} ui-icon-circle-triangle-s" title="<@spring.message 'ByLanguage_t' /> ">
-                   <noscript><h4><@spring.message 'ByLanguage_t' />:</h4></noscript>
+                   <div class="toggler-c ${togglerClass} ui-icon-circle-triangle-s" title="<@spring.message '_facet.by.language' /> ">
+                   <noscript><h4><@spring.message '_facet.by.language' />:</h4></noscript>
                    <#assign columsize = 2>
                 </#if>
                    <#break/>
             <#case "YEAR">
                 <#if facet.links?size &gt; 0>
                     <#if facet.selected ><#assign togglerClass="toggler-c-opened"/></#if>
-                   <div class="toggler-c ${togglerClass}>" title="<@spring.message 'Bydate_t' />">
-                   <noscript><h4><@spring.message 'Bydate_t' />:</h4></noscript>
+                   <div class="toggler-c ${togglerClass}>" title="<@spring.message '_facet.by.date' />">
+                   <noscript><h4><@spring.message '_facet.by.date' />:</h4></noscript>
                    <#assign columsize = 2>
                </#if>
                <#break/>
             <#case "DCTYPE">
                 <#if facet.links?size &gt; 0>
                 <#if facet.selected ><#assign togglerClass="toggler-c-opened"/></#if>
-               <div class="toggler-c ${togglerClass}" title="<@spring.message 'Bytype_t' />">
-               <noscript><h4><@spring.message 'Bytype_t' />:</h4></noscript>
+               <div class="toggler-c ${togglerClass}" title="<@spring.message '_facet.by.type' />">
+               <noscript><h4><@spring.message '_facet.by.type' />:</h4></noscript>
                <#assign columsize = 1>
                </#if>
                <#break/>
             <#case "TYPE">
                 <#if facet.links?size &gt; 0>
                 <#if facet.selected ><#assign togglerClass="toggler-c-opened"/></#if>
-               <div class="toggler-c ${togglerClass}" title="<@spring.message 'Bytype_t' />">
-               <noscript><h4><@spring.message 'Bytype_t' />:</h4></noscript>
+               <div class="toggler-c ${togglerClass}" title="<@spring.message '_facet.by.type' />">
+               <noscript><h4><@spring.message '_facet.by.type' />:</h4></noscript>
                <#assign columsize = 1>
                </#if>
                <#break/>
             <#case "COLLECTION">
                 <#if facet.links?size &gt; 0>
                    <#if facet.selected><#assign togglerClass="toggler-c-opened"/></#if>
-                   <div class="toggler-c ${togglerClass} ui-icon-circle-triangle-s" title="<@spring.message 'ByCollection_t' />">
-                   <noscript><h4><@spring.message 'ByCollection_t' />:</h4></noscript>
+                   <div class="toggler-c ${togglerClass} ui-icon-circle-triangle-s" title="<@spring.message '_facet.by.collection' />">
+                   <noscript><h4><@spring.message '_facet.by.collection' />:</h4></noscript>
                    <#assign columsize = 1>
                 </#if>
                    <#break/>
             <#case "PROVIDER">
                 <#if facet.links?size &gt; 0>
                 <#if facet.selected ><#assign togglerClass="toggler-c-opened"/></#if>
-               <div class="toggler-c ${togglerClass}" title="<@spring.message 'ByProvider_t' />">
-               <noscript><h4><@spring.message 'ByProvider_t' />:</h4></noscript>
+               <div class="toggler-c ${togglerClass}" title="<@spring.message '_facet.by.provider' />">
+               <noscript><h4><@spring.message '_facet.by.provider' />:</h4></noscript>
                <#assign columsize = 1>
                </#if>
                <#break/>
             <#case "COUNTRY">
                 <#if facet.links?size &gt; 0>
                 <#if facet.selected ><#assign togglerClass="toggler-c-opened"/></#if>
-               <div class="toggler-c ${togglerClass}" title="<@spring.message 'ByCountry_t' />">
-                   <noscript><h4><@spring.message 'ByCountry_t' />:</h4></noscript>
+               <div class="toggler-c ${togglerClass}" title="<@spring.message '_facet.by.country' />">
+                   <noscript><h4><@spring.message '_facet.by.country' />:</h4></noscript>
                    <#assign columsize = 1>
                 </#if>
                <#break/>
@@ -102,13 +102,13 @@
         </#if>
     </#list>
     <#if seq?size &gt; 0>
-        <h4><@spring.message 'Actions_t'/>:</h4>
+        <h4><@spring.message '_portal.ui.message.actions'/>:</h4>
         <div class="related-links">
             <p class="linetop">
                 <#if user??>
-                    <a id="saveQuery" href="inc_facets_lists.ftl#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message 'SaveThisSearch_t'/></a>
+                    <a id="saveQuery" href="inc_facets_lists.ftl#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message '_action.save.this.search'/></a>
                 <#else>
-                    <a href="inc_facets_lists.ftl#" onclick="highLight('mustlogin'); return false" class="disabled"><@spring.message 'SaveThisSearch_t'/></a>
+                    <a href="inc_facets_lists.ftl#" onclick="highLight('mustlogin'); return false" class="disabled"><@spring.message '_action.save.this.search'/></a>
                 </#if>
             </p>
             <div id="msg-save-search" class="msg-hide fg-pink"></div>

@@ -3,13 +3,13 @@
 <@addCustomAssigns/>
 <@addHeader "Delving", "",["results.js","fancybox/jquery.fancybox-1.3.1.pack.js"],["fancybox/jquery.fancybox-1.3.1.css"]/>
 <script type="text/javascript">
-    var msgItemSaveSuccess = "<@spring.message 'ItemSaved_t'/>";
-    var msgItemSaveFail = "<@spring.message 'ItemSavedFailed_t'/>";
+    var msgItemSaveSuccess = "<@spring.message '_mine.itemsaved'/>";
+    var msgItemSaveFail = "<@spring.message '_mine.itemsavefailed'/>";
 </script>
 <section id="sidebar" class="grid_3" role="complementary">
 
 
-        <h4 class="header"><@spring.message 'RelatedContent_t' /></h4>
+        <h4 class="header"><@spring.message '_portal.ui.message.relatedcontent' /></h4>
 
          <table summary="related items" id="tbl-related-items" width="100%">
             <#assign max=3/><!-- max shown in list -->
@@ -45,7 +45,7 @@
             </#list>
             <#if result.relatedItems?size &gt; max>
                 <tr>
-                    <td id="see-all" colspan="2"><a href='/${portalName}/brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message 'SeeAllRelatedItems_t' /></a></td>
+                    <td id="see-all" colspan="2"><a href='/${portalName}/brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message '_action.see.all.related.items' /></a></td>
                 </tr>
             </#if>
         </table>
@@ -53,10 +53,10 @@
 
 
 
-            <h4 class="header"><@spring.message 'Actions_t' />:</h4>
+            <h4 class="header"><@spring.message '_portal.ui.message.actions' />:</h4>
 
             <#--<p>-->
-            <#--<a href="inc_related_content.ftl#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');return false;"><@spring.message 'SaveToPersonalPage' /></a>-->
+            <#--<a href="inc_related_content.ftl#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');return false;"><@spring.message '_action.save.to.mine' /></a>-->
 
             <#--<div id="msg-save-item" class="msg-hide"></div>-->
             <#--</p>-->
@@ -64,13 +64,13 @@
             <#if result.fullDoc.europeanaType == "IMAGE">
                 <#if result.fullDoc.europeanaIsShownBy[0]?? && imageAnnotationToolBaseUrl?? && imageAnnotationToolBaseUrl!="">
                 <p>
-                    <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}&id=${result.fullDoc.id}" target="_blank"><@spring.message 'AddAnnotation_t' /></a>
+                    <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}&id=${result.fullDoc.id}" target="_blank"><@spring.message '_action.add.annotation' /></a>
                 </p>
                 </#if>
             </#if>
 
             <#--<p>-->
-            <#--<h6><@spring.message 'AddATag_t' /></h6>-->
+            <#--<h6><@spring.message '_action.add.tag' /></h6>-->
 
 
             <#--<form action="inc_related_content.ftl#" method="post" onsubmit="addTag('SocialTag', document.getElementById('tag').value,'${result.fullDoc.id}','${result.fullDoc.thumbnails[0]?js_string}','${postTitle}','${result.fullDoc.europeanaType}'); return false;" id="form-addtag" name="form-addtag" accept-charset="UTF-8">-->
@@ -81,7 +81,7 @@
         <#--</p>-->                
 
 
-         <h5><@spring.message 'Actions_t' />:</h5>
+         <h5><@spring.message '_portal.ui.message.actions' />:</h5>
 
         <#if addThisTrackingCode??>
             <p>
@@ -97,11 +97,11 @@
             <#else>
                 <div class="related-links">
                     <#--<p>-->
-                        <#--<a href="/${portalName}/login.html" class="disabled" onclick="highLight('#mustlogin'); writeMessage('div#msg-save-item','<@spring.message 'login.required'/>'); return false;"><@spring.message 'AddATag_t' /></a>-->
+                        <#--<a href="/${portalName}/login.html" class="disabled" onclick="highLight('#mustlogin'); writeMessage('div#msg-save-item','<@spring.message '_mine.user.notification.login.required'/>'); return false;"><@spring.message '_action.add.tag' /></a>-->
                     <#--</p>-->
 
                     <p>
-                        <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); writeMessage('div#msg-save-item','<@spring.message 'login.required'/>'); return false;"><@spring.message 'SaveToPersonalPage' /></a>
+                        <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); writeMessage('div#msg-save-item','<@spring.message '_mine.user.notification.login.required'/>'); return false;"><@spring.message '_action.save.to.mine' /></a>
                     </p>
                 </div>
                 <div id="msg-save-item" class="msg-hide"></div>

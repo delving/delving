@@ -30,10 +30,10 @@
         <nav id="adminNav">
         <table class="user-options">
             <tbody>
-                    <th scope="rows"><@spring.message 'dms.administration.title' /></th>
-                    <td><a href="/${portalName}/_.dml"><span class="ui-icon ui-icon-document"></span><@spring.message 'dms.administration.pages' /></a></td>
-                    <td><a href="/${portalName}/_.img"><span class="ui-icon ui-icon-image"></span><@spring.message 'dms.administration.images' /></a></td>
-                    <td><a href="/${portalName}/administration.html"><span class="ui-icon ui-icon-person"></span><@spring.message 'dms.administration.users' /></a></td>
+                    <th scope="rows"><@spring.message '_cms.administration.title' /></th>
+                    <td><a href="/${portalName}/_.dml"><span class="ui-icon ui-icon-document"></span><@spring.message '_cms.administration.pages' /></a></td>
+                    <td><a href="/${portalName}/_.img"><span class="ui-icon ui-icon-image"></span><@spring.message '_cms.administration.images' /></a></td>
+                    <td><a href="/${portalName}/administration.html"><span class="ui-icon ui-icon-person"></span><@spring.message '_cms.administration.users' /></a></td>
                 </tr>
             </tbody>
         </table>
@@ -85,7 +85,7 @@
             <title>${title}</title>
             <script type="text/javascript">
                 var locale = "${locale}";
-                var msgRequired = "<@spring.message 'RequiredField_t'/>";
+                var msgRequired = "<@spring.message '_mine.user.register.requiredfield'/>";
                 var portalName = "/${portalName}";
                 var baseThemePath = "/${portalName}/${portalTheme}";
             </script>
@@ -104,7 +104,6 @@
             ${javascriptFiles}
         </head>
         <body class="${bodyClass}">
-
          <div class="container_12">
             <a href="/${portalName}/" alt="Home">
                 <img id="branding" src="/${portalName}/${portalTheme}/images/logo.png" alt="" align="absmiddle"/>
@@ -126,11 +125,10 @@
             <div id="search">
                 <@simpleSearch/>
                     <noscript>
-                    <@spring.message 'NoScript_t' />
+                    <@spring.message '_portal.ui.message.noscript' />
                     </noscript>
             </div>
             <div class="clear"></div>
-
     </#if>
 </#macro>
 
@@ -192,7 +190,7 @@
 
 <#macro languageSelect>
 <select onchange="setLang(this.options[selectedIndex].value)" name="dd_lang" id="dd_lang">
-    <option value="Choose language" selected="selected"><@spring.message 'ChooseLanguage_t' /></option>
+    <option value="Choose language" selected="selected"><@spring.message '_action.chooselanguage' /></option>
     <option value="en">
     English (eng)
     </option>
@@ -209,28 +207,28 @@
 <#macro loginFormModal>
 
 <div id="loginFormModal">
-<h2><@spring.message 'LogIn_t' /></h2>
+<h2><@spring.message '_mine.login' /></h2>
 
 <form name='f1' id="loginForm" action='j_spring_security_check' method='POST' accept-charset="UTF-8">
 <table>
     <tr>
-        <td><label for="j_username"><@spring.message 'EmailAddress_t' /></label></td>
+        <td><label for="j_username"><@spring.message '_mine.email.address' /></label></td>
         <td><input type='text' id="j_username" name="j_username" value="" maxlength="50"></td>
     </tr>
     <tr>
-        <td><label for="j_password"><@spring.message "Password_t" /></label></td>
+        <td><label for="j_password"><@spring.message "_mine.user.register.password" /></label></td>
         <td><input type='password' id="j_password" name='j_password' maxlength="50"/></td>
     </tr>
     <tr>
         <td>
-            <a href="/${portalName}/forgot-password.html"><@spring.message 'ForgotPassword_t' /></a>
+            <a href="/${portalName}/forgot-password.html"><@spring.message '_mine.forgotpassword' /></a>
         </td>
-        <td align="right"><input name="submit_login" type="submit" value="<@spring.message 'LogIn_t' />"/></td>
+        <td align="right"><input name="submit_login" type="submit" value="<@spring.message '_mine.login' />"/></td>
     </tr>
 </table>
 <#if errorMessage??>
 
-<strong><@spring.message 'Error_t' />: </strong> Inlog gegevens zijn niet juist
+<strong><@spring.message '_portal.ui.notification.error' />: </strong> Inlog gegevens zijn niet juist
 
 </#if>
 </div>
@@ -258,7 +256,7 @@
                                  class="thumb"
                                  id="thumb_${cell.index()?c}"
                                  align="middle"
-                                 src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}" alt="<@spring.message 'AltMoreInfo_t' />"
+                                 src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}" alt="<@spring.message '_action.alt.more.info' />"
                                  onload="checkSize(this.id,'brief',this.width);"
                                  onerror="showDefaultSmall(this,'${cell.type}')"
                                  height="110"
@@ -333,9 +331,8 @@
                              id="thumb_${cell.index()}"
                              align="middle"
                              src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}"
-                             alt="<@spring.message 'AltMoreInfo_t' />"
+                             alt="<@spring.message '_action.alt.more.info' />"
                              height="50"
-                             onerror="showDefaultSmall(this,'${cell.type}')"
                           />
                     <#else>
                         <img class="thumb"
@@ -357,25 +354,16 @@
                         <@stringLimiter "${cell.title}" "100"/></a>
                 </h6>
                 <p>
-                 <#if cell.creator??>
-                    <#if !(cell.creator = " " || cell.creator = "," || cell.creator = "Unknown,")>
-                        <span><@spring.message 'Creator_t' />: </span><@stringLimiter "${cell.creator}" "120"/>
-                    </#if>
-
-                </#if>
-                <#if cell.year != "">
-                    <#if cell.year != "0000">
-                        ><span><@spring.message 'Date_t' />: </span>${cell.year}
-                    </#if>
-
-                </#if>
-                <#if cell.dataProvider != "">
-                    <#assign pr = cell.dataProvider />
-                    <#if pr?length &gt; 80>
-                        <#assign pr = cell.dataProvider?substring(0, 80) + "..."/>
-                    </#if>
-                    <span><@spring.message 'Provider_t' />: </span> <span class="provider">${pr}</span></li>
-                </#if>
+                <#-- without labels -->
+                <#--
+                <#if !cell.creator[0]?matches(" ")>${cell.creator}<br/></#if>
+                <#if !cell.year?matches(" ")><#if cell.year != "0000">${cell.year}<br/></#if></#if>
+                <#if !cell.provider?matches(" ")>${cell.provider}</#if>
+                --->
+                <#-- with labels -->
+                <#if !cell.creator[0]?matches(" ")><span><@spring.message '_search.field.creator' />: </span>${cell.creator}<br/></#if>
+                <#if !cell.year?matches(" ")><#if cell.year != "0000"><span><@spring.message '_search.field.date' />: </span>${cell.year}<br/></#if></#if>
+                <#if !cell.provider?matches(" ")><@spring.message '_search.field.provider' />: <span class="provider">${cell.provider}</span></#if>
                 </p>
         </td>
     </tr>
@@ -438,31 +426,31 @@
             <#case "LANGUAGE">
                 <#if facet.links?size &gt; 0>
                    <#assign columsize = 2 />
-                   <h4><@spring.message 'ByLanguage_t' /></h4>
+                   <h4><@spring.message '_facet.by.language' /></h4>
                 </#if>
                    <#break/>
             <#case "YEAR">
                 <#if facet.links?size &gt; 0>
                     <#assign columsize = 2 />
-                    <h4><@spring.message 'Bydate_t' /></h4>
+                    <h4><@spring.message '_facet.by.date' /></h4>
                </#if>
                <#break/>
             <#case "TYPE">
                 <#if facet.links?size &gt; 0>
                     <#assign columsize = 1 />
-                    <h4><@spring.message 'Bytype_t' /></h4>
+                    <h4><@spring.message '_facet.by.type' /></h4>
                 </#if>
                <#break/>
             <#case "PROVIDER">
                 <#if facet.links?size &gt; 0>
                     <#assign columsize = 1 />
-                    <h4><@spring.message 'ByProvider_t' /></h4>
+                    <h4><@spring.message '_facet.by.provider' /></h4>
                </#if>
                <#break/>
             <#case "COUNTRY">
                 <#if facet.links?size &gt; 0>
                     <#assign columsize = 1 />
-                    <h4><@spring.message 'ByCountry_t' /></h4>
+                    <h4><@spring.message '_facet.by.country' /></h4>
                 </#if>
                <#break/>
         </#switch>
@@ -518,15 +506,15 @@
         </#if>
     </#list>
     <#if pagination.previous>
-        <#--<a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}" alt="<@spring.message 'AltPreviousPage_t' />">-->
-        <a href="?${queryStringForPresentation?html}}&amp;start=${pagination.previousPage?c}&amp;view=${view}" alt="<@spring.message 'AltPreviousPage_t' />">
-       <@spring.message 'Previous_t' />
+        <#--<a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}" alt="<@spring.message '_action.alt.previous.page' />">-->
+        <a href="?${queryStringForPresentation?html}}&amp;start=${pagination.previousPage?c}&amp;view=${view}" alt="<@spring.message '_action.alt.previous.page' />">
+       <@spring.message '_action.previous' />
     </a>
     </#if>
     <#if pagination.next>
-        <#--<a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}&amp;view=${view}" alt="<@spring.message 'AltNextPage_t' />">-->
-        <a href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}&amp;view=${view}" alt="<@spring.message 'AltNextPage_t' />">
-            <@spring.message 'Next_t' />
+        <#--<a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}&amp;view=${view}" alt="<@spring.message '_action.alt.next.page' />">-->
+        <a href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}&amp;view=${view}" alt="<@spring.message '_action.alt.next.page' />">
+            <@spring.message '_portal.ui.navigation.next' />
         </a>
     </#if>
 </#macro>
@@ -534,9 +522,9 @@
 <#macro resultBriefPaginationStyled>
         <div class="fg-buttonset fg-buttonset-multi">
 
-            <#--<@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}-->
+            <#--<@spring.message '_portal.ui.navigation.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}-->
 
-            <#--<@spring.message 'Page_t' />:-->
+            <#--<@spring.message '_portal.ui.navigation.page' />:-->
             <#list pagination.pageLinks as link>
             <#assign uiClassBorder = ""/>
             <#if link_index == 0>
@@ -571,17 +559,17 @@
             <a
                     href="?${queryStringForPresentation?html}&amp;start=${pagination.previousPage?c}&amp;view=${view}"
                     class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}"
-                    alt="<@spring.message 'AltPreviousPage_t' />"
+                    alt="<@spring.message '_action.alt.previous.page' />"
                     style="margin: 0 8px;"
                     >
-               <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message 'Previous_t' />
+               <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message '_action.previous' />
             </a>
             <a
                     href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}&amp;view=${view}"
                     class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}"
-                    alt="<@spring.message 'AltNextPage_t' />"
+                    alt="<@spring.message '_action.alt.next.page' />"
                     >
-                    <span class="ui-icon ui-icon-circle-arrow-e"></span><@spring.message 'Next_t' />
+                    <span class="ui-icon ui-icon-circle-arrow-e"></span><@spring.message '_portal.ui.navigation.next' />
             </a>
         </div>
 </#macro>
@@ -612,9 +600,9 @@
         <a
             <#--href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}"-->
             href="?${queryStringForPresentation?html}&amp;start=${pagination.previousPage?c}&amp;view=${view}"
-            alt="<@spring.message 'AltPreviousPage_t' />"
+            alt="<@spring.message '_action.alt.previous.page' />"
         >
-        <@spring.message 'Previous_t' />
+        <@spring.message '_action.previous' />
         </a>
     </li>
     </#if>
@@ -623,9 +611,9 @@
         <a
             <#--href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}&amp;view=${view}"-->
             href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}&amp;view=${view}"
-            alt="<@spring.message 'AltNextPage_t' />"
+            alt="<@spring.message '_action.alt.next.page' />"
         >
-        <@spring.message 'Next_t' />
+        <@spring.message '_portal.ui.navigation.next' />
         </a>
     </li>
     </#if>
@@ -639,7 +627,7 @@
  -->
 <#macro resultBriefQueryBreadcrumbs>
 <#assign breadcrumbs = breadcrumbs/>
-    <@spring.message 'MatchesFor_t' />:
+    <@spring.message '_portal.ui.navigation.matchesfor' />:
         <#if !result.matchDoc??>
             <#list breadcrumbs as crumb>
                 <#if !crumb.last>
@@ -649,7 +637,7 @@
                 </#if>
             </#list>
         <#else>
-            <@spring.message 'ViewingRelatedItems_t' />
+            <@spring.message '_portal.ui.viewingrelateditems' />
             <#assign match = result.matchDoc/>
             <a href="${match.fullDocUrl()}">
                 <#if useCache="true">
@@ -669,7 +657,7 @@
 <#macro resultBriefQueryBreadcrumbsList>
 <#assign breadcrumbs = breadcrumbs/>
     <dl class="breadcrumbs">
-        <dt><@spring.message 'MatchesFor_t' />:</dt>
+        <dt><@spring.message '_portal.ui.navigation.matchesfor' />:</dt>
         <#if !result.matchDoc??>
             <#list breadcrumbs as crumb>
                 <#if !crumb.last>
@@ -680,7 +668,7 @@
             </#list>
         <#else>
             <dd>
-                <@spring.message 'ViewingRelatedItems_t' />
+                <@spring.message '_portal.ui.viewingrelateditems' />
                 <#assign match = result.matchDoc/>
                 <a href="${match.fullDocUrl}">
                     <#if useCache="true">
@@ -697,25 +685,22 @@
 <#macro resultsBriefUserActions>
 <#assign seq = briefDocs/>
     <#if seq?size &gt; 0>
-        <h3 class="header"><@spring.message 'Actions_t'/>:</h3>
-            <#-- TODO: use a hidden form instead of hrefs to function without javascript? -->
-        <div id="actions-container">
+        <h4><@spring.message '_portal.ui.message.actions'/>:</h4>
+            <#-- TODO: use a hidden form instead of hrefs to function without javascript? --> 
             <p class="linetop">
                 <#if user??>
-                    <a id="saveQuery" href="#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message 'SaveThisSearch_t'/></a>
+                    <a id="saveQuery" href="#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message '_action.save.this.search'/></a>
                 <#else>
-                    <a href="#" onclick="highLight('a#login'); writeMessage('div#msg-save-search','<@spring.message 'login.required'/>'); return false" class="disabled"><@spring.message 'SaveThisSearch_t'/></a>
+                    <a href="#" onclick="highLight('a#login'); writeMessage('div#msg-save-search','<@spring.message '_mine.user.notification.login.required'/>'); return false" class="disabled"><@spring.message '_action.save.this.search'/></a>
                 </#if>
-            </p>           
-        </div>
-
+            </p>
             <div id="msg-save-search" class="msg-hide"></div>
     </#if>
 </#macro>
 
 <#macro resultsFullQueryBreadcrumbs>
     <#if pagination??>
-        <@spring.message 'MatchesFor_t' />:
+        <@spring.message '_portal.ui.navigation.matchesfor' />:
             <#if !query?starts_with("europeana_uri:")>
                 <#list pagination.breadcrumbs as crumb>
                     <#if !crumb.last>
@@ -725,7 +710,7 @@
                     </#if>
                 </#list>
             <#else>
-                    <@spring.message 'ViewingRelatedItems_t' />
+                    <@spring.message '_portal.ui.viewingrelateditems' />
                     <#assign match = result.fullDoc />
                     <#assign imgSrc = match.getAsString("europeana_object")/>
 
@@ -746,7 +731,7 @@
 <#macro resultsFullQueryBreadcrumbsList>
     <#if pagination??>
         <dl>
-            <dt><@spring.message 'MatchesFor_t' />:</dt>
+            <dt><@spring.message '_portal.ui.navigation.matchesfor' />:</dt>
             <#if !query?starts_with("europeana_uri:")>
                 <#list pagination.breadcrumbs as crumb>
                     <#if !crumb.last>
@@ -757,7 +742,7 @@
                 </#list>
             <#else>
                 <dd class="nobg">
-                    <@spring.message 'ViewingRelatedItems_t' />
+                    <@spring.message '_portal.ui.viewingrelateditems' />
                     <#assign match = result.fullDoc />
                     <#--todo review this. It seems wrong to display the image of the current full-doc instead of the original related item search-->
                     <a href="full-doc.html?&amp;uri=${match.id}">
@@ -797,17 +782,17 @@
             <#assign urlNext = pagination.nextFullDocUrl/>
         </#if>
 
-        <a href="${urlPrevious}" class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}" alt="<@spring.message 'AltPreviousPage_t' />">
-            <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message 'Previous_t' />
+        <a href="${urlPrevious}" class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}" alt="<@spring.message '_action.alt.previous.page' />">
+            <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message '_action.previous' />
         </a>
 
-        <a href="${urlNext}" class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}" alt="<@spring.message 'AltNextPage_t' />">
-            <span class="ui-icon ui-icon-circle-arrow-e"></span><@spring.message 'Next_t' />
+        <a href="${urlNext}" class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}" alt="<@spring.message '_action.alt.next.page' />">
+            <span class="ui-icon ui-icon-circle-arrow-e"></span><@spring.message '_portal.ui.navigation.next' />
         </a>
 
         <#if pagination.returnToResults??>
-            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="${pagination.returnToResults?html}" alt="<@spring.message 'ReturnToResults_t' />">
-               <span class="ui-icon ui-icon-circle-arrow-n"></span><@spring.message 'ReturnToResults_t' />
+            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="${pagination.returnToResults?html}" alt="<@spring.message '_action.return.to.results' />">
+               <span class="ui-icon ui-icon-circle-arrow-n"></span><@spring.message '_action.return.to.results' />
             </a>
         </#if>
 
@@ -819,7 +804,7 @@
 
 <#macro resultFullImage>
 
-        <#assign thumbnail = result.fullDoc.getFieldValue("europeana_object")/>
+    <#assign thumbnail = result.fullDoc.getFieldValue("europeana_object")/>
     <#if !thumbnail.isNotEmpty()>
         <#assign thumbnail = "noImageFound"/>
     <#else>
@@ -865,7 +850,7 @@
     <#--<a class="<#if overlayActive>overlay</#if>"-->
        <#--href="/${portalName}/redirect.html?shownBy=${overlayUrl?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"-->
        <#--target="_blank"-->
-       <#--alt="<@spring.message 'ViewInOriginalContext_t' /> <@spring.message 'OpensInNewWindow_t'/>"-->
+       <#--alt="<@spring.message '_action.view.in.original.context' /> <@spring.message '_action.OpenInNewWindow'/>"-->
     <#-->-->
     <#if useCache="true">
         <img src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
@@ -882,7 +867,7 @@
             src="${thumbnail}"
             onload="checkSize(this.id,'full',this.width);"
             onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"
-            alt="<@spring.message 'ViewInOriginalContext_t' /> <@spring.message 'OpensInNewWindow_t'/>"
+            alt="<@spring.message '_action.view.in.original.context' /> <@spring.message '_action.OpenInNewWindow'/>"
         />
     </#if>
     <#--<#if useCache="true">-->
@@ -911,12 +896,12 @@
     <a
             href="/${portalName}/redirect.html?shownAt=${originalContextUrl?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
             target="_blank"
-            alt="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
-            title="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
+            alt="<@spring.message '_action.view.in.original.context' /> - <@spring.message '_action.OpenInNewWindow'/>"
+            title="<@spring.message '_action.view.in.original.context' /> - <@spring.message '_action.OpenInNewWindow'/>"
             class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
             style="float: none;;"
             >
-        <span class="ui-icon ui-icon-newwin"></span><@spring.message 'ViewInOriginalContext_t' />
+        <span class="ui-icon ui-icon-newwin"></span><@spring.message '_action.view.in.original.context' />
     </a>
     </nav>
 
@@ -938,10 +923,10 @@
             <#--<@resultFullDataRow "dc_identifier"/>-->
 
         <#list result.fullDoc.getFieldValuesFiltered(false, ['europeana_uri', 'delving_pmhId', 'europeana_collectionName', 'europeana_collectionTitle',
-        'europeana_object', 'europeana_isShownAt', 'europeana_isShownBy', 'europeana_language', 'europeana_rights', 'europeana_typet']) as field>
+        'europeana_object', 'europeana_isShownAt', 'europeana_isShownBy', 'europeana_language', 'europeana_rights', 'europeana_type']) as field>
             <tr>
                 <#--<th scrope="row">${field.getKeyAsXml()}</th>-->
-                <th scope="row"><@spring.message '${field.getKey()}_t' />:</th>
+                <th scope="row"><@spring.messageText '${field.getKeyAsMessageKey()}', '${field.getKeyAsXml()}' />:</th>
                 <td>${field.getFirst()}</td>
             </tr>
         </#list>
@@ -953,7 +938,7 @@
     <#assign keyVal = result.fullDoc.getFieldValue(key)/>
     <#if keyVal.isNotEmpty()>
         <tr>
-            <th scope="row"><@spring.message '${keyVal.getKey()}_t' />:</th>
+            <th scope="row"><@spring.messageText '${field.getKeyAsMessageKey()}', '${field.getKeyAsXml()}' />:</th>
             <td>${keyVal.getFirst()}</td>
         </tr>
     </#if>
@@ -972,9 +957,9 @@
         <legend>Search</legend>
         <#--<input name="query" id="query" type="text" title="Europeana Search" maxlength="100" />-->
         <input name="query" id="query" type="search" title="Search" maxlength="100" autofocus="true" class="ui-corner-all" />
-        <button id="submitSimpleSearch" type="submit"><@spring.message 'Search_t' /></button>
+        <button id="submitSimpleSearch" type="submit"><@spring.message '_action.search' /></button>
         <nav>
-        <a href="/${portalName}/advancedsearch.html" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
+        <a href="/${portalName}/advancedsearch.html" title="<@spring.message '_action.advanced.search' />"><@spring.message '_action.advanced.search' /></a>
         </nav>
     </fieldset>
 </form>
@@ -1004,18 +989,18 @@
 <#macro userBar>
 <ul>
     <#if !user??>
-        <li><a id="login" href="/${portalName}/login.html"><@spring.message 'LogIn_t'/></a></li>
-        <li><a id="register" href="/${portalName}/register-request.html"><@spring.message 'Register_t'/></a></li>
+        <li><a id="login" href="/${portalName}/login.html"><@spring.message '_mine.login'/></a></li>
+        <li><a id="register" href="/${portalName}/register-request.html"><@spring.message '_mine.user.register.register'/></a></li>
     </#if>
     <#if user??>
     <li>
-        <@spring.message 'LoggedInAs_t' />: <strong>${user.userName?html}</strong> |
-            <a id="logout" href="/${portalName}/logout.html"><@spring.message 'LogOut_t' /></a>
+        <@spring.message '_mine.loggedinas' />: <strong>${user.userName?html}</strong> | <a
+            href="/${portalName}/logout.html"><@spring.message '_mine.logout' /></a>
     </li>
     <#if user.savedItems??>
     <li>
         <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });">
-            <@spring.message 'SavedItems_t' />
+            <@spring.message '_mine.saved.items' />
         </a>
         (<span id="savedItemsCount">${user.savedItems?size}</span>)
     </li>
@@ -1023,7 +1008,7 @@
     <#if user.savedSearches??>
     <li>
         <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });">
-            <@spring.message 'SavedSearches_t' />
+            <@spring.message '_mine.saved.searches' />
         </a>
         (<span id="savedSearchesCount">${user.savedSearches?size}</span>)
     </li>
@@ -1031,7 +1016,7 @@
     <#--<#if user.socialTags??>-->
     <#--<li>-->
         <#--<a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });">-->
-            <#--<@spring.message 'SavedTags_t' />-->
+            <#--<@spring.message '_mine.saved.tags' />-->
         <#--</a>-->
         <#--(<span id="savedTagsCount">${user.socialTags?size}</span>)-->
     <#--</li>-->
@@ -1050,11 +1035,11 @@
 <div id="viewselect">
     <#if queryStringForPresentation?exists>
         <#if view="table">
-            <a href="?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-hi.gif" alt="<@spring.message 'AltTableView_t' />" /></a>
-            <a href="?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />" >&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-lo.gif" alt="<@spring.message 'AltListView_t' />" /></a>
+            <a href="?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message '_action.alt.table.view' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-hi.gif" alt="<@spring.message '_action.alt.table.view' />" /></a>
+            <a href="?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message '_action.alt.list.view' />" >&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-lo.gif" alt="<@spring.message '_action.alt.list.view' />" /></a>
         <#else>
-            <a href="?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-lo.gif" alt="<@spring.message 'AltTableView_t' />" hspace="5"/></a>
-            <a href="?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-hi.gif" alt="<@spring.message 'AltListView_t' />" hspace="5"/></a>
+            <a href="?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message '_action.alt.table.view' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-lo.gif" alt="<@spring.message '_action.alt.table.view' />" hspace="5"/></a>
+            <a href="?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message '_action.alt.list.view' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-hi.gif" alt="<@spring.message '_action.alt.list.view' />" hspace="5"/></a>
         </#if>
     </#if>
 </div>
@@ -1067,11 +1052,11 @@
  -->
 <#macro sortResults>
 <select id="sortOptions" name="sortBy" onchange="$('input#sortBy').val(this.value);$('form#form-sort').submit();">
-    <option value=""><@spring.message 'search.order.by' /></option>
-    <option value="title" ><@spring.message 'dc_title_t' /></option>
-    <option value="creator"><@spring.message 'dc_creator_t' /></option>
-    <option value="YEAR"><@spring.message 'dc_date_t' /></option>
-    <#--<option value="COLLECTION"><@spring.message 'collection_t' /></option>-->
+    <option value=""><@spring.message '_action.search.order.by' /></option>
+    <option value="title" ><@spring.message '_metadata.dc.title' /></option>
+    <option value="creator"><@spring.message '_metadata.dc.creator' /></option>
+    <option value="YEAR"><@spring.message '_metadata.dc.date' /></option>
+    <#--<option value="COLLECTION"><@spring.message '_search.field.collection' /></option>-->
 </select>
 <form action="" method="GET" id="form-sort" style="display:none;">
     <input type="hidden" name="query" value="${justTheQuery}"/>

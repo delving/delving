@@ -10,7 +10,7 @@
     </#if>
 
 <#else>
-    <div id="no-result"><@spring.message 'NoItemsFound_t' /></div>
+    <div id="no-result"><@spring.message '_portal.ui.notification.noitemsfound' /></div>
 </#if>
 
 
@@ -26,7 +26,7 @@
                              id="thumb_${cell.index()}"
                              align="middle"
                              src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}"
-                             alt="<@spring.message 'AltMoreInfo_t' />"
+                             alt="<@spring.message '_action.alt.more.info' />"
                              height="50"
                           />
                     <#else>
@@ -55,9 +55,9 @@
                 <#if !cell.provider?matches(" ")>${cell.provider}</#if>
                 --->
                 <#-- with labels -->
-                <#if !cell.creator[0]?matches(" ")><span><@spring.message 'Creator_t' />: </span>${cell.creator}<br/></#if>
-                <#if !cell.year?matches(" ")><#if cell.year != "0000"><span><@spring.message 'Date_t' />: </span>${cell.year}<br/></#if></#if>
-                <#if !cell.provider?matches(" ")><@spring.message 'Provider_t' />: <span class="provider">${cell.provider}</span></#if>
+                <#if !cell.creator[0]?matches(" ")><span><@spring.message '_search.field.creator' />: </span>${cell.creator}<br/></#if>
+                <#if !cell.year?matches(" ")><#if cell.year != "0000"><span><@spring.message '_search.field.date' />: </span>${cell.year}<br/></#if></#if>
+                <#if !cell.provider?matches(" ")><@spring.message '_search.field.provider' />: <span class="provider">${cell.provider}</span></#if>
                 </p>
         </td>
     </tr>
@@ -68,7 +68,7 @@
 <#macro show_result_flow seq>
 <div id="imageflow">
     <noscript>
-        <div class="attention"><@spring.message 'NoScript_t' /></div>
+        <div class="attention"><@spring.message '_portal.ui.message.noscript' /></div>
     </noscript>
     <div id="loading">
         <b>Loading images</b><br/>

@@ -8,17 +8,17 @@
 <section role="main" class="main grid_12" id="administration-page">
 
     <header>
-        <h1><@spring.message 'dms.administration.users' /></h1>
+        <h1><@spring.message '_cms.administration.users' /></h1>
     </header>
 
     <#--
 
     <div class="grid_8">
             <ol>
-                <li><@spring.message 'dms.user.change.role.step.1' /></li>
-                <li><@spring.message 'dms.user.change.role.step.2' /></li>
-                <li><@spring.message 'dms.user.change.role.step.3' /></li>
-                <li><@spring.message 'dms.user.change.role.step.4' /></li>
+                <li><@spring.message '_cms.user.change.role.step.1' /></li>
+                <li><@spring.message '_cms.user.change.role.step.2' /></li>
+                <li><@spring.message '_cms.user.change.role.step.3' /></li>
+                <li><@spring.message '_cms.user.change.role.step.4' /></li>
             </ol>
     </div>
 
@@ -26,21 +26,21 @@
             <form method="post" action="administration.html" id="search-form">
                 <table width="400">
                     <tr>
-                        <th colspan="2"><@spring.message 'dms.user.find' /></th>
+                        <th colspan="2"><@spring.message '_cms.user.find' /></th>
                      </tr>
                     <tr></tr>
                         <td><input type="search" name="searchPattern"/></td>
-                        <td><input type="submit" value="<@spring.message 'dms.find' />"/> </td>
+                        <td><input type="submit" value="<@spring.message '_cms.find' />"/> </td>
                     </tr>
                 </table>
                 <#if targetUser??>
                     <p>
-                        ${targetUser.email} <@spring.message 'dms.user.role.set.to' />:
+                        ${targetUser.email} <@spring.message '_cms.user.role.set.to' />: 
                         <#if targetUser.role = 'ROLE_ADMINISTRATOR'>
-                            <@spring.message 'dms.user.role.administrator' />
+                            <@spring.message '_cms.user.role.administrator' />
                         </#if>
                         <#if targetUser.role = 'ROLE_USER'>
-                            <@spring.message 'dms.user.role.public' />
+                            <@spring.message '_cms.user.role.public' />
                         </#if>
                     </p>
                 </#if>
@@ -53,9 +53,9 @@
             <#if userList?size &gt; 0>
                 <table>
                     <tr>
-                        <th><@spring.message 'EmailAddress_t' /></th>
-                        <th><@spring.message 'dms.user.role.current' /></th>
-                        <th><@spring.message 'dms.user.role.new' /></th>
+                        <th><@spring.message '_mine.email.address' /></th>
+                        <th><@spring.message '_cms.user.role.current' /></th>
+                        <th><@spring.message '_cms.user.role.new' /></th>
                         <th>&#160;</th>
                     </tr>
 
@@ -67,31 +67,31 @@
                                 <td width="150">
                                     <#switch userEdit.role>
                                         <#case "ROLE_GOD">
-                                            <@spring.message 'dms.user.role.super' />
+                                            <@spring.message '_cms.user.role.super' />
                                         <#break>
                                         <#case "ROLE_ADMINISTRATOR">
-                                              <@spring.message 'dms.user.role.administrator' />
+                                              <@spring.message '_cms.user.role.administrator' />
                                         <#break>
                                         <#case "ROLE_USER">
-                                              <@spring.message 'dms.user.role.public' />
+                                              <@spring.message '_cms.user.role.public' />
                                         <#break>
                                     </#switch>
                                 </td>
                                 <td width="200">
                                     <select name="newRole" id="newRole">
-                                        <option value="NONE"><@spring.message 'dms.user.role.choose' /></option>
-                                        <#if user.role=="ROLE_GOD"><option value="ROLE_ADMINISTRATOR"><@spring.message 'dms.user.role.administrator' /></option></#if>
-                                        <option value="ROLE_USER"><@spring.message 'dms.user.role.public' /></option>
+                                        <option value="NONE"><@spring.message '_cms.user.role.choose' /></option>
+                                        <#if user.role=="ROLE_GOD"><option value="ROLE_ADMINISTRATOR"><@spring.message '_cms.user.role.administrator' /></option></#if>
+                                        <option value="ROLE_USER"><@spring.message '_cms.user.role.public' /></option>
                                     </select>
                                 </td>
-                                <td><input type="submit" value="<@spring.message 'dms.change' />"/> </td>
+                                <td><input type="submit" value="<@spring.message '_cms.change' />"/> </td>
                             </tr>
                         </form>
                     </#list>
                 </table>
             <#else>
-                <h4><@spring.message 'dms.user.not.found' /></h4>
-                <p><a href="/${portalName}/administration.html"><@spring.message 'dms.user.find' /></a></p>
+                <h4><@spring.message '_cms.user.not.found' /></h4>
+                <p><a href="/${portalName}/administration.html"><@spring.message '_cms.user.find' /></a></p>
             </#if>
         </#if>
 
@@ -101,10 +101,10 @@
     -->
          <div class="grid_6 alpha">
             <ol>
-                <li><@spring.message 'dms.user.change.role.step.1' /></li>
-                <li><@spring.message 'dms.user.change.role.step.2' /></li>
-                <li><@spring.message 'dms.user.change.role.step.3' /></li>
-                <li><@spring.message 'dms.user.change.role.step.4' /></li>
+                <li><@spring.message '_cms.user.change.role.step.1' /></li>
+                <li><@spring.message '_cms.user.change.role.step.2' /></li>
+                <li><@spring.message '_cms.user.change.role.step.3' /></li>
+                <li><@spring.message '_cms.user.change.role.step.4' /></li>
             </ol>
 
                 <#if targetUser??>
@@ -138,7 +138,7 @@
                 <table>
                     <tr>
                         <td width="150"><input type="text" id="searchPattern" name="searchPattern"/></td>
-                        <td><input type="submit" class="btn-strong" value="<@spring.message 'dms.find' />"/> </td>
+                        <td><input type="submit" class="btn-strong" value="<@spring.message '_cms.find' />"/> </td>
                     </tr>
                 </table>
             </form>

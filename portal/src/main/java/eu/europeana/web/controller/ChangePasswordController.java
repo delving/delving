@@ -178,7 +178,7 @@ public class ChangePasswordController {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password2", "password2.required", "Repeat Password is required");
 
             if (!form.getPassword().equals(form.getPassword2())) {
-                errors.rejectValue("password", "password.mismatch", "Passwords do not match");
+                errors.rejectValue("password", "_mine.user.validation.password.mismatch", "Passwords do not match");
             }
         }
     }

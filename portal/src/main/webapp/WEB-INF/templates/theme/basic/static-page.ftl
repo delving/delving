@@ -21,10 +21,10 @@
 
             <section role="main" class="main">
 
-                <#--<h1><@spring.message 'dms.administration.pages' /></h1>-->
+                <#--<h1><@spring.message '_cms.administration.pages' /></h1>-->
 
                 <div class="grid_8">
-                    <h2><@spring.message 'dms.existing.pages' /></h2>
+                    <h2><@spring.message '_cms.existing.pages' /></h2>
                     <table summary="List of existing pages" class="user-options" width="100%">
                         <#list pagePathList as pagePath>
                             <tr>
@@ -34,12 +34,12 @@
                                     ${pagePath}</a></td>
                                 <td width="85"><a href="${pagePath}?edit=true">
                                     <span class="ui-icon ui-icon-pencil"></span>
-                                    <@spring.message 'dms.edit' /></a>
+                                    <@spring.message '_cms.edit' /></a>
                                 </td>
                                 <td width="100">
                                      <a class="delete" id="delete_${pagePath_index}" href="${pagePath}?delete=true">
                                         <span class="ui-icon ui-icon-trash"></span>
-                                          <@spring.message 'dms.delete' />
+                                          <@spring.message '_cms.delete' />
                                      </a>
 
                                 </td>
@@ -50,14 +50,14 @@
 
                 <div class="grid_4">
 
-                    <h2><@spring.message 'dms.page.create' /></h2>
+                    <h2><@spring.message '_cms.page.create' /></h2>
                     <ol>
-                        <li><@spring.message 'dms.page.create.step.1' /></li>
-                        <li><@spring.message 'dms.page.create.step.2' /></li>
+                        <li><@spring.message '_cms.page.create.step.1' /></li>
+                        <li><@spring.message '_cms.page.create.step.2' /></li>
                     </ol>
                     <form method="get" action="" id="form-makePage" onsubmit="createPage(this.pagePath.value);return false;">
                         /${portalName}/&#160;<input type="text" value="" name="pagePath" id="pagePath"/>
-                        <input type="submit" value="<@spring.message 'dms.create' />" id="makePage"/>
+                        <input type="submit" value="<@spring.message '_cms.create' />" id="makePage"/>
                     </form>
 
                </div>
@@ -122,31 +122,31 @@
                     <#if edit>
                         <div id="pageForm">
                             <form action="${page.path}" method="POST" id="form-edit">
-                                <a href="javascript:toggleEditor('editor');" class=""><@spring.message 'dms.html.editor.show.hide' /></a>
+                                <a href="javascript:toggleEditor('editor');" class=""><@spring.message '_cms.html.editor.show.hide' /></a>
 
                                 <textarea name="content" id="editor" style="width: 100%;height:550px;">${page.getContent(locale)}</textarea>
-                                <input type="submit" name="submit" value="<@spring.message 'dms.save' />"/>
-                                <a href="${page.path}" class="button"><@spring.message 'dms.cancel' /></a>
+                                <input type="submit" name="submit" value="<@spring.message '_cms.save' />"/>
+                                <a href="${page.path}" class="button"><@spring.message '_cms.cancel' /></a>
                             </form>
                         </div>
                     <#else>
                         <#if page.id??>
-                            <p><a href="${page.path}?edit=true&version=${page.id}" class="button"><@spring.message 'dms.page.edit' /></a></p>
+                            <p><a href="${page.path}?edit=true&version=${page.id}" class="button"><@spring.message '_cms.page.edit' /></a></p>
                         <#else>
-                            <p><a href="${page.path}?edit=true" class="button"><@spring.message 'dms.page.edit' /></a></p>
+                            <p><a href="${page.path}?edit=true" class="button"><@spring.message '_cms.page.edit' /></a></p>
                         </#if>
 
-                        <p><a href="/${portalName}/_.dml" class="button"><@spring.message 'dms.page.list' /></a></p>
+                        <p><a href="/${portalName}/_.dml" class="button"><@spring.message '_cms.page.list' /></a></p>
 
                         <#if versionList?? && page.id??>
-                            <h3><@spring.message 'dms.version.management' /></h3>
+                            <h3><@spring.message '_cms.version.management' /></h3>
                             <p>
-                                <@spring.message 'dms.version.approve.explain' />
+                                <@spring.message '_cms.version.approve.explain' />
                             </p>
                             <ul>
                                 <#list versionList as version>
                                     <#if version.id == page.id>
-                                        <li><strong>${version.date?string("yyyy-MM-dd HH:mm:ss")}</strong> - <a href="${version.path}?version=${version.id}&edit=false&approve=true"><@spring.message 'dms.version.approve' /></li>
+                                        <li><strong>${version.date?string("yyyy-MM-dd HH:mm:ss")}</strong> - <a href="${version.path}?version=${version.id}&edit=false&approve=true"><@spring.message '_cms.version.approve' /></li>
                                     <#else>
                                         <li><a href="${version.path}?version=${version.id}&edit=false">${version.date?string("yyyy-MM-dd HH:mm:ss")}</a></li>
                                     </#if>

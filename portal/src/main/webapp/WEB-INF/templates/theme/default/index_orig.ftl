@@ -19,7 +19,7 @@
          <noscript>
             <div class="ui-widget grid_5 alpha">
                 <div class="ui-state-highlight ui-corner-all" style="padding: 0pt 0.7em; margin-top: 20px;">
-                    <@spring.message 'NoScript_t' />
+                    <@spring.message '_portal.ui.message.noscript' />
                 </div>
             </div>
         </noscript>

@@ -558,7 +558,7 @@
              <field name="europeana_collectionTitle" type="string" indexed="true" stored="true" required="true" multiValued="false" />
              <field name="europeana_type" type="string" indexed="true" stored="true" multiValued="false" />
              <!--<field name="europeana_userTag" type="text" indexed="true" stored="true" multiValued="true" />-->
-             <!--<field name="europeana_unstored" type="text" indexed="true" stored="false" multiValued="true" />-->
+             <field name="europeana_unstored" type="text" indexed="true" stored="false" multiValued="true" />
              <!--<field name="europeana_object" type="text" indexed="true" stored="true" multiValued="true" />-->
              <!--<field name="europeana_country" type="text" indexed="true" stored="true" multiValued="true" />-->
              <!--<field name="europeana_source" type="text" indexed="true" stored="true" multiValued="true" />-->
@@ -597,7 +597,7 @@
              <field name="abm_digitised" type="string" indexed="true" stored="true" multiValued="true"/>
              <field name="abm_address" type="string" indexed="true" stored="true" multiValued="true"/>
              <field name="abm_landedProperty" type="string" indexed="true" stored="true" multiValued="true"/>
-             <field name="abm_contentprovider" type="string" indexed="true" stored="true" multiValued="true"/>
+             <field name="abm_contentProvider" type="string" indexed="true" stored="true" multiValued="true"/>
 
 
      <!-- Dublin Core / ESE fields -->
