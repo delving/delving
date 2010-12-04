@@ -5,7 +5,7 @@
 
 <#include "includeMarcos.ftl">
 
-<@addHeader "Norvegiana", "",["mine.js"],[]/>
+<@addHeader "Delving", "",["mine.js"],[]/>
 
 
 <style>
@@ -21,24 +21,7 @@
 
 </script>
 
-<section id="sidebar" class="grid_3" role="complementary">
-    <header id="branding" role="banner">
-        <a href="/${portalName}/" title=""/>
-        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
-        </a>
-        <h1 class="large">${portalDisplayName}</h1>
-    </header>
-
-</section>
-
-<section id="main" class="grid_9">
-    <div id="userBar" role="navigation">
-        <div class="inner">
-        <@userBar/>
-        </div>
-    </div>
-
-    <div class="clear"></div>
+<section id="main" class="grid_12">
 
     <div id="savedItems">
         <ul>

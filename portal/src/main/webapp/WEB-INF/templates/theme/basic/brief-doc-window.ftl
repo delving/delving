@@ -15,25 +15,17 @@
 
 <#include "includeMarcos.ftl">
 
-<@addHeader "Norvegiana", "",["results.js"],[]/>
+<@addHeader "Delving", "",["results.js"],[]/>
 <script type="text/javascript">
     var msgSearchSaveSuccess = "<@spring.message 'SearchSaved_t'/>";
     var msgSearchSaveFail = "<@spring.message 'SearchSavedFailed_t'/>";
 </script>
 
 <section class="grid_3" role="complementary">
-    <header id="branding">
-        <a href="/${portalName}/" title=""/>
-        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
-        </a>
-        <h1 class="large">${portalDisplayName}</h1>
-    </header>
-
-    <h3><@spring.message 'RefineYourSearch_t' /></h3>
+    <h3 class="header"><@spring.message 'RefineYourSearch_t' /></h3>
     <nav id="facetList">
-        <@resultBriefFacets "DATAPROVIDER",  "abm_contentProvider_t", 2/>
-        <@resultBriefFacets "COUNTY",  "abm_county_t", 2/>
-        <@resultBriefFacets "MUNICIPALITY",  "abm_municipality_t", 2/>
+        <@resultBriefFacets "DATAPROVIDER",  "Provider_t", 1/>
+
         <#-- TODO: Create this facet -------------------------->
         <#-- Norvegiana: Add "by About Person" ---------------->
         <#----------------------------------------------------->
@@ -47,26 +39,8 @@
 
 <section class="grid_9" id="results" role="main">
 
-    <div id="userBar" role="navigation">
-        <div class="inner">
-        <@userBar/>
-        </div>
-    </div>
-
-    <div class="clear"></div>
-
-    <div id="search" role="search">
-        <div class="inner">
-            <@simpleSearch/>
-        </div>
-    </div>
-
-    <div class="clear"></div>           
-
     <div id="nav_query_breadcrumbs">
-        <div class="inner">
             <h4><@resultBriefQueryBreadcrumbs/></h4>
-        </div>
     </div>
 
     <div class="clear"></div>
