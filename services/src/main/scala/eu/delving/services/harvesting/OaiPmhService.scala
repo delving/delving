@@ -212,7 +212,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
           <identifier>{setSpec}:{record.getIdentifier}</identifier>
           <datestamp>{record.getModifiedDate}</datestamp>
           <setSpec>{setSpec}</setSpec>
-       </header>
+        </header>
         }
         {renderResumptionToken(harvestStep)}
      </ListIdentifiers>

@@ -222,7 +222,7 @@ public class RecordMapping {
             if (forCompile) {
                 out.indent(-1);
             }
-            if (usedPaths.size() != fieldMappings.size()) {
+            if (selectedPath == null && usedPaths.size() != fieldMappings.size()) {
                 Set<String> unusedPaths = new TreeSet<String>(fieldMappings.keySet());
                 unusedPaths.removeAll(usedPaths);
                 Logger.getLogger(getClass()).warn("unused paths: " + unusedPaths);

@@ -60,7 +60,7 @@ public class MongoObjectParser {
                     System.out.println("namespace: " + input.getName());
                     break;
                 case XMLEvent.START_ELEMENT:
-                    path.push(Tag.create(input.getName().getPrefix(),input.getName().getLocalPart()));
+                    path.push(Tag.create(input.getName().getPrefix(), input.getName().getLocalPart()));
                     if (!withinRecord) {
                         if (path.equals(recordRoot)) {
                             withinRecord = true;
@@ -82,9 +82,15 @@ public class MongoObjectParser {
                         if (input.getAttributeCount() > 0) {
                             for (int walk = 0; walk < input.getAttributeCount(); walk++) {
                                 QName qName = input.getAttributeName(walk);
-                                String attrName = qName.getPrefix().isEmpty() ? qName.getLocalPart() : qName.getPrefix() + ":" + qName.getLocalPart();
-                                String value = input.getAttributeValue(walk);
-                                contentBuffer.append(' ').append(attrName).append("=\"").append(value).append("\"");
+                                String attrName = qName.getLocalPart();
+//                                if (!qName.getPrefix().isEmpty()) {
+//                                    namespaces.put(qName.getPrefix(), input.getNamespaceURI());
+//                                    attrName = qName.getPrefix() + ":" + qName.getLocalPart();
+//                                }
+                                if (qName.getPrefix().isEmpty()) { // only accept unprefixed attributes
+                                    String value = input.getAttributeValue(walk);
+                                    contentBuffer.append(' ').append(attrName).append("=\"").append(value).append("\"");
+                                }
                             }
                         }
                         contentBuffer.append(">");

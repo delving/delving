@@ -156,7 +156,7 @@ public class Statistics implements Comparable<Statistics>, Serializable {
                         html.append(String.format("<p>There are <strong>%d</strong> different values, in descending order of frequency.</p>", histogram.getSize()));
                         List<Histogram.Counter> counterList = new ArrayList<Histogram.Counter>(histogram.getCounters());
                         Collections.sort(counterList);
-                        html.append("<table cellpadding=30px><tr><td><table cellpadding=4px>");
+                        html.append("<table<tr><td width=20px></td><td><table cellpadding=3px>");
                         for (Histogram.Counter counter : counterList) {
                             html.append(String.format("<tr></td><td>%d</td><td>%s</td><td><strong>%s</strong></tr>", counter.getCount(), counter.getPercentage(), counter.getValue()));
                         }
