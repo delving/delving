@@ -286,6 +286,12 @@ public class UserDaoImpl implements UserDao {
         return (List<User>) query.getResultList();
     }
 
+    @Override
+    @Transactional
+    public List<User> fetchUsers() {
+        Query query = entityManager.createQuery("select u from User as u order by u.role asc, u.email asc");
+        return (List<User>) query.getResultList();
+    }
 
     @Override
     @Transactional
