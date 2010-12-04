@@ -1,16 +1,7 @@
 <#assign thisPage = "register-request.html"/>
 <#include "includeMarcos.ftl">
 
-<@addHeader "Norvegiana", "",[],[]/>
-
-<#if contentOnly != "true">
-<div class="centered">
-    <div class="grid_12" id="branding">
-        <h1 class="gigantic">
-            <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana" align="absmiddle"/>${portalDisplayName}
-        </h1>
-    </div>
-</#if>
+<@addHeader "Delving", "",[],[]/>
 
 <section role="main" class="grid_4 prefix_4">
 

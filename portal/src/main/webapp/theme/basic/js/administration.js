@@ -45,7 +45,7 @@ $(document).ready(function(){
               type: 'POST',
               url: portalName+'/user-remove.ajax',
               data: "email="+toRemove,
-              success: function(data){
+              success: function(data){   
                   window.location.href=window.location.href;
               }
             });

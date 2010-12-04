@@ -1,4 +1,5 @@
 function setLang(lang) {
+       takeMeBack();
        var langform = document.getElementById("frm-lang");
        var langval = langform.lang;
        langval.value = lang;

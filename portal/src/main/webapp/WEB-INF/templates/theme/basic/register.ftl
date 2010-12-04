@@ -12,20 +12,12 @@
 </#if>
 <#include "includeMarcos.ftl">
 
-<@addHeader "Norvegiana", "",[],["login-register.css"]/>
+<@addHeader "Delving", "",[],["login-register.css"]/>
+
+<div role="main" class="grid_12 login-register">
 
 
-    <div class="grid_12" id="branding">
-        <h1 class="gigantic">
-            <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana" align="absmiddle"/>${portalDisplayName}
-        </h1>
-    </div>
-
-
-<section role="main" class="grid_12 login-register">
-
-
-                <h1><@spring.message 'Register_t' /></h1>
+                <h2><@spring.message 'Register_t' /></h2>
 
 
                 <form id="regForm" action="/${portalName}/register.html" method="post">
@@ -33,7 +25,7 @@
                     <input type="hidden" name="token" value="${command.token}" />
                     <input type="hidden" name="email" value="${command.email}" />
 
-                    <div class="grid_3 alha">
+                    <div class="grid_3 alpha">
                     <fieldset id="pt1">
 
                         <legend><span>Step </span>1. <span>: Email details</span> </legend>
@@ -100,7 +92,7 @@
                     
                 </form>
 
-</section>
+</div>
 
 	    <@addFooter/>
 

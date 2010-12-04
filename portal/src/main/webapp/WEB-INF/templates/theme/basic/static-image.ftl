@@ -12,7 +12,7 @@
             <#assign pageId = "static"/>
             <#include "includeMarcos.ftl">
 
-            <@addHeader "Norvegiana", "",[],[]/>
+            <@addHeader "Delving", "",[],[]/>
 
 
             <section role="main" class="main">
@@ -90,7 +90,7 @@
 
         <#include "includeMarcos.ftl">
 
-        <@addHeader "Norvegiana", "",[],[]/>
+        <@addHeader "Delving", "",[],[]/>
 
             <section id="sidebar" class="grid_3" role="complementary">
                 <header id="branding" role="banner">

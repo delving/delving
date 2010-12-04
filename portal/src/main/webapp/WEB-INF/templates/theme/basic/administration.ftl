@@ -200,13 +200,13 @@
 
 </section>
 
-<script type="text/javascript">
-    $("form#set-form").submit(function(){
-        if($("select#newRole").val()=="NONE"){
-            return false;
-        }
+<#--<script type="text/javascript">-->
+    <#--$("form#set-form").submit(function(){-->
+        <#--if($("select#newRole").val()=="NONE"){-->
+            <#--return false;-->
+        <#--}-->
 
-    })
-</script>
+    <#--})-->
+<#--</script>-->
 
 <@addFooter/>

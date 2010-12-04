@@ -3,15 +3,7 @@
 <#assign pageId = "rsp">
 <#include "includeMarcos.ftl">
 
-<@addHeader "Norvegiana", "",[],[]/>
-
-
-    <div class="grid_12" id="branding">
-        <h1 class="gigantic">
-            <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana" align="absmiddle"/>${portalDisplayName}
-        </h1>
-    </div>
-
+<@addHeader "Delving", "",[],[]/>
 
 <section role="main" class="grid_4 prefix_4">
 

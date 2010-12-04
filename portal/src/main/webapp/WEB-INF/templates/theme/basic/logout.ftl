@@ -1,7 +1,7 @@
 <#assign thisPage = "logout.html"/>
 <#include "includeMarcos.ftl">
 
-<@addHeader "Norvegiana", "",[],[]/>
+<@addHeader "Delving", "",[],[]/>
 
 <section class="grid_3">
     <header id="branding">

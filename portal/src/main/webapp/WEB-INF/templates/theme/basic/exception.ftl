@@ -14,14 +14,7 @@
 </#if>
 <#include "includeMarcos.ftl">
 
-<@addHeader "Norvegiana", "",[],[]/>
-
-
-    <div class="grid_12" id="branding">
-        <h1 class="gigantic">
-            <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana" align="absmiddle"/>${portalDisplayName}
-        </h1>
-    </div>
+<@addHeader "Delving", "",[],[]/>
 
 
 <section role="main" class="grid_4 prefix_4">
@@ -71,7 +64,6 @@
     <#default>
         <div class="ui-widget ui-info">
             Something went wrong! An email has been sent to inform our technical staff.
-            <strong>Please</strong> try another search.
         </div>
         <#if debug>
             <div class="yui-u first">

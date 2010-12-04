@@ -3,7 +3,7 @@
 
 <#include "includeMarcos.ftl">
 
-<@addHeader "Norvegiana", "",[],[]/>
+<@addHeader "Delving", "",[],[]/>
 
 <#if contentOnly != "true">
     <div class="grid_12" id="branding">
