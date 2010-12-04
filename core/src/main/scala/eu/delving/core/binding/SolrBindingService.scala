@@ -193,6 +193,12 @@ case class FieldValue (key: String, solrDocument: SolrDocument) {
    */
   def getKeyAsXml = key.replaceFirst("_", ":")
 
+
+  /**
+   * This gives back the key formatted as a metadata key as specified in the message.properties files.
+   */
+  def getKeyAsMessageKey = "_metadata.%s" format (key.replaceFirst("_", "."))
+
   /**
    * Only give back the first item from the fieldMap retrieved with 'key' in the SolrDocument as a String. When the key
    * is not found an empty String is returned.
