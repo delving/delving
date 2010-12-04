@@ -11,7 +11,7 @@ import org.apache.log4j.Logger
 import xml._
 import eu.delving.services.core.MetaRepo.{Record, HarvestStep, PmhVerb}
 import eu.delving.services.core.MetaRepo
-import eu.delving.services.exceptions.{BadArgumentException, BadResumptionTokenException, CannotDisseminateFormatException, NoRecordsMatchException}
+import eu.delving.services.exceptions._
 import java.text.{ParseException, SimpleDateFormat}
 import org.joda.time.DateTime
 
@@ -57,14 +57,16 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
         case "GetRecord" => processGetRecord( pmhRequest(PmhVerb.GET_RECORD) )
         case _ => createErrorResponse("badVerb")
       }
-    } catch {
-      case nrm: NoRecordsMatchException => createErrorResponse("noRecordsMatch")
-      case cdf: CannotDisseminateFormatException => createErrorResponse("cannotDisseminateFormat")
-      case brt: BadResumptionTokenException => createErrorResponse("badResumptionToken")
-      // not caught explicitly MappingException, XMLStreamException todo what to do with these
-      case e: Exception =>
-        log.error(e.getMessage + e.getStackTraceString)
-        createErrorResponse("badArgument")
+    }
+    catch {
+      case ace  : AccessKeyException => createErrorResponse("cannotDisseminateFormat", ace)
+      case bae  : BadArgumentException => createErrorResponse("badArgument", bae)
+      case dsnf : DataSetNotFoundException => createErrorResponse("cannotDisseminateFormat", dsnf)
+      case mnf  : MappingNotFoundException => createErrorResponse("cannotDisseminateFormat", mnf)
+      case rpe  : RecordParseException => createErrorResponse("cannotDisseminateFormat", rpe)
+      case rtnf : ResumptionTokenNotFoundException => createErrorResponse("badResumptionToken", rtnf)
+//    another option:    createErrorResponse("noRecordsMatch")
+      case e    : Exception => createErrorResponse("badArgument", e)
     }
     response.toString
   }
@@ -210,7 +212,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
           <identifier>{setSpec}:{record.getIdentifier}</identifier>
           <datestamp>{record.getModifiedDate}</datestamp>
           <setSpec>{setSpec}</setSpec>
-       </header>
+        </header>
         }
         {renderResumptionToken(harvestStep)}
      </ListIdentifiers>
@@ -305,7 +307,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
     val recordAsString = record.getXmlString(metadataPrefix).replaceAll("<[/]{0,1}(br|BR)>", "<br/>").replaceAll("&((?!amp;))","&amp;$1")
     // todo get the record separator for rendering from somewhere
     val response = try {
-      val elem = XML.loadString("<record>\n" + {recordAsString} + "</record>")
+      val elem = XML.loadString(recordAsString)
       <record>
         <header>
           <identifier>{set}:{record.getIdentifier}</identifier>
@@ -358,6 +360,11 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
    * This method is used to create all the OAI-PMH error responses to a given OAI-PMH request. The error descriptions have
    * been taken directly from the specifications document for v.2.0.
    */
+  def createErrorResponse(errorCode: String, exception : Exception): Elem = {
+    log.error(errorCode, exception)
+    createErrorResponse(errorCode)
+  }
+
   def createErrorResponse(errorCode: String): Elem = {
 <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

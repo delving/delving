@@ -63,10 +63,11 @@ import java.awt.event.FocusListener;
  */
 
 public class AnalysisFactsPanel extends JPanel {
+    private static final String RERUN = "Rerun the Analysis";
     private static final String ELEMENTS_PROCESSED = "%d Elements Processed";
     private JButton selectRecordRootButton = new JButton("Select Record Root >> ");
     private JButton selectUniqueElementButton = new JButton("Select Unique Element >> ");
-    private JButton reanalyzeButton = new JButton("Rerun the Analysis");
+    private JButton reanalyzeButton = new JButton(RERUN);
     private JEditorPane statisticsView = new JEditorPane();
     private JTree statisticsJTree;
     private SipModel sipModel;
@@ -152,6 +153,7 @@ public class AnalysisFactsPanel extends JPanel {
 
             @Override
             public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
+                reanalyzeButton.setText(RERUN);
             }
 
             @Override

@@ -21,9 +21,6 @@
 
 package eu.delving.services.controller;
 
-import eu.delving.services.cache.ItemSize;
-import eu.europeana.core.querymodel.query.DocType;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,20 +40,6 @@ import java.net.URLEncoder;
 
 @Controller
 public class ServiceController {
-    private Logger log = Logger.getLogger(getClass());
-    private static final String DEFAULT_IMAGE = "/cache/unknown.png";
-    private static final String[][] TYPES = {
-            {ItemSize.BRIEF_DOC.toString(), DocType.TEXT.toString(), "/cache/item-page.gif"},
-            {ItemSize.BRIEF_DOC.toString(), DocType.IMAGE.toString(), "/cache/item-image.gif"},
-            {ItemSize.BRIEF_DOC.toString(), DocType.SOUND.toString(), "/cache/item-sound.gif"},
-            {ItemSize.BRIEF_DOC.toString(), DocType.VIDEO.toString(), "/cache/item-video.gif"},
-            {ItemSize.FULL_DOC.toString(), DocType.TEXT.toString(), "/cache/item-page-large.gif"},
-            {ItemSize.FULL_DOC.toString(), DocType.IMAGE.toString(), "/cache/item-image-large.gif"},
-            {ItemSize.FULL_DOC.toString(), DocType.SOUND.toString(), "/cache/item-sound-large.gif"},
-            {ItemSize.FULL_DOC.toString(), DocType.VIDEO.toString(), "/cache/item-video-large.gif"},
-    };
-    private final int CACHE_DURATION_IN_SECOND = 60 * 60 * 2; // 2 hour
-    private final long CACHE_DURATION_IN_MS = CACHE_DURATION_IN_SECOND * 1000;
 
     @Value("#{launchProperties['displayPageUrl']}")
     private String displayPageUrl;

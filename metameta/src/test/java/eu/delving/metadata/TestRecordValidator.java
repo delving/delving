@@ -1,8 +1,5 @@
 package eu.delving.metadata;
 
-import eu.delving.metadata.MetadataException;
-import eu.delving.metadata.MetadataModelImpl;
-import eu.delving.metadata.RecordValidator;
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Before;
@@ -41,7 +38,7 @@ public class TestRecordValidator {
             "<europeana:collectionName>collectionName</europeana:collectionName>",
             "<europeana:language>en</europeana:language>",
             "<europeana:object>http://object.com/</europeana:object>",
-            "<europeana:rights>nerd's</europeana:rights>",
+            "<europeana:rights>UNKNOWN</europeana:rights>",
             "<europeana:dataProvider>everyone</europeana:dataProvider>",
             "<europeana:type>IMAGE</europeana:type>",
             "<europeana:collectionTitle>Tittle</europeana:collectionTitle>",
@@ -60,12 +57,13 @@ public class TestRecordValidator {
         problems.clear();
     }
 
-    private String toString(List<String> lines) {
-        StringBuilder out = new StringBuilder("<record>\n");
+    private String toString(List<String> lines, boolean wrap) {
+        StringBuilder out = new StringBuilder();
+        if (wrap) out.append("<record>\n");
         for (String line : lines) {
             out.append(line.trim()).append('\n');
         }
-        out.append("</record>");
+        if (wrap) out.append("</record>\n");
         return out.toString();
     }
 
@@ -76,18 +74,16 @@ public class TestRecordValidator {
             expectList.addAll(validFields);
             inputList.addAll(validFields);
         }
-        String expect = toString(expectList);
-        String input = toString(inputList);
+        String expect = toString(expectList, true);
+        String input = toString(inputList, true);
         log.info("input:\n" + input);
         String validated = recordValidator.validateRecord(input, problems);
         for (String problem : problems) {
             log.info("Problem: " + problem);
         }
         Assert.assertTrue("Problems", problems.isEmpty());
-        List<String> validatedList = new ArrayList<String>(Arrays.asList(validated.split("\n")));
-        validatedList.remove(0); // <record>
-        validatedList.remove(validatedList.size()-1); // </record>
-        validated = toString(validatedList);
+        List<String> validatedList = new ArrayList<String>(Arrays.asList(validated.trim().split("\n")));
+        validated = toString(validatedList, false);
         log.info("validated:\n" + validated);
         assertEquals(
                 message,
@@ -101,7 +97,7 @@ public class TestRecordValidator {
         if (includeRequired) {
             inputList.addAll(validFields);
         }
-        String input = toString(inputList);
+        String input = toString(inputList, true);
         log.info("input:\n" + input);
         recordValidator.validateRecord(input, problems);
         Assert.assertFalse("Expected problems", problems.isEmpty());

@@ -1,11 +1,10 @@
-package eu.delving.services.impl;
+package eu.delving.services.core;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import eu.delving.metadata.MetadataNamespace;
 import eu.delving.metadata.Path;
 import eu.delving.metadata.Tag;
-import eu.delving.services.core.MetaRepo;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 
@@ -27,7 +26,7 @@ import java.util.Date;
 public class MongoObjectParser {
     private XMLStreamReader2 input;
     private Path recordRoot, uniqueElement;
-    private String metadataPrefix, namespaceUri;
+    private String metadataPrefix;
     private Path path = new Path();
     private DBObject namespaces = new BasicDBObject();
 
@@ -35,7 +34,6 @@ public class MongoObjectParser {
         this.recordRoot = recordRoot;
         this.uniqueElement = uniqueElement;
         this.metadataPrefix = metadataPrefix;
-        this.namespaceUri = namespaceUri;
         XMLInputFactory2 xmlif = (XMLInputFactory2) XMLInputFactory2.newInstance();
         xmlif.configureForSpeed();
         Source source = new StreamSource(inputStream, "UTF-8");
@@ -62,7 +60,7 @@ public class MongoObjectParser {
                     System.out.println("namespace: " + input.getName());
                     break;
                 case XMLEvent.START_ELEMENT:
-                    path.push(Tag.create(input.getName().getPrefix(),input.getName().getLocalPart()));
+                    path.push(Tag.create(input.getName().getPrefix(), input.getName().getLocalPart()));
                     if (!withinRecord) {
                         if (path.equals(recordRoot)) {
                             withinRecord = true;
@@ -84,9 +82,15 @@ public class MongoObjectParser {
                         if (input.getAttributeCount() > 0) {
                             for (int walk = 0; walk < input.getAttributeCount(); walk++) {
                                 QName qName = input.getAttributeName(walk);
-                                String attrName = qName.getPrefix().isEmpty() ? qName.getLocalPart() : qName.getPrefix() + ":" + qName.getLocalPart();
-                                String value = input.getAttributeValue(walk);
-                                contentBuffer.append(' ').append(attrName).append("=\"").append(value).append("\"");
+                                String attrName = qName.getLocalPart();
+//                                if (!qName.getPrefix().isEmpty()) {
+//                                    namespaces.put(qName.getPrefix(), input.getNamespaceURI());
+//                                    attrName = qName.getPrefix() + ":" + qName.getLocalPart();
+//                                }
+                                if (qName.getPrefix().isEmpty()) { // only accept unprefixed attributes
+                                    String value = input.getAttributeValue(walk);
+                                    contentBuffer.append(' ').append(attrName).append("=\"").append(value).append("\"");
+                                }
                             }
                         }
                         contentBuffer.append(">");

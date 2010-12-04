@@ -1,6 +1,5 @@
-package eu.delving.services.impl;
+package eu.delving.services.core;
 
-import eu.delving.services.core.MetaRepo;
 import org.springframework.beans.factory.annotation.Value;
 
 /**

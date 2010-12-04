@@ -143,7 +143,7 @@ public class MappingPanel extends JPanel {
     }
 
     private JPanel createButtonPanel() {
-        JPanel p = new JPanel(new GridLayout(0, 1, 5, 5));
+        JPanel p = new JPanel(new GridLayout(0, 1, 2, 2));
         createMappingButton.setEnabled(false);
         p.add(createMappingButton);
         createObviousMappingButton.setEnabled(false);
@@ -203,7 +203,8 @@ public class MappingPanel extends JPanel {
                 }
                 variablesList.clearSelection();
                 fieldList.clearSelection();
-                mappingList.setSelectedIndex(mappingList.getModel().getSize() - 1);
+                int index = mappingList.getModel().getSize() - 1;
+                mappingList.clearSelection();
 //                prepareCreateMappingButtons();
             }
         });

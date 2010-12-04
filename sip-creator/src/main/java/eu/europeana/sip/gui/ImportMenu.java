@@ -159,7 +159,7 @@ public class ImportMenu extends JMenu {
                 return true;
             }
             catch (FileStoreException e) {
-                sipModel.tellUser("Unable to import", e);
+                sipModel.getUserNotifier().tellUser("Unable to import", e);
             }
         }
         return false;

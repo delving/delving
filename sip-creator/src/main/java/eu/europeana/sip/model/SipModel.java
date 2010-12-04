@@ -35,7 +35,6 @@ import eu.delving.metadata.Statistics;
 import eu.delving.sip.AppConfig;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
-import eu.delving.sip.FileType;
 import eu.delving.sip.ProgressListener;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MetadataRecord;
@@ -195,6 +194,18 @@ public class SipModel {
         executor.execute(new AppConfigSetter());
     }
 
+    public String getNormalizeDirectory() {
+        return appConfig.getNormalizeDirectory();
+    }
+
+    public void setNormalizeDirectory(File directory) {
+        if (!directory.isDirectory()) {
+            directory = directory.getParentFile();
+        }
+        appConfig.setNormalizeDirectory(directory.getAbsolutePath());
+        executor.execute(new AppConfigSetter());
+    }
+
     public FileStore.DataSetStore getDataSetStore() {
         return dataSetStore;
     }
@@ -207,12 +218,8 @@ public class SipModel {
         return mappingModel;
     }
 
-    public void tellUser(String message) {
-        userNotifier.tellUser(message);
-    }
-
-    public void tellUser(String message, Exception e) {
-        userNotifier.tellUser(message, e);
+    public UserNotifier getUserNotifier() {
+        return userNotifier;
     }
 
     public void setDataSetStore(final FileStore.DataSetStore dataSetStore) {
@@ -239,7 +246,7 @@ public class SipModel {
                         });
                     }
                     catch (FileStoreException e) {
-                        tellUser("Unable to select Data Set " + dataSetStore, e);
+                        userNotifier.tellUser("Unable to select Data Set " + dataSetStore, e);
                     }
                 }
             });
@@ -276,44 +283,38 @@ public class SipModel {
                     });
                 }
                 catch (FileStoreException e) {
-                    tellUser("Unable to select Metadata Prefix " + metadataPrefix, e);
+                    userNotifier.tellUser("Unable to select Metadata Prefix " + metadataPrefix, e);
                 }
             }
         });
     }
 
-//    public String getMappingTemplate() {
-//        return recordCompileModel.getRecordMapping().getCodeForTemplate();
-//    }
-//
-//    public void loadMappingTemplate(File file) {
-//        if (recordCompileModel.getRecordMapping().fieldMappings == null) {
-//            userNotifier.tellUser("Record must be empty to use a template.");
-//        }
-//        else {
-//            try {
-//                BufferedReader in = new BufferedReader(new FileReader(file));
-//                StringBuilder out = new StringBuilder();
-//                String line;
-//                while ((line = in.readLine()) != null) {
-//                    out.append(line).append('\n');
-//                }
-//                in.close();
-//                String templateCode = out.toString();
-//                RecordMapping recordMapping = recordCompileModel.getRecordMapping();
-//                recordMapping.setCode(templateCode, fieldMap);
-//                setRecordRootInternal(recordMapping.recordRoot);
-//                recordMapping.getFactModel().clear();
-//                createMetadataParser(1);
-//                for (UpdateListener updateListener : updateListeners) {
-//                    updateListener.templateApplied();
-//                }
-//            }
-//            catch (IOException e) {
-//                userNotifier.tellUser("Unable to load template", e);
-//            }
-//        }
-//    }
+    public void saveAsTemplate(final String name) {
+        try {
+            fileStore.setTemplate(name, mappingModel.getRecordMapping());
+        }
+        catch (FileStoreException e) {
+            userNotifier.tellUser("Unable to store template", e);
+        }
+    }
+
+    public void applyTemplate(RecordMapping template) {
+        if (!mappingModel.getRecordMapping().getFieldMappings().isEmpty()) {
+            userNotifier.tellUser("Record must be empty to use a template.");
+        }
+        else {
+            try {
+                mappingModel.getRecordMapping().getFieldMappings().addAll(template.getFieldMappings());
+                createMetadataParser(1);
+                for (UpdateListener updateListener : updateListeners) {
+                    updateListener.templateApplied();
+                }
+            }
+            catch (Exception e) {
+                userNotifier.tellUser("Unable to load template", e);
+            }
+        }
+    }
 
     public void analyze(final AnalysisListener listener) {
         checkSwingThread();
@@ -361,19 +362,15 @@ public class SipModel {
         return facts;
     }
 
-    public void normalize(boolean discardInvalid, boolean storeNormalizedFile, ProgressListener progressListener) {
+    public void normalize(File normalizeDirectory, boolean discardInvalid, ProgressListener progressListener) {
         checkSwingThread();
-        File normalizedFile = null;
-        if (storeNormalizedFile) {
-            // todo: file chooser
-        }
         normalizeMessage(false, "Normalizing and validating...");
         executor.execute(new Normalizer(
                 this,
                 getRecordRoot(),
                 getRecordCount(),
                 discardInvalid,
-                normalizedFile,
+                normalizeDirectory,
                 progressListener,
                 new Normalizer.Listener() {
                     @Override
@@ -412,22 +409,6 @@ public class SipModel {
                     }
                 }
         ));
-    }
-
-    public void uploadFile(FileType fileType, File file, ProgressListener progressListener, FileUploader.Receiver receiver) {
-        checkSwingThread();
-        executor.execute(
-                new FileUploader(
-                        dataSetStore.getSpec(),
-                        fileType,
-                        file,
-                        serverUrl,
-                        getServerAccessKey(),
-                        userNotifier,
-                        progressListener,
-                        receiver
-                )
-        );
     }
 
     public TreeModel getAnalysisTreeModel() {

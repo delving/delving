@@ -22,13 +22,15 @@
 package eu.delving.services.core;
 
 import com.mongodb.DBObject;
-import eu.delving.metadata.MetadataException;
 import eu.delving.metadata.Path;
 import eu.delving.metadata.RecordMapping;
+import eu.delving.services.exceptions.AccessKeyException;
 import eu.delving.services.exceptions.BadArgumentException;
-import eu.delving.services.exceptions.BadResumptionTokenException;
-import eu.delving.services.exceptions.CannotDisseminateFormatException;
-import eu.delving.services.exceptions.NoRecordsMatchException;
+import eu.delving.services.exceptions.DataSetNotFoundException;
+import eu.delving.services.exceptions.MappingNotFoundException;
+import eu.delving.services.exceptions.RecordParseException;
+import eu.delving.services.exceptions.ResumptionTokenNotFoundException;
+import eu.delving.sip.DataSetState;
 import org.bson.types.ObjectId;
 
 import java.io.InputStream;
@@ -48,27 +50,27 @@ import java.util.Set;
 
 public interface MetaRepo {
 
-    DataSet createDataSet(String spec) throws BadArgumentException;
+    DataSet createDataSet(String spec);
 
-    Collection<? extends DataSet> getDataSets() throws BadArgumentException;
+    Collection<? extends DataSet> getDataSets();
 
-    DataSet getDataSet(String spec) throws BadArgumentException;
+    DataSet getDataSet(String spec);
 
-    DataSet getFirstDataSet(DataSetState dataSetState) throws BadArgumentException;
+    DataSet getFirstDataSet(DataSetState dataSetState);
 
     void incrementRecordCount(String spec, int increment);
 
-    Set<? extends MetadataFormat> getMetadataFormats() throws BadArgumentException, MetaRepoException;
+    Set<? extends MetadataFormat> getMetadataFormats();
 
-    Set<? extends MetadataFormat> getMetadataFormats(String id, String accessKey) throws BadArgumentException, CannotDisseminateFormatException, MetaRepoException;
+    Set<? extends MetadataFormat> getMetadataFormats(String id, String accessKey) throws MappingNotFoundException, AccessKeyException;
 
-    HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String accessKey) throws NoRecordsMatchException, BadArgumentException;
+    HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String accessKey) throws DataSetNotFoundException;
 
-    HarvestStep getHarvestStep(String resumptionToken) throws NoRecordsMatchException, BadArgumentException, BadResumptionTokenException;
+    HarvestStep getHarvestStep(String resumptionToken) throws ResumptionTokenNotFoundException, DataSetNotFoundException;
 
     void removeExpiredHarvestSteps();
 
-    Record getRecord(String identifier, String metadataFormat, String accessKey) throws CannotDisseminateFormatException, BadArgumentException, MetaRepoException;
+    Record getRecord(String identifier, String metadataFormat, String accessKey) throws BadArgumentException, DataSetNotFoundException, MappingNotFoundException, AccessKeyException;
 
     MetaConfig getMetaRepoConfig();
 
@@ -78,7 +80,7 @@ public interface MetaRepo {
 
         boolean hasDetails();
         Details createDetails();
-        Details getDetails() throws MetaRepoException;
+        Details getDetails();
         void setFactsHash(String sourceHash);
         DBObject getNamespaces();
 
@@ -87,7 +89,7 @@ public interface MetaRepo {
         void setState(DataSetState dataSetState);
         void setErrorState(String message);
 
-        void parseRecords(InputStream inputStream) throws MetaRepoException;
+        void parseRecords(InputStream inputStream) throws RecordParseException;
         void setSourceHash(String hash);
 
         void setMapping(RecordMapping recordMapping);
@@ -96,10 +98,10 @@ public interface MetaRepo {
         int getRecordsIndexed();
         void setRecordsIndexed(int count);
 
-        Map<String,Mapping> mappings() throws BadArgumentException;
+        Map<String,Mapping> mappings();
         int getRecordCount();
-        Record fetch(ObjectId id, String metadataPrefix, String accessKey) throws BadArgumentException, CannotDisseminateFormatException, MetaRepoException;
-        List<? extends Record> records(String prefix, int start, int count, Date from, Date until, String accessKey) throws CannotDisseminateFormatException, BadArgumentException, MetaRepoException;
+        Record getRecord(ObjectId id, String metadataPrefix, String accessKey) throws MappingNotFoundException, AccessKeyException;
+        List<? extends Record> getRecords(String prefix, int start, int count, Date from, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException;
 
         void save();
 
@@ -137,32 +139,13 @@ public interface MetaRepo {
         String METADATA_FORMAT = "metadata_format";
     }
 
-    public enum DataSetState {
-        EMPTY,
-        DISABLED,
-        UPLOADED,
-        QUEUED,
-        INDEXING,
-        ENABLED,
-        ERROR;
-
-        public static DataSetState get(String string) {
-            for (DataSetState t : values()) {
-                if (t.toString().equalsIgnoreCase(string)) {
-                    return t;
-                }
-            }
-            throw new IllegalArgumentException("Did not recognize DataSetState: [" + string + "]");
-        }
-    }
-
     public interface HarvestStep {
 
         ObjectId getResumptionToken();
         Date getExpiration();
         int getListSize();
         int getCursor();
-        List<? extends Record> getRecords() throws CannotDisseminateFormatException, BadArgumentException, MetaRepoException;
+        List<? extends Record> getRecords() throws DataSetNotFoundException, MappingNotFoundException, AccessKeyException;
         PmhRequest getPmhRequest();
         DBObject getNamespaces();
         boolean hasNext();
@@ -198,8 +181,8 @@ public interface MetaRepo {
         Date getModifiedDate();
         boolean isDeleted();
         DBObject getNamespaces();
-        String getXmlString() throws CannotDisseminateFormatException;
-        String getXmlString(String metadataPrefix) throws CannotDisseminateFormatException;
+        String getXmlString() throws MappingNotFoundException;
+        String getXmlString(String metadataPrefix) throws MappingNotFoundException;
 
         String MODIFIED = "mod";
         String UNIQUE = "uniq";
@@ -212,7 +195,7 @@ public interface MetaRepo {
 
     public interface Mapping {
         MetadataFormat getMetadataFormat();
-        RecordMapping getRecordMapping() throws MetadataException;
+        RecordMapping getRecordMapping();
 
         String RECORD_MAPPING = "recordMapping";
         String FORMAT = "format";

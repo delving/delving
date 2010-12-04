@@ -77,10 +77,11 @@ public class FieldListModel extends AbstractListModel {
     public static class CellRenderer extends DefaultListCellRenderer {
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            FieldDefinition europeanaField = (FieldDefinition) value;
-            String string = europeanaField.getFieldNameString();
-            if (europeanaField.requiredGroup != null) {
-                string += " (required: " + europeanaField.requiredGroup + ")";
+            FieldDefinition fieldDefinition = (FieldDefinition) value;
+            String string = fieldDefinition.getFieldNameString();
+            FieldDefinition.Validation validation = fieldDefinition.validation;
+            if (validation != null && validation.requiredGroup != null) {
+                string += " (required: " + validation.requiredGroup + ")";
             }
             return super.getListCellRendererComponent(list, string, index, isSelected, cellHasFocus);
         }

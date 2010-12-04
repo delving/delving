@@ -83,9 +83,6 @@ public class ElementDefinition {
     public FieldDefinition getFieldDefinition(Path path) {
         if (fields != null) {
             for (FieldDefinition fieldDefinition : fields) {
-                if (fieldDefinition.category.equals("INDEX_TIME_ADDITION")) {
-                    continue;
-                }
                 if (path.equals(fieldDefinition.path)) {
                     return fieldDefinition;
                 }
@@ -104,15 +101,15 @@ public class ElementDefinition {
     public void setFactDefinitions() throws MetadataException {
         if (fields != null) {
             for (FieldDefinition fieldDefinition : fields) {
-                if (fieldDefinition.factName != null) {
+                if (fieldDefinition.validation != null && fieldDefinition.validation.factName != null) {
                     for (FactDefinition factDefinition : Facts.definitions()) {
-                        if (fieldDefinition.factName.equals(factDefinition.name)) {
-                            fieldDefinition.factDefinition = factDefinition;
+                        if (fieldDefinition.validation.factName.equals(factDefinition.name)) {
+                            fieldDefinition.validation.factDefinition = factDefinition;
                             break;
                         }
                     }
-                    if (fieldDefinition.factDefinition == null) {
-                        throw new MetadataException(String.format("Record Definition %s requires fact %s", prefix, fieldDefinition.factName));
+                    if (fieldDefinition.validation.factDefinition == null) {
+                        throw new MetadataException(String.format("Record Definition %s requires fact %s", prefix, fieldDefinition.validation.factName));
                     }
                 }
             }
@@ -127,9 +124,7 @@ public class ElementDefinition {
     public void getMappableFields(List<FieldDefinition> fieldDefinitions) {
         if (this.fields != null) {
             for (FieldDefinition fieldDefinition : this.fields) {
-                if (!"INDEX_TIME_ADDITION".equals((fieldDefinition.category))) { // todo: better test, should be a flag
-                    fieldDefinitions.add(fieldDefinition);
-                }
+                fieldDefinitions.add(fieldDefinition);
             }
         }
         if (elements != null) {

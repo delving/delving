@@ -24,6 +24,7 @@ package eu.europeana.sip.gui;
 import eu.delving.sip.DataSetInfo;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
+import eu.delving.sip.Hasher;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
@@ -54,9 +55,10 @@ public class DataSetListModel extends AbstractListModel {
         entry.setDataSetStore(dataSetStore);
     }
 
-    public void setDataSetInfo(DataSetInfo dataSetInfo) {
+    public Entry setDataSetInfo(DataSetInfo dataSetInfo) {
         Entry entry = getEntry(dataSetInfo.spec);
         entry.setDataSetInfo(dataSetInfo);
+        return entry;
     }
 
     public Entry getEntry(int i) {
@@ -122,7 +124,7 @@ public class DataSetListModel extends AbstractListModel {
                 html.append("<p>Present in the local file store</p>");
                 if (dataSetStore.hasSource()) {
                     for (File mappingFile : dataSetStore.getMappingFiles()) {
-                        String name = mappingFile.getName();
+                        String name = Hasher.getName(mappingFile);
                         name = name.substring(FileStore.MAPPING_FILE_PREFIX.length());
                         name = name.substring(0, name.length() - FileStore.MAPPING_FILE_SUFFIX.length());
                         html.append(String.format("<p>Has mapping for '%s'</p>",name));

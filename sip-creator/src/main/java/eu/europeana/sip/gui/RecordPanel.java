@@ -30,6 +30,9 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -51,7 +54,26 @@ public class RecordPanel extends JPanel {
         super(new BorderLayout(5, 5));
         this.sipModel = sipModel;
         setBorder(BorderFactory.createTitledBorder("Parsed Record"));
-        JTextArea area = new JTextArea(compileModel.getInputDocument());
+        final JTextArea area = new JTextArea(compileModel.getInputDocument());
+        area.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent documentEvent) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        area.setCaretPosition(0);
+                    }
+                });
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent documentEvent) {
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent documentEvent) {
+            }
+        });
         area.setEditable(false);
         JPanel grid = new JPanel(new GridLayout(1, 0, 5, 5));
         grid.add(nextButton);

@@ -25,8 +25,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
-import java.util.List;
-
 /**
  * An XStream approach for replacing the annotated beans.
  *
@@ -38,42 +36,36 @@ public class FieldDefinition implements Comparable<FieldDefinition> {
 
     @XStreamAsAttribute
     public String prefix;
+
     @XStreamAsAttribute
     public String localName;
-    
-    public String facetPrefix;
+
+    @XStreamAsAttribute
     public boolean briefDoc = false;
+
+    @XStreamAsAttribute
     public boolean fullDoc = true;
-    public boolean hidden = true;
-    public boolean id = false;
-    public boolean object = false;
-    public boolean type = false;
-    public String requiredGroup;
-    public String factName;
-    public String category;
-    public String converterPattern;
-    public boolean converterMultipleOutput = false;
-    public boolean url = false;
-    public String regularExpression;
-    public boolean valueMapped = false;
+
+    @XStreamAsAttribute
+    public boolean systemField = false;
+
+    @XStreamAsAttribute
     public String fieldType;
-    public boolean multivalued = true;
-    public boolean stored = true;
-    public boolean indexed = true;
-    public boolean compressed = false;
-    public boolean termVectors = true;
-    public boolean termPositions = true;
-    public boolean termOffsets = true;
-    public boolean omitNorms = true;
-    public String defaultValue = "";
-    public List<String> toCopyField;
+
+    @XStreamAsAttribute
+    public String facetPrefix;
+
+    @XStreamAsAttribute
+    public String searchField;
+
+    public Validation validation;
 
     @XStreamOmitField
     public Path path;
 
-    @XStreamOmitField
-    public FactDefinition factDefinition;
+    public String description;
 
+    @XStreamOmitField
     private Tag tag;
 
     public Tag getTag() {
@@ -99,12 +91,7 @@ public class FieldDefinition implements Comparable<FieldDefinition> {
     }
 
     public String getPrefix() {
-        if (facetPrefix != null) {
-            return facetPrefix;
-        }
-        else {
-            return tag.getPrefix();
-        }
+        return tag.getPrefix();
     }
 
     public String getLocalName() {
@@ -123,5 +110,50 @@ public class FieldDefinition implements Comparable<FieldDefinition> {
     @Override
     public int compareTo(FieldDefinition fieldDefinition) {
         return path.compareTo(fieldDefinition.path);
+    }
+
+    @XStreamAlias("validation")
+    public static class Validation {
+
+        @XStreamAsAttribute
+        public String factName;
+
+        @XStreamAsAttribute
+        public String requiredGroup;
+
+        @XStreamAsAttribute
+        public boolean url = false;
+
+        @XStreamAsAttribute
+        public boolean object = false;
+
+        @XStreamAsAttribute
+        public boolean unique = false;
+
+        @XStreamAsAttribute
+        public boolean id = false;
+
+        @XStreamAsAttribute
+        public boolean type = false;
+
+        @XStreamAsAttribute
+        public boolean multivalued = true;
+
+        @XStreamAsAttribute
+        public boolean required = true;
+
+        @XStreamOmitField
+        public FactDefinition factDefinition;
+
+        public Converter converter;
+    }
+
+    public static class Converter {
+
+        @XStreamAsAttribute
+        public boolean multipleOutput = false;
+
+        @XStreamAsAttribute
+        public String pattern;
     }
 }

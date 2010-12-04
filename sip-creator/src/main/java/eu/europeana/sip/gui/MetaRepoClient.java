@@ -2,6 +2,10 @@ package eu.europeana.sip.gui;
 
 import com.thoughtworks.xstream.XStream;
 import eu.delving.sip.DataSetInfo;
+import eu.delving.sip.DataSetState;
+import eu.delving.sip.FileType;
+import eu.delving.sip.ProgressListener;
+import eu.europeana.sip.model.FileUploader;
 import eu.europeana.sip.model.SipModel;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -13,6 +17,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -23,7 +28,7 @@ import java.util.concurrent.Executors;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class RepositoryConnection {
+public class MetaRepoClient {
     private static final int LIST_FETCH_DELAY_MILLIS = 5000;
     private Executor executor = Executors.newSingleThreadExecutor();
     private SipModel sipModel;
@@ -34,18 +39,10 @@ public class RepositoryConnection {
     public interface Listener {
         void setInfo(DataSetInfo dataSetInfo);
         void setList(List<DataSetInfo> list);
+        void disconnected();
     }
 
-    public enum DataSetState {
-        DISABLED,
-        UPLOADED,
-        QUEUED,
-        INDEXING,
-        ENABLED,
-        ERROR
-    }
-
-    public RepositoryConnection(SipModel sipModel, Listener listener) {
+    public MetaRepoClient(SipModel sipModel, Listener listener) {
         this.sipModel = sipModel;
         this.listener = listener;
         periodicListFetchTimer = new Timer(LIST_FETCH_DELAY_MILLIS, new ActionListener() {
@@ -77,6 +74,7 @@ public class RepositoryConnection {
             case ENABLED:
             case QUEUED:
                 return false;
+            case EMPTY:
             case UPLOADED:
             case DISABLED:
             case ERROR:
@@ -84,6 +82,21 @@ public class RepositoryConnection {
             default:
                 throw new RuntimeException();
         }
+    }
+
+    public void uploadFile(FileType fileType, File file, ProgressListener progressListener, FileUploader.Receiver receiver) {
+        executor.execute(
+                new FileUploader(
+                        sipModel.getDataSetStore().getSpec(),
+                        fileType,
+                        file,
+                        sipModel.getServerUrl(),
+                        sipModel.getServerAccessKey(),
+                        sipModel.getUserNotifier(),
+                        progressListener,
+                        receiver
+                )
+        );
     }
 
     private class ListFetcher implements Runnable {
@@ -113,7 +126,8 @@ public class RepositoryConnection {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        sipModel.tellUser("Access to list failed with this key", e);
+                        sipModel.getUserNotifier().tellUser("Access to list failed with this key", e);
+                        listener.disconnected();
                     }
                 });
             }
@@ -156,32 +170,12 @@ public class RepositoryConnection {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        sipModel.tellUser("Access to enable/disable control failed", e);
+                        sipModel.getUserNotifier().tellUser("Access to enable/disable control failed", e);
                     }
                 });
             }
         }
     }
-
-//    private class UploadFileAction extends AbstractAction {
-//        private File file;
-//
-//        private UploadFileAction(File file) {
-//            super(String.format("Upload %s", file));
-//            this.file = file;
-//        }
-//
-//        @Override
-//        public void actionPerformed(ActionEvent actionEvent) {
-//            try {
-//                ProgressMonitor progressMonitor = new ProgressMonitor(SwingUtilities.getRoot(DataSetPanel.this), "Uploading", "Uploading  " + file, 0, 100);
-//                sipModel.uploadFile(sipModel.getDataSetStore().getSourceFile(), new ProgressListener.Adapter(progressMonitor, this));
-//            }
-//            catch (FileStoreException e) {
-//                sipModel.tellUser(String.format("Unable to get %s for upload", file), e);
-//            }
-//        }
-//    }
 
     private XStream xstream() {
         XStream stream = new XStream();

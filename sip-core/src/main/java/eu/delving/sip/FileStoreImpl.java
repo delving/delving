@@ -108,6 +108,47 @@ public class FileStoreImpl implements FileStore {
     }
 
     @Override
+    public void setTemplate(String name, RecordMapping recordMapping) throws FileStoreException {
+        File templateFile = new File(home, String.format(MAPPING_FILE_PATTERN, name));
+        try {
+            FileOutputStream fos = new FileOutputStream(templateFile);
+            RecordMapping.write(recordMapping, fos);
+            fos.close();
+        }
+        catch (IOException e) {
+            throw new FileStoreException(String.format("Unable to save template to %s", templateFile.getAbsolutePath()), e);
+        }
+    }
+
+    @Override
+    public Map<String, RecordMapping> getTemplates() {
+        Map<String,RecordMapping> templates = new TreeMap<String,RecordMapping>();
+        for (File templateFile : home.listFiles(new MappingFileFilter())) {
+            try {
+                FileInputStream fis = new FileInputStream(templateFile);
+                RecordMapping recordMapping = RecordMapping.read(fis, metadataModel);
+                fis.close();
+                String name = templateFile.getName();
+                name = name.substring(MAPPING_FILE_PREFIX.length());
+                name = name.substring(0, name.length() - MAPPING_FILE_SUFFIX.length());
+                templates.put(name, recordMapping);
+            }
+            catch (Exception e) {
+                templateFile.delete();
+            }
+        }
+        return templates;
+    }
+
+    @Override
+    public void deleteTemplate(String name) {
+        File templateFile = new File(home,String.format(MAPPING_FILE_PATTERN, name));
+        if (templateFile.exists()) {
+            templateFile.delete();
+        }
+    }
+
+    @Override
     public Map<String, DataSetStore> getDataSetStores() {
         Map<String, DataSetStore> map = new TreeMap<String, DataSetStore>();
         for (File file : home.listFiles()) {
@@ -466,7 +507,7 @@ public class FileStoreImpl implements FileStore {
     }
 
     private File findFactsFile(File dir) {
-        File [] files = dir.listFiles(new FactsFileFilter());
+        File[] files = dir.listFiles(new FactsFileFilter());
         switch (files.length) {
             case 0:
                 return new File(dir, FACTS_FILE_NAME);
@@ -483,7 +524,7 @@ public class FileStoreImpl implements FileStore {
     }
 
     private File findSourceFile(File dir) {
-        File [] files = dir.listFiles(new SourceFileFilter());
+        File[] files = dir.listFiles(new SourceFileFilter());
         switch (files.length) {
             case 0:
                 return new File(dir, SOURCE_FILE_NAME);
@@ -501,7 +542,7 @@ public class FileStoreImpl implements FileStore {
 
     private Collection<File> findMappingFiles(File dir) {
         List<File> mappingFiles = new ArrayList<File>();
-        File [] files = dir.listFiles(new MappingFileFilter());
+        File[] files = dir.listFiles(new MappingFileFilter());
         Map<String, List<File>> map = new TreeMap<String, List<File>>();
         for (File file : files) {
             String prefix = getMetadataPrefix(file);
@@ -571,7 +612,7 @@ public class FileStoreImpl implements FileStore {
         }
     }
 
-    private File getMostRecent(File [] files) {
+    private File getMostRecent(File[] files) {
         long maxLastModified = 0;
         File mostRecent = null;
         for (File file : files) {

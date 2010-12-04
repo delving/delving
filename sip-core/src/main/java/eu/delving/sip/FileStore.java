@@ -44,6 +44,12 @@ public interface FileStore {
 
     void setAppConfig(AppConfig appConfig) throws FileStoreException;
 
+    void setTemplate(String name, RecordMapping recordMapping) throws FileStoreException;
+
+    Map<String, RecordMapping> getTemplates();
+
+    void deleteTemplate(String name);
+
     Map<String, DataSetStore> getDataSetStores();
 
     DataSetStore createDataSetStore(String spec) throws FileStoreException;

@@ -151,7 +151,7 @@ public class MetadataRecord {
                             else {
                                 GroovyNode parent = nodeStack.peek();
                                 String nodeName;
-                                if (null == input.getPrefix()) {
+                                if (input.getPrefix().isEmpty()) {
                                     nodeName = Sanitizer.tagToVariable(input.getLocalName());
                                 }
                                 else {
