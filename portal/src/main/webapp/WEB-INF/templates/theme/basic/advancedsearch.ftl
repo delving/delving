@@ -1,20 +1,8 @@
 <#compress>
 <#include "includeMarcos.ftl">
-
-<@addHeader "Norvegiana", "",[],[]/>
-
-<section id="sidebar" class="grid_3" role="complementary">
-    <header id="branding" role="banner">
-        <a href="/${portalName}/" title=""/>
-        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
-        </a>
-        <h1 class="large">${portalDisplayName}</h1>
-    </header>
-
-</section>
-
-
-<section id="search_advanced" class="grid_9" style="background: #fff;" role="search">
+<#assign title><@spring.message 'AdvancedSearch_t'/></#assign>
+<@addHeader "Delving - ${title}", "",[],[]/>
+<section id="search_advanced" class="grid_9"  role="search">
        <h1><@spring.message 'AdvancedSearch_t'/></h1>
        <form method="POST" action="advancedsearch.html" accept-charset="UTF-8">
         <input type="hidden" name="start" value="1" />

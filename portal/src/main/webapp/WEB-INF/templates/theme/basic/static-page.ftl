@@ -16,25 +16,14 @@
             <#assign pageId = "static"/>
             <#include "includeMarcos.ftl">
 
-            <@addHeader "Norvegiana", "",[],[]/>
-
-            <section id="sidebar" class="grid_3" role="complementary">
-                <header id="branding" role="banner">
-                    <a href="/${portalName}/" title=""/>
-                        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
-                    </a>
-                    <h1 class="large">${portalDisplayName}</h1>
-                </header>
-            </section>
+            <@addHeader "Delving", "",[],[]/>
 
 
-            <section role="main">
+            <section role="main" class="main">
 
-            <header>
-                <h1><@spring.message 'dms.administration.pages' /></h1>
-            </header>
+                <#--<h1><@spring.message 'dms.administration.pages' /></h1>-->
 
-                <div class="grid_5 alpha">
+                <div class="grid_8">
                     <h2><@spring.message 'dms.existing.pages' /></h2>
                     <table summary="List of existing pages" class="user-options" width="100%">
                         <#list pagePathList as pagePath>
@@ -59,7 +48,7 @@
                     </table>
                 </div>
 
-                <div class="grid_4 omega">
+                <div class="grid_4">
 
                     <h2><@spring.message 'dms.page.create' /></h2>
                     <ol>
@@ -122,20 +111,10 @@
         <#assign pageId = page.path/>
             <#include "includeMarcos.ftl">
 
-            <@addHeader "Norvegiana", "",[],[]/>
+            <@addHeader "Delving", "",[],[]/>
 
 
-            <section id="sidebar" class="grid_2" role="complementary">
-                <header id="branding" role="banner">
-                    <a href="/${portalName}/" title=""/>
-                    <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
-                    </a>
-                    <h1 class="large">${portalDisplayName}</h1>
-                </header>
-            </section>
-
-
-            <section role="main" class="grid_10">
+            <section role="main" class="grid_12">
                 <div id="content" class="content-preview">
                     ${page.getContent(locale)}
                 </div>

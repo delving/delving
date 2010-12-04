@@ -21,7 +21,6 @@
 
 package eu.europeana.web.controller;
 
-import eu.delving.core.util.MessageSourceRepo;
 import eu.europeana.core.database.UserDao;
 import eu.europeana.core.database.domain.Role;
 import eu.europeana.core.database.domain.SavedItem;
@@ -38,7 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,7 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URLDecoder;
-import java.util.Locale;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -61,8 +59,10 @@ import static eu.europeana.core.util.web.ClickStreamLogger.UserAction;
 @Controller
 public class AjaxController {
 
-    private static Logger LOG = Logger.getLogger(AjaxController.class);
-    private static boolean DEBUG = false; // true logs the exception to the xml response
+    protected Logger log = Logger.getLogger(getClass());
+    private boolean debug = false; // true logs the exception to the xml response
+    private boolean success = false; // todo: wrong scope!
+    private String exceptionString = "";  // todo: wrong scope!
 
     @Autowired
     private UserDao userDao;
@@ -77,80 +77,95 @@ public class AjaxController {
     @Autowired
     private SorlIndexUtil sorlIndexUtil;
 
-    @Autowired
-    private MessageSourceRepo messageSourceRepo;
+    @RequestMapping("/users.ajax")
+    public ModelAndView ajaxUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        ModelAndView page = ControllerUtil.createModelAndViewPage("ajax-users");
+        response.setContentType("text/xml");  // todo: viewResolver should set content type
+        User user = ControllerUtil.getUser();
+        if (!hasJavascriptInjection(request) && user != null && (user.getRole() == Role.ROLE_ADMINISTRATOR || user.getRole() == Role.ROLE_GOD)) {
+            page.addObject("users", userDao.fetchUsers());
+        }
+        return page;
+    }
 
-    @RequestMapping("/message.ajax")
-    public ModelAndView setTranslation(
-            @RequestParam String key,
-            @RequestParam String content,
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Locale locale
-    ) {
-        boolean success = false;
-        String exceptionString = "";
+    @RequestMapping("/user-remove.ajax")
+    public ModelAndView removeUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
         try {
+            success = false;
             if (!hasJavascriptInjection(request)) {
-                User user = ControllerUtil.getUser();
-                if (user != null && (user.getRole() == Role.ROLE_GOD || user.getRole() == Role.ROLE_ADMINISTRATOR)) {
-                    messageSourceRepo.setTranslation(key, content, locale);
-                    success = true;
+                String email = request.getParameter("email");
+                if (email != null) {
+                    User user = userDao.fetchUserByEmail(email);
+                    if (user != null) {
+                        userDao.removeUser(user);
+                        success = true;
+                    }
                 }
             }
         }
         catch (Exception e) {
-            exceptionString = handleAjaxException(e, response, request);
+            handleAjaxException(e, response, request);
         }
-        return createResponsePage(DEBUG, success, exceptionString, response);
+        return createResponsePage(debug, success, exceptionString, response);
     }
 
     @RequestMapping("/remove.ajax")
     public ModelAndView handleAjaxRemoveRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        boolean success = false;
-        String exceptionString = "";
         try {
             if (!hasJavascriptInjection(request)) {
                 success = processAjaxRemoveRequest(request);
             }
         }
         catch (Exception e) {
-            exceptionString = handleAjaxException(e, response, request);
+            handleAjaxException(e, response, request);
         }
-        return createResponsePage(DEBUG, success, exceptionString, response);
+        return createResponsePage(debug, success, exceptionString, response);
+    }
+
+    private Boolean processAjaxRemoveRequest(HttpServletRequest request) throws Exception {
+        String className = request.getParameter("className");
+        String idString = request.getParameter("id");
+        if (className == null || idString == null) {
+            throw new IllegalArgumentException("Expected 'className' and 'id' parameters!");
+        }
+        Long id = Long.valueOf(idString);
+
+        User user;
+        switch (findModifiable(className)) {
+            case SAVED_ITEM:
+                user = userDao.removeSavedItem(id);
+                clickStreamLogger.logUserAction(request, UserAction.REMOVE_SAVED_ITEM);
+                break;
+            case SAVED_SEARCH:
+                user = userDao.removeSavedSearch(id);
+                clickStreamLogger.logUserAction(request, UserAction.REMOVE_SAVED_SEARCH);
+                break;
+            case SOCIAL_TAG:
+                final String europeanaUri = userDao.findEuropeanaUri(id);
+                user = userDao.removeSocialTag(id);
+                sorlIndexUtil.indexUserTags(europeanaUri);
+                clickStreamLogger.logUserAction(request, UserAction.REMOVE_SOCIAL_TAG);
+                break;
+            default:
+                throw new IllegalArgumentException("Unhandled removable");
+        }
+
+        ControllerUtil.setUser(user);
+        return true;
     }
 
     @RequestMapping("/save.ajax")
     public ModelAndView handleAjaxSaveRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        boolean success = false;
-        String exceptionString = "";
         try {
             if (!hasJavascriptInjection(request)) {
                 success = processAjaxSaveRequest(request);
             }
         }
         catch (Exception e) {
-            exceptionString = handleAjaxException(e, response, request);
-        }
-        return createResponsePage(DEBUG, success, exceptionString, response);
-    }
-
-    @RequestMapping("/email-to-friend.ajax")
-    public ModelAndView handleSendToAFriendHandler(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        boolean success = false;
-        String exceptionString = "";
-        try {
-            if (!hasJavascriptInjection(request)) {
-                success = processSendToAFriendHandler(request);
-            }
-        }
-        catch (Exception e) {
             handleAjaxException(e, response, request);
         }
-        return createResponsePage(DEBUG, success, exceptionString, response);
+        return createResponsePage(debug, success, exceptionString, response);
     }
-
-    // private
 
     private boolean processAjaxSaveRequest(HttpServletRequest request) throws Exception {
         User user = ControllerUtil.getUser();
@@ -203,6 +218,19 @@ public class AjaxController {
         return success;
     }
 
+    @RequestMapping("/email-to-friend.ajax")
+    public ModelAndView handleSendToAFriendHandler(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        try {
+            if (!hasJavascriptInjection(request)) {
+                success = processSendToAFriendHandler(request);
+            }
+        }
+        catch (Exception e) {
+            handleAjaxException(e, response, request);
+        }
+        return createResponsePage(debug, success, exceptionString, response);
+    }
+
     private boolean processSendToAFriendHandler(HttpServletRequest request) throws Exception {
         String emailAddress = getStringParameter("email", request);
         if (!ControllerUtil.validEmailAddress(emailAddress)) {
@@ -221,48 +249,38 @@ public class AjaxController {
         return true;
     }
 
-    private Boolean processAjaxRemoveRequest(HttpServletRequest request) throws Exception {
-        String className = request.getParameter("className");
-        String idString = request.getParameter("id");
-        if (className == null || idString == null) {
-            throw new IllegalArgumentException("Expected 'className' and 'id' parameters!");
-        }
-        Long id = Long.valueOf(idString);
+    // currently not used. todo: maybe remove later
 
-        User user;
-        switch (findModifiable(className)) {
-            case SAVED_ITEM:
-                user = userDao.removeSavedItem(id);
-                clickStreamLogger.logUserAction(request, UserAction.REMOVE_SAVED_ITEM);
-                break;
-            case SAVED_SEARCH:
-                user = userDao.removeSavedSearch(id);
-                clickStreamLogger.logUserAction(request, UserAction.REMOVE_SAVED_SEARCH);
-                break;
-            case SOCIAL_TAG:
-                final String europeanaUri = userDao.findEuropeanaUri(id);
-                user = userDao.removeSocialTag(id);
-                sorlIndexUtil.indexUserTags(europeanaUri);
-                clickStreamLogger.logUserAction(request, UserAction.REMOVE_SOCIAL_TAG);
-                break;
-            default:
-                throw new IllegalArgumentException("Unhandled removable");
+    @RequestMapping("/tag-autocomplete.ajax")
+    public ModelAndView handleTagAutoCompleteRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        response.setContentType("xml"); // todo: viewResolver should set content type
+        String query = request.getParameter("q").toLowerCase();
+        if (query == null) {
+            query = "";
         }
-
-        ControllerUtil.setUser(user);
-        return true;
+        ModelAndView page = ControllerUtil.createModelAndViewPage("tag-autocomplete");
+        try {
+            List<UserDao.TagCount> tagCountList = userDao.getSocialTagCounts(query);
+            page.addObject("tagList", tagCountList);
+        }
+        catch (Exception e) {
+            handleAjaxException(e, response, request);
+        }
+        clickStreamLogger.logUserAction(request, UserAction.TAG_AUTOCOMPLETE);
+        return page;
     }
 
 
-    private String handleAjaxException(Exception e, HttpServletResponse response, HttpServletRequest request) {
+    private void handleAjaxException(Exception e, HttpServletResponse response, HttpServletRequest request) {
+        success = false;
         response.setStatus(400);
+        exceptionString = getStackTrace(e);
         clickStreamLogger.logUserAction(request, UserAction.AJAX_ERROR);
-        LOG.warn("Problem handling AJAX request", e);
-        return getStackTrace(e);
+        log.warn("Problem handling AJAX request", e);
     }
 
     private static ModelAndView createResponsePage(boolean debug, boolean success, String exceptionString, HttpServletResponse response) {
-        ModelAndView page = ControllerUtil.createModelAndViewPage("xml/ajax");
+        ModelAndView page = ControllerUtil.createModelAndViewPage("ajax");
         response.setContentType("text/xml");  // todo: viewResolver should set content type
         page.addObject("success", String.valueOf(success));
         page.addObject("exception", exceptionString);
@@ -279,6 +297,7 @@ public class AjaxController {
         throw new IllegalArgumentException("Unable to find removable class with name " + className);
     }
 
+
     private enum Modifiable {
         SAVED_ITEM(SavedItem.class),
         SAVED_SEARCH(SavedSearch.class),
@@ -294,6 +313,7 @@ public class AjaxController {
             return this.className.equals(className);
         }
     }
+
 
     protected static String getStringParameter(String parameterName, HttpServletRequest request) {
         String stringValue = request.getParameter(parameterName);
@@ -319,7 +339,7 @@ public class AjaxController {
         for (Object o : map.keySet()) {
             if (request.getParameter(String.valueOf(o)).contains("<")) {
                 hasJavascript = true;
-                LOG.warn("The request contains javascript so do not process this request");
+                log.warn("The request contains javascript so do not process this request");
                 break;
             }
         }

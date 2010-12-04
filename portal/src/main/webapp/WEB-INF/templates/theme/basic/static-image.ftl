@@ -12,24 +12,14 @@
             <#assign pageId = "static"/>
             <#include "includeMarcos.ftl">
 
-            <@addHeader "Norvegiana", "",[],[]/>
-
-            <section id="sidebar" class="grid_3" role="complementary">
-                <header id="branding" role="banner">
-                    <a href="/${portalName}/" title=""/>
-                    <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
-                    </a>
-                    <h1 class="large">${portalDisplayName}</h1>
-                </header>
-            </section>
+            <@addHeader "Delving", "",[],[]/>
 
 
-            <section role="main">
+            <section role="main" class="main">
 
-            <header>
                 <h1><@spring.message 'dms.administration.images' /></h1>
-            </header>
-                <div class="grid_5">
+
+                <div class="grid_8">
                     <h2><@spring.message 'dms.existing.images' /></h2>
                      <table summary="List of existing images" class="user-options">
                         <#list imagePathList as imagePath>
@@ -100,7 +90,7 @@
 
         <#include "includeMarcos.ftl">
 
-        <@addHeader "Norvegiana", "",[],[]/>
+        <@addHeader "Delving", "",[],[]/>
 
             <section id="sidebar" class="grid_3" role="complementary">
                 <header id="branding" role="banner">

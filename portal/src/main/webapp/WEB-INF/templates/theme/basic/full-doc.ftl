@@ -1,22 +1,17 @@
 <#compress>
 <#include "includeMarcos.ftl">
 <@addCustomAssigns/>
-<@addHeader "Norvegiana", "",["results.js","fancybox/jquery.fancybox-1.3.1.pack.js"],["fancybox/jquery.fancybox-1.3.1.css"]/>
+<@addHeader "Delving", "",["results.js","fancybox/jquery.fancybox-1.3.1.pack.js"],["fancybox/jquery.fancybox-1.3.1.css"]/>
 <script type="text/javascript">
     var msgItemSaveSuccess = "<@spring.message 'ItemSaved_t'/>";
     var msgItemSaveFail = "<@spring.message 'ItemSavedFailed_t'/>";
 </script>
 <section id="sidebar" class="grid_3" role="complementary">
-    <header id="branding" role="banner">
-        <a href="/${portalName}/" title=""/>
-        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="${portalDisplayName}"/>
-        </a>
-        <h1 class="large">${portalDisplayName}</h1>
-    </header>
-    
-    <div id="facet-list">
-       <h5><@spring.message 'RelatedContent_t' />:</h5>
-        <table summary="related items" id="tbl-related-items" width="100%">
+
+
+        <h4 class="header"><@spring.message 'RelatedContent_t' /></h4>
+
+         <table summary="related items" id="tbl-related-items" width="100%">
             <#assign max=3/><!-- max shown in list -->
             <#list result.relatedItems as doc>
                 <#if doc_index &gt; 2><#break/></#if>
@@ -55,20 +50,16 @@
             </#if>
         </table>
 
-         <h5><@spring.message 'Actions_t' />:</h5>
 
-        <#if addThisTrackingCode??>
-            <p>
-                <@addThis "${addThisTrackingCode}"/>
-            </p>
-        </#if>
 
-        <#if user??>
-            <p>
-            <a href="inc_related_content.ftl#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');return false;"><@spring.message 'SaveToPersonalPage' /></a>
 
-            <div id="msg-save-item" class="msg-hide"></div>
-            </p>
+            <h4 class="header"><@spring.message 'Actions_t' />:</h4>
+
+            <#--<p>-->
+            <#--<a href="inc_related_content.ftl#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');return false;"><@spring.message 'SaveToPersonalPage' /></a>-->
+
+            <#--<div id="msg-save-item" class="msg-hide"></div>-->
+            <#--</p>-->
 
             <#if result.fullDoc.europeanaType == "IMAGE">
                 <#if result.fullDoc.europeanaIsShownBy[0]?? && imageAnnotationToolBaseUrl?? && imageAnnotationToolBaseUrl!="">
@@ -87,7 +78,19 @@
                 <#--<input type="submit" class="button" value="Add"/>-->
             <#--</form>-->
             <#--<div id="msg-save-tag" class="hide"></div>-->
-        <#--</p>-->
+        <#--</p>-->                
+
+
+         <h5><@spring.message 'Actions_t' />:</h5>
+
+        <#if addThisTrackingCode??>
+            <p>
+                <@addThis "${addThisTrackingCode}"/>
+            </p>
+        </#if>
+
+        <#if user??>
+
 
 
 
@@ -104,33 +107,15 @@
                 <div id="msg-save-item" class="msg-hide"></div>
 
         </#if>
-    </div>
+
 
 </section>
 
 
 <section id="item" class="grid_9" role="main">
 
-    <div id="userBar" role="navigation">
-        <div class="inner">
-        <@userBar/>
-        </div>
-    </div>
-
-    <div class="clear"></div>
-
-    <div id="search" role="search">
-        <div class="inner">
-            <@simpleSearch/>
-        </div>
-    </div>
-
-    <div class="clear"></div>
-
      <div id="nav_query_breadcrumbs">
-        <div class="inner">
             <h4><@resultsFullQueryBreadcrumbs/></h4>
-        </div>
     </div>
 
     <div class="clear"></div>
@@ -145,7 +130,6 @@
 
     <div class="clear"></div>
 
-    <div class="inner">
 
         <div id="itemImage" class="grid_4 alpha">
             <div class="inner">
@@ -157,7 +141,7 @@
             <@resultFullList/>
         </div>
 
-    </div>
+
 
 </section>
 

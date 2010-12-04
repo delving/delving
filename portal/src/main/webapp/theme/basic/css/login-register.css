@@ -3,7 +3,7 @@
 
  label {font-weight: bold; }
  label.norm {font-weight: normal;}
- input {display: block; margin-bottom: 1em; }
+ input[type=text] {display: block; margin-bottom: 1em; }
  input.inline {display: inline; margin: 0 0 0 0; line-height: 2em;}
  p {font-size: 85%; padding: 5px; font-weight: bold;}
  p.failure {background-color: firebrick; color: #fff;}
@@ -17,13 +17,15 @@
     width: 200px;
     border: 0;
     margin: 0;
-    padding: 1em;
+    padding: 0;
     float: left;
      }
 #regForm fieldset legend {
-    font-size: 4em;
+    font-size: 2em;
     font-family: Georgia, "Times New Roman", Times, serif;
     color: #888;
+    padding: 0;
+    margin: 0;
     }
 #regForm fieldset legend span {
     display: none;
