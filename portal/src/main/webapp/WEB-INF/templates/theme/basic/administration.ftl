@@ -3,7 +3,7 @@
 <#assign pageId = "ad"/>
 <#include "includeMarcos.ftl">
 
-<@addHeader "Delving", "",["jquery.tablesorter.min.js","administration.js"],[]/>
+<@addHeader "${portalDisplayName}", "",["jquery.tablesorter.min.js","administration.js"],[]/>
 
 <section role="main" class="main grid_12" id="administration-page">
 

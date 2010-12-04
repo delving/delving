@@ -1,7 +1,7 @@
 <#compress>
 <#include "includeMarcos.ftl">
 <@addCustomAssigns/>
-<@addHeader "Delving", "",["results.js","fancybox/jquery.fancybox-1.3.1.pack.js"],["fancybox/jquery.fancybox-1.3.1.css"]/>
+<@addHeader "${portalDisplayName}", "",["results.js","fancybox/jquery.fancybox-1.3.1.pack.js"],["fancybox/jquery.fancybox-1.3.1.css"]/>
 <script type="text/javascript">
     var msgItemSaveSuccess = "<@spring.message '_mine.itemsaved'/>";
     var msgItemSaveFail = "<@spring.message '_mine.itemsavefailed'/>";

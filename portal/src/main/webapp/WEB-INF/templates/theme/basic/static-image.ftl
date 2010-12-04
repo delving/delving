@@ -12,7 +12,7 @@
             <#assign pageId = "static"/>
             <#include "includeMarcos.ftl">
 
-            <@addHeader "Delving", "",[],[]/>
+            <@addHeader "${portalDisplayName}", "",[],[]/>
 
 
             <section role="main" class="main">
@@ -90,12 +90,12 @@
 
         <#include "includeMarcos.ftl">
 
-        <@addHeader "Delving", "",[],[]/>
+        <@addHeader "${portalDisplayName}", "",[],[]/>
 
             <section id="sidebar" class="grid_3" role="complementary">
                 <header id="branding" role="banner">
                     <a href="/${portalName}/" title=""/>
-                    <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
+                    <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="${portalDisplayName}"/>
                     </a>
                     <h1 class="large">${portalDisplayName}</h1>
                 </header>

@@ -12,12 +12,12 @@
 
 <#include "includeMarcos.ftl">
 
-<@addHeader "Delving", "",[],[]/>
+<@addHeader "${portalDisplayName}", "",[],[]/>
 
 <section class="grid_3">
     <header id="branding">
         <a href="/${portalName}/" title=""/>
-        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
+        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="${portalDisplayName}"/>
         </a>
         <h1 class="large">${portalDisplayName}</h1>
     </header>

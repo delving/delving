@@ -2,7 +2,7 @@
 
 <#include "includeMarcos.ftl"/>
 
-<@addHeader "Delving", "",["index.js"],[]/>
+<@addHeader "${portalDisplayName}", "",["index.js"],[]/>
 
 
 <@addFooter/>

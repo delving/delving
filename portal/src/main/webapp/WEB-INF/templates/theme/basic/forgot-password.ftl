@@ -3,12 +3,12 @@
 
 <#include "includeMarcos.ftl">
 
-<@addHeader "Delving", "",[],[]/>
+<@addHeader "${portalDisplayName}", "",[],[]/>
 
 <div class="centered">
     <div class="grid_12" id="branding">
         <h1 class="gigantic">
-            <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana" align="absmiddle"/>${portalDisplayName}
+            <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="${portalDisplayName}" align="absmiddle"/>${portalDisplayName}
         </h1>
     </div>
 

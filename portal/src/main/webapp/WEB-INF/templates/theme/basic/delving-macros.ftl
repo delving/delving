@@ -77,7 +77,7 @@
  * @param pageCssFiles : additional css files appended to the default
  * @param pageJsFiles : additional js files appended to the default
  -->
-<#macro addHeader title="Delving" bodyClass="" pageJsFiles=[] pageCssFiles=[]>
+<#macro addHeader title="${portalDisplayName}" bodyClass="" pageJsFiles=[] pageCssFiles=[]>
     <#if contentOnly != "true">
         <!DOCTYPE html>
         <head>

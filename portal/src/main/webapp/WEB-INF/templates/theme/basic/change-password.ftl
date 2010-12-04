@@ -2,7 +2,7 @@
 <#assign pageId = "cp"/>
 <#include "includeMarcos.ftl">
 
-<@addHeader "Delving", "",[],[]/>
+<@addHeader "${portalDisplayName}", "",[],[]/>
 
 <section role="main" class="grid_9">
 

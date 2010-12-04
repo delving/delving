@@ -16,7 +16,7 @@
             <#assign pageId = "static"/>
             <#include "includeMarcos.ftl">
 
-            <@addHeader "Delving", "",[],[]/>
+            <@addHeader "${portalDisplayName}", "",[],[]/>
 
 
             <section role="main" class="main">
@@ -111,7 +111,7 @@
         <#assign pageId = page.path/>
             <#include "includeMarcos.ftl">
 
-            <@addHeader "Delving", "",[],[]/>
+            <@addHeader "${portalDisplayName}", "",[],[]/>
 
 
             <section role="main" class="grid_12">

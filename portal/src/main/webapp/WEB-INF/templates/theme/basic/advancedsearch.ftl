@@ -1,7 +1,7 @@
 <#compress>
 <#include "includeMarcos.ftl">
 <#assign title><@spring.message '_action.advanced.search'/></#assign>
-<@addHeader "Delving - ${title}", "",[],[]/>
+<@addHeader "${portalDisplayName} - ${title}", "",[],[]/>
 <section id="search_advanced" class="grid_9"  role="search">
        <h1><@spring.message '_action.advanced.search'/></h1>
        <form method="POST" action="advancedsearch.html" accept-charset="UTF-8">

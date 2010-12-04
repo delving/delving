@@ -15,7 +15,7 @@
 
 <#include "includeMarcos.ftl">
 
-<@addHeader "Delving", "",["results.js"],[]/>
+<@addHeader "${portalDisplayName}", "",["results.js"],[]/>
 <script type="text/javascript">
     var msgSearchSaveSuccess = "<@spring.message '_portal.ui.message.success.search.saved'/>";
     var msgSearchSaveFail = "<@spring.message '_mine.user.notification.failure.search.saved'/>";

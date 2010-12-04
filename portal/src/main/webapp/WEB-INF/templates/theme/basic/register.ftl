@@ -12,7 +12,7 @@
 </#if>
 <#include "includeMarcos.ftl">
 
-<@addHeader "Delving", "",[],["login-register.css"]/>
+<@addHeader "${portalDisplayName}", "",[],["login-register.css"]/>
 
 <div role="main" class="grid_12 login-register">
 

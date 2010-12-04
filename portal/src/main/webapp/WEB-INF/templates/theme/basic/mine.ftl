@@ -5,7 +5,7 @@
 
 <#include "includeMarcos.ftl">
 
-<@addHeader "Delving", "",["mine.js"],[]/>
+<@addHeader "${portalDisplayName}", "",["mine.js"],[]/>
 
 
 <style>

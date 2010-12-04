@@ -10,7 +10,7 @@
 </#if>
 <#include "includeMarcos.ftl">
 
-<@addHeader "Delving", "",[],[]/>
+<@addHeader "${portalDisplayName}", "",[],[]/>
 
 <section role="main" class="grid_4 prefix_4">
 
