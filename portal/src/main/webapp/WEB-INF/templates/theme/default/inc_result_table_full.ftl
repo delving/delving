@@ -149,7 +149,7 @@
                          <#assign titleArrTest = result.fullDoc.getFieldValue("dc_title") />
                          <#if titleArrTest.isNotEmpty()>
                              <tr>
-                                 <th scope="row"><@spring.message '${titleArrTest.getKey()}_t' />:</th>
+                                 <th scope="row"><@spring.messageText '${field.getKeyAsMessageKey()}', '${field.getKeyAsXml()}' />:</th>
                                  <td><@simple_list titleArrTest.getValueAsArray() '<br />'/></td>
                              </tr>
                          </#if>

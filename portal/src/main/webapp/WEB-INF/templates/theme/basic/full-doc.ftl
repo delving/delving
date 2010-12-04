@@ -4,7 +4,7 @@
 <@addHeader "Norvegiana", "",["results.js","fancybox/jquery.fancybox-1.3.1.pack.js"],["fancybox/jquery.fancybox-1.3.1.css"]/>
 <script type="text/javascript">
     var msgItemSaveSuccess = "<@spring.message '_mine.itemsaved'/>";
-    var msgItemSaveFail = "<@spring.message 'ItemSavedFailed_t'/>";
+    var msgItemSaveFail = "<@spring.message '_mine.itemsavefailed'/>";
 </script>
 <section id="sidebar" class="grid_3" role="complementary">
     <header id="branding" role="banner">
@@ -65,7 +65,7 @@
 
         <#if user??>
             <p>
-            <a href="inc_related_content.ftl#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');return false;"><@spring.message 'SaveTo_action.personal.page' /></a>
+            <a href="inc_related_content.ftl#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');return false;"><@spring.message '_action.save.to.mine' /></a>
 
             <div id="msg-save-item" class="msg-hide"></div>
             </p>
@@ -98,7 +98,7 @@
                     <#--</p>-->
 
                     <p>
-                        <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); writeMessage('div#msg-save-item','<@spring.message '_mine.user.notification.login.required'/>'); return false;"><@spring.message 'SaveTo_action.personal.page' /></a>
+                        <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); writeMessage('div#msg-save-item','<@spring.message '_mine.user.notification.login.required'/>'); return false;"><@spring.message '_action.save.to.mine' /></a>
                     </p>
                 </div>
                 <div id="msg-save-item" class="msg-hide"></div>

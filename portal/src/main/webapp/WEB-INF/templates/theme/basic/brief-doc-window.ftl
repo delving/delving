@@ -31,7 +31,7 @@
 
     <h3><@spring.message '_action.refine.your.search' /></h3>
     <nav id="facetList">
-        <@resultBriefFacets "DATAPROVIDER",  "abm_content_search.field.provider", 2/>
+        <@resultBriefFacets "DATAPROVIDER",  "_search.field.provider", 2/>
         <@resultBriefFacets "COUNTY",  "_metadata.abm.county", 2/>
         <@resultBriefFacets "MUNICIPALITY",  "_metadata.abm.municipality", 2/>
         <#-- TODO: Create this facet -------------------------->

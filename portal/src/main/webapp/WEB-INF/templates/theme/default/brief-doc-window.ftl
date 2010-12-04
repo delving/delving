@@ -84,7 +84,7 @@
                 </#list>
             <#else>
                 <dd  class="nobg">
-                    <@spring.message 'ViewingRelated_portal.ui.messages.items' />
+                    <@spring.message '_portal.ui.viewingrelateditems' />
                     <#assign match = result.matchDoc/>
                     <a href="${match.fullDocUrl}">
                         <#if useCache="true"><img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
@@ -351,7 +351,7 @@
         <option value="title" ><@spring.message '_metadata.dc.title' /></option>
         <option value="creator"><@spring.message '_metadata.dc.creator' /></option>
         <option value="YEAR"><@spring.message '_metadata.dc.date' /></option>
-        <#--<option value="COLLECTION"><@spring.message 'collection_t' /></option>-->
+        <#--<option value="COLLECTION"><@spring.message '_search.field.collection' /></option>-->
     </select>
 
     <form action="${thisPage}" method="GET" id="form-sort" style="display:none;">

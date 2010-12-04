@@ -26,7 +26,7 @@
             <#if user??>
 
 
-                    <a href="inc_related_content.ftl#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');return false;"><@spring.message 'SaveToPersonalPage' /></a>
+                    <a href="inc_related_content.ftl#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');return false;"><@spring.message '_action.save.to.mine' /></a>
                     <div id="msg-save-item" class="msg-hide"></div>
 
 
@@ -56,7 +56,7 @@
                 </p>
 
                 <p>
-                    <a  href="/${portalName}/login.html" class="disabled" onclick="highLight('#mustlogin'); return false;"><@spring.message 'SaveToPersonalPage' /></a>
+                    <a  href="/${portalName}/login.html" class="disabled" onclick="highLight('#mustlogin'); return false;"><@spring.message '_action.save.to.mine' /></a>
                 </p>
             </div>
 

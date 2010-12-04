@@ -62,7 +62,7 @@
                         </#list>
                     <#else>
                         <dd class="nobg">
-                            <@spring.message 'ViewingRelated_portal.ui.messages.items' />
+                            <@spring.message '_portal.ui.viewingrelateditems' />
                             <#assign match = result.fullDoc />
                             <#--todo review this. It seems wrong to display the image of the current full-doc instead of the original related item search-->
                             <a href="full-doc.html?&amp;uri=${match.id}">

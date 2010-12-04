@@ -50,7 +50,7 @@
                 </#list>
             <#else>
                 <li class="first">
-                <@spring.message 'ViewingRelated_portal.ui.messages.items' />
+                <@spring.message '_portal.ui.viewingrelateditems' />
                 <#assign match = defaultView.matchDoc/>
                 <a href="${match.fullDocUrl}">
                     <#if useCache="true"><img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>

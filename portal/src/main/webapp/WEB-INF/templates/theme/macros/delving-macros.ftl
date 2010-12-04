@@ -625,7 +625,7 @@
                 </#if>
             </#list>
         <#else>
-            <@spring.message 'ViewingRelated_portal.ui.messages.items' />
+            <@spring.message '_portal.ui.viewingrelateditems' />
             <#assign match = result.matchDoc/>
             <a href="${match.fullDocUrl()}">
                 <#if useCache="true">
@@ -656,7 +656,7 @@
             </#list>
         <#else>
             <dd>
-                <@spring.message 'ViewingRelated_portal.ui.messages.items' />
+                <@spring.message '_portal.ui.viewingrelateditems' />
                 <#assign match = result.matchDoc/>
                 <a href="${match.fullDocUrl}">
                     <#if useCache="true">
@@ -698,7 +698,7 @@
                     </#if>
                 </#list>
             <#else>
-                    <@spring.message 'ViewingRelated_portal.ui.messages.items' />
+                    <@spring.message '_portal.ui.viewingrelateditems' />
                     <#assign match = result.fullDoc />
                     <#assign imgSrc = match.getAsString("europeana_object")/>
 
@@ -730,7 +730,7 @@
                 </#list>
             <#else>
                 <dd class="nobg">
-                    <@spring.message 'ViewingRelated_portal.ui.messages.items' />
+                    <@spring.message '_portal.ui.viewingrelateditems' />
                     <#assign match = result.fullDoc />
                     <#--todo review this. It seems wrong to display the image of the current full-doc instead of the original related item search-->
                     <a href="full-doc.html?&amp;uri=${match.id}">
@@ -914,7 +914,7 @@
         'europeana_object', 'europeana_isShownAt', 'europeana_isShownBy', 'europeana_language', 'europeana_rights', 'europeana_typet']) as field>
             <tr>
                 <#--<th scrope="row">${field.getKeyAsXml()}</th>-->
-                <th scope="row"><@spring.message '${field.getKey()}_t' />:</th>
+                <th scope="row"><@spring.messageText '${field.getKeyAsMessageKey()}', '${field.getKeyAsXml()}' />:</th>
                 <td>${field.getFirst()}</td>
             </tr>
         </#list>
@@ -926,7 +926,7 @@
     <#assign keyVal = result.fullDoc.getFieldValue(key)/>
     <#if keyVal.isNotEmpty()>
         <tr>
-            <th scope="row"><@spring.message '${keyVal.getKey()}_t' />:</th>
+            <th scope="row"><@spring.messageText '${field.getKeyAsMessageKey()}', '${field.getKeyAsXml()}' />:</th>
             <td>${keyVal.getFirst()}</td>
         </tr>
     </#if>
@@ -1044,7 +1044,7 @@
     <option value="title" ><@spring.message '_metadata.dc.title' /></option>
     <option value="creator"><@spring.message '_metadata.dc.creator' /></option>
     <option value="YEAR"><@spring.message '_metadata.dc.date' /></option>
-    <#--<option value="COLLECTION"><@spring.message 'collection_t' /></option>-->
+    <#--<option value="COLLECTION"><@spring.message '_search.field.collection' /></option>-->
 </select>
 <form action="" method="GET" id="form-sort" style="display:none;">
     <input type="hidden" name="query" value="${justTheQuery}"/>

@@ -115,7 +115,7 @@
                                 </#list>
 
                             <#else>
-                                <tr><td><@spring.message 'NoSaved_portal.ui.messages.items'/></td></tr>
+                                <tr><td><@spring.message '_mine.nosaveditems'/></td></tr>
                             </#if>
                         </table>
                     </div>
