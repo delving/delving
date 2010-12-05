@@ -62,7 +62,7 @@ public class RefinementPanel extends JPanel {
     private SipModel sipModel;
     private JTextArea groovyCodeArea;
     private JButton removeMappingButton = new JButton("Remove Selected Mapping");
-    private JButton valueMappingButton = new JButton("Edit Value Mapping");
+    private JButton dictionaryButton = new JButton("Edit Dictionary");
     private JList mappingList;
 
     public RefinementPanel(SipModel sipModel) {
@@ -103,10 +103,10 @@ public class RefinementPanel extends JPanel {
                 }
             }
         });
-        valueMappingButton.addActionListener(new ActionListener() {
+        dictionaryButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ValueMapDialog dialog = new ValueMapDialog(
+                DictionaryDialog dialog = new DictionaryDialog(
                         (Frame)SwingUtilities.getWindowAncestor(RefinementPanel.this),
                         sipModel.getFieldCompileModel().getSelectedFieldMapping()
                 );
@@ -119,12 +119,12 @@ public class RefinementPanel extends JPanel {
                 FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
                 if (fieldMapping != null) {
                     sipModel.getFieldCompileModel().setSelectedPath(fieldMapping.getFieldDefinition().path.toString());
-                    valueMappingButton.setEnabled(fieldMapping.valueMap != null);
+                    dictionaryButton.setEnabled(fieldMapping.valueMap != null);
                     removeMappingButton.setEnabled(true);
                 }
                 else {
                     sipModel.getFieldCompileModel().setSelectedPath(null);
-                    valueMappingButton.setEnabled(false);
+                    dictionaryButton.setEnabled(false);
                     removeMappingButton.setEnabled(false);
                 }
             }
@@ -174,7 +174,7 @@ public class RefinementPanel extends JPanel {
         groovyCodeArea = new JTextArea(sipModel.getFieldCompileModel().getCodeDocument());
         JScrollPane scroll = new JScrollPane(groovyCodeArea);
         p.add(scroll, BorderLayout.CENTER);
-        p.add(valueMappingButton, BorderLayout.SOUTH);
+        p.add(dictionaryButton, BorderLayout.SOUTH);
         return p;
     }
 

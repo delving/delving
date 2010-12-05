@@ -40,24 +40,24 @@ public class TestValueMap {
 
     @Test
     public void writeAndRead() {
-        Map<String, ValueMap> maps = ValueMap.fromMapping(toLines(
-                        "/* ValueMap */ def gumbyMap = [ // one,two,three\n" +
+        Map<String, Dictionary> maps = Dictionary.fromMapping(toLines(
+                        "/* Dictionary */ def gumbyMap = [ // one,two,three\n" +
                         "'uno':'one',\n" +
                         "'duo':'two',\n" +
                         "'trezz':'three',\n" +
                         "]\n" +
-                        "/* ValueMap */ def pokeyMap = [ // no,yes\n" +
+                        "/* Dictionary */ def pokeyMap = [ // no,yes\n" +
                         "'fantastic':'yes',\n" +
                         "'terrible':'no',\n" +
                         "]\n"
         ));
         assertEquals(2, maps.size());
         StringBuilder out = new StringBuilder();
-        for (ValueMap valueMap : maps.values()) {
-            out.append(valueMap.toString());
+        for (Dictionary dictionary : maps.values()) {
+            out.append(dictionary.toString());
         }
         System.out.println(out);
-        maps = ValueMap.fromMapping(toLines(out.toString()));
+        maps = Dictionary.fromMapping(toLines(out.toString()));
         assertEquals(2, maps.size());
         assertEquals("yes", maps.get("pokey").get("fantastic"));
         maps.get("gumby").put("whatever", "two");

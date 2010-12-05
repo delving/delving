@@ -35,13 +35,13 @@ import java.util.Map;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class ValueMapDialog extends JDialog {
+public class DictionaryDialog extends JDialog {
     private FieldMapping fieldMapping;
     private JButton selectionSetButton;
     private JComboBox editorBox, selectionEditorBox;
     private JTable table;
 
-    public ValueMapDialog(Frame owner, FieldMapping fieldMapping) {
+    public DictionaryDialog(Frame owner, FieldMapping fieldMapping) {
         super(owner, true);
         this.fieldMapping = fieldMapping;
         setTitle("Value Map for " + fieldMapping.getFieldDefinition().getTag());
@@ -99,7 +99,7 @@ public class ValueMapDialog extends JDialog {
         ok.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ValueMapDialog.this.setVisible(false);
+                DictionaryDialog.this.setVisible(false);
             }
         });
         return ok;
