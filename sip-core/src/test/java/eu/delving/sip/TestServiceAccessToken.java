@@ -15,11 +15,11 @@ public class TestServiceAccessToken {
 
     @Test
     public void check() {
-        String keyString = ServiceAccessToken.createKey("uzer", "delving-pass");
+        String keyString = AccessKey.createKey("uzer", "delving-pass");
         log.info("Created "+keyString);
-        ServiceAccessToken serviceAccessToken = new ServiceAccessToken();
-        serviceAccessToken.setServicesPassword("delving-pass");
-        Assert.assertTrue("Should have matched!", serviceAccessToken.checkKey(keyString));
-        Assert.assertFalse("Should not have matched", serviceAccessToken.checkKey("gumby"));
+        AccessKey accessKey = new AccessKey();
+        accessKey.setServicesPassword("delving-pass");
+        Assert.assertTrue("Should have matched!", accessKey.checkKey(keyString));
+        Assert.assertFalse("Should not have matched", accessKey.checkKey("gumby"));
     }
 }

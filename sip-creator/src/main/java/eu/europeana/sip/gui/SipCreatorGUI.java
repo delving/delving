@@ -85,12 +85,12 @@ public class SipCreatorGUI extends JFrame {
     private JList dataSetList = new JList(dataSetListModel);
     private DataSetActions dataSetActions;
 
-    public SipCreatorGUI(File fileStoreDirectory, String serverUrl) throws FileStoreException {
+    public SipCreatorGUI(File fileStoreDirectory) throws FileStoreException {
         super("Delving SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         MetadataModel metadataModel = loadMetadataModel();
         FileStore fileStore = new FileStoreImpl(fileStoreDirectory, metadataModel);
-        this.sipModel = new SipModel(fileStore, metadataModel, new PopupExceptionHandler(), serverUrl);
+        this.sipModel = new SipModel(fileStore, metadataModel, new PopupExceptionHandler());
         this.metaRepoClient = new MetaRepoClient(sipModel, new MetaRepoClient.Listener() {
 
             @Override
@@ -199,6 +199,7 @@ public class SipCreatorGUI extends JFrame {
 
     private JMenu createRepositoryMenu() {
         JMenu repository = new JMenu("Repository");
+        repository.add(new ServerHostAction());
         repository.add(new AccessKeyAction());
         connectedBox.addItemListener(new ItemListener() {
             @Override
@@ -269,6 +270,21 @@ public class SipCreatorGUI extends JFrame {
         }
     }
 
+    private class ServerHostAction extends AbstractAction {
+
+        public ServerHostAction() {
+            super("Server Host Name");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            String serverHost = JOptionPane.showInputDialog(SipCreatorGUI.this, "Server Host Name", sipModel.getServerHost());
+            if (serverHost != null && !serverHost.isEmpty()) {
+                sipModel.setServerHost(serverHost);
+            }
+        }
+    }
+
     private class AccessKeyAction extends AbstractAction {
 
         public AccessKeyAction() {
@@ -285,14 +301,10 @@ public class SipCreatorGUI extends JFrame {
     }
 
     public static void main(final String[] args) throws ClassNotFoundException {
-//        if (args.length != 1) {
-//            throw new RuntimeException("SipCreatorGUI gets two parameters <server-url>");
-//        }
-        final String serverUrl = args.length > 0 ? args[0] : null;
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    SipCreatorGUI sipCreatorGUI = new SipCreatorGUI(new File(System.getProperty("user.home"), "/sip-creator-file-store"), serverUrl);
+                    SipCreatorGUI sipCreatorGUI = new SipCreatorGUI(new File(System.getProperty("user.home"), "/sip-creator-file-store"));
                     sipCreatorGUI.setVisible(true);
                 }
                 catch (FileStoreException e) {

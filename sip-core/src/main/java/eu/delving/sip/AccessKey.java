@@ -11,7 +11,7 @@ import java.security.NoSuchAlgorithmException;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class ServiceAccessToken {
+public class AccessKey {
 
     private String servicesPassword;
 

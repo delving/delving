@@ -6,8 +6,8 @@ import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.Path;
 import eu.delving.metadata.Tag;
 import eu.delving.services.exceptions.HarvindexingException;
+import eu.delving.sip.AccessKey;
 import eu.delving.sip.DataSetState;
-import eu.delving.sip.ServiceAccessToken;
 import eu.europeana.core.database.ConsoleDao;
 import eu.europeana.core.database.UserDao;
 import eu.europeana.core.database.domain.CollectionState;
@@ -67,7 +67,7 @@ public class Harvindexer {
     private String servicesUrl;
 
     @Autowired
-    private ServiceAccessToken serviceAccessToken;
+    private AccessKey accessKey;
 
     @Autowired
     private UserDao userDao;
@@ -225,7 +225,7 @@ public class Harvindexer {
         }
 
         private void importPmh(EuropeanaCollection collection) throws HarvindexingException, IOException, TransformerException, XMLStreamException, SolrServerException {
-            String accessKey = serviceAccessToken.createKey("HARVINDEXER");
+            String accessKey = Harvindexer.this.accessKey.createKey("HARVINDEXER");
             String url = String.format(
                     "%s/oai-pmh?verb=ListRecords&metadataPrefix=%s&set=%s&accessKey=%s",
                     servicesUrl,

@@ -91,7 +91,6 @@ public class SipModel {
     private VariableListModel variableListModel = new VariableListModel();
     private List<UpdateListener> updateListeners = new CopyOnWriteArrayList<UpdateListener>();
     private List<ParseListener> parseListeners = new CopyOnWriteArrayList<ParseListener>();
-    private String serverUrl;
 
     public interface UpdateListener {
 
@@ -116,12 +115,11 @@ public class SipModel {
         void updatedRecord(MetadataRecord metadataRecord);
     }
 
-    public SipModel(FileStore fileStore, MetadataModel metadataModel, UserNotifier userNotifier, String serverUrl) throws FileStoreException {
+    public SipModel(FileStore fileStore, MetadataModel metadataModel, UserNotifier userNotifier) throws FileStoreException {
         this.fileStore = fileStore;
         this.appConfig = fileStore.getAppConfig();
         this.metadataModel = metadataModel;
         this.userNotifier = userNotifier;
-        this.serverUrl = serverUrl;
         analysisTree = AnalysisTree.create("Select a Data Set from the File menu");
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
         fieldListModel = new FieldListModel(metadataModel);
@@ -171,6 +169,19 @@ public class SipModel {
 
     public FactModel getFactModel() {
         return factModel;
+    }
+
+    public String getServerHost() {
+        return appConfig.getServerHost();
+    }
+
+    public void setServerHost(String host) {
+        appConfig.setServerHost(host);
+        executor.execute(new AppConfigSetter());
+    }
+
+    public String getServerUrl() {
+        return String.format("http://%s:8983/services/dataset",appConfig.getServerHost());
     }
 
     public String getServerAccessKey() {
@@ -352,10 +363,6 @@ public class SipModel {
             analysisParser.abort();
             analysisParser = null;
         }
-    }
-
-    public String getServerUrl() {
-        return serverUrl;
     }
 
     public Facts getFacts() {
