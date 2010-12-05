@@ -60,7 +60,10 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -85,10 +88,29 @@ public class SipCreatorGUI extends JFrame {
     private JList dataSetList = new JList(dataSetListModel);
     private DataSetActions dataSetActions;
 
-    public SipCreatorGUI(File fileStoreDirectory) throws FileStoreException {
+    public SipCreatorGUI() throws FileStoreException {
         super("Delving SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         MetadataModel metadataModel = loadMetadataModel();
+        File fileStoreDirectory = new File(System.getProperty("user.home"), "/sip-creator-file-store");
+        if (fileStoreDirectory.isFile()) {
+            try {
+                BufferedReader br = new BufferedReader(new FileReader(fileStoreDirectory));
+                String line;
+                while ((line = br.readLine()) != null) {
+                    line = line.trim();
+                    if (!line.isEmpty()) {
+                        fileStoreDirectory = new File(line);
+                        log.info(String.format("Using %s as file store directory", fileStoreDirectory.getAbsolutePath()));
+                        break;
+                    }
+                }
+                br.close();
+            }
+            catch (IOException e) {
+                throw new FileStoreException("Unable to read the file "+fileStoreDirectory.getAbsolutePath());
+            }
+        }
         FileStore fileStore = new FileStoreImpl(fileStoreDirectory, metadataModel);
         this.sipModel = new SipModel(fileStore, metadataModel, new PopupExceptionHandler());
         this.metaRepoClient = new MetaRepoClient(sipModel, new MetaRepoClient.Listener() {
@@ -304,7 +326,7 @@ public class SipCreatorGUI extends JFrame {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    SipCreatorGUI sipCreatorGUI = new SipCreatorGUI(new File(System.getProperty("user.home"), "/sip-creator-file-store"));
+                    SipCreatorGUI sipCreatorGUI = new SipCreatorGUI();
                     sipCreatorGUI.setVisible(true);
                 }
                 catch (FileStoreException e) {
