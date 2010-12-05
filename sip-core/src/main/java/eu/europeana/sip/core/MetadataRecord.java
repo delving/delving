@@ -22,6 +22,7 @@
 package eu.europeana.sip.core;
 
 import com.ctc.wstx.exc.WstxParsingException;
+import eu.delving.metadata.Sanitizer;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 

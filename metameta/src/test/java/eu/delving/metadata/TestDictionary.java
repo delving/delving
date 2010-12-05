@@ -19,7 +19,7 @@
  *  permissions and limitations under the Licence.
  */
 
-package eu.europeana.sip.core;
+package eu.delving.metadata;
 
 import org.junit.Test;
 
@@ -36,7 +36,7 @@ import static org.junit.Assert.fail;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class TestValueMap {
+public class TestDictionary {
 
     @Test
     public void writeAndRead() {

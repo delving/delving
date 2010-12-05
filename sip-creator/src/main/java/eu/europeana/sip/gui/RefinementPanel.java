@@ -119,7 +119,7 @@ public class RefinementPanel extends JPanel {
                 FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
                 if (fieldMapping != null) {
                     sipModel.getFieldCompileModel().setSelectedPath(fieldMapping.getFieldDefinition().path.toString());
-                    dictionaryButton.setEnabled(fieldMapping.valueMap != null);
+                    dictionaryButton.setEnabled(fieldMapping.valueMap != null); // todo: criteria for this
                     removeMappingButton.setEnabled(true);
                 }
                 else {

@@ -46,6 +46,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
@@ -315,9 +316,11 @@ public class SipCreatorGUI extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            String accessKey = JOptionPane.showInputDialog(SipCreatorGUI.this, "Server Access Key", sipModel.getServerAccessKey());
-            if (accessKey != null && !accessKey.isEmpty()) {
-                sipModel.setServerAccessKey(accessKey);
+            JPasswordField passwordField = new JPasswordField(sipModel.getServerAccessKey());
+            Object[] msg = { "Server Access Key", passwordField };
+            int result = JOptionPane.showConfirmDialog(SipCreatorGUI.this, msg, "Permission", JOptionPane.OK_CANCEL_OPTION);
+            if (result == JOptionPane.OK_OPTION) {
+                sipModel.setServerAccessKey(new String(passwordField.getPassword()));
             }
         }
     }

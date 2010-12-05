@@ -121,11 +121,8 @@ public class CodeGenerator {
             }
         }
         else {
-            if (fieldDefinition.validation != null &&
-                    fieldDefinition.validation.factDefinition != null &&
-                    fieldDefinition.validation.factDefinition.options != null &&
-                    node.getStatistics().getHistogramValues() != null) {
-                renderValueMapLine(fieldDefinition, fieldMapping, node, variable);
+            if (Dictionary.isPossible(fieldDefinition, node)) { // todo: should be only when user chooses
+                renderDictionaryLine(fieldDefinition, fieldMapping, node, variable);
             }
             else {
                 renderLineSimple(fieldDefinition, fieldMapping, variable);
@@ -159,7 +156,7 @@ public class CodeGenerator {
         );
     }
 
-    private void renderValueMapLine(FieldDefinition fieldDefinition, FieldMapping fieldMapping, AnalysisTree.Node node, String variable) {
+    private void renderDictionaryLine(FieldDefinition fieldDefinition, FieldMapping fieldMapping, AnalysisTree.Node node, String variable) {
         fieldMapping.createValueMap(node.getStatistics().getHistogramValues());
         fieldMapping.addCodeLine(
                 String.format(

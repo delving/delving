@@ -19,9 +19,8 @@
  *  permissions and limitations under the Licence.
  */
 
-package eu.europeana.sip.core;
+package eu.delving.metadata;
 
-import eu.delving.metadata.FieldMapping;
 import org.junit.Test;
 
 import java.util.List;

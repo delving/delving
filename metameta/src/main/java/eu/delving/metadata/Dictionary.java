@@ -1,4 +1,4 @@
-package eu.europeana.sip.core;
+package eu.delving.metadata;
 
 import java.util.Arrays;
 import java.util.List;
@@ -109,6 +109,13 @@ public class Dictionary {
 
     private static String escapeApostrophe(String s) {
         return s.replaceAll("'", "\\\\'");
+    }
+
+    public static boolean isPossible(FieldDefinition fieldDefinition, AnalysisTree.Node node) {
+        return fieldDefinition.validation != null &&
+                    fieldDefinition.validation.factDefinition != null &&
+                    fieldDefinition.validation.factDefinition.options != null &&
+                    node.getStatistics().getHistogramValues() != null;
     }
 
 //    public static void main(String[] args) {
