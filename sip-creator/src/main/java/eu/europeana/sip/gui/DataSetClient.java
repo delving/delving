@@ -190,26 +190,31 @@ public class DataSetClient {
                 file = Hasher.hashFile(file);
                 log.info("Checking " + file);
                 final DataSetResponse checkResponse = checkFile();
-                if (checkResponse.getResponseCode() == DataSetResponseCode.READY_TO_RECEIVE) {
-                    log.info("Server is ready to receive " + file);
-                    final DataSetResponse uploadResponse = uploadFile();
-                    if (uploadResponse.getResponseCode() == DataSetResponseCode.THANK_YOU) {
-                        log.info("Upload response " + checkResponse);
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                progressListener.finished();
-                                success.run();
-                            }
-                        });
-                    }
-                    else {
-                        notifyUser(uploadResponse);
-                    }
-                }
-                else {
-                    log.info("Check response " + checkResponse);
-                    notifyUser(checkResponse);
+                switch (checkResponse.getResponseCode()) {
+                    case READY_TO_RECEIVE:
+                        log.info("Server is ready to receive " + file);
+                        final DataSetResponse uploadResponse = uploadFile();
+                        if (uploadResponse.getResponseCode() == DataSetResponseCode.THANK_YOU) {
+                            log.info("Upload response " + checkResponse);
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    progressListener.finished();
+                                    success.run();
+                                }
+                            });
+                        }
+                        else {
+                            notifyUser(uploadResponse);
+                        }
+                        break;
+                    case GOT_IT_ALREADY:
+                        success.run();
+                        break;
+                    default:
+                        log.info("Check response " + checkResponse);
+                        notifyUser(checkResponse);
+                        break;
                 }
             }
             catch (Exception e) {

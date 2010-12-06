@@ -349,6 +349,7 @@ public class MetaRepoImpl implements MetaRepo {
             catch (Exception e) {
                 throw new RecordParseException("Unable to parse records", e);
             }
+            object.put(DataSet.DATA_SET_STATE, DataSetState.UPLOADED.toString());
             saveObject();
         }
 

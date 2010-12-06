@@ -48,4 +48,8 @@ public class DataSetResponse {
     public List<DataSetInfo> getDataSetList() {
         return dataSetList;
     }
+
+    public String toString() {
+        return responseCode;
+    }
 }

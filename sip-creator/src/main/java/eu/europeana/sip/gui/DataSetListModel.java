@@ -169,7 +169,7 @@ public class DataSetListModel extends AbstractListModel {
                         break;
                     case ENABLED:
                         html.append(String.format(
-                                "<p>Data set is enabled, with %d records indexed of the total %d.</p>",
+                                "<p><strong>Data set is enabled, with %d records indexed of the total %d.</strong></p>",
                                 dataSetInfo.recordsIndexed,
                                 dataSetInfo.recordCount
                         ));

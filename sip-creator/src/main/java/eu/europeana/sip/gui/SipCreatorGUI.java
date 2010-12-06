@@ -93,25 +93,7 @@ public class SipCreatorGUI extends JFrame {
         super("Delving SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         MetadataModel metadataModel = loadMetadataModel();
-        File fileStoreDirectory = new File(System.getProperty("user.home"), "/sip-creator-file-store");
-        if (fileStoreDirectory.isFile()) {
-            try {
-                BufferedReader br = new BufferedReader(new FileReader(fileStoreDirectory));
-                String line;
-                while ((line = br.readLine()) != null) {
-                    line = line.trim();
-                    if (!line.isEmpty()) {
-                        fileStoreDirectory = new File(line);
-                        log.info(String.format("Using %s as file store directory", fileStoreDirectory.getAbsolutePath()));
-                        break;
-                    }
-                }
-                br.close();
-            }
-            catch (IOException e) {
-                throw new FileStoreException("Unable to read the file "+fileStoreDirectory.getAbsolutePath());
-            }
-        }
+        File fileStoreDirectory = getFileStoreDirectory();
         FileStore fileStore = new FileStoreImpl(fileStoreDirectory, metadataModel);
         this.sipModel = new SipModel(fileStore, metadataModel, new PopupExceptionHandler());
         this.dataSetClient = new DataSetClient(sipModel, new DataSetClient.Listener() {
@@ -167,6 +149,29 @@ public class SipCreatorGUI extends JFrame {
             }
         });
         dataSetActions.setEntry(null);
+    }
+
+    private File getFileStoreDirectory() throws FileStoreException {
+        File fileStoreDirectory = new File(System.getProperty("user.home"), "/sip-creator-file-store");
+        if (fileStoreDirectory.isFile()) {
+            try {
+                BufferedReader br = new BufferedReader(new FileReader(fileStoreDirectory));
+                String line;
+                while ((line = br.readLine()) != null) {
+                    line = line.trim();
+                    if (!line.isEmpty()) {
+                        fileStoreDirectory = new File(line);
+                        log.info(String.format("Using %s as file store directory", fileStoreDirectory.getAbsolutePath()));
+                        break;
+                    }
+                }
+                br.close();
+            }
+            catch (IOException e) {
+                throw new FileStoreException("Unable to read the file "+fileStoreDirectory.getAbsolutePath());
+            }
+        }
+        return fileStoreDirectory;
     }
 
     private JPanel createSouth() {
