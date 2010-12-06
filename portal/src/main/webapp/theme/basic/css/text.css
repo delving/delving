@@ -3,7 +3,7 @@ body {
 }
 
 a:focus {
-    outline: 1px dotted
+    outline: none;
 }
 
 hr {

@@ -7,9 +7,8 @@ $(document).ready(function() {
         // goto last visited page
         document.location.href = gotoPage;
     }
-    var langTab = "1";
-    if(locale=="no"){langTab=0}
-    $("#aboutTabs").tabs({selected: langTab});    
+        delvingPageCall("#block-1", portalName+"/home/block1.dml?embedded=true"," "," "," ");
+        delvingPageCall("#block-2", portalName+"/home/block2.dml?embedded=true"," "," "," ");
 });
 
 

@@ -89,7 +89,7 @@
                 var portalName = "/${portalName}";
                 var baseThemePath = "/${portalName}/${portalTheme}";
             </script>
-            <@addCss ["reset.css","text.css","960.css","jquery-ui-1.8.5.custom.css","screen.css"], "screen"/>
+            <@addCss ["reset.css","text.css","960.css","jquery-ui-1.8.6.custom.css","screen.css"], "screen"/>
             <#if pageCssFiles?size &gt; 0>
                 <@addCss pageCssFiles/>
             </#if>
@@ -108,8 +108,12 @@
             <a href="/${portalName}/" alt="Home">
                 <img id="branding" src="/${portalName}/${portalTheme}/images/logo.png" alt="" align="absmiddle"/>
             </a>
-            <div id="messages" class="grid_6 push_3">
-                <div class="message"></div>
+            <div id="messages" class="grid_12">
+
+                    <div class="message"></div>
+                    <div class="">
+                    <a href="#" onclick="$('#messages').slideUp()">Close</a>
+                    </div>
             </div>
             <div id="userBar" role="navigation">
                 <div class="inner">
@@ -177,14 +181,13 @@
         <!-- AddThis Button END -->
         <script type="text/javascript">
         var addthis_config = {
-             ui_language: "no",
+            ui_language: "${locale}",
             ui_click: true,
-            ui_cobrand: "Norvegiana",
+            ui_cobrand: "Delving",
             ui_header_color: "#ffffff",
-            ui_header_background:"#0071BC"
+            ui_header_background:"#336699"
         }
         </script>
-        <br/>
 
 </#macro>
 
@@ -333,6 +336,7 @@
                              src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}"
                              alt="<@spring.message '_action.alt.more.info' />"
                              height="50"
+                             onerror="showDefaultSmall(this,'${cell.type}')"
                           />
                     <#else>
                         <img class="thumb"
@@ -361,9 +365,9 @@
                 <#if !cell.provider?matches(" ")>${cell.provider}</#if>
                 --->
                 <#-- with labels -->
-                <#if !cell.creator[0]?matches(" ")><span><@spring.message '_search.field.creator' />: </span>${cell.creator}<br/></#if>
-                <#if !cell.year?matches(" ")><#if cell.year != "0000"><span><@spring.message '_search.field.date' />: </span>${cell.year}<br/></#if></#if>
-                <#if !cell.provider?matches(" ")><@spring.message '_search.field.provider' />: <span class="provider">${cell.provider}</span></#if>
+                <#if !cell.creator?matches("")><span><@spring.message '_search.field.creator' />: </span>${cell.creator}<br/></#if>
+                <#if !cell.year?matches("")><#if cell.year != "0000"><span><@spring.message '_search.field.date' />: </span>${cell.year}<br/></#if></#if>
+                <#if !cell.provider?matches("")><@spring.message '_search.field.provider' />: <span class="provider">${cell.provider}</span></#if>
                 </p>
         </td>
     </tr>
@@ -685,20 +689,32 @@
 <#macro resultsBriefUserActions>
 <#assign seq = briefDocs/>
     <#if seq?size &gt; 0>
-        <h4><@spring.message '_portal.ui.message.actions'/>:</h4>
-            <#-- TODO: use a hidden form instead of hrefs to function without javascript? --> 
-            <p class="linetop">
+        <#--<h3 class="header actions"><@spring.message '_portal.ui.message.actions'/>:</h3>-->
+            <#--&lt;#&ndash; TODO: use a hidden form instead of hrefs to function without javascript? &ndash;&gt; -->
+            <#--<p class="linetop">-->
+                <#--<#if user??>-->
+                    <#--<a id="saveQuery" href="#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message '_action.save.this.search'/></a>-->
+                <#--<#else>-->
+                    <#--<a href="#" onclick="highLight('a#login'); writeMessage('div#msg-save-search','<@spring.message '_mine.user.notification.login.required'/>'); return false" class="disabled"><@spring.message '_action.save.this.search'/></a>-->
+                <#--</#if>-->
+            <#--</p>-->
+            <#--<div id="msg-save-search" class="msg-hide"></div>-->
+        <dl class="menu">
+            <dt><@spring.message '_portal.ui.message.actions'/></dt>
+            <dd>
                 <#if user??>
                     <a id="saveQuery" href="#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message '_action.save.this.search'/></a>
                 <#else>
                     <a href="#" onclick="highLight('a#login'); writeMessage('div#msg-save-search','<@spring.message '_mine.user.notification.login.required'/>'); return false" class="disabled"><@spring.message '_action.save.this.search'/></a>
                 </#if>
-            </p>
-            <div id="msg-save-search" class="msg-hide"></div>
+            </dd>
+        </dl>
+        <div id="msg-save-search" class="msg-hide"></div>
     </#if>
 </#macro>
 
 <#macro resultsFullQueryBreadcrumbs>
+
     <#if pagination??>
         <@spring.message '_portal.ui.navigation.matchesfor' />:
             <#if !query?starts_with("europeana_uri:")>
@@ -1033,6 +1049,7 @@
  -->
 <#macro viewSelect>
 <div id="viewselect">
+
     <#if queryStringForPresentation?exists>
         <#if view="table">
             <a href="?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message '_action.alt.table.view' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-hi.gif" alt="<@spring.message '_action.alt.table.view' />" /></a>
@@ -1051,6 +1068,7 @@
  * Macro to generate a dropdow with sorting options
  -->
 <#macro sortResults>
+<#setting url_escaping_charset='utf-8'>
 <select id="sortOptions" name="sortBy" onchange="$('input#sortBy').val(this.value);$('form#form-sort').submit();">
     <option value=""><@spring.message '_action.search.order.by' /></option>
     <option value="title" ><@spring.message '_metadata.dc.title' /></option>
@@ -1062,6 +1080,7 @@
     <input type="hidden" name="query" value="${justTheQuery}"/>
     <input type="hidden" name="start" value="${start}"/>
     <input type="hidden" name="view" value="${view}"/>
+ 
     <input type="hidden" name="sortBy" id="sortBy" value=""/>
 </form>
 </#macro>

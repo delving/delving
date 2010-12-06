@@ -25,7 +25,14 @@
 
                 <div class="grid_8">
                     <h2><@spring.message '_cms.existing.pages' /></h2>
-                    <table summary="List of existing pages" class="user-options" width="100%">
+                    <table summary="List of existing pages" class="user-options zebra" width="100%">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                        </thead>
                         <#list pagePathList as pagePath>
                             <tr>
                                 <td width="300">
