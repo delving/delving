@@ -100,23 +100,14 @@
 
         <@addHeader "${portalDisplayName}", "",[],[]/>
 
-            <section id="sidebar" class="grid_3" role="complementary">
-                <header id="branding" role="banner">
-                    <a href="/${portalName}/" title=""/>
-                    <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="${portalDisplayName}"/>
-                    </a>
-                    <h1 class="large">${portalDisplayName}</h1>
-                </header>
-            </section>
 
-
-            <section role="main">
+            <section role="main" class="grid_12">
 
                 <header>
                     <h1><@spring.message '_cms.administration.images' /></h1>
                 </header>
 
-                <div class="grid_5">
+                <div class="grid_5 alpha">
                     <#if imageExists>
                         <img src="/${portalName}/${imagePath}" alt="${imagePath}" style="max-width:100%"/><br/>
                         ${imagePath}
@@ -127,7 +118,7 @@
 
                 <#--<div class="clear"></div>-->
 
-                <div class="grid_4">
+                <div class="grid_7 omega">
                     <#if edit??>
                         <#if edit>
                             <div id="pageForm">
