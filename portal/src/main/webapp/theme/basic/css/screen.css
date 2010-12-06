@@ -6,6 +6,10 @@ body {
     color: #666666;
 }
 
+body#tinymce {
+    background: #fff;
+}
+
 a:link
 {
     color: #0071BC;
@@ -93,6 +97,7 @@ img#branding {
 }
 
 div#header {
+    /*background: #993300;*/
     background: #336699 url(../images/bg-gradient-blue.png) repeat-x 0 0;
     background: -moz-linear-gradient(100% 100% 90deg, #81aad0, #336699);
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#336699), to(#81aad0));
@@ -113,7 +118,7 @@ div#header h1 {
 /* USERBAR **********************************/
 
 #userBar {
-    background: #ff9900;
+    background: #f8ad40;
     color: #fff;
     text-align: right;
 }

@@ -26,7 +26,7 @@
  -->
 <#macro adminBlock>
     <#if user?? && (user.role == ('ROLE_ADMINISTRATOR') || user.role == ('ROLE_GOD'))>
-    <section id="adminBlock">
+    <section id="adminBlock" class="grid_12">
         <nav id="adminNav">
         <table class="user-options">
             <tbody>
@@ -116,18 +116,21 @@
                 <#include "language_select.ftl"/><@userBar/>
                 </div>
             </div>
-            <@adminBlock/>
+
             <div id="header">
                 <h1 class="gigantic">
                     ${portalDisplayName}
                 </h1>
             </div>
+
+             <@adminBlock/>
             <div id="search">
                 <@simpleSearch/>
                     <noscript>
                     <@spring.message '_portal.ui.message.noscript' />
                     </noscript>
             </div>
+
             <div class="clear"></div>
     </#if>
 </#macro>
@@ -988,6 +991,7 @@
  -->
 <#macro userBar>
 <ul>
+        <li><a id="home" href="/${portalName}/">Home<#-- todo add message tag --></a></li>
     <#if !user??>
         <li><a id="login" href="/${portalName}/login.html"><@spring.message '_mine.login'/></a></li>
         <li><a id="register" href="/${portalName}/register-request.html"><@spring.message '_mine.user.register.register'/></a></li>
@@ -1058,8 +1062,9 @@
     <option value="YEAR"><@spring.message '_metadata.dc.date' /></option>
     <#--<option value="COLLECTION"><@spring.message '_search.field.collection' /></option>-->
 </select>
+
 <form action="" method="GET" id="form-sort" style="display:none;">
-    <input type="hidden" name="query" value="${justTheQuery}"/>
+    <input type="hidden" name="query" value="${queryToSave?replace('query=','')}"/>
     <input type="hidden" name="start" value="${start}"/>
     <input type="hidden" name="view" value="${view}"/>
     <input type="hidden" name="sortBy" id="sortBy" value=""/>
