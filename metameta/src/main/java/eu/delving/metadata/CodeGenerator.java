@@ -32,27 +32,23 @@ import java.util.List;
 
 public class CodeGenerator {
 
-    public FieldMapping createFieldMapping(FieldDefinition fieldDefinition, List<SourceVariable> variables, String constantValue) {
-        FieldMapping fieldMapping = new FieldMapping(fieldDefinition);
-        if (variables.isEmpty()) {
-            fieldMapping.addCodeLine(String.format(
-                    "%s.%s '%s'",
-                    fieldDefinition.getPrefix(),
-                    fieldDefinition.getLocalName(),
-                    constantValue
-            ));
+    public void generateCodeFor(FieldMapping fieldMapping, List<SourceVariable> sourceVariables, String constantValue, boolean dictionaryPreferred) {
+        if (sourceVariables.isEmpty()) {
+            lineConstant(fieldMapping, constantValue);
         }
         else {
-            for (SourceVariable variable : variables) {
-                generateCopyCode(fieldMapping.fieldDefinition, variable.getNode(), fieldMapping);
+            for (SourceVariable variable : sourceVariables) {
+                copyCode(variable.getNode(), fieldMapping, dictionaryPreferred);
             }
         }
-        return fieldMapping;
     }
 
     public List<FieldMapping> createObviousMappings(List<FieldDefinition> unmappedFieldDefinitions, List<SourceVariable> variables) {
-        // todo: unique element -> id is also obvious
         List<FieldMapping> fieldMappings = new ArrayList<FieldMapping>();
+        FieldMapping uniqueMapping = createUniqueMapping(unmappedFieldDefinitions, variables);
+        if (uniqueMapping != null) {
+            fieldMappings.add(uniqueMapping);
+        }
         for (FieldDefinition fieldDefinition : unmappedFieldDefinitions) {
             if (fieldDefinition.validation != null && fieldDefinition.validation.factName != null) {
                 FieldMapping fieldMapping = createObviousMappingFromFact(fieldDefinition);
@@ -76,11 +72,27 @@ public class CodeGenerator {
         return fieldMappings;
     }
 
+    // ===================== the rest is private
+
+    private FieldMapping createUniqueMapping(List<FieldDefinition> unmappedFieldDefinitions, List<SourceVariable> variables) {
+        for (SourceVariable variable : variables) {
+            if (variable.getNode().isUniqueElement()) {
+                for (FieldDefinition definition : unmappedFieldDefinitions) {
+                    if (definition.validation != null && definition.validation.id) {
+                        FieldMapping fieldMapping = new FieldMapping(definition);
+                        lineSelectFirst(fieldMapping, variable.getVariableName());
+                    }
+                }
+            }
+        }
+        return null;  //To change body of created methods use File | Settings | File Templates.
+    }
+
     private FieldMapping createObviousMappingFromFact(FieldDefinition fieldDefinition) {
         FieldMapping fieldMapping = new FieldMapping(fieldDefinition);
         for (FactDefinition factDefinition : Facts.definitions()) {
             if (factDefinition.name.equals(fieldDefinition.validation.factName)) {
-                renderLineSimple(fieldDefinition, fieldMapping, factDefinition.name);
+                line(fieldMapping, factDefinition.name);
             }
         }
         return fieldMapping.code == null ? null : fieldMapping;
@@ -92,57 +104,48 @@ public class CodeGenerator {
             String variableName = variable.getVariableName();
             String fieldName = fieldDefinition.getFieldNameString();
             if (variableName.endsWith(fieldName)) {
-                generateCopyCode(fieldDefinition, variable.getNode(), fieldMapping);
+                copyCode(variable.getNode(), fieldMapping, false);
             }
         }
         return fieldMapping.code == null ? null : fieldMapping;
     }
 
-    private void generateCopyCode(FieldDefinition fieldDefinition, AnalysisTree.Node node, FieldMapping fieldMapping) {
+    private void copyCode(AnalysisTree.Node node, FieldMapping fieldMapping, boolean dictionaryPreferred) {
+        FieldDefinition fieldDefinition = fieldMapping.getFieldDefinition();
         if (fieldDefinition.validation != null && fieldDefinition.validation.multivalued) {
-            startEachBlock(fieldMapping, node.getVariableName());
-            renderLine(fieldDefinition, node, fieldMapping, "it");
+            each(fieldMapping, node.getVariableName());
+            codeLine(node, fieldMapping, "it", dictionaryPreferred);
             endBlock(fieldMapping);
         }
         else {
-            renderLine(fieldDefinition, node, fieldMapping, String.format("%s[0]", node.getVariableName()));
+            codeLine(node, fieldMapping, String.format("%s[0]", node.getVariableName()), dictionaryPreferred);
         }
     }
 
-    private void renderLine(FieldDefinition fieldDefinition, AnalysisTree.Node node, FieldMapping fieldMapping, String variable) {
+    private void codeLine(AnalysisTree.Node node, FieldMapping fieldMapping, String variable, boolean dictionaryPreferred) {
+        FieldDefinition fieldDefinition = fieldMapping.getFieldDefinition();
         if (fieldDefinition.validation != null && fieldDefinition.validation.converter != null) {
             if (fieldDefinition.validation.converter.multipleOutput) {
-                startForPartInConvert(fieldDefinition, fieldMapping, variable);
-                renderLineSimple(fieldDefinition, fieldMapping, "part");
+                forPartIn(fieldMapping, variable);
+                line(fieldMapping, "part");
                 endBlock(fieldMapping);
             }
             else {
-                renderLineSelect(fieldDefinition, fieldMapping, variable);
+                lineSelectFirst(fieldMapping, variable);
             }
         }
         else {
-            if (Dictionary.isPossible(fieldDefinition, node)) { // todo: should be only when user chooses
-                renderDictionaryLine(fieldDefinition, fieldMapping, node, variable);
+            if (Dictionary.isPossible(fieldDefinition, node) && dictionaryPreferred) {
+                dictionaryCall(fieldMapping, node, variable);
             }
             else {
-                renderLineSimple(fieldDefinition, fieldMapping, variable);
+                line(fieldMapping, variable);
             }
         }
     }
 
-    private void startForPartInConvert(FieldDefinition fieldDefinition, FieldMapping fieldMapping, String variable) {
-        fieldMapping.addCodeLine(
-                String.format(
-                        "for (part in %s) {",
-                        String.format(
-                                fieldDefinition.validation.converter.pattern,
-                                variable
-                        )
-                )
-        );
-    }
-
-    private void renderLineSelect(FieldDefinition fieldDefinition, FieldMapping fieldMapping, String variable) {
+    private void lineSelectFirst(FieldMapping fieldMapping, String variable) {
+        FieldDefinition fieldDefinition = fieldMapping.getFieldDefinition();
         if (fieldDefinition.validation.converter.pattern != null) {
             variable = String.format(fieldDefinition.validation.converter.pattern, variable);
         }
@@ -156,7 +159,52 @@ public class CodeGenerator {
         );
     }
 
-    private void renderDictionaryLine(FieldDefinition fieldDefinition, FieldMapping fieldMapping, AnalysisTree.Node node, String variable) {
+    private void each(FieldMapping fieldMapping, String variable) {
+        fieldMapping.addCodeLine(String.format("%s.each {", variable));
+    }
+
+    private void forPartIn(FieldMapping fieldMapping, String variable) {
+        FieldDefinition fieldDefinition = fieldMapping.getFieldDefinition();
+        fieldMapping.addCodeLine(
+                String.format(
+                        "for (part in %s) {",
+                        String.format(
+                                fieldDefinition.validation.converter.pattern,
+                                variable
+                        )
+                )
+        );
+    }
+
+    private void endBlock(FieldMapping fieldMapping) {
+        fieldMapping.addCodeLine("}");
+    }
+
+    private void lineConstant(FieldMapping fieldMapping, String constantValue) {
+        FieldDefinition fieldDefinition = fieldMapping.getFieldDefinition();
+        fieldMapping.addCodeLine(String.format(
+                "%s.%s '%s'",
+                fieldDefinition.getPrefix(),
+                fieldDefinition.getLocalName(),
+                constantValue
+        ));
+    }
+
+
+    private void line(FieldMapping fieldMapping, String variable) {
+        FieldDefinition fieldDefinition = fieldMapping.getFieldDefinition();
+        fieldMapping.addCodeLine(
+                String.format(
+                        "%s.%s %s",
+                        fieldDefinition.getPrefix(),
+                        fieldDefinition.getLocalName(),
+                        variable
+                )
+        );
+    }
+
+    private void dictionaryCall(FieldMapping fieldMapping, AnalysisTree.Node node, String variable) {
+        FieldDefinition fieldDefinition = fieldMapping.getFieldDefinition();
         fieldMapping.createValueMap(node.getStatistics().getHistogramValues());
         fieldMapping.addCodeLine(
                 String.format(
@@ -169,22 +217,4 @@ public class CodeGenerator {
         );
     }
 
-    private void renderLineSimple(FieldDefinition fieldDefinition, FieldMapping fieldMapping, String variable) {
-        fieldMapping.addCodeLine(
-                String.format(
-                        "%s.%s %s",
-                        fieldDefinition.getPrefix(),
-                        fieldDefinition.getLocalName(),
-                        variable
-                )
-        );
-    }
-
-    private void startEachBlock(FieldMapping fieldMapping, String variable) {
-        fieldMapping.addCodeLine(String.format("%s.each {", variable));
-    }
-
-    private void endBlock(FieldMapping fieldMapping) {
-        fieldMapping.addCodeLine("}");
-    }
 }

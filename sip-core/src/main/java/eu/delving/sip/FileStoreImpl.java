@@ -398,6 +398,18 @@ public class FileStoreImpl implements FileStore {
         }
 
         @Override
+        public List<String> getMappingPrefixes() {
+            List<String> prefixes = new ArrayList<String>();
+            for (File mappingFile : getMappingFiles()) {
+                String name = Hasher.getName(mappingFile);
+                name = name.substring(FileStore.MAPPING_FILE_PREFIX.length());
+                name = name.substring(0, name.length() - FileStore.MAPPING_FILE_SUFFIX.length());
+                prefixes.add(name);
+            }
+            return prefixes;
+        }
+
+        @Override
         public String toString() {
             return getSpec();
         }

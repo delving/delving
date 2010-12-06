@@ -184,7 +184,7 @@ public class SipModel {
         return String.format("http://%s:8983/services/dataset",appConfig.getServerHost());
     }
 
-    public String getServerAccessKey() {
+    public String getAccessKey() {
         return appConfig.getAccessKey();
     }
 

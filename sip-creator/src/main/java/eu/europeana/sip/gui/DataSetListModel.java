@@ -22,9 +22,9 @@
 package eu.europeana.sip.gui;
 
 import eu.delving.sip.DataSetInfo;
+import eu.delving.sip.DataSetState;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
-import eu.delving.sip.Hasher;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
@@ -35,7 +35,6 @@ import javax.swing.ListCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -120,25 +119,80 @@ public class DataSetListModel extends AbstractListModel {
                             spec
                     )
             );
+            if (dataSetStore != null && dataSetInfo != null) {
+                html.append("<p>Data Set is present in the repository as well as in the local file store.</p>");
+            }
+            else if (dataSetStore != null) {
+                html.append("<p>Data Set is in the local file store but not in the repository.</p>");
+            }
+            else if (dataSetInfo != null) {
+                html.append("<p>Data Set is present only in the repository, and not in the local file store.</p>");
+            }
+
             if (dataSetStore != null) {
-                html.append("<p>Present in the local file store</p>");
-                if (dataSetStore.hasSource()) {
-                    for (File mappingFile : dataSetStore.getMappingFiles()) {
-                        String name = Hasher.getName(mappingFile);
-                        name = name.substring(FileStore.MAPPING_FILE_PREFIX.length());
-                        name = name.substring(0, name.length() - FileStore.MAPPING_FILE_SUFFIX.length());
-                        html.append(String.format("<p>Has mapping for '%s'</p>",name));
-                    }
+                List<String> mappingPrefixes = dataSetStore.getMappingPrefixes();
+                switch (mappingPrefixes.size()) {
+                    case 0:
+                        break;
+                    case 1:
+                        html.append(String.format(
+                                "<p>There is a mapping created for <strong>%s</strong>.</p>",
+                                mappingPrefixes.get(0)
+                        ));
+                        break;
+                    case 2:
+                        html.append(String.format(
+                                "<p>There are mappings created for <strong>%s</strong> and <strong>%s</strong>.</p>",
+                                mappingPrefixes.get(0),
+                                mappingPrefixes.get(1)
+                        ));
+                        break;
+                    default:
+                        html.append(String.format(
+                                "<p>There are mappings created for all of <strong>%s</strong>.</p>",
+                                mappingPrefixes
+                        ));
+                        break;
                 }
             }
             if (dataSetInfo != null) {
-                html.append("<p>Present in the server</p>");
-                html.append(String.format(
-                        "<p>State '%s', with %d indexed of %d</p>",
-                        dataSetInfo.state,
-                        dataSetInfo.recordsIndexed,
-                        dataSetInfo.recordCount
-                ));
+                DataSetState state = DataSetState.valueOf(dataSetInfo.state);
+                switch (state) {
+                    case DISABLED:
+                        html.append("<p>Data Set is disabled, and it can be indexed.</p>");
+                        break;
+                    case EMPTY:
+                        html.append(String.format(
+                                "<p>Data Set is being uploaded.  So far %d records.</p>",
+                                dataSetInfo.recordCount
+                        ));
+                        break;
+                    case ENABLED:
+                        html.append(String.format(
+                                "<p>Data set is enabled, with %d records indexed of the total %d.</p>",
+                                dataSetInfo.recordsIndexed,
+                                dataSetInfo.recordCount
+                        ));
+                        break;
+                    case ERROR:
+                        html.append("<p>Data set is in <strong>error</strong>. Indexing can be retried.</p>");
+                        break;
+                    case INDEXING:
+                        html.append(String.format(
+                                "<p>Data set is busy indexing, with %d records indexed so far of %d.</p>",
+                                dataSetInfo.recordsIndexed,
+                                dataSetInfo.recordCount
+                        ));
+                        break;
+                    case QUEUED:
+                        html.append("<p>Data set is queued for indexing, which should start shortly.</p>");
+                        break;
+                    case UPLOADED:
+                        html.append("<p>Data Set is fully uploaded, and it can now be indexed.</p>");
+                        break;
+                    default:
+                        throw new RuntimeException();
+                }
             }
             html.append("</td></table></html>");
             return html.toString();

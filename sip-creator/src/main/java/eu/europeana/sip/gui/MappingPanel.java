@@ -70,7 +70,6 @@ public class MappingPanel extends JPanel {
     private static final String CREATE_FOR = "Create mapping for '%s'";
     private static final Dimension PREFERRED_SIZE = new Dimension(300, 700);
     private SipModel sipModel;
-    private CodeGenerator codeGenerator = new CodeGenerator();
     private JTextField constantField = new JTextField("?");
     private JButton createMappingButton = new JButton(String.format(CREATE_FOR, "?"));
     private ObviousMappingDialog obviousMappingDialog;
@@ -199,7 +198,10 @@ public class MappingPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 FieldDefinition fieldDefinition = (FieldDefinition) fieldList.getSelectedValue();
                 if (fieldDefinition != null) {
-                    sipModel.addFieldMapping(codeGenerator.createFieldMapping(fieldDefinition, createSelectedVariableList(), constantField.getText()));
+                    CodeGenerator generator = new CodeGenerator();
+                    FieldMapping fieldMapping = new FieldMapping(fieldDefinition);
+                    generator.generateCodeFor(fieldMapping, createSelectedVariableList(), constantField.getText(), false);
+                    sipModel.addFieldMapping(fieldMapping);
                 }
                 variablesList.clearSelection();
                 fieldList.clearSelection();
@@ -307,6 +309,7 @@ public class MappingPanel extends JPanel {
                     createMappingButton.setText(CREATE);
                     createMappingButton.setEnabled(false);
                 }
+                CodeGenerator codeGenerator = new CodeGenerator();
                 List<FieldMapping> obvious = codeGenerator.createObviousMappings(sipModel.getUnmappedFields(), sipModel.getVariables());
                 if (obvious.isEmpty()) {
                     obviousMappingDialog = null;
