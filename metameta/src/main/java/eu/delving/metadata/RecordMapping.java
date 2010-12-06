@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -123,6 +124,12 @@ public class RecordMapping {
                 throw new MetadataException("Field definition not found for " + path);
             }
             entry.getValue().fieldDefinition = fieldDefinition;
+        }
+    }
+
+    public void apply(List<Statistics> statisticsList) {
+        for (Map.Entry<String, FieldMapping> entry : fieldMappings.entrySet()) {
+            Path path = new Path(entry.getKey());
         }
     }
 

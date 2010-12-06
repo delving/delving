@@ -39,7 +39,7 @@ public class TestFieldMapping {
     public void extractVariables() {
         FieldMapping fm = new FieldMapping(null);
         fm.setCode("whatever code contains a variable like input.something.something should reveal that");
-        List<String> vars = fm.getVariables();
+        List<String> vars = fm.getVariableNames();
         assertEquals(1, vars.size());
         assertEquals("input.something.something", vars.get(0));
     }
@@ -48,7 +48,7 @@ public class TestFieldMapping {
     public void extractMultiple() {
         FieldMapping fm = new FieldMapping(null);
         fm.setCode("suppose \ninput.something.something were to appear on the same line as input.somethingelse,\n kind of");
-        List<String> vars = fm.getVariables();
+        List<String> vars = fm.getVariableNames();
         assertEquals(2, vars.size());
         assertEquals("input.something.something", vars.get(0));
         assertEquals("input.somethingelse", vars.get(1));
@@ -58,7 +58,7 @@ public class TestFieldMapping {
     public void strangeCharacters() {
         FieldMapping fm = new FieldMapping(null);
         fm.setCode("did you know that accents were possible? \ninput.strange."+ Sanitizer.tagToVariable("ANN\u00C8E_DE_D\u00C8BUT_DE_FABRICATION")+" is a legit var name");
-        List<String> vars = fm.getVariables();
+        List<String> vars = fm.getVariableNames();
         assertEquals(1, vars.size());
         assertEquals("input.strange.ANNEE_DE_DEBUT_DE_FABRICATION", vars.get(0));
     }

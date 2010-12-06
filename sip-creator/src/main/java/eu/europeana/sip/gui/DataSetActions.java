@@ -308,7 +308,7 @@ public class DataSetActions {
             this.sipModel = sipModel;
             JTabbedPane tabs = new JTabbedPane();
             tabs.addTab("Mapping", new MappingPanel(sipModel));
-            tabs.addTab("Refinement", new RefinementPanel(sipModel));
+            tabs.addTab("Refinement", new RefinementPanel(frame, sipModel));
             tabs.addTab("Normalization", new NormalizationPanel(sipModel));
             getContentPane().add(tabs, BorderLayout.CENTER);
             getContentPane().add(createFinishedPanel(this), BorderLayout.SOUTH);

@@ -107,7 +107,7 @@ public class VariableListModel extends AbstractListModel {
                 for (SourceVariable uncountedHolder : variableList) {
                     SourceVariable sourceVariable = new SourceVariable(uncountedHolder.getNode());
                     for (FieldMapping fieldMapping : mappingModel.getRecordMapping().getFieldMappings()) {
-                        for (String variable : fieldMapping.getVariables()) {
+                        for (String variable : fieldMapping.getVariableNames()) {
                             sourceVariable.checkIfMapped(variable);
                         }
                     }

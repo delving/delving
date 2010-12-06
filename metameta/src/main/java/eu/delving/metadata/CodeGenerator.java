@@ -32,7 +32,15 @@ import java.util.List;
 
 public class CodeGenerator {
 
+
+    public void generateCodeFor(FieldMapping fieldMapping, SourceVariable sourceVariable, String constantValue, boolean dictionaryPreferred) {
+        List<SourceVariable> sourceVariables = new ArrayList<SourceVariable>();
+        sourceVariables.add(sourceVariable);
+        generateCodeFor(fieldMapping, sourceVariables, constantValue, dictionaryPreferred);
+    }
+
     public void generateCodeFor(FieldMapping fieldMapping, List<SourceVariable> sourceVariables, String constantValue, boolean dictionaryPreferred) {
+        fieldMapping.clearCode();
         if (sourceVariables.isEmpty()) {
             lineConstant(fieldMapping, constantValue);
         }
@@ -205,7 +213,7 @@ public class CodeGenerator {
 
     private void dictionaryCall(FieldMapping fieldMapping, AnalysisTree.Node node, String variable) {
         FieldDefinition fieldDefinition = fieldMapping.getFieldDefinition();
-        fieldMapping.createValueMap(node.getStatistics().getHistogramValues());
+        fieldMapping.createDictionary(node.getStatistics().getHistogramValues());
         fieldMapping.addCodeLine(
                 String.format(
                         "%s.%s %s(%s)",

@@ -45,6 +45,10 @@ public class FieldMapping implements Comparable<FieldMapping> {
         return fieldDefinition;
     }
 
+    public void clearCode() {
+        code = null;
+    }
+
     public void addCodeLine(String line) {
         if (code == null) {
             code = new ArrayList<String>();
@@ -53,14 +57,14 @@ public class FieldMapping implements Comparable<FieldMapping> {
         variables = null;
     }
 
-    public void createValueMap(Set<String> domainValues) {
+    public void createDictionary(Set<String> domainValues) {
         this.dictionary = new TreeMap<String,String>();
         for (String key : domainValues) {
             this.dictionary.put(key,"");
         }
     }
 
-    public List<String> getVariables() {
+    public List<String> getVariableNames() {
         if (variables == null) {
             variables = new ArrayList<String>();
             for (String line : code) {
@@ -108,15 +112,15 @@ public class FieldMapping implements Comparable<FieldMapping> {
 
     public String getDescription() {
         String fieldName = fieldDefinition == null ? "?" : fieldDefinition.getFieldNameString();
-        if (getVariables().isEmpty()) {
+        if (getVariableNames().isEmpty()) {
             return fieldName;
         }
         else {
-            return fieldName + " from " + getVariables();
+            return fieldName + " from " + getVariableNames();
         }
     }
 
-    private static final Pattern VARIABLE_PATTERN = Pattern.compile("input(\\.\\w+)+");
+    private static final Pattern VARIABLE_PATTERN = Pattern.compile("input(\\.\\w+)+"); // todo: doesn't catch facts
     private static final String [] TO_REMOVE = {
             ".each",
             ".split"
