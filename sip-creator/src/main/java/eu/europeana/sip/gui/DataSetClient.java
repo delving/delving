@@ -5,7 +5,6 @@ import eu.delving.sip.DataSetCommand;
 import eu.delving.sip.DataSetInfo;
 import eu.delving.sip.DataSetResponse;
 import eu.delving.sip.DataSetResponseCode;
-import eu.delving.sip.DataSetState;
 import eu.delving.sip.FileType;
 import eu.delving.sip.Hasher;
 import eu.delving.sip.ProgressListener;
@@ -104,16 +103,16 @@ public class DataSetClient {
                     });
                 }
                 else {
+                    periodicListFetchTimer.stop();
                     notifyUser(response.getResponseCode());
                 }
             }
             catch (final Exception e) {
                 periodicListFetchTimer.stop();
-
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        sipModel.getUserNotifier().tellUser("Access to list failed with this key", e);
+                        sipModel.getUserNotifier().tellUser("Disconnected from Repository", e);
                         listener.disconnected();
                     }
                 });
@@ -134,7 +133,7 @@ public class DataSetClient {
         public void run() {
             try {
                 String url = String.format(
-                        "%s/%s/%s&accessKey=%s",
+                        "%s/%s/%s?accessKey=%s",
                         sipModel.getServerUrl(),
                         spec,
                         command,
@@ -322,6 +321,7 @@ public class DataSetClient {
     }
 
     private DataSetResponse execute(HttpGet httpGet) throws IOException {
+        log.info("GET: " + httpGet.getURI());
         HttpClient httpClient = new DefaultHttpClient();
         try {
             return translate(httpClient.execute(httpGet));
@@ -332,6 +332,7 @@ public class DataSetClient {
     }
 
     private DataSetResponse execute(HttpPost httpPost) throws IOException {
+        log.info("POST: " + httpPost.getURI());
         HttpClient httpClient = new DefaultHttpClient();
         try {
             return translate(httpClient.execute(httpPost));
@@ -342,30 +343,14 @@ public class DataSetClient {
     }
 
     private DataSetResponse translate(HttpResponse httpResponse) throws IOException {
-        if (httpResponse.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+        if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             HttpEntity entity = httpResponse.getEntity();
             DataSetResponse response = (DataSetResponse) xstream().fromXML(entity.getContent());
             entity.consumeContent();
             return response;
         }
         else {
-            throw new IOException("Response not OK");
-        }
-    }
-
-    public boolean enableAction(DataSetInfo info) {
-        switch (DataSetState.valueOf(info.state)) {
-            case INDEXING:
-            case ENABLED:
-            case QUEUED:
-                return false;
-            case EMPTY:
-            case UPLOADED:
-            case DISABLED:
-            case ERROR:
-                return true;
-            default:
-                throw new RuntimeException();
+            throw new IOException("Response not OK: " + httpResponse.getStatusLine());
         }
     }
 
@@ -384,23 +369,30 @@ public class DataSetClient {
         notifyUser(response.getResponseCode());
     }
 
-    private void notifyUser(DataSetResponseCode responseCode) {
+    private void notifyUser(final DataSetResponseCode responseCode) {
         switch (responseCode) {
             case THANK_YOU:
-                break;
             case GOT_IT_ALREADY:
-                break;
             case READY_TO_RECEIVE:
+                log.info("Received "+responseCode);
                 break;
             case ACCESS_KEY_FAILURE:
+                sipModel.getUserNotifier().tellUser("The Access Key is not correct for this Repository");
+                break;
+            case STATE_CHANGE_FAILURE:
+                sipModel.getUserNotifier().tellUser("Could not execute state change"); // todo
                 break;
             case DATA_SET_NOT_FOUND:
+                sipModel.getUserNotifier().tellUser("The Data Set was not found in the Repository");
                 break;
             case NEWORK_ERROR:
+                sipModel.getUserNotifier().tellUser("There was a network error while communicating with the Repository");
                 break;
             case SYSTEM_ERROR:
+                sipModel.getUserNotifier().tellUser("Sorry, there was a system error in the Repository");
                 break;
             case UNKNOWN_RESPONSE:
+                log.error(responseCode.toString());
                 break;
             default:
                 break;

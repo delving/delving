@@ -86,6 +86,8 @@ public interface FileStore {
         File getSourceFile();
 
         Collection<File> getMappingFiles();
+
+        List<String> getMappingPrefixes();
     }
 
     public interface MappingOutput {

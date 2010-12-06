@@ -313,17 +313,18 @@ public class DataSetController {
                             dataSet.setRecordsIndexed(0);
                             dataSet.save();
                             deleteFromSolr(dataSet);
-                            return view(DataSetResponseCode.THANK_YOU);
+                            return view(dataSet);
                         default :
                             return view(DataSetResponseCode.STATE_CHANGE_FAILURE);
                     }
                 case INDEX:
                     switch (dataSet.getState()) {
                         case EMPTY: // todo: make sure the data set goes to upload
+                        case DISABLED:
                         case UPLOADED:
                             dataSet.setState(DataSetState.QUEUED);
                             dataSet.save();
-                            return view(DataSetResponseCode.THANK_YOU);
+                            return view(dataSet);
                         default :
                             return view(DataSetResponseCode.STATE_CHANGE_FAILURE);
                     }
@@ -333,7 +334,7 @@ public class DataSetController {
                             dataSet.setRecordsIndexed(0);
                             dataSet.setState(DataSetState.QUEUED);
                             dataSet.save();
-                            return view(DataSetResponseCode.THANK_YOU);
+                            return view(dataSet);
                         default :
                             return view(DataSetResponseCode.STATE_CHANGE_FAILURE);
                     }
