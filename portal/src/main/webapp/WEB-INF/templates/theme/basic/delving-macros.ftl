@@ -1062,9 +1062,8 @@
     <option value="YEAR"><@spring.message '_metadata.dc.date' /></option>
     <#--<option value="COLLECTION"><@spring.message '_search.field.collection' /></option>-->
 </select>
-
 <form action="" method="GET" id="form-sort" style="display:none;">
-    <input type="hidden" name="query" value="${queryToSave?replace('query=','')}"/>
+    <input type="hidden" name="query" value="${justTheQuery}"/>
     <input type="hidden" name="start" value="${start}"/>
     <input type="hidden" name="view" value="${view}"/>
     <input type="hidden" name="sortBy" id="sortBy" value=""/>
