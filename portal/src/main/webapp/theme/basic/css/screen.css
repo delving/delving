@@ -187,8 +187,12 @@ td .ui-icon {
     background:none repeat scroll 0 0 transparent;
 }
 
-#nav_query_breadcrumbs h4 {
+#nav_query_breadcrumbs {
     margin: 0;
+    font-size: 1.25em;
+    line-height: 35px;
+    padding: 0 0 0 8px;
+
 }
 
 /* RESULT COUNT *******************************/
@@ -336,7 +340,7 @@ h4.active:hover {
 }
 
 .facets_container {
-    background: ivory;
+    background: #fffff0;
 	margin: 0;
 	padding: 5px 0;
 	/*overflow: hidden;*/
@@ -529,10 +533,10 @@ dl.info-box {
 
 dl.info-box dt, h3.header {
 	background: #336699 url(../images/bg-gradients-50.png) repeat-x 0 0;
-	background: -moz-linear-gradient(100% 100% 90deg, #6699cc, #336699);
-  	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#336699), to(#6699cc));
-	height: 40px;
-	line-height: 40px;
+	/*background: -moz-linear-gradient(100% 100% 90deg, #6699cc, #336699);*/
+  	/*background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#336699), to(#6699cc));*/
+	height: 35px;
+	line-height: 35px;
 	color: #fff;
 	font-weight: normal;
 	font-size: 1.25em;
@@ -575,6 +579,11 @@ dl.info-box .blue {
   	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#6699cc), to(#336699));
 }
 
+dl.info-box .light-blue,
+h3.header.light-blue {
+    background: #A1D3F8;
+}
+
 dl.info-box .green {
 	background: #669933 url(../images/gradients-sprite.png) repeat-x 0 -50px;
 	background: -moz-linear-gradient(100% 100% 90deg, #336600, #669933);
@@ -598,7 +607,8 @@ dl.info-box .orange {
   	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ff9900), to(#ff6633));
 }
 
-dl.info-box .brown {
+dl.info-box .brown,
+h3.header.brown {
 	background: #cc6600 url(../images/gradients-sprite.png) repeat-x 0 -250px;
 	background: -moz-linear-gradient(100% 100% 90deg, #cc6600, #554433);
   	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#554433), to(#cc6600));
@@ -609,6 +619,48 @@ dl.info-box .black {
 	background: -moz-linear-gradient(100% 100% 90deg, #333, #666);
   	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#333));
 }
+
+h3.header.facets {
+    background: #996633;
+}
+h3.header.actions {
+    background: #554433;
+}
+
+/* definition lists */
+
+dl.menu {
+    
+}
+dl.menu dt {
+    /*background: #bbbbb0;*/
+    border-bottom: 1px solid #666666;
+	height: 35px;
+	line-height: 35px;
+	/*color: #fff;*/
+	font-weight: normal;
+	font-size: 1.25em;
+	text-align: left;
+	margin: 0;
+    padding: 0 0 0 4px;
+	/*-webkit-border-radius:  5px 5px 0 0;*/
+	/*-moz-border-radius:  5px 5px 0 0;*/
+	/*border-radius: 5px 5px 0 0;*/
+    /*text-shadow: 1px 1px 0 #000;*/
+}
+dl.menu dd {
+    border-bottom: 1px solid #ccc;
+    padding: 4px 0 4px 4px;
+}
+dl.menu dd.container {
+    border-bottom: none;
+    padding: 0;
+}
+dl.menu dd img {
+    float: left;
+    margin: 0 .25em .25em 0;
+}
+
 
 
 /* SORTABLE TABLE */

@@ -177,14 +177,13 @@
         <!-- AddThis Button END -->
         <script type="text/javascript">
         var addthis_config = {
-             ui_language: "no",
+            ui_language: "${locale}",
             ui_click: true,
-            ui_cobrand: "Norvegiana",
+            ui_cobrand: "Delving",
             ui_header_color: "#ffffff",
-            ui_header_background:"#0071BC"
+            ui_header_background:"#336699"
         }
         </script>
-        <br/>
 
 </#macro>
 
@@ -685,20 +684,32 @@
 <#macro resultsBriefUserActions>
 <#assign seq = briefDocs/>
     <#if seq?size &gt; 0>
-        <h4><@spring.message '_portal.ui.message.actions'/>:</h4>
-            <#-- TODO: use a hidden form instead of hrefs to function without javascript? --> 
-            <p class="linetop">
+        <#--<h3 class="header actions"><@spring.message '_portal.ui.message.actions'/>:</h3>-->
+            <#--&lt;#&ndash; TODO: use a hidden form instead of hrefs to function without javascript? &ndash;&gt; -->
+            <#--<p class="linetop">-->
+                <#--<#if user??>-->
+                    <#--<a id="saveQuery" href="#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message '_action.save.this.search'/></a>-->
+                <#--<#else>-->
+                    <#--<a href="#" onclick="highLight('a#login'); writeMessage('div#msg-save-search','<@spring.message '_mine.user.notification.login.required'/>'); return false" class="disabled"><@spring.message '_action.save.this.search'/></a>-->
+                <#--</#if>-->
+            <#--</p>-->
+            <#--<div id="msg-save-search" class="msg-hide"></div>-->
+        <dl class="menu">
+            <dt><@spring.message '_portal.ui.message.actions'/></dt>
+            <dd>
                 <#if user??>
                     <a id="saveQuery" href="#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message '_action.save.this.search'/></a>
                 <#else>
                     <a href="#" onclick="highLight('a#login'); writeMessage('div#msg-save-search','<@spring.message '_mine.user.notification.login.required'/>'); return false" class="disabled"><@spring.message '_action.save.this.search'/></a>
                 </#if>
-            </p>
-            <div id="msg-save-search" class="msg-hide"></div>
+            </dd>
+        </dl>
+        <div id="msg-save-search" class="msg-hide"></div>
     </#if>
 </#macro>
 
 <#macro resultsFullQueryBreadcrumbs>
+
     <#if pagination??>
         <@spring.message '_portal.ui.navigation.matchesfor' />:
             <#if !query?starts_with("europeana_uri:")>
@@ -1062,6 +1073,7 @@
     <input type="hidden" name="query" value="${justTheQuery}"/>
     <input type="hidden" name="start" value="${start}"/>
     <input type="hidden" name="view" value="${view}"/>
+ 
     <input type="hidden" name="sortBy" id="sortBy" value=""/>
 </form>
 </#macro>

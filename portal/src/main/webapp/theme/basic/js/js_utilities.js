@@ -158,13 +158,13 @@ $(document).ready(function() {
     if($("a#login")){
         $("a#login").click(function(){
             takeMeBack();
-            $("div#overlayContainer").dialog({
-                modal: true,
-                width: 350
-            });
-            $("div#overlayContainer").load("login.html?contentOnly=true");
-            
-            return false;
+//            $("div#overlayContainer").dialog({
+//                modal: true,
+//                width: 350
+//            });
+//            $("div#overlayContainer").load("login.html?contentOnly=true");
+//
+//            return false;
         })
     }
     if($("a#logout")){

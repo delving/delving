@@ -5,15 +5,7 @@
 
 <@addHeader "${portalDisplayName}", "",[],[]/>
 
-<div class="centered">
-    <div class="grid_12" id="branding">
-        <h1 class="gigantic">
-            <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="${portalDisplayName}" align="absmiddle"/>${portalDisplayName}
-        </h1>
-    </div>
-
-
-<section role="main" class="grid_4 prefix_4">
+<section role="main" class="grid_5 prefix_4">
 
 <h2>
     <@spring.message '_mine.forgotpassword' />
@@ -47,6 +39,5 @@
 
 </section>
 
-</div>
 <@addFooter/>
 
