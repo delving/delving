@@ -185,16 +185,16 @@ public class RecordMapping {
                         escapeApostrophe(factEntry.getValue())
                 ));
             }
-            out.line("\n// Value Maps\n");
+            out.line("\n// Dictionaries\n");
             for (Map.Entry<String, FieldMapping> fieldMappingEntry : fieldMappings.entrySet()) {
-                if (fieldMappingEntry.getValue().valueMap != null) {
+                if (fieldMappingEntry.getValue().dictionary != null) {
                     String path = mungePath(fieldMappingEntry.getKey());
                     out.line(String.format(
-                            "def %sMap = [\n",
+                            "def %sDictionary = [\n",
                             path
                     ));
                     out.indent(1);
-                    for (Map.Entry<String, String> entry : fieldMappingEntry.getValue().valueMap.entrySet()) {
+                    for (Map.Entry<String, String> entry : fieldMappingEntry.getValue().dictionary.entrySet()) {
                         out.line(String.format(
                                 "'%s':'%s',",
                                 escapeApostrophe(entry.getKey()),
@@ -204,7 +204,7 @@ public class RecordMapping {
                     out.indent(-1);
                     out.line("]");
                     out.line(String.format(
-                            "def %s = { def v = %sMap[it.toString()]; return v ? v : it }\n",
+                            "def %s = { def v = %sDictionary[it.toString()]; return v ? v : it }\n",
                             path,
                             path
                     ));

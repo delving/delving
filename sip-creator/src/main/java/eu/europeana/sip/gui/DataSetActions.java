@@ -21,14 +21,13 @@
 
 package eu.europeana.sip.gui;
 
+import eu.delving.sip.DataSetCommand;
 import eu.delving.sip.DataSetInfo;
-import eu.delving.sip.DataSetResponse;
 import eu.delving.sip.DataSetState;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.FileType;
 import eu.delving.sip.ProgressListener;
-import eu.europeana.sip.model.FileUploader;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.AbstractAction;
@@ -64,14 +63,14 @@ public class DataSetActions {
     private AnalysisFactsFrame analysisFactsFrame;
     private MappingFrame mappingFrame;
     private SipModel sipModel;
-    private MetaRepoClient metaRepoClient;
+    private DataSetClient dataSetClient;
     private DataSetListModel.Entry entry;
     private List<DataSetAction> actions = new ArrayList<DataSetAction>();
 
-    public DataSetActions(JFrame frame, SipModel sipModel, MetaRepoClient metaRepoClient) {
+    public DataSetActions(JFrame frame, SipModel sipModel, DataSetClient dataSetClient) {
         this.frame = frame;
         this.sipModel = sipModel;
-        this.metaRepoClient = metaRepoClient;
+        this.dataSetClient = dataSetClient;
         this.analysisFactsFrame = new AnalysisFactsFrame(sipModel);
         this.mappingFrame = new MappingFrame(sipModel);
         actions.add(createAnalyzeFactsAction());
@@ -79,8 +78,9 @@ public class DataSetActions {
             actions.add(createEditMappingAction(metadataPrefix));
         }
         actions.add(createUploadAction());
-        actions.add(createEnableAction());
-        actions.add(createDisableAction());
+        for (DataSetCommand command : DataSetCommand.values()) {
+            actions.add(createCommandAction(command));
+        }
     }
 
     public List<Action> getActions() {
@@ -170,43 +170,27 @@ public class DataSetActions {
                 sipModel.setDataSetStore(entry.getDataSetStore());
                 ProgressMonitor progressMonitor = new ProgressMonitor(frame, "Uploading", "Uploading files for " + store.getSpec(), 0, 100);
                 final ProgressListener progressListener = new ProgressListener.Adapter(progressMonitor, this);
-                metaRepoClient.uploadFile(FileType.FACTS, store.getFactsFile(), progressListener, new FileUploader.Receiver() {
+                dataSetClient.uploadFile(FileType.FACTS, store.getFactsFile(), progressListener, new Runnable() {
                     @Override
-                    public void acceptResponse(DataSetResponse dataSetResponse) {
-                        switch (dataSetResponse) {
-                            case THANK_YOU:
-                            case GOT_IT_ALREADY:
-                                metaRepoClient.uploadFile(FileType.SOURCE, store.getSourceFile(), progressListener, new FileUploader.Receiver() {
-                                    @Override
-                                    public void acceptResponse(DataSetResponse dataSetResponse) {
-                                        switch (dataSetResponse) {
-                                            case THANK_YOU:
-                                            case GOT_IT_ALREADY:
-                                                Collection<File> mappingFiles = store.getMappingFiles();
-                                                if (!mappingFiles.isEmpty()) {
-                                                    if (mappingFiles.size() > 1) {
-                                                        throw new RuntimeException("Not yet ready for multiple mappings");
-                                                    }
-                                                    File mappingFile = mappingFiles.iterator().next();
-                                                    metaRepoClient.uploadFile(FileType.MAPPING, mappingFile, progressListener, new FileUploader.Receiver() {
-                                                        @Override
-                                                        public void acceptResponse(DataSetResponse dataSetResponse) {
-                                                            // todo: done
-                                                        }
-                                                    });
-                                                }
-                                                break;
-                                            default:
-                                                sipModel.getUserNotifier().tellUser("Response: " + dataSetResponse); // todo
-                                                break;
-                                        }
+                    public void run() {
+                        dataSetClient.uploadFile(FileType.SOURCE, store.getSourceFile(), progressListener, new Runnable() {
+                            @Override
+                            public void run() {
+                                Collection<File> mappingFiles = store.getMappingFiles();
+                                if (!mappingFiles.isEmpty()) {
+                                    if (mappingFiles.size() > 1) {
+                                        throw new RuntimeException("Not yet ready for multiple mappings");
                                     }
-                                });
-                                break;
-                            default:
-                                sipModel.getUserNotifier().tellUser("Response: " + dataSetResponse); // todo
-                                break;
-                        }
+                                    File mappingFile = mappingFiles.iterator().next();
+                                    dataSetClient.uploadFile(FileType.MAPPING, mappingFile, progressListener, new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            // todo: implement
+                                        }
+                                    });
+                                }
+                            }
+                        });
                     }
                 });
             }
@@ -218,12 +202,12 @@ public class DataSetActions {
         };
     }
 
-    private DataSetAction createEnableAction() {
-        return new DataSetAction("Enable") {
+    private DataSetAction createCommandAction(final DataSetCommand command) {
+        return new DataSetAction(getCommandName(command)) {
 
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                metaRepoClient.setEnabled(entry.getDataSetInfo().spec, true);
+                dataSetClient.sendCommand(entry.getDataSetInfo().spec, command);
             }
 
             @Override
@@ -233,15 +217,45 @@ public class DataSetActions {
                     return false;
                 }
                 else switch (DataSetState.valueOf(info.state)) {
-                    case INDEXING:
-                    case ENABLED:
-                    case QUEUED:
-                        return false;
                     case EMPTY:
+                        return false;
                     case UPLOADED:
+                        switch (command) {
+                            case INDEX:
+                                return true;
+                            default:
+                                return false;
+                        }
+                    case QUEUED:
+                    case INDEXING:
+                        switch (command) {
+                            case DISABLE:
+                                return true;
+                            default:
+                                return false;
+                        }
+                    case ENABLED:
+                        switch (command) {
+                            case DISABLE:
+                            case REINDEX:
+                                return true;
+                            default:
+                                return false;
+                        }
                     case DISABLED:
+                        switch (command) {
+                            case INDEX:
+                                return true;
+                            default:
+                                return false;
+                        }
                     case ERROR:
-                        return true;
+                        switch (command) {
+                            case DISABLE:
+                                return true;
+                            default:
+                                return false;
+                        }
                     default:
                         throw new RuntimeException();
                 }
@@ -249,35 +263,22 @@ public class DataSetActions {
         };
     }
 
-    private DataSetAction createDisableAction() {
-        return new DataSetAction("Disable") {
-
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                metaRepoClient.setEnabled(entry.getDataSetInfo().spec, false);
-            }
-
-            @Override
-            boolean isEnabled(DataSetListModel.Entry entry) {
-                DataSetInfo info = entry.getDataSetInfo();
-                if (info == null) {
-                    return false;
-                }
-                else switch (DataSetState.valueOf(info.state)) {
-                    case INDEXING:
-                    case ENABLED:
-                    case QUEUED:
-                        return true;
-                    case EMPTY:
-                    case UPLOADED:
-                    case DISABLED:
-                    case ERROR:
-                        return false;
-                    default:
-                        throw new RuntimeException();
-                }
-            }
-        };
+    private String getCommandName(DataSetCommand command) {
+        String name;
+        switch (command) {
+            case INDEX:
+                name = "Index";
+                break;
+            case DISABLE:
+                name = "Disable";
+                break;
+            case REINDEX:
+                name = "Re-index";
+                break;
+            default:
+                throw new RuntimeException();
+        }
+        return name;
     }
 
     private class AnalysisFactsFrame extends JDialog {

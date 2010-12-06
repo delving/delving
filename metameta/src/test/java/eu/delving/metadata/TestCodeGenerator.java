@@ -10,8 +10,6 @@ import org.junit.Test;
 
 public class TestCodeGenerator {
 
-    private CodeGenerator cg = new CodeGenerator();
-
     @Test
     public void simple() {
         // todo: create minimal record-def, record-map, fillable field-map, make sure everything's tested

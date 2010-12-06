@@ -128,7 +128,7 @@ public class DictionaryDialog extends JDialog {
         private List<String[]> rows = new ArrayList<String[]>();
 
         private MapModel() {
-            for (Map.Entry<String, String> entry : fieldMapping.valueMap.entrySet()) {
+            for (Map.Entry<String, String> entry : fieldMapping.dictionary.entrySet()) {
                 rows.add(new String[]{entry.getKey(), entry.getValue()});
             }
         }
@@ -175,7 +175,7 @@ public class DictionaryDialog extends JDialog {
             if (valueObject == null) {
                 valueObject = "";
             }
-            fieldMapping.valueMap.put(rows.get(rowIndex)[0], rows.get(rowIndex)[1] = (String) valueObject);
+            fieldMapping.dictionary.put(rows.get(rowIndex)[0], rows.get(rowIndex)[1] = (String) valueObject);
             // todo: notify the world
             fireTableCellUpdated(rowIndex, columnIndex);
         }

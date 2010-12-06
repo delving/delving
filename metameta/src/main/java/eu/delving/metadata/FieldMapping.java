@@ -22,8 +22,8 @@ import java.util.regex.Pattern;
 @XStreamAlias("field-mapping")
 public class FieldMapping implements Comparable<FieldMapping> {
 
-    @XStreamAlias("value-map")
-    public Map<String, String> valueMap;
+    @XStreamAlias("dictionary")
+    public Map<String, String> dictionary;
 
     @XStreamAlias("groovy-code")
     public List<String> code;
@@ -54,9 +54,9 @@ public class FieldMapping implements Comparable<FieldMapping> {
     }
 
     public void createValueMap(Set<String> domainValues) {
-        this.valueMap = new TreeMap<String,String>();
+        this.dictionary = new TreeMap<String,String>();
         for (String key : domainValues) {
-            this.valueMap.put(key,"");
+            this.dictionary.put(key,"");
         }
     }
 

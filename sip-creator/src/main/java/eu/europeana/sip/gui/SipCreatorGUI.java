@@ -83,7 +83,7 @@ public class SipCreatorGUI extends JFrame {
     private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel;
     private JLabel titleLabel = new JLabel(LOCAL_SETS, JLabel.CENTER);
-    private MetaRepoClient metaRepoClient;
+    private DataSetClient dataSetClient;
     private JCheckBoxMenuItem connectedBox = new JCheckBoxMenuItem("Connect");
     private DataSetListModel dataSetListModel = new DataSetListModel();
     private JList dataSetList = new JList(dataSetListModel);
@@ -114,7 +114,7 @@ public class SipCreatorGUI extends JFrame {
         }
         FileStore fileStore = new FileStoreImpl(fileStoreDirectory, metadataModel);
         this.sipModel = new SipModel(fileStore, metadataModel, new PopupExceptionHandler());
-        this.metaRepoClient = new MetaRepoClient(sipModel, new MetaRepoClient.Listener() {
+        this.dataSetClient = new DataSetClient(sipModel, new DataSetClient.Listener() {
 
             @Override
             public void setInfo(DataSetInfo dataSetInfo) {
@@ -135,7 +135,7 @@ public class SipCreatorGUI extends JFrame {
                 connectedBox.setSelected(false);
             }
         });
-        dataSetActions = new DataSetActions(this, sipModel, metaRepoClient);
+        dataSetActions = new DataSetActions(this, sipModel, dataSetClient);
         setJMenuBar(createMenuBar());
         JPanel main = new JPanel(new BorderLayout(MARGIN, MARGIN));
         main.setBorder(BorderFactory.createEmptyBorder(MARGIN, MARGIN, MARGIN, MARGIN));
@@ -228,7 +228,7 @@ public class SipCreatorGUI extends JFrame {
             @Override
             public void itemStateChanged(ItemEvent itemEvent) {
                 boolean enabled = itemEvent.getStateChange() == ItemEvent.SELECTED;
-                metaRepoClient.enablePolling(enabled);
+                dataSetClient.setListFetchingEnabled(enabled);
                 if (!enabled) {
                     dataSetListModel.clear();
                     for (FileStore.DataSetStore dataSetStore : sipModel.getFileStore().getDataSetStores().values()) {
@@ -316,7 +316,7 @@ public class SipCreatorGUI extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            JPasswordField passwordField = new JPasswordField(sipModel.getServerAccessKey());
+            JPasswordField passwordField = new JPasswordField(sipModel.getAccessKey());
             Object[] msg = { "Server Access Key", passwordField };
             int result = JOptionPane.showConfirmDialog(SipCreatorGUI.this, msg, "Permission", JOptionPane.OK_CANCEL_OPTION);
             if (result == JOptionPane.OK_OPTION) {
