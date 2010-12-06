@@ -44,7 +44,7 @@ $(document).ready(function(){
               type: 'POST',
               url: portalName+'/user-remove.ajax',
               data: "email="+toRemove,
-              success: function(data){   
+              success: function(){
                   window.location.href=window.location.href;
               }
             });
@@ -52,13 +52,14 @@ $(document).ready(function(){
         } else {
             return false;
         }
-    })
+    });
 
-    $("form#set-form").submit(function(){
-        if($("select#newRole").val()=="NONE"){
+    $("form.set-form").submit(function(){
+        if($("select.newRole").val()=="NONE"){
             showMessage("error","You must choose a user role");
             return false;
         }
     })
+
 })
 
