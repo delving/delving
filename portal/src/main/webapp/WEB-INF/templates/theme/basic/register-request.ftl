@@ -40,6 +40,9 @@
 </#if>
 
 </section>
-</div>
+<script type="text/javascript">
+    <#-- nullify takeMeBack cookie so that user is not returned to registration page -->
+    $.cookie('takeMeBack', null);
+</script>
 <@addFooter/>
 

@@ -60,8 +60,9 @@ function takeMeBack(){
 
 function delvingPageCall(targetId,pageName,msgHead,msgBody,msgLink){
 
-    if(!msgHead){msgHead="Fout";}
-    if(!msgBody){msgBody="Er is een fout opgetreden";}
+    if(!msgHead){msgHead="Error";}
+    if(!msgBody){msgBody="Something went wrong";}
+
     $.ajax({
       url: pageName,
       async: false,
@@ -76,12 +77,20 @@ function delvingPageCall(targetId,pageName,msgHead,msgBody,msgLink){
             }else{
                 $(targetId).html(data);
             }
+        },
+        fail: function(data){
+            alert('error');
         }
     });
 }
 
 function showMessage(messageClass, messageString){
+    //get top of viewer window
+    //alert($(document).scrollTop());
+    var top = $(document).scrollTop()+"px";
     $("#messages .message").html(messageString);
+//    $("#messages").css("top",top);
+//        $("#messages").css("position","fixed");
     $("#messages").addClass(messageClass).slideDown("slow").click(function(){
         $(this).slideUp("slow").delay(2000).css("display","none");
     });
@@ -172,4 +181,5 @@ $(document).ready(function() {
             takeMeBack();
         })
     }
+
 });
