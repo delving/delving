@@ -19,7 +19,7 @@
  *  permissions and limitations under the Licence.
  */
 
-package eu.europeana.sip.core;
+package eu.delving.metadata;
 
 /**
  * Remove the frightening things from tags so that they can become proper variable names.

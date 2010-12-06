@@ -8,12 +8,12 @@ import eu.delving.metadata.RecordMapping;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.AccessKeyException;
 import eu.delving.services.exceptions.DataSetNotFoundException;
+import eu.delving.sip.AccessKey;
 import eu.delving.sip.DataSetInfo;
 import eu.delving.sip.DataSetResponse;
 import eu.delving.sip.DataSetState;
 import eu.delving.sip.FileType;
 import eu.delving.sip.Hasher;
-import eu.delving.sip.ServiceAccessToken;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -65,7 +65,7 @@ public class DataSetController {
     private MetadataModel metadataModel;
 
     @Autowired
-    private ServiceAccessToken serviceAccessToken;
+    private AccessKey accessKey;
 
     @Autowired
     @Qualifier("solrUpdateServer")
@@ -348,7 +348,7 @@ public class DataSetController {
             log.warn("Service Access Key missing");
             throw new AccessKeyException("Access Key missing");
         }
-        else if (!serviceAccessToken.checkKey(accessKey)) {
+        else if (!this.accessKey.checkKey(accessKey)) {
             log.warn(String.format("Service Access Key %s invalid!", accessKey));
             throw new AccessKeyException(String.format("Access Key %s not accepted", accessKey));
         }

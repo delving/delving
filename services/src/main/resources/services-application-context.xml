@@ -29,7 +29,7 @@
 
     <tx:annotation-driven proxy-target-class="true"/>
 
-    <bean id="serviceAccessToken" class="eu.delving.sip.ServiceAccessToken">
+    <bean id="accessKey" class="eu.delving.sip.AccessKey">
         <property name="servicesPassword" value="#{launchProperties['services.password']}"/>
     </bean>
 

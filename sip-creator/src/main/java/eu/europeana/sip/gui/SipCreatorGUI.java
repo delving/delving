@@ -46,6 +46,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
@@ -60,7 +61,10 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -85,12 +89,31 @@ public class SipCreatorGUI extends JFrame {
     private JList dataSetList = new JList(dataSetListModel);
     private DataSetActions dataSetActions;
 
-    public SipCreatorGUI(File fileStoreDirectory, String serverUrl) throws FileStoreException {
+    public SipCreatorGUI() throws FileStoreException {
         super("Delving SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         MetadataModel metadataModel = loadMetadataModel();
+        File fileStoreDirectory = new File(System.getProperty("user.home"), "/sip-creator-file-store");
+        if (fileStoreDirectory.isFile()) {
+            try {
+                BufferedReader br = new BufferedReader(new FileReader(fileStoreDirectory));
+                String line;
+                while ((line = br.readLine()) != null) {
+                    line = line.trim();
+                    if (!line.isEmpty()) {
+                        fileStoreDirectory = new File(line);
+                        log.info(String.format("Using %s as file store directory", fileStoreDirectory.getAbsolutePath()));
+                        break;
+                    }
+                }
+                br.close();
+            }
+            catch (IOException e) {
+                throw new FileStoreException("Unable to read the file "+fileStoreDirectory.getAbsolutePath());
+            }
+        }
         FileStore fileStore = new FileStoreImpl(fileStoreDirectory, metadataModel);
-        this.sipModel = new SipModel(fileStore, metadataModel, new PopupExceptionHandler(), serverUrl);
+        this.sipModel = new SipModel(fileStore, metadataModel, new PopupExceptionHandler());
         this.metaRepoClient = new MetaRepoClient(sipModel, new MetaRepoClient.Listener() {
 
             @Override
@@ -199,6 +222,7 @@ public class SipCreatorGUI extends JFrame {
 
     private JMenu createRepositoryMenu() {
         JMenu repository = new JMenu("Repository");
+        repository.add(new ServerHostAction());
         repository.add(new AccessKeyAction());
         connectedBox.addItemListener(new ItemListener() {
             @Override
@@ -269,6 +293,21 @@ public class SipCreatorGUI extends JFrame {
         }
     }
 
+    private class ServerHostAction extends AbstractAction {
+
+        public ServerHostAction() {
+            super("Server Host Name");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            String serverHost = JOptionPane.showInputDialog(SipCreatorGUI.this, "Server Host Name", sipModel.getServerHost());
+            if (serverHost != null && !serverHost.isEmpty()) {
+                sipModel.setServerHost(serverHost);
+            }
+        }
+    }
+
     private class AccessKeyAction extends AbstractAction {
 
         public AccessKeyAction() {
@@ -277,22 +316,20 @@ public class SipCreatorGUI extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            String accessKey = JOptionPane.showInputDialog(SipCreatorGUI.this, "Server Access Key", sipModel.getServerAccessKey());
-            if (accessKey != null && !accessKey.isEmpty()) {
-                sipModel.setServerAccessKey(accessKey);
+            JPasswordField passwordField = new JPasswordField(sipModel.getServerAccessKey());
+            Object[] msg = { "Server Access Key", passwordField };
+            int result = JOptionPane.showConfirmDialog(SipCreatorGUI.this, msg, "Permission", JOptionPane.OK_CANCEL_OPTION);
+            if (result == JOptionPane.OK_OPTION) {
+                sipModel.setServerAccessKey(new String(passwordField.getPassword()));
             }
         }
     }
 
     public static void main(final String[] args) throws ClassNotFoundException {
-//        if (args.length != 1) {
-//            throw new RuntimeException("SipCreatorGUI gets two parameters <server-url>");
-//        }
-        final String serverUrl = args.length > 0 ? args[0] : null;
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    SipCreatorGUI sipCreatorGUI = new SipCreatorGUI(new File(System.getProperty("user.home"), "/sip-creator-file-store"), serverUrl);
+                    SipCreatorGUI sipCreatorGUI = new SipCreatorGUI();
                     sipCreatorGUI.setVisible(true);
                 }
                 catch (FileStoreException e) {

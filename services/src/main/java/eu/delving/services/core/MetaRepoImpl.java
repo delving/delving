@@ -22,8 +22,8 @@ import eu.delving.services.exceptions.MappingNotFoundException;
 import eu.delving.services.exceptions.MetaRepoSystemException;
 import eu.delving.services.exceptions.RecordParseException;
 import eu.delving.services.exceptions.ResumptionTokenNotFoundException;
+import eu.delving.sip.AccessKey;
 import eu.delving.sip.DataSetState;
-import eu.delving.sip.ServiceAccessToken;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
@@ -70,7 +70,7 @@ public class MetaRepoImpl implements MetaRepo {
     private MetaConfig metaRepoConfig;
 
     @Autowired
-    private ServiceAccessToken serviceAccessToken;
+    private AccessKey accessKey;
 
     @Autowired
     private Mongo mongo;
@@ -523,7 +523,7 @@ public class MetaRepoImpl implements MetaRepo {
             Mapping mapping;
             if (getDetails().getMetadataFormat().getPrefix().equals(prefix)) {
                 mapping = null;
-                if (getDetails().getMetadataFormat().isAccessKeyRequired() && !serviceAccessToken.checkKey(accessKey)) {
+                if (getDetails().getMetadataFormat().isAccessKeyRequired() && !MetaRepoImpl.this.accessKey.checkKey(accessKey)) {
                     log.warn("Access key violation for raw format " + prefix);
                     throw new AccessKeyException(String.format("Raw metadata format requires access key, but %s is not valid", accessKey));
                 }
@@ -533,7 +533,7 @@ public class MetaRepoImpl implements MetaRepo {
                 if (mapping == null) {
                     throw new MappingNotFoundException(String.format("No mapping found to prefix %s", prefix));
                 }
-                if (mapping.getMetadataFormat().isAccessKeyRequired() && !serviceAccessToken.checkKey(accessKey)) {
+                if (mapping.getMetadataFormat().isAccessKeyRequired() && !MetaRepoImpl.this.accessKey.checkKey(accessKey)) {
                     log.warn("Access key violation for mapped format " + prefix);
                     throw new AccessKeyException(String.format("Mapping to metadata format requires access key, but %s is not valid", accessKey));
                 }
