@@ -30,8 +30,13 @@
 <div id="login-err-msg"></div>
 
 <#if errorMessage>
-
-<strong><@spring.message '_portal.ui.notification.error' />: </strong> Inlog gegevens zijn niet juist
+    <script type="text/javascript">
+        showMessage("error","<strong><@spring.message '_portal.ui.notification.error' />: </strong><@spring.message '_mine.user.notification.login.failed'/>")
+    </script>
+    <noscript>
+        <strong><@spring.message '_portal.ui.notification.error' />: </strong><@spring.message '_mine.user.notification.login.failed'/>    
+    </noscript>
+<strong>
 
 </#if>
 </section>

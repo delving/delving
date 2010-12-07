@@ -6,7 +6,7 @@ body {
     color: #666666;
 }
 
-body#tinymce {
+body#tinymce, body#mceTemplatePreview {
     background: #fff;
 }
 
@@ -58,34 +58,43 @@ table th { white-space: nowrap; }
     display: none;
     position: fixed;
     top: 0px;
-    text-align: center;
+    /*text-align: center;*/
     z-index: 1000;
 	-webkit-border-radius:  0 0 5px 5px;
-	-moz-border-radius:    0 0 5px 5px;
+	-moz-border-radius:    0 0 10px 10px;
 	border-radius:   0 0 5px 5px;
-    -moz-box-shadow: 0 0 5px 5px #6699cc;
-    -webkit-box-shadow: 0 0 5px 5px #6699cc;
-    box-shadow: 0 0 5px 5px #6699cc;
-    background: #fff;
+    /*-moz-box-shadow: 0 0 2px 5px #993333;*/
+    /*-webkit-box-shadow: 0 0 2px 5px #6699cc;*/
+    /*box-shadow: 0 0 5px 2px #6699cc;*/
+    background: #6699cc;
+    padding: 0 8px 8px 8px;
+    width: 460px;
 }
-#messages .message {
-    background: #fff;
+
+#messages .actions {
+    width: 100%;
+    text-align: right;
+}
+#messages .inner {
+    background: #fffff0;
     border-top: none;
     text-align: left;
-    padding: 1em;
+    padding: 2em 1em 1em 1em;
 	-webkit-border-radius: 0 0 5px 5px;
 	-moz-border-radius: 0 0 5px 5px;
 	border-radius: 0 0 5px 5px;
 }
 #messages.success {
-    -moz-box-shadow: 0 0 5px 5px #669933;
-    -webkit-box-shadow: 0 0 5px 5px #669933;
-    box-shadow: 0 0 5px 5px #669933;
+    /*-moz-box-shadow: 0 0 2px 5px #669933;*/
+    /*-webkit-box-shadow: 0 0 2px 5px #669933;*/
+    /*box-shadow: 0 0 5px 2px #669933;*/
+    background: #669933;
 }
 #messages.fail, #messages.error {
-    -moz-box-shadow: 0 0 5px 5px #993333;
-    -webkit-box-shadow: 0 0 5px 5px #993333;
-    box-shadow: 0 0 5px 5px #993333;
+    /*-moz-box-shadow: 0 0 2px 5px #993333;*/
+    /*-webkit-box-shadow: 0 0 2px 5px #993333;*/
+    /*box-shadow: 0 0 2px 5px #993333;*/
+    background: #993333;
 }
 
 /* BRANDING *********************************/

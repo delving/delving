@@ -5,18 +5,18 @@ function saveQuery(className, queryToSave, queryString){
     sr.css("display","block");
     $.ajax({
        type: "POST",
-       url: "/portal/save.ajax",
+       url: "/portal/save-saved-search.ajax",
        data: "className="+className+"&query="+queryToSave+"&queryString="+queryString,
        success: function(msg){
            
-           sr.html(msgSearchSaveSuccess);
+           showMessage("success",msgSearchSaveSuccess);
            //$("#msg-save-search").delay(2000).hide();
            var ss = $("#savedSearchesCount");
            var currentCount = parseInt(ss.html(), 10);
            ss.html(currentCount + 1);
        },
        error: function(msg) {
-            sr.html(msgSearchSaveFail);
+           showMessage("fail",msgSearchSaveFail);
        }
      });
     return false;
@@ -105,16 +105,16 @@ function saveItem(className,postTitle,postAuthor,objUri,thumbnail,type){
     sr.style.display = 'block';
     $.ajax({
        type: "POST",
-       url: "/portal/save.ajax",
+       url: "/portal/save-saved-item.ajax",
        data: "className="+className+"&title="+postTitle+"&author="+postAuthor+"&europeanaUri="+objUri+"&europeanaObject="+thumbnail+"&docType="+type,
        success: function(msg){
-           sr.innerHTML = msgItemSaveSuccess;
+           showMessage("success",msgItemSaveSuccess);
            var ss = document.getElementById("savedItemsCount");
            var currentCount = parseInt(ss.innerHTML, 10);
            ss.innerHTML = currentCount + 1;
        },
        error: function(msg) {
-            sr.innerHTML = "<span class='fg-red'>"+msgItemSaveFail+"</span>";
+           showMessage("failure",msgItemSaveFail);
        }
      });
     return false;

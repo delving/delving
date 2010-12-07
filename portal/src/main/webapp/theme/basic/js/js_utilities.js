@@ -1,3 +1,12 @@
+
+function takeMeBack(){
+    var futdate = new Date()		//Get the current time and date
+    var expdate = futdate.getTime()  //Get the milliseconds since Jan 1, 1970
+    expdate += 120000  //expires in 2 minutes (milliseconds)
+    var location = document.location.href;
+    $.cookie('takeMeBack', location, { expires: expdate,  path: portalName });
+}
+
 function setLang(lang) {
        takeMeBack();
        var langform = document.getElementById("frm-lang");
@@ -50,13 +59,6 @@ function checkFormSimpleSearch(oId){
     return true;
 }
 
-function takeMeBack(){
-    var futdate = new Date()		//Get the current time and date
-    var expdate = futdate.getTime()  //Get the milliseconds since Jan 1, 1970
-    expdate += 120000  //expires in 2 minutes (milliseconds)
-    var location = document.location.href;
-    $.cookie('takeMeBack', location, { expires: expdate });
-}
 
 function delvingPageCall(targetId,pageName,msgHead,msgBody,msgLink){
 
@@ -85,15 +87,15 @@ function delvingPageCall(targetId,pageName,msgHead,msgBody,msgLink){
 }
 
 function showMessage(messageClass, messageString){
-    //get top of viewer window
-    //alert($(document).scrollTop());
     var top = $(document).scrollTop()+"px";
     $("#messages .message").html(messageString);
 //    $("#messages").css("top",top);
 //        $("#messages").css("position","fixed");
-    $("#messages").addClass(messageClass).slideDown("slow").click(function(){
+    $("#messages").addClass(messageClass).slideDown("slow").delay(5000).slideUp("slow");
+    $("#messages").click(function(){
         $(this).slideUp("slow").delay(2000).css("display","none");
     });
+    
 
 }
 

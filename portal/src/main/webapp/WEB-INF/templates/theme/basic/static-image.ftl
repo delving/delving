@@ -17,17 +17,13 @@
 
             <section role="main" class="grid_12" >
 
-                <h1><@spring.message '_cms.administration.images' /></h1>
+                <h2><@spring.message '_cms.administration.images' /></h2>
 
                 <div class="grid_8 alpha">
-                    <h2><@spring.message '_cms.existing.images' /></h2>
                      <table summary="List of existing images" class="user-options zebra">
                         <thead>
                             <tr>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
+                                <th colspan="4"><@spring.message '_cms.existing.images' /></th>
                             </tr>
                         </thead>
                         <#list imagePathList as imagePath>
@@ -46,7 +42,9 @@
 
                 <div class="grid_4 omega">
 
-                    <h2><@spring.message '_cms.image.create' /></h2>
+                    <fieldset>
+                        <legend><@spring.message '_cms.image.create' /></legend>
+
                     <form method="POST" action="/${portalName}/images/_.img" enctype="multipart/form-data">
                         <table>
                             <tr>
@@ -57,7 +55,7 @@
                             </tr>
                         </table>
                     </form>
-                    
+                      </fieldset>
                     <script type="text/javascript">
                         function createImage(){
                             var name = $("#imgName").attr("value");
@@ -103,9 +101,9 @@
 
             <section role="main" class="grid_12">
 
-                <header>
-                    <h1><@spring.message '_cms.administration.images' /></h1>
-                </header>
+
+                    <h2><@spring.message '_cms.administration.images' /></h2>
+
 
                 <div class="grid_5 alpha">
                     <#if imageExists>
@@ -125,12 +123,12 @@
                                 <form method="POST" enctype="multipart/form-data">
                                     <table>
                                         <tr>
-                                            <td width="200"><@spring.message '_cms.image.choose' /></td>
+                                            <td width="200" align="right"><@spring.message '_cms.image.choose' /></td>
                                             <td><input type="file" name="file" size="30"/></td>
                                         </tr>
                                         <tr>
                                             <td></td>
-                                            <td><input type="submit" name="submit" value="<@spring.message '_cms.upload' />"></td>
+                                            <td><input type="submit" name="submit" value="<@spring.message '_cms.upload' />" class="btn-strong"></td>
                                         </tr>
                                     </table>
                                 </form>
@@ -139,12 +137,12 @@
                                 <form method="POST">
                                     <table>
                                         <tr>
-                                            <td width="200">Nieuwe afbeelding URL</td>
+                                            <td width="200" align="right">Nieuwe afbeelding URL</td>
                                             <td><input type="newPath" name="newPath" value="${imagePath}" size="30"/></td>
                                         </tr>
                                         <tr>
                                             <td></td>
-                                            <td><input type="submit" name="submit" value="Afbeelding hernoemen"></td>
+                                            <td><input type="submit" name="submit" value="Afbeelding hernoemen"  class="btn-strong"></td>
                                         </tr>
                                     </table>
                                 </form>
