@@ -6,9 +6,10 @@ $(document).ready(function() {
         $.cookie('takeMeBack', null, { path: portalName });
         // goto last visited page
         document.location.href = gotoPage;
-    }
+    }else{
         delvingPageCall("#block-1", portalName+"/home/block1.dml?embedded=true"," "," "," ");
         delvingPageCall("#block-2", portalName+"/home/block2.dml?embedded=true"," "," "," ");
+    }
 });
 
 
