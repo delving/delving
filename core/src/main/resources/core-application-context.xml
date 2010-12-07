@@ -241,12 +241,6 @@
         <property name="subject" value="Password has been changed"/>
     </bean>
 
-    <bean id="emailSenderForSendToFriend" class="eu.europeana.core.util.web.EmailSender">
-        <property name="template" value="/email/to-friend"/>
-        <property name="subject" value="A link from Europeana"/>
-        <!--todo: this should be multilingual-->
-    </bean>
-
     <bean id="emailSenderForUserFeedback" class="eu.europeana.core.util.web.EmailSender">
         <property name="template" value="/email/feedback"/>
         <property name="fromEmail" value="#{launchProperties['feedback.from']}"/>
