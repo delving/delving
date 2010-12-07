@@ -27,17 +27,15 @@
 <#macro adminBlock>
     <#if user?? && (user.role == ('ROLE_ADMINISTRATOR') || user.role == ('ROLE_GOD'))>
     <section id="adminBlock" class="grid_12">
-        <nav id="adminNav">
         <table class="user-options">
             <tbody>
-                    <th scope="rows"><@spring.message '_cms.administration.title' /></th>
-                    <td><a href="/${portalName}/_.dml"><span class="ui-icon ui-icon-document"></span><@spring.message '_cms.administration.pages' /></a></td>
-                    <td><a href="/${portalName}/_.img"><span class="ui-icon ui-icon-image"></span><@spring.message '_cms.administration.images' /></a></td>
-                    <td><a href="/${portalName}/administration.html"><span class="ui-icon ui-icon-person"></span><@spring.message '_cms.administration.users' /></a></td>
+                    <#--<th scope="rows"><@spring.message '_cms.administration.title' /></th>-->
+                    <td><a class="ui-widget button adm" href="/${portalName}/_.dml"><span class="ui-icon ui-icon-document"></span><@spring.message '_cms.administration.pages' /></a></td>
+                    <td><a class="ui-widget button adm" href="/${portalName}/_.img"><span class="ui-icon ui-icon-image"></span><@spring.message '_cms.administration.images' /></a></td>
+                    <td><a class="ui-widget button adm" href="/${portalName}/administration.html"><span class="ui-icon ui-icon-person"></span><@spring.message '_cms.administration.users' /></a></td>
                 </tr>
             </tbody>
         </table>
-        </nav>
     </section>
     </#if>
 </#macro>
@@ -125,15 +123,16 @@
                 </h1>
             </div>
 
-             <@adminBlock/>
+
             <div id="search">
                 <@simpleSearch/>
                     <noscript>
                     <@spring.message '_portal.ui.message.noscript' />
                     </noscript>
             </div>
-
+            <@adminBlock/>
             <div class="clear"></div>
+
     </#if>
 </#macro>
 
