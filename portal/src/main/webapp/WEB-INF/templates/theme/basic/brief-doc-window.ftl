@@ -1,3 +1,4 @@
+<#compress>
 <#--<#assign queryStringForPresentation = queryStringForPresentation/>-->
 <#--<#assign queryToSave = queryToSave />-->
 <#assign view = "table"/>
@@ -22,25 +23,22 @@
 </script>
 
 <section class="grid_3" role="complementary">
-    <h3 class="header"><@spring.message '_action.refine.your.search' /></h3>
-    <nav id="facetList">
-        <@resultBriefFacets "DATAPROVIDER",  "_facet.by.provider", 1/>
-
-        <#-- TODO: Create this facet -------------------------->
-        <#-- Norvegiana: Add "by About Person" ---------------->
-        <#----------------------------------------------------->
-        <@resultBriefFacets "DCTYPE",  "_metadata.dc.type", 2/>
-    </nav>
-
-    <nav id="userActions">
+    <dl class="menu">
+        <dt><@spring.message '_action.refine.your.search' /></dt>
+        <dd class="container">
+         <@resultBriefFacets "DATAPROVIDER",  "_facet.by.provider", 1/>
+        <@resultBriefFacets "YEAR",  "_metadata.dc.date", 2/>
+        <@resultBriefFacets "TYPE",  "_metadata.dc.type", 2/>
+        <@resultBriefFacets "LANGUAGE",  "_metadata.dc.language", 2/>
+        </dd>
+    </dl>
         <@resultsBriefUserActions/>
-    </nav>
 </section>
 
 <section class="grid_9" id="results" role="main">
-
+  
     <div id="nav_query_breadcrumbs">
-            <h4><@resultBriefQueryBreadcrumbs/></h4>
+            <@resultBriefQueryBreadcrumbs/>
     </div>
 
     <div class="clear"></div>
@@ -98,4 +96,4 @@
 
 
 <@addFooter/>
-
+</#compress>

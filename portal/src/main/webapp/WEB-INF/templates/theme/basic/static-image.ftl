@@ -15,13 +15,21 @@
             <@addHeader "${portalDisplayName}", "",[],[]/>
 
 
-            <section role="main" class="main">
+            <section role="main" class="grid_12" >
 
                 <h1><@spring.message '_cms.administration.images' /></h1>
 
-                <div class="grid_8">
+                <div class="grid_8 alpha">
                     <h2><@spring.message '_cms.existing.images' /></h2>
-                     <table summary="List of existing images" class="user-options">
+                     <table summary="List of existing images" class="user-options zebra">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
                         <#list imagePathList as imagePath>
                             <tr>
                                 <td width="50"><img src="${imagePath}" alt="thumbnail" height="20"/></td>
@@ -36,7 +44,7 @@
                 </div>
 
 
-                <div class="grid_4">
+                <div class="grid_4 omega">
 
                     <h2><@spring.message '_cms.image.create' /></h2>
                     <form method="POST" action="/${portalName}/images/_.img" enctype="multipart/form-data">
@@ -92,23 +100,14 @@
 
         <@addHeader "${portalDisplayName}", "",[],[]/>
 
-            <section id="sidebar" class="grid_3" role="complementary">
-                <header id="branding" role="banner">
-                    <a href="/${portalName}/" title=""/>
-                    <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="${portalDisplayName}"/>
-                    </a>
-                    <h1 class="large">${portalDisplayName}</h1>
-                </header>
-            </section>
 
-
-            <section role="main">
+            <section role="main" class="grid_12">
 
                 <header>
                     <h1><@spring.message '_cms.administration.images' /></h1>
                 </header>
 
-                <div class="grid_5">
+                <div class="grid_5 alpha">
                     <#if imageExists>
                         <img src="/${portalName}/${imagePath}" alt="${imagePath}" style="max-width:100%"/><br/>
                         ${imagePath}
@@ -119,7 +118,7 @@
 
                 <#--<div class="clear"></div>-->
 
-                <div class="grid_4">
+                <div class="grid_7 omega">
                     <#if edit??>
                         <#if edit>
                             <div id="pageForm">

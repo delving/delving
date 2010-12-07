@@ -3,6 +3,11 @@
 
 body {
     background: #bbbbb0;
+    color: #666666;
+}
+
+body#tinymce {
+    background: #fff;
 }
 
 a:link
@@ -51,7 +56,7 @@ table th { white-space: nowrap; }
 
 #messages {
     display: none;
-    position: absolute;
+    position: fixed;
     top: 0px;
     text-align: center;
     z-index: 1000;
@@ -61,6 +66,7 @@ table th { white-space: nowrap; }
     -moz-box-shadow: 0 0 5px 5px #6699cc;
     -webkit-box-shadow: 0 0 5px 5px #6699cc;
     box-shadow: 0 0 5px 5px #6699cc;
+    background: #fff;
 }
 #messages .message {
     background: #fff;
@@ -76,7 +82,7 @@ table th { white-space: nowrap; }
     -webkit-box-shadow: 0 0 5px 5px #669933;
     box-shadow: 0 0 5px 5px #669933;
 }
-#messages.fail {
+#messages.fail, #messages.error {
     -moz-box-shadow: 0 0 5px 5px #993333;
     -webkit-box-shadow: 0 0 5px 5px #993333;
     box-shadow: 0 0 5px 5px #993333;
@@ -91,6 +97,7 @@ img#branding {
 }
 
 div#header {
+    /*background: #993300;*/
     background: #336699 url(../images/bg-gradient-blue.png) repeat-x 0 0;
     background: -moz-linear-gradient(100% 100% 90deg, #81aad0, #336699);
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#336699), to(#81aad0));
@@ -98,9 +105,12 @@ div#header {
 }
 
 div#header h1 {
+    background: transparent url(../images/header-name.png) no-repeat 0 15px;
     color: #fff;
     padding: 0;
     margin: 0 0 0 200px;
+    text-indent: -1200px;
+    height: 120px;
 }
 
 /* HOME *************************************/
@@ -108,7 +118,7 @@ div#header h1 {
 /* USERBAR **********************************/
 
 #userBar {
-    background: #ff9900;
+    background: #f8ad40;
     color: #fff;
     text-align: right;
 }
@@ -187,8 +197,12 @@ td .ui-icon {
     background:none repeat scroll 0 0 transparent;
 }
 
-#nav_query_breadcrumbs h4 {
+#nav_query_breadcrumbs {
     margin: 0;
+    font-size: 1.25em;
+    line-height: 35px;
+    padding: 0 0 0 8px;
+
 }
 
 /* RESULT COUNT *******************************/
@@ -202,7 +216,7 @@ td .ui-icon {
   float: right;
 }
 
-#result_view_select a:link {
+#result_view_select a:link, #result_view_select a:visited {
     text-decoration: none;
 }
 
@@ -336,7 +350,7 @@ h4.active:hover {
 }
 
 .facets_container {
-    background: ivory;
+    background: #fffff0;
 	margin: 0;
 	padding: 5px 0;
 	/*overflow: hidden;*/
@@ -529,10 +543,10 @@ dl.info-box {
 
 dl.info-box dt, h3.header {
 	background: #336699 url(../images/bg-gradients-50.png) repeat-x 0 0;
-	background: -moz-linear-gradient(100% 100% 90deg, #6699cc, #336699);
-  	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#336699), to(#6699cc));
-	height: 40px;
-	line-height: 40px;
+	/*background: -moz-linear-gradient(100% 100% 90deg, #6699cc, #336699);*/
+  	/*background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#336699), to(#6699cc));*/
+	height: 35px;
+	line-height: 35px;
 	color: #fff;
 	font-weight: normal;
 	font-size: 1.25em;
@@ -575,6 +589,11 @@ dl.info-box .blue {
   	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#6699cc), to(#336699));
 }
 
+dl.info-box .light-blue,
+h3.header.light-blue {
+    background: #A1D3F8;
+}
+
 dl.info-box .green {
 	background: #669933 url(../images/gradients-sprite.png) repeat-x 0 -50px;
 	background: -moz-linear-gradient(100% 100% 90deg, #336600, #669933);
@@ -598,7 +617,8 @@ dl.info-box .orange {
   	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ff9900), to(#ff6633));
 }
 
-dl.info-box .brown {
+dl.info-box .brown,
+h3.header.brown {
 	background: #cc6600 url(../images/gradients-sprite.png) repeat-x 0 -250px;
 	background: -moz-linear-gradient(100% 100% 90deg, #cc6600, #554433);
   	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#554433), to(#cc6600));
@@ -609,6 +629,51 @@ dl.info-box .black {
 	background: -moz-linear-gradient(100% 100% 90deg, #333, #666);
   	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#333));
 }
+
+h3.header.facets {
+    background: #996633;
+}
+h3.header.actions {
+    background: #554433;
+}
+
+/* definition lists */
+
+dl.menu {
+    
+}
+dl.menu dt {
+    /*background: #bbbbb0;*/
+    border-bottom: 1px solid #aaaaa0;
+	height: 35px;
+	line-height: 35px;
+	/*color: #fff;*/
+	font-weight: normal;
+	font-size: 1.25em;
+	text-align: left;
+	margin: 0;
+    padding: 0 0 0 4px;
+    color: #666666;
+	/*-webkit-border-radius:  5px 5px 0 0;*/
+	/*-moz-border-radius:  5px 5px 0 0;*/
+	/*border-radius: 5px 5px 0 0;*/
+    /*text-shadow: 1px 1px 0 #000;*/
+}
+dl.menu dd {
+    border-bottom: 1px solid #ccc;
+    padding: 4px 0 4px 4px;
+    clear: both;
+    height: auto;
+}
+dl.menu dd.container {
+    border-bottom: none;
+    padding: 0;
+}
+dl.menu dd img {
+    float: left;
+    margin: 0 .25em .25em 0;
+}
+
 
 
 /* SORTABLE TABLE */
@@ -655,5 +720,10 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 background-color: #bbbbb0;
 }
 
+table.zebra tbody tr:nth-child(odd) td {
+    background-color:transparent;
+}
 
-
+table.zebra tbody tr:nth-child(even) td{
+    background-color:#eeeee0;
+}

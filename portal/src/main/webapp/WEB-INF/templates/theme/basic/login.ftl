@@ -5,15 +5,8 @@
 
 <@addHeader "${portalDisplayName}", "",[],[]/>
 
-<#if contentOnly != "true">
-    <div class="grid_12" id="branding">
-        <h1 class="gigantic">
-            <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="${portalDisplayName}" align="absmiddle"/>${portalDisplayName}
-        </h1>
-    </div>
-</#if>
 
-<section role="main" class="grid_4 prefix_4">
+<section role="main" class="grid_5 prefix_4">
 <h2><@spring.message '_mine.login' /></h2>
 
 <form name='f1' id="loginForm" action='j_spring_security_check' method='POST' accept-charset="UTF-8">
