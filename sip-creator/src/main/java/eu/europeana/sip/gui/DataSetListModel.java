@@ -159,7 +159,7 @@ public class DataSetListModel extends AbstractListModel {
                 DataSetState state = DataSetState.valueOf(dataSetInfo.state);
                 switch (state) {
                     case DISABLED:
-                        html.append("<p>Data Set is disabled, and it can be indexed.</p>");
+                        html.append(String.format("<p>Data Set is disabled, but it has %d records and it can be indexed.</p>", dataSetInfo.recordCount));
                         break;
                     case EMPTY:
                         html.append(String.format(

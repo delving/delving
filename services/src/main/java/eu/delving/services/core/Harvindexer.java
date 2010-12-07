@@ -25,6 +25,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.SolrInputField;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -173,7 +174,7 @@ public class Harvindexer {
         public void run() {
             log.info("Importing " + collection);
             try {
-                DateTime now = new DateTime();
+                DateTime now = new DateTime(DateTimeZone.UTC);
                 DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
                 importPmh(collection);
                 solrServer.deleteByQuery("europeana_collectionName:" + collection.getName() + " AND timestamp:[* TO " + fmt.print(now) + "]");

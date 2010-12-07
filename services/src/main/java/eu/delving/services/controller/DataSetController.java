@@ -308,6 +308,7 @@ public class DataSetController {
                     switch (dataSet.getState()) {
                         case QUEUED:
                         case INDEXING:
+                        case ERROR:
                         case ENABLED:
                             dataSet.setState(DataSetState.DISABLED);
                             dataSet.setRecordsIndexed(0);
