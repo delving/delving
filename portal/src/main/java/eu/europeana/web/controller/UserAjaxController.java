@@ -33,9 +33,12 @@ import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -64,8 +67,14 @@ public class UserAjaxController {
     @Autowired
     private SorlIndexUtil sorlIndexUtil;
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ModelAndView handleException(HttpServletRequest request, Exception exception) {
+        return failure(request, exception);
+    }
+
     @RequestMapping("/list-users.ajax")
-    public ModelAndView listUsers() {
+    public ModelAndView listUsers() throws Exception {
         User user = ControllerUtil.getUser();
         if (user != null && (user.getRole() == Role.ROLE_ADMINISTRATOR || user.getRole() == Role.ROLE_GOD)) {
             ModelAndView page = complete(true);
@@ -73,7 +82,7 @@ public class UserAjaxController {
             return page;
         }
         else {
-            return complete(false);
+            throw new Exception("Not authorized");
         }
     }
 
@@ -81,32 +90,22 @@ public class UserAjaxController {
     public ModelAndView removeUser(
             HttpServletRequest request,
             @RequestParam String email
-    ) {
-        try {
-            User user = userDao.fetchUserByEmail(email);
-            if (user != null) {
-                userDao.removeUser(user);
-            }
-            return complete(user != null);
+    ) throws Exception {
+        User user = userDao.fetchUserByEmail(email);
+        if (user != null) {
+            userDao.removeUser(user);
         }
-        catch (Exception e) {
-            return failure(request, e);
-        }
+        return complete(user != null);
     }
 
     @RequestMapping("/remove-saved-item.ajax")
     public ModelAndView removeSavedItem(
             HttpServletRequest request,
             @RequestParam Long id
-    ) {
-        try {
-            ControllerUtil.setUser(userDao.removeSavedItem(id));
-            clickStreamLogger.logUserAction(request, UserAction.REMOVE_SAVED_ITEM);
-            return complete(true);
-        }
-        catch (Exception e) {
-            return failure(request, e);
-        }
+    ) throws Exception {
+        ControllerUtil.setUser(userDao.removeSavedItem(id));
+        clickStreamLogger.logUserAction(request, UserAction.REMOVE_SAVED_ITEM);
+        return complete(true);
     }
 
 
@@ -115,14 +114,9 @@ public class UserAjaxController {
             HttpServletRequest request,
             @RequestParam Long id
     ) throws Exception {
-        try {
-            ControllerUtil.setUser(userDao.removeSavedSearch(id));
-            clickStreamLogger.logUserAction(request, UserAction.REMOVE_SAVED_SEARCH);
-            return complete(true);
-        }
-        catch (Exception e) {
-            return failure(request, e);
-        }
+        ControllerUtil.setUser(userDao.removeSavedSearch(id));
+        clickStreamLogger.logUserAction(request, UserAction.REMOVE_SAVED_SEARCH);
+        return complete(true);
     }
 
     @RequestMapping("/remove-social-tag.ajax")
@@ -130,16 +124,11 @@ public class UserAjaxController {
             HttpServletRequest request,
             @RequestParam Long id
     ) throws Exception {
-        try {
-            final String europeanaUri = userDao.findEuropeanaUri(id);
-            ControllerUtil.setUser(userDao.removeSocialTag(id));
-            sorlIndexUtil.indexUserTags(europeanaUri);
-            clickStreamLogger.logUserAction(request, UserAction.REMOVE_SOCIAL_TAG);
-            return complete(true);
-        }
-        catch (Exception e) {
-            return failure(request, e);
-        }
+        final String europeanaUri = userDao.findEuropeanaUri(id);
+        ControllerUtil.setUser(userDao.removeSocialTag(id));
+        sorlIndexUtil.indexUserTags(europeanaUri);
+        clickStreamLogger.logUserAction(request, UserAction.REMOVE_SOCIAL_TAG);
+        return complete(true);
     }
 
     @RequestMapping("/save-saved-item.ajax")
@@ -151,21 +140,16 @@ public class UserAjaxController {
             @RequestParam String europeanaObject,
             @RequestParam String europeanaUri
     ) throws Exception {
-        try {
-            SavedItem savedItem = new SavedItem();
-            savedItem.setTitle(title);
-            savedItem.setAuthor(author);
-            savedItem.setDocType(DocType.valueOf(docType));
-            savedItem.setLanguage(ControllerUtil.getLocale(request));
-            savedItem.setEuropeanaObject(europeanaObject);
-            User user = ControllerUtil.getUser();
-            ControllerUtil.setUser(userDao.addSavedItem(user, savedItem, europeanaUri));
-            clickStreamLogger.logUserAction(request, UserAction.SAVE_ITEM);
-            return complete(true);
-        }
-        catch (Exception e) {
-            return failure(request, e);
-        }
+        SavedItem savedItem = new SavedItem();
+        savedItem.setTitle(title);
+        savedItem.setAuthor(author);
+        savedItem.setDocType(DocType.valueOf(docType));
+        savedItem.setLanguage(ControllerUtil.getLocale(request));
+        savedItem.setEuropeanaObject(europeanaObject);
+        User user = ControllerUtil.getUser();
+        ControllerUtil.setUser(userDao.addSavedItem(user, savedItem, europeanaUri));
+        clickStreamLogger.logUserAction(request, UserAction.SAVE_ITEM);
+        return complete(true);
     }
 
     @RequestMapping("/save-saved-search.ajax")
@@ -174,19 +158,14 @@ public class UserAjaxController {
             @RequestParam String query,
             @RequestParam String queryString
     ) throws Exception {
-        try {
-            SavedSearch savedSearch = new SavedSearch();
-            savedSearch.setQuery(query);
-            savedSearch.setQueryString(URLDecoder.decode(queryString, "utf-8"));
-            savedSearch.setLanguage(ControllerUtil.getLocale(request));
-            User user = ControllerUtil.getUser();
-            ControllerUtil.setUser(userDao.addSavedSearch(user, savedSearch));
-            clickStreamLogger.logUserAction(request, UserAction.SAVE_SEARCH);
-            return complete(true);
-        }
-        catch (Exception e) {
-            return failure(request, e);
-        }
+        SavedSearch savedSearch = new SavedSearch();
+        savedSearch.setQuery(query);
+        savedSearch.setQueryString(URLDecoder.decode(queryString, "utf-8"));
+        savedSearch.setLanguage(ControllerUtil.getLocale(request));
+        User user = ControllerUtil.getUser();
+        ControllerUtil.setUser(userDao.addSavedSearch(user, savedSearch));
+        clickStreamLogger.logUserAction(request, UserAction.SAVE_SEARCH);
+        return complete(true);
     }
 
     @RequestMapping("/save-social-tag.ajax")
@@ -198,24 +177,19 @@ public class UserAjaxController {
             @RequestParam String europeanaObject,
             @RequestParam String title
     ) throws Exception {
-        try {
-            SocialTag socialTag = new SocialTag();
-            socialTag.setTag(tag);
-            socialTag.setEuropeanaUri(europeanaUri);
-            socialTag.setDocType(DocType.valueOf(docType));
-            socialTag.setEuropeanaObject(europeanaObject);
-            socialTag.setTitle(title);
-            socialTag.setLanguage(ControllerUtil.getLocale(request));
-            User user = ControllerUtil.getUser();
-            ControllerUtil.setUser(userDao.addSocialTag(user, socialTag));
-            boolean success = sorlIndexUtil.indexUserTags(europeanaUri);
-            clickStreamLogger.logCustomUserAction(request, UserAction.SAVE_SOCIAL_TAG, "tag=" + tag);
-            clickStreamLogger.logUserAction(request, UserAction.SAVE_SEARCH);
-            return complete(true);
-        }
-        catch (Exception e) {
-            return failure(request, e);
-        }
+        SocialTag socialTag = new SocialTag();
+        socialTag.setTag(tag);
+        socialTag.setEuropeanaUri(europeanaUri);
+        socialTag.setDocType(DocType.valueOf(docType));
+        socialTag.setEuropeanaObject(europeanaObject);
+        socialTag.setTitle(title);
+        socialTag.setLanguage(ControllerUtil.getLocale(request));
+        User user = ControllerUtil.getUser();
+        ControllerUtil.setUser(userDao.addSocialTag(user, socialTag));
+        boolean success = sorlIndexUtil.indexUserTags(europeanaUri);
+        clickStreamLogger.logCustomUserAction(request, UserAction.SAVE_SOCIAL_TAG, "tag=" + tag);
+        clickStreamLogger.logUserAction(request, UserAction.SAVE_SEARCH);
+        return complete(true);
     }
 
     private ModelAndView failure(HttpServletRequest request, Exception e) {
