@@ -1,8 +1,8 @@
 $(document).ready(function(){
      $.ajax({
-        url: portalName+"/users.ajax",
+        url: "/portal/list-users.ajax",
         type: "GET",
-         dataType: "xml",
+        dataType: "XML",
         success: function(xml) {
             var openTable = "<table id='user-table' class='tablesorter zebra'>";
             var closeTable = "</tbody></table>"
@@ -31,27 +31,29 @@ $(document).ready(function(){
                 return false;
             })
         },
-        error: function(xml) {
-            alert(xml);
-            showMessage("fail","Something went wrong");
+        error: function(xhr) {
+            showMessage("fail","Something went wrong<br/>error: "+xhr.status );
         }
     });
+  
     $('button#rem-user').click(function(){
         var toRemove = $('input#userEmail').val();
-        var confirmation = confirm("Gebruiker: "+toRemove +" verwijderen ?");
+        var confirmation = confirm("Remove user: "+toRemove+"?");
         if(confirmation){
             $.ajax({
               type: 'POST',
-              url: portalName+'/user-remove.ajax',
+              url: portalName+'/remove-user.ajax',
               data: "email="+toRemove,
-              success: function(){
-                  window.location.href=window.location.href;
+              success: function(data){
+                  $("#tbl-users-found").hide();
+                  showMessage("success","User: "+toRemove+ " has been successfully removed");   
+              },
+              error: function(xhr, ajaxOptions, thrownError){
+                showMessage("success","An error has occured: "+xhr.status);
               }
             });
-            return false;
-        } else {
-            return false;
         }
+        return false;
     });
 
     $("form.set-form").submit(function(){

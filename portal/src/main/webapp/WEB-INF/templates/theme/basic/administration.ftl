@@ -29,7 +29,7 @@
 
         <#if userList?? && (userList?size &gt; 0)>
         <div class="grid_12 alpha">
-            <table  class="tablesorter zebra" width="100%">
+            <table  class="tablesorter zebra" width="100%" id="tbl-users-found">
                 <thead>
                 <tr>
                     <th><@spring.message '_mine.email.address' /></th>
@@ -90,13 +90,15 @@
                 msgString += "<@spring.message '_cms.user.role.administrator' />";
             </#if>
             <#if targetUser.role = 'ROLE_USER'>
-                msgString += "<@spring.message '_cms.user.role.public' />""
+                msgString += "<@spring.message '_cms.user.role.public' />";
             </#if>
         showMessage("success",msgString);
 
     </#if>
     <#if RequestParameters.userRemoved??>
-        showMessage("success","User has been successfully removed");
+        <#if RequestParameters.userRemoved = "true">
+            showMessage("success","User has been successfully removed");
+        </#if>
     </#if>
 </script>
 <@addFooter/>

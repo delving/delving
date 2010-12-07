@@ -3,7 +3,7 @@ $(document).ready(function() {
     if($.cookie('takeMeBack')){
         var gotoPage = $.cookie('takeMeBack');
         // kill the cookie
-        $.cookie('takeMeBack', null);
+        $.cookie('takeMeBack', null, { path: portalName });
         // goto last visited page
         document.location.href = gotoPage;
     }

@@ -11,7 +11,7 @@
 <#if RequestParameters.view??>
     <#assign view = RequestParameters.view/>
 </#if>
-<#assign useCache = "false">
+<#assign useCache = "true">
 <#assign javascriptFiles = ""/>
 <#assign cssFiles = ""/>
 <#assign contentOnly = "false"/>
@@ -108,9 +108,11 @@
             <a href="/${portalName}/" alt="Home">
                 <img id="branding" src="/${portalName}/${portalTheme}/images/logo.png" alt="" align="absmiddle"/>
             </a>
-            <div id="messages" class="grid_6 push_3">
-                <div class="message"></div>
+
+            <div class="grid_5 prefix_3">
+                <@showMessages/>
             </div>
+
             <div id="userBar" role="navigation">
                 <div class="inner">
                 <#include "language_select.ftl"/><@userBar/>
@@ -138,6 +140,15 @@
 <#macro addHtmlFooter>
     </body>
 </html>
+</#macro>
+
+<#macro showMessages>
+    <div id="messages">
+        <div class="inner">
+            <div class="message"></div>
+            <div class="actions"><a href="#!" onclick="javascript:$('#messages').slideUp('slow');">Close</a></div>
+        </div>
+    </div>
 </#macro>
 
 <#macro addFooter >

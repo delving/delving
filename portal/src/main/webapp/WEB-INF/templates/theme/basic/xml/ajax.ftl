@@ -1,15 +1,19 @@
 <?xml version="1.0"?>
 <reply>
-<success>${success?string}</success>
-<#if exception??>
-    <exception>
-        ${exception}
-    </exception>
-</#if>
-<#if users??>
-    <users>
-        <#list users as user>
-            <user
+    <#if success??>
+    <success>
+        ${success?string}
+    </success>
+    </#if>
+    <#if exception??>
+        <exception>
+            ${exception?string}
+        </exception>
+    </#if>
+    <#if users??>
+        <users>
+            <#list users as user>
+                <user
                     email="${user.email}"
                     role="
                         <#switch user.role>
@@ -23,7 +27,7 @@
                                   Administrator
                             <#break>
                             <#case "ROLE_USER">
-                                  Gewone Gebruiker
+                                  Regular User
                             <#break>
                         </#switch>
                     "
@@ -33,7 +37,7 @@
                     registrationDate="<#if user.registrationDate??>${user.registrationDate?string("yyyy-MM-dd HH:mm")}</#if>"
                     lastLoginDate="<#if user.lastLogin??>${user.lastLogin?string("yyyy-MM-dd HH:mm")}</#if>"
                     />
-        </#list>
-    </users>
-</#if>
+            </#list>
+        </users>
+    </#if>
 </reply>
