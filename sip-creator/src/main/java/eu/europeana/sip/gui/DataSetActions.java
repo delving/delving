@@ -60,8 +60,8 @@ import java.util.List;
 public class DataSetActions {
     private static final Dimension SIZE = new Dimension(1024 - 60, 768 - 60);
     private JFrame frame;
-    private AnalysisFactsFrame analysisFactsFrame;
-    private MappingFrame mappingFrame;
+    private AnalysisFactsDialog analysisFactsDialog;
+    private MappingDialog mappingDialog;
     private SipModel sipModel;
     private DataSetClient dataSetClient;
     private DataSetListModel.Entry entry;
@@ -71,8 +71,8 @@ public class DataSetActions {
         this.frame = frame;
         this.sipModel = sipModel;
         this.dataSetClient = dataSetClient;
-        this.analysisFactsFrame = new AnalysisFactsFrame(sipModel);
-        this.mappingFrame = new MappingFrame(sipModel);
+        this.analysisFactsDialog = new AnalysisFactsDialog(sipModel);
+        this.mappingDialog = new MappingDialog(sipModel);
         actions.add(createAnalyzeFactsAction());
         for (String metadataPrefix : sipModel.getMetadataModel().getPrefixes()) {
             actions.add(createEditMappingAction(metadataPrefix));
@@ -125,7 +125,7 @@ public class DataSetActions {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 sipModel.setDataSetStore(entry.getDataSetStore());
-                analysisFactsFrame.reveal();
+                analysisFactsDialog.reveal();
             }
 
             @Override
@@ -141,7 +141,7 @@ public class DataSetActions {
             public void actionPerformed(ActionEvent actionEvent) {
                 sipModel.setDataSetStore(entry.getDataSetStore());
                 sipModel.setMetadataPrefix(metadataPrefix);
-                mappingFrame.reveal(metadataPrefix);
+                mappingDialog.reveal(metadataPrefix);
             }
 
             @Override
@@ -281,15 +281,14 @@ public class DataSetActions {
         return name;
     }
 
-    private class AnalysisFactsFrame extends JDialog {
+    private class AnalysisFactsDialog extends JDialog {
         private SipModel sipModel;
 
-        private AnalysisFactsFrame(SipModel sipModel) throws HeadlessException {
+        private AnalysisFactsDialog(SipModel sipModel) throws HeadlessException {
             super(frame, "Analysis & Facts", true);
             this.sipModel = sipModel;
             getContentPane().add(new AnalysisFactsPanel(sipModel));
             getContentPane().add(createFinishedPanel(this), BorderLayout.SOUTH);
-//            setSize(Toolkit.getDefaultToolkit().getScreenSize());
             setSize(SIZE);
             setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - SIZE.width) / 2, (Toolkit.getDefaultToolkit().getScreenSize().height - SIZE.height) / 2);
         }
@@ -300,15 +299,15 @@ public class DataSetActions {
         }
     }
 
-    private class MappingFrame extends JDialog {
+    private class MappingDialog extends JDialog {
         private SipModel sipModel;
 
-        private MappingFrame(SipModel sipModel) throws HeadlessException {
+        private MappingDialog(SipModel sipModel) throws HeadlessException {
             super(frame, "Mapping", true);
             this.sipModel = sipModel;
             JTabbedPane tabs = new JTabbedPane();
             tabs.addTab("Mapping", new MappingPanel(sipModel));
-            tabs.addTab("Refinement", new RefinementPanel(frame, sipModel));
+            tabs.addTab("Refinement", new RefinementPanel(this, sipModel));
             tabs.addTab("Normalization", new NormalizationPanel(sipModel));
             getContentPane().add(tabs, BorderLayout.CENTER);
             getContentPane().add(createFinishedPanel(this), BorderLayout.SOUTH);

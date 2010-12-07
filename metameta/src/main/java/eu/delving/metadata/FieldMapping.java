@@ -45,6 +45,10 @@ public class FieldMapping implements Comparable<FieldMapping> {
         return fieldDefinition;
     }
 
+    public String getFieldNameString() {
+        return getFieldDefinition().getFieldNameString();
+    }
+
     public void clearCode() {
         code = null;
     }

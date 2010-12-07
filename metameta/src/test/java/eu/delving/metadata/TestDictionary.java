@@ -23,15 +23,8 @@ package eu.delving.metadata;
 
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 /**
- * Make sure the value map model (de)serializes correctly
+ * Make sure the dictionary
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
@@ -40,37 +33,5 @@ public class TestDictionary {
 
     @Test
     public void writeAndRead() {
-        Map<String, Dictionary> maps = Dictionary.fromMapping(toLines(
-                        "/* Dictionary */ def gumbyMap = [ // one,two,three\n" +
-                        "'uno':'one',\n" +
-                        "'duo':'two',\n" +
-                        "'trezz':'three',\n" +
-                        "]\n" +
-                        "/* Dictionary */ def pokeyMap = [ // no,yes\n" +
-                        "'fantastic':'yes',\n" +
-                        "'terrible':'no',\n" +
-                        "]\n"
-        ));
-        assertEquals(2, maps.size());
-        StringBuilder out = new StringBuilder();
-        for (Dictionary dictionary : maps.values()) {
-            out.append(dictionary.toString());
-        }
-        System.out.println(out);
-        maps = Dictionary.fromMapping(toLines(out.toString()));
-        assertEquals(2, maps.size());
-        assertEquals("yes", maps.get("pokey").get("fantastic"));
-        maps.get("gumby").put("whatever", "two");
-        try {
-            maps.get("gumby").put("noway", "six");
-            fail();
-        }
-        catch (RuntimeException e) {
-            // okay!
-        }
-    }
-
-    private List<String> toLines(String code) {
-        return Arrays.asList(code.split("\n"));
     }
 }

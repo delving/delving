@@ -3,7 +3,6 @@ package eu.europeana.sip.gui;
 import eu.delving.metadata.FieldMapping;
 
 import javax.swing.AbstractListModel;
-import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
@@ -22,7 +21,8 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Frame;
+import java.awt.Dialog;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -40,26 +40,22 @@ public class DictionaryDialog extends JDialog {
     private JButton selectionSetButton;
     private JComboBox editorBox, selectionEditorBox;
     private JTable table;
+    private Runnable finishedRunnable;
 
-    public DictionaryDialog(Frame owner, FieldMapping fieldMapping) {
+    public DictionaryDialog(Dialog owner, FieldMapping fieldMapping, Runnable finishedRunnable) {
         super(owner, true);
+        setTitle(String.format("Dictionary for %s", fieldMapping.getFieldNameString()));
         this.fieldMapping = fieldMapping;
+        this.finishedRunnable = finishedRunnable;
         setTitle("Value Map for " + fieldMapping.getFieldDefinition().getTag());
         editorBox = new JComboBox(new EditorModel());
         JPanel p = new JPanel(new BorderLayout(6, 6));
-        p.setBorder(
-                BorderFactory.createCompoundBorder(
-                        BorderFactory.createEmptyBorder(6, 6, 6, 6),
-                        BorderFactory.createTitledBorder(fieldMapping.getFieldDefinition().getTag().toString())
-                )
-        );
         p.add(createSelectionSetter(), BorderLayout.NORTH);
         p.add(new JScrollPane(createTable()), BorderLayout.CENTER);
-        p.add(createButton(), BorderLayout.SOUTH);
+        p.add(createFinishedPanel(), BorderLayout.SOUTH);
         getContentPane().add(p);
-        setLocationRelativeTo(owner);
-        setLocation(owner.getWidth() / 3, 20);
-        setSize(owner.getWidth() / 2, owner.getHeight() - 60);
+        setLocation(owner.getLocation());
+        setSize(owner.getSize());
     }
 
     private JPanel createSelectionSetter() {
@@ -94,15 +90,18 @@ public class DictionaryDialog extends JDialog {
         return table;
     }
 
-    private JButton createButton() {
-        JButton ok = new JButton("OK, Finished");
-        ok.addActionListener(new ActionListener() {
+    private JPanel createFinishedPanel() {
+        JButton finished = new JButton("Finished");
+        finished.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 DictionaryDialog.this.setVisible(false);
+                finishedRunnable.run();
             }
         });
-        return ok;
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        panel.add(finished);
+        return panel;
     }
 
     private TableColumnModel createTableColumnModel() {

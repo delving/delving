@@ -23,7 +23,6 @@ package eu.europeana.sip.gui;
 
 import eu.delving.metadata.AnalysisTree;
 import eu.delving.metadata.CodeGenerator;
-import eu.delving.metadata.Dictionary;
 import eu.delving.metadata.FieldMapping;
 import eu.delving.metadata.Path;
 import eu.delving.metadata.SourceVariable;
@@ -36,7 +35,7 @@ import eu.europeana.sip.model.SipModel;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -58,7 +57,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.List;
-import java.util.TreeSet;
 
 /**
  * A Graphical interface for analysis
@@ -75,11 +73,11 @@ public class RefinementPanel extends JPanel {
     private JButton dictionaryEdit = new JButton("Edit");
     private JButton dictionaryDelete = new JButton("Delete");
     private JList mappingList;
-    private JFrame frame;
+    private JDialog parent;
 
-    public RefinementPanel(JFrame frame, SipModel sipModel) {
+    public RefinementPanel(JDialog parent, SipModel sipModel) {
         super(new BorderLayout());
-        this.frame = frame;
+        this.parent = parent;
         this.sipModel = sipModel;
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         split.setLeftComponent(createLeftSide());
@@ -171,11 +169,10 @@ public class RefinementPanel extends JPanel {
             public void actionPerformed(ActionEvent actionEvent) {
                 FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
                 if (fieldMapping != null) {
-                    fieldMapping.createDictionary(new TreeSet<String>(fieldMapping.getFieldDefinition().validation.factDefinition.options));
                     CodeGenerator codeGenerator = new CodeGenerator();
                     SourceVariable sourceVariable = getSourceVariable(fieldMapping);
+                    fieldMapping.createDictionary(sourceVariable.getNode().getStatistics().getHistogramValues());
                     codeGenerator.generateCodeFor(fieldMapping, sourceVariable, "", true);
-                    sipModel.getFieldCompileModel().compileSoon();
                     setFieldMapping(fieldMapping);
                 }
             }
@@ -183,9 +180,14 @@ public class RefinementPanel extends JPanel {
         dictionaryEdit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
+                final FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
                 if (fieldMapping != null) {
-                    DictionaryDialog dialog = new DictionaryDialog(frame, fieldMapping);
+                    DictionaryDialog dialog = new DictionaryDialog(parent, fieldMapping, new Runnable() {
+                        @Override
+                        public void run() {
+                            setFieldMapping(fieldMapping);
+                        }
+                    });
                     dialog.setVisible(true);
                 }
             }
@@ -199,7 +201,6 @@ public class RefinementPanel extends JPanel {
                     CodeGenerator codeGenerator = new CodeGenerator();
                     SourceVariable sourceVariable = getSourceVariable(fieldMapping);
                     codeGenerator.generateCodeFor(fieldMapping, sourceVariable, "", false);
-                    sipModel.getFieldCompileModel().compileSoon();
                     setFieldMapping(fieldMapping);
                 }
             }
@@ -268,7 +269,7 @@ public class RefinementPanel extends JPanel {
             sipModel.getFieldCompileModel().setSelectedPath(fieldMapping.getFieldDefinition().path.toString());
             AnalysisTree.Node node = getNode(fieldMapping);
             if (node != null) {
-                dictionaryCreate.setEnabled(fieldMapping.dictionary == null && Dictionary.isPossible(fieldMapping.getFieldDefinition(), node));
+                dictionaryCreate.setEnabled(fieldMapping.dictionary == null && CodeGenerator.isDictionaryPossible(fieldMapping.getFieldDefinition(), node));
             }
             else {
                 dictionaryCreate.setEnabled(false);

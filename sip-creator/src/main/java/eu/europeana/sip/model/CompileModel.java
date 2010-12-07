@@ -287,6 +287,7 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
                 }
             }
             catch (MappingException e) {
+                System.out.println(mappingCode); // todo remove
                 compilationComplete(e.getMessage());
                 notifyStateChange(State.ERROR);
             }

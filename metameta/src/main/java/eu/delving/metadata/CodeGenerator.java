@@ -80,6 +80,13 @@ public class CodeGenerator {
         return fieldMappings;
     }
 
+    public static boolean isDictionaryPossible(FieldDefinition fieldDefinition, AnalysisTree.Node node) {
+        return fieldDefinition.validation != null &&
+                    fieldDefinition.validation.factDefinition != null &&
+                    fieldDefinition.validation.factDefinition.options != null &&
+                    node.getStatistics().getHistogramValues() != null;
+    }
+
     // ===================== the rest is private
 
     private FieldMapping createUniqueMapping(List<FieldDefinition> unmappedFieldDefinitions, List<SourceVariable> variables) {
@@ -143,7 +150,7 @@ public class CodeGenerator {
             }
         }
         else {
-            if (Dictionary.isPossible(fieldDefinition, node) && dictionaryPreferred) {
+            if (isDictionaryPossible(fieldDefinition, node) && dictionaryPreferred) {
                 dictionaryCall(fieldMapping, node, variable);
             }
             else {
@@ -216,7 +223,7 @@ public class CodeGenerator {
         fieldMapping.createDictionary(node.getStatistics().getHistogramValues());
         fieldMapping.addCodeLine(
                 String.format(
-                        "%s.%s %s(%s)",
+                        "%s.%s %s_lookup(%s)",
                         fieldDefinition.getPrefix(),
                         fieldDefinition.getLocalName(),
                         fieldDefinition.getFieldNameString(),
