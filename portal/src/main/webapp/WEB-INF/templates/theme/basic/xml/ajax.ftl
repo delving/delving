@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <reply>
-<success>${success}</success>
+<success>${success?string}</success>
 <#if exception??>
     <exception>
         ${exception}

@@ -33,12 +33,9 @@ import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -66,12 +63,6 @@ public class UserAjaxController {
 
     @Autowired
     private SorlIndexUtil sorlIndexUtil;
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ModelAndView handleException(HttpServletRequest request, Exception exception) {
-        return failure(request, exception);
-    }
 
     @RequestMapping("/list-users.ajax")
     public ModelAndView listUsers() throws Exception {
@@ -192,17 +183,8 @@ public class UserAjaxController {
         return complete(true);
     }
 
-    private ModelAndView failure(HttpServletRequest request, Exception e) {
-        ModelAndView page = ControllerUtil.createModelAndViewPage("ajax");
-        page.addObject("success", false);
-        page.addObject("exception", getStackTrace(e));
-        clickStreamLogger.logUserAction(request, UserAction.AJAX_ERROR);
-        log.warn("Problem handling AJAX request", e);
-        return page;
-    }
-
     private static ModelAndView complete(boolean success) {
-        ModelAndView page = ControllerUtil.createModelAndViewPage("ajax");
+        ModelAndView page = ControllerUtil.createModelAndViewPage("xml/ajax");
         page.addObject("success", success);
         return page;
     }
