@@ -87,7 +87,7 @@
                 var portalName = "/${portalName}";
                 var baseThemePath = "/${portalName}/${portalTheme}";
             </script>
-            <@addCss ["reset.css","text.css","960.css","jquery-ui-1.8.5.custom.css","screen.css"], "screen"/>
+            <@addCss ["reset.css","text.css","960.css","jquery-ui-1.8.6.custom.css","screen.css"], "screen"/>
             <#if pageCssFiles?size &gt; 0>
                 <@addCss pageCssFiles/>
             </#if>
@@ -969,8 +969,9 @@
     <fieldset>
         <legend>Search</legend>
         <#--<input name="query" id="query" type="text" title="Europeana Search" maxlength="100" />-->
-        <input name="query" id="query" type="search" title="Search" maxlength="100" autofocus="true" class="ui-corner-all" />
-        <button id="submitSimpleSearch" type="submit"><@spring.message '_action.search' /></button>
+        <input name="query" id="query" type="query" title="Search" maxlength="100" autofocus="true" class="ui-corner-all" />
+        <#--<button id="submitSimpleSearch" type="submit" class="btn-strong"><@spring.message '_action.search' /></button>-->
+        <input type="submit" id="submitSimpleSearch" class="btn-strong" value="<@spring.message '_action.search' />"/>
         <nav>
         <a href="/${portalName}/advancedsearch.html" title="<@spring.message '_action.advanced.search' />"><@spring.message '_action.advanced.search' /></a>
         </nav>

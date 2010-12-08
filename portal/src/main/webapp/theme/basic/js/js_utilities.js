@@ -1,4 +1,5 @@
 
+
 function takeMeBack(){
     var futdate = new Date()		//Get the current time and date
     var expdate = futdate.getTime()  //Get the milliseconds since Jan 1, 1970
@@ -103,7 +104,7 @@ function styleUIButtons(){
 
     // style all the submit and button elements.
 
-    var buttons = $(document).find("input[type=submit],input[type=reset],button,a.button");
+    var buttons = $(document).find("input[type=submit].button,input[type=reset],button,a.button");
         buttons.addClass("fg-button ui-state-default ui-corner-all");
         buttons.css({'padding':'0.2em .25em'});
 // Todo: when icons added FF does not render them in the desired position
