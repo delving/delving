@@ -126,6 +126,15 @@ public class RecordMapping {
         }
     }
 
+    public void applyTemplate(RecordMapping template) {
+        if (!fieldMappings.isEmpty()) {
+            throw new RuntimeException("Field mappings must be empty to apply template");
+        }
+        for (FieldMapping fieldMapping : template.getFieldMappings()) {
+            fieldMappings.put(fieldMapping.getFieldDefinition().path.toString(), fieldMapping);
+        }
+    }
+
     public FieldMapping getFieldMapping(String path) {
         return fieldMappings.get(path);
     }

@@ -66,6 +66,13 @@ public class MappingModel {
         fireChangeEvent();
     }
 
+    public void applyTemplate(RecordMapping template) {
+        if (recordMapping.fieldMappings.isEmpty()) {
+            recordMapping.applyTemplate(template);
+            fireChangeEvent();
+        }
+    }
+
     // observable
 
     public interface Listener {

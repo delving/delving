@@ -215,10 +215,6 @@ public class RefinementPanel extends JPanel {
         });
         sipModel.addUpdateListener(new SipModel.UpdateListener() {
             @Override
-            public void templateApplied() {
-            }
-
-            @Override
             public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
             }
 

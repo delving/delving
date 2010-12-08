@@ -163,10 +163,6 @@ public class MappingPanel extends JPanel {
     private void wireUp() {
         sipModel.addUpdateListener(new SipModel.UpdateListener() {
             @Override
-            public void templateApplied() {
-            }
-
-            @Override
             public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
                 variablesList.clearSelection();
                 fieldList.clearSelection();

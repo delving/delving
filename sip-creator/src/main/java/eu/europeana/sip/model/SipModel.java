@@ -94,8 +94,6 @@ public class SipModel {
 
     public interface UpdateListener {
 
-        void templateApplied();
-
         void updatedDataSetStore(FileStore.DataSetStore dataSetStore);
 
         void updatedStatistics(Statistics statistics);
@@ -315,11 +313,8 @@ public class SipModel {
         }
         else {
             try {
-                mappingModel.getRecordMapping().getFieldMappings().addAll(template.getFieldMappings());
+                mappingModel.applyTemplate(template);
                 createMetadataParser(1);
-                for (UpdateListener updateListener : updateListeners) {
-                    updateListener.templateApplied();
-                }
             }
             catch (Exception e) {
                 userNotifier.tellUser("Unable to load template", e);
