@@ -21,26 +21,22 @@
 
             <section role="main" class="main">
 
-                <#--<h1><@spring.message '_cms.administration.pages' /></h1>-->
-
                 <div class="grid_8">
                     <h2><@spring.message '_cms.administration.pages' /></h2>
                     <table summary="List of existing pages" class="user-options zebra" width="100%">
                         <thead>
                         <tr>
-                            <th><@spring.message '_cms.existing.pages' /></th>
-                            <th></th>
-                            <th></th>
+                            <th colspan="3"><@spring.message '_cms.existing.pages' /></th>
                         </tr>
                         </thead>
                         <#list pagePathList as pagePath>
                             <tr>
-                                <td width="300">
+                                <td>
                                     <a href="${pagePath}?edit=true">
                                     <span class="ui-icon ui-icon-document"></span>
                                     <span class="ui-icon ui-icon-document"></span>
                                     ${pagePath}</a></td>
-                                <td width="85"><a href="${pagePath}?edit=true" class="btn-strong">
+                                <td width="100"><a href="${pagePath}?edit=true" class="btn-strong">
                                     <span class="ui-icon ui-icon-pencil"></span>
                                     <@spring.message '_cms.edit' /></a>
                                 </td>

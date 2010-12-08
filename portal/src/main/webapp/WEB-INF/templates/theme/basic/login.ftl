@@ -24,7 +24,7 @@
         <td>
             <a href="/${portalName}/forgot-password.html"><@spring.message '_mine.forgotpassword' /></a>
         </td>
-        <td align="right"><input name="submit_login" type="submit" value="<@spring.message '_mine.login' />"/></td>
+        <td align="right"><input name="submit_login" class="button" type="submit" value="<@spring.message '_mine.login' />"/></td>
     </tr>
 </table>
 <div id="login-err-msg"></div>
