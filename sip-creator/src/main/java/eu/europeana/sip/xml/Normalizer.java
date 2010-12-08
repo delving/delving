@@ -87,6 +87,7 @@ public class Normalizer implements Runnable {
     public void run() {
         FileStore.MappingOutput fileSetOutput = null;
         boolean store = normalizedFile != null;
+        ProgressAdapter progressAdapter = new ProgressAdapter(progressListener);
         try {
             RecordMapping recordMapping = sipModel.getMappingModel().getRecordMapping();
             if (recordMapping == null) {
@@ -104,7 +105,6 @@ public class Normalizer implements Runnable {
                 out.write(">\n");
             }
             MappingRunner mappingRunner = new MappingRunner(toolCodeResource.getCode() + recordMapping.toCompileCode(sipModel.getMetadataModel().getRecordDefinition()));
-            ProgressAdapter progressAdapter = new ProgressAdapter(progressListener);
             MetadataParser parser = new MetadataParser(sipModel.getDataSetStore().createXmlInputStream(), recordRoot, recordCount, progressAdapter);
             RecordValidator recordValidator = new RecordValidator(sipModel.getMetadataModel(), true);
             MetadataRecord record;
@@ -178,7 +178,6 @@ public class Normalizer implements Runnable {
                 fileSetOutput.getOutputWriter().write("</metadata>\n");
             }
             fileSetOutput.close(!progressAdapter.running);
-            listener.finished(progressAdapter.running);
         }
         catch (XMLStreamException e) {
             throw new RuntimeException("XML Problem", e);
@@ -198,7 +197,9 @@ public class Normalizer implements Runnable {
                     throw new RuntimeException("Couldn't close output properly");
                 }
             }
-            listener.finished(false);
+        }
+        finally {
+            listener.finished(progressAdapter.running);
         }
     }
 

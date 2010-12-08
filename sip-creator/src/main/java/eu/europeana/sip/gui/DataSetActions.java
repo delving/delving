@@ -27,6 +27,7 @@ import eu.delving.sip.DataSetState;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.FileType;
+import eu.delving.sip.Hasher;
 import eu.delving.sip.ProgressListener;
 import eu.europeana.sip.model.SipModel;
 
@@ -156,6 +157,7 @@ public class DataSetActions {
 
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                setEnabled(false);
                 final FileStore.DataSetStore store = entry.getDataSetStore();
                 try {
                     if (!store.getFacts().isValid()) {
@@ -185,7 +187,7 @@ public class DataSetActions {
                                     dataSetClient.uploadFile(FileType.MAPPING, mappingFile, progressListener, new Runnable() {
                                         @Override
                                         public void run() {
-                                            // todo: implement
+                                            setEntry(entry);
                                         }
                                     });
                                 }
@@ -197,7 +199,20 @@ public class DataSetActions {
 
             @Override
             boolean isEnabled(DataSetListModel.Entry entry) {
-                return entry.getDataSetStore() != null;
+                FileStore.DataSetStore store = entry.getDataSetStore();
+                if (store == null) {
+                    return false;
+                }
+                for (File file : store.getMappingFiles()) {
+                    if (readyForUpload(file)) {
+                        return true;
+                    }
+                }
+                return readyForUpload(store.getFactsFile()) || readyForUpload(store.getSourceFile());
+            }
+
+            private boolean readyForUpload(File file) {
+                return Hasher.getHash(file) == null;
             }
         };
     }
