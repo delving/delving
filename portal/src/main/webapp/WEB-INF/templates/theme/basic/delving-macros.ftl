@@ -260,7 +260,7 @@
     <#list seq?chunk(4) as row>
     <tr>
         <#list row as cell>
-        <td valign="bottom" class="${cell.type}" width="25%">
+        <td valign="bottom" class="${cell.type}">
             <div class="brief-thumb-container">
                 <#--<a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">-->
                 <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">
