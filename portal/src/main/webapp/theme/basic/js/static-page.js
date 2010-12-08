@@ -8,14 +8,15 @@ $(document).ready(function() {
             theme_advanced_path_location : "top"
         },
 
-        body_class : "${portalColor}",
+        body_class : "container_12",
         relative_urls : false,
         theme_advanced_toolbar_location : "top",
         theme_advanced_toolbar_align : "left",
         theme_advanced_buttons1 : "|,template,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,|,bullist,numlist,|,undo,redo,|,link,unlink,anchor,|,image,|,forecolor,backcolor,|,removeformat,code",
         theme_advanced_buttons2 : "",
         theme_advanced_statusbar_location : "bottom",
-        content_css : baseThemePath+"/css/reset-text-grid.css,"+baseThemePath+"/css/type.css,"+baseThemePath+"/css/screen.css,"+baseThemePath+"/css/colors.css",
+//        content_css : baseThemePath+"/css/reset.css,"+baseThemePath+"/css/text.css,"+baseThemePath+"/css/960.css,"+baseThemePath+"/css/screen.css",
+        content_css : baseThemePath+"/css/reset.css,"+baseThemePath+"/css/text.css,"+baseThemePath+"/css/960.css,"+baseThemePath+"/css/screen.css",
         external_image_list_url : portalName+"/_.img?javascript=true",
         template_external_list_url : baseThemePath+"/js/tiny-templates.js",
         external_link_list_url : portalName+"/_.dml?javascript=true"

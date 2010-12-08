@@ -38,6 +38,7 @@
                                 <td width="300">
                                     <a href="${pagePath}?edit=true">
                                     <span class="ui-icon ui-icon-document"></span>
+                                    <span class="ui-icon ui-icon-document"></span>
                                     ${pagePath}</a></td>
                                 <td width="85"><a href="${pagePath}?edit=true" class="btn-strong">
                                     <span class="ui-icon ui-icon-pencil"></span>
@@ -122,7 +123,7 @@
             <@addHeader "${portalDisplayName}", "",[],[]/>
 
             <section role="main" class="grid_12">
-                <div id="content" class="content-preview">
+                <div id="content" class="content-preview" >
                     ${page.getContent(locale)}
                 </div>
                 <#if edit??>
@@ -132,11 +133,14 @@
                                 <a href="javascript:toggleEditor('editor');" class=""><@spring.message '_cms.html.editor.show.hide' /></a>
 
                                 <textarea name="content" id="editor" style="width: 100%;height:550px;">${page.getContent(locale)}</textarea>
-                                <input type="submit" name="submit" value="<@spring.message '_cms.save' />"/>
+                                <hr/>
+                                <input type="submit" name="submit" class="btn-strong" value="<@spring.message '_cms.save' />"/>
                                 <a href="${page.path}" class="button"><@spring.message '_cms.cancel' /></a>
+                                <hr/>
                             </form>
                         </div>
                     <#else>
+                        <hr/>
                         <#if page.id??>
                             <p><a href="${page.path}?edit=true&version=${page.id}" class="button"><@spring.message '_cms.page.edit' /></a></p>
                         <#else>
@@ -146,6 +150,8 @@
                         <p><a href="/${portalName}/_.dml" class="button"><@spring.message '_cms.page.list' /></a></p>
 
                         <#if versionList?? && page.id??>
+                        <div class="grid_12 alpha">
+                            <hr/>
                             <h3><@spring.message '_cms.version.management' /></h3>
                             <p>
                                 <@spring.message '_cms.version.approve.explain' />
@@ -159,6 +165,7 @@
                                     </#if>
                                 </#list>
                             </ul>
+                        </div>
                         </#if>
                     </#if>
                 </#if>
