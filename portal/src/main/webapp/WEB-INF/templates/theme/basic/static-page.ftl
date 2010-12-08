@@ -23,14 +23,14 @@
 
                 <div class="grid_8">
                     <h2><@spring.message '_cms.administration.pages' /></h2>
-                    <table summary="List of existing pages" class="user-options zebra" width="100%">
+                    <table summary="List of existing pages" class="user-pages zebra" width="100%">
                         <thead>
                         <tr>
                             <th colspan="3"><@spring.message '_cms.existing.pages' /></th>
                         </tr>
                         </thead>
                         <#list pagePathList as pagePath>
-                            <tr>
+                            <tr  id="${pagePath_index}">
                                 <td>
                                     <a href="${pagePath}?edit=true">
                                     <span class="ui-icon ui-icon-document"></span>
@@ -41,7 +41,7 @@
                                     <@spring.message '_cms.edit' /></a>
                                 </td>
                                 <td width="100">
-                                     <a id="delete_${pagePath_index}" href="${pagePath}?delete=true">
+                                     <a class="delete" id="${pagePath_index}" href="${pagePath}?delete=true">
                                         <span class="ui-icon ui-icon-trash"></span>
                                           <@spring.message '_cms.delete' />
                                      </a>
@@ -74,17 +74,18 @@
                 $("a.delete").click(function(){
                     var target = $(this).attr("id");
                     var targetURL = $(this).attr("href");
-                    var confirmation = confirm("Pagina: "+targetURL +" verwijderen ?")
+                    var confirmation = confirm("Pagina: "+targetURL +" verwijderen ?");
                     if(confirmation){
                         $.ajax({
                             url: targetURL,
                             type: "POST",
                             data: "content=",
                             success: function(data) {
-                                window.location.reload();
+                                $("table.user-pages tr#"+target).css("display","none");
+                                showMessage("success","The page: "+targetURL+" has been deleted.");
                             },
                             error: function(data) {
-                                alert("page could not be deleted");
+                                showMessage("fail","The page: "+targetURL+" could not be deleted.");
                             }
                         });
                         return false;
