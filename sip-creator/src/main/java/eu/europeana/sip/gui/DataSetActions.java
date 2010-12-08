@@ -157,7 +157,6 @@ public class DataSetActions {
 
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                setEnabled(false);
                 final FileStore.DataSetStore store = entry.getDataSetStore();
                 try {
                     if (!store.getFacts().isValid()) {
@@ -170,8 +169,9 @@ public class DataSetActions {
                     return;
                 }
                 sipModel.setDataSetStore(entry.getDataSetStore());
+                setEnabled(false);
                 ProgressMonitor progressMonitor = new ProgressMonitor(frame, "Uploading", "Uploading files for " + store.getSpec(), 0, 100);
-                final ProgressListener progressListener = new ProgressListener.Adapter(progressMonitor, this);
+                final ProgressListener progressListener = new ProgressListener.Adapter(progressMonitor);
                 dataSetClient.uploadFile(FileType.FACTS, store.getFactsFile(), progressListener, new Runnable() {
                     @Override
                     public void run() {
@@ -187,7 +187,7 @@ public class DataSetActions {
                                     dataSetClient.uploadFile(FileType.MAPPING, mappingFile, progressListener, new Runnable() {
                                         @Override
                                         public void run() {
-                                            setEntry(entry);
+                                            DataSetActions.this.setEntry(entry);
                                         }
                                     });
                                 }
@@ -350,6 +350,7 @@ public class DataSetActions {
         hide.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                setEntry(entry);
                 frame.setVisible(false);
             }
         });
