@@ -55,6 +55,7 @@ public interface FileStore {
     DataSetStore createDataSetStore(String spec) throws FileStoreException;
 
     public interface DataSetStore {
+
         String getSpec();
 
         boolean hasSource();

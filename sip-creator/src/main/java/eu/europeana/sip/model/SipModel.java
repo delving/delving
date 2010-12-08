@@ -181,7 +181,7 @@ public class SipModel {
     }
 
     public String getServerUrl() {
-        return String.format("http://%s:8983/services/dataset",appConfig.getServerHost());
+        return String.format("http://%s:8983/services/dataset", appConfig.getServerHost());
     }
 
     public String getAccessKey() {
@@ -717,6 +717,12 @@ public class SipModel {
         public void run() {
             try {
                 dataSetStore.setFacts(facts);
+                for (String prefix : dataSetStore.getMappingPrefixes()) {
+                    RecordMapping recordMapping = dataSetStore.getRecordMapping(prefix);
+                    if (factModel.fillRecordMapping(recordMapping)) {
+                        dataSetStore.setRecordMapping(recordMapping);
+                    }
+                }
             }
             catch (FileStoreException e) {
                 userNotifier.tellUser("Unable to save facts", e);
