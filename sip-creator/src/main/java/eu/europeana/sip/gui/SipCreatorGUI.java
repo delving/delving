@@ -227,7 +227,7 @@ public class SipCreatorGUI extends JFrame {
 
     private JMenu createRepositoryMenu() {
         JMenu repository = new JMenu("Repository");
-        repository.add(new ServerHostAction());
+        repository.add(new ServerHostPortAction());
         repository.add(new AccessKeyAction());
         connectedBox.addItemListener(new ItemListener() {
             @Override
@@ -298,17 +298,17 @@ public class SipCreatorGUI extends JFrame {
         }
     }
 
-    private class ServerHostAction extends AbstractAction {
+    private class ServerHostPortAction extends AbstractAction {
 
-        public ServerHostAction() {
-            super("Server Host Name");
+        public ServerHostPortAction() {
+            super("Server Network Address");
         }
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            String serverHost = JOptionPane.showInputDialog(SipCreatorGUI.this, "Server Host Name", sipModel.getServerHost());
-            if (serverHost != null && !serverHost.isEmpty()) {
-                sipModel.setServerHost(serverHost);
+            String serverHostPort = JOptionPane.showInputDialog(SipCreatorGUI.this, "Server network address host:port (eg. delving.eu:8080).", sipModel.getServerHostPort());
+            if (serverHostPort != null && !serverHostPort.isEmpty()) {
+                sipModel.setServerHostPort(serverHostPort);
             }
         }
     }

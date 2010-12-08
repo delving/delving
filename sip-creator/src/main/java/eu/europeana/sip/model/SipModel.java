@@ -171,17 +171,17 @@ public class SipModel {
         return factModel;
     }
 
-    public String getServerHost() {
-        return appConfig.getServerHost();
+    public String getServerHostPort() {
+        return appConfig.getServerHostPort();
     }
 
-    public void setServerHost(String host) {
-        appConfig.setServerHost(host);
+    public void setServerHostPort(String hostPort) {
+        appConfig.setServerHostPort(hostPort);
         executor.execute(new AppConfigSetter());
     }
 
     public String getServerUrl() {
-        return String.format("http://%s:8983/services/dataset", appConfig.getServerHost());
+        return String.format("http://%s/services/dataset", appConfig.getServerHostPort());
     }
 
     public String getAccessKey() {
