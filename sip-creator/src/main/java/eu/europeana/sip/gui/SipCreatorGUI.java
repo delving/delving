@@ -106,9 +106,11 @@ public class SipCreatorGUI extends JFrame {
 
             @Override
             public void setList(List<DataSetInfo> list) {
-                for (DataSetInfo dataSetInfo : list) {
-                    dataSetListModel.setDataSetInfo(dataSetInfo);
-                    dataSetActions.setDataSetInfo(dataSetInfo);
+                if (list != null) {
+                    for (DataSetInfo dataSetInfo : list) {
+                        dataSetListModel.setDataSetInfo(dataSetInfo);
+                        dataSetActions.setDataSetInfo(dataSetInfo);
+                    }
                 }
             }
 
@@ -168,7 +170,7 @@ public class SipCreatorGUI extends JFrame {
                 br.close();
             }
             catch (IOException e) {
-                throw new FileStoreException("Unable to read the file "+fileStoreDirectory.getAbsolutePath());
+                throw new FileStoreException("Unable to read the file " + fileStoreDirectory.getAbsolutePath());
             }
         }
         return fileStoreDirectory;
@@ -322,7 +324,7 @@ public class SipCreatorGUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             JPasswordField passwordField = new JPasswordField(sipModel.getAccessKey());
-            Object[] msg = { "Server Access Key", passwordField };
+            Object[] msg = {"Server Access Key", passwordField};
             int result = JOptionPane.showConfirmDialog(SipCreatorGUI.this, msg, "Permission", JOptionPane.OK_CANCEL_OPTION);
             if (result == JOptionPane.OK_OPTION) {
                 sipModel.setServerAccessKey(new String(passwordField.getPassword()));
