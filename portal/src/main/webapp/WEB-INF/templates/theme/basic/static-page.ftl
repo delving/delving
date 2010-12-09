@@ -123,19 +123,21 @@
                 <div id="content" class="content-preview" >
                     ${page.getContent(locale)}
                 </div>
+                <div class="clear"></div>
                 <#if edit??>
                     <#if edit>
                         <div id="pageForm">
                             <form action="${page.path}" method="POST" id="form-edit">
                                 <a href="javascript:toggleEditor('editor');" class=""><@spring.message '_cms.html.editor.show.hide' /></a>
 
-                                <textarea name="content" id="editor" style="width: 100%;height:550px;">${page.getContent(locale)}</textarea>
+                                <textarea name="content" id="editor" style="width: 100%;height:400px;">${page.getContent(locale)}</textarea>
                                 <hr/>
-                                <input type="submit" name="submit" class="btn-strong" value="<@spring.message '_cms.save' />"/>
+                                <input type="submit" name="submit" class="button btn-strong" value="<@spring.message '_cms.save' />"/>
                                 <a href="${page.path}" class="button"><@spring.message '_cms.cancel' /></a>
                                 <hr/>
                             </form>
                         </div>
+                        <div class="clear"></div>
                     <#else>
                         <hr/>
                         <#if page.id??>

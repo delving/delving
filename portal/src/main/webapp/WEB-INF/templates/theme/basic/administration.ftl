@@ -66,7 +66,7 @@
                                     <option value="ROLE_USER"><@spring.message '_cms.user.role.public' /></option>
                                 </select>
                             </td>
-                            <td><input type="submit" value="<@spring.message '_cms.change' />" class="btn-strong"/> </td>
+                            <td><input type="submit" class="button btn-strong" value="<@spring.message '_cms.change' />" class="btn-strong"/> </td>
                             <td><button id="rem-user" class="btn-strong delete"><@spring.message '_cms.delete' /></button> </td>
                         </tr>
                    </form>
