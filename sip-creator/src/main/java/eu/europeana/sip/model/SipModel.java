@@ -94,8 +94,6 @@ public class SipModel {
 
     public interface UpdateListener {
 
-        void templateApplied();
-
         void updatedDataSetStore(FileStore.DataSetStore dataSetStore);
 
         void updatedStatistics(Statistics statistics);
@@ -138,8 +136,10 @@ public class SipModel {
         fieldCompileModel.addListener(new CompileModel.Listener() {
             @Override
             public void stateChanged(CompileModel.State state) {
-                if (state == CompileModel.State.COMMITTED) {
-                    mappingSaveTimer.mappingChanged(null);
+                switch (state) {
+                    case COMMITTED:
+                    case REGENERATED:
+                        mappingSaveTimer.mappingChanged(null);
                 }
             }
         });
@@ -171,17 +171,17 @@ public class SipModel {
         return factModel;
     }
 
-    public String getServerHost() {
-        return appConfig.getServerHost();
+    public String getServerHostPort() {
+        return appConfig.getServerHostPort();
     }
 
-    public void setServerHost(String host) {
-        appConfig.setServerHost(host);
+    public void setServerHostPort(String hostPort) {
+        appConfig.setServerHostPort(hostPort);
         executor.execute(new AppConfigSetter());
     }
 
     public String getServerUrl() {
-        return String.format("http://%s:8983/services/dataset", appConfig.getServerHost());
+        return String.format("http://%s/services/dataset", appConfig.getServerHostPort());
     }
 
     public String getAccessKey() {
@@ -315,11 +315,8 @@ public class SipModel {
         }
         else {
             try {
-                mappingModel.getRecordMapping().getFieldMappings().addAll(template.getFieldMappings());
+                mappingModel.applyTemplate(template);
                 createMetadataParser(1);
-                for (UpdateListener updateListener : updateListeners) {
-                    updateListener.templateApplied();
-                }
             }
             catch (Exception e) {
                 userNotifier.tellUser("Unable to load template", e);
@@ -369,7 +366,7 @@ public class SipModel {
         return facts;
     }
 
-    public void normalize(File normalizeDirectory, boolean discardInvalid, ProgressListener progressListener) {
+    public void normalize(File normalizeDirectory, boolean discardInvalid, final ProgressListener progressListener) {
         checkSwingThread();
         normalizeMessage(false, "Normalizing and validating...");
         executor.execute(new Normalizer(
@@ -382,6 +379,7 @@ public class SipModel {
                 new Normalizer.Listener() {
                     @Override
                     public void invalidInput(final MappingException exception) {
+                        userNotifier.tellUser("Problem normalizing " + exception.getMetadataRecord().toString(), exception);
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
@@ -392,6 +390,7 @@ public class SipModel {
 
                     @Override
                     public void invalidOutput(final RecordValidationException exception) {
+                        userNotifier.tellUser("Invalid output record", exception);
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
@@ -545,7 +544,7 @@ public class SipModel {
     private void normalizeMessage(RecordMapping recordMapping) {
         Date date = new Date(recordMapping.getNormalizeTime());
         String message = String.format(
-                "Completed at %tT on %tY-%tm-%td with %d normalized, and %d discarded",
+                "<html>Completed at %tT on %tY-%tm-%td<br>with %d normalized, and %d discarded",
                 date, date, date, date,
                 recordMapping.getRecordsNormalized(),
                 recordMapping.getRecordsDiscarded()

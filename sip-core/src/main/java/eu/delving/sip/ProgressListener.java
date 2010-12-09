@@ -46,6 +46,10 @@ public interface ProgressListener {
         private Action launchAction;
         private Runnable finishedRunnable;
 
+        public Adapter(ProgressMonitor progressMonitor) {
+            this(progressMonitor, (Action) null);
+        }
+
         public Adapter(ProgressMonitor progressMonitor, Action launchAction) {
             this.progressMonitor = progressMonitor;
             this.launchAction = launchAction;

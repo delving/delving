@@ -52,10 +52,6 @@ public class MappingMenu extends JMenu {
         sipModel.addUpdateListener(new SipModel.UpdateListener() {
 
             @Override
-            public void templateApplied() {
-            }
-
-            @Override
             public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
                 refresh();
             }

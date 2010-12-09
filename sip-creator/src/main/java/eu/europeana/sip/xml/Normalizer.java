@@ -55,8 +55,9 @@ public class Normalizer implements Runnable {
     private int recordCount;
     private boolean discardInvalid;
     private File normalizedFile;
-    private ProgressListener progressListener;
+    private ProgressAdapter progressAdapter;
     private Listener listener;
+    private volatile boolean running = true;
 
     public interface Listener {
         void invalidInput(MappingException exception);
@@ -80,14 +81,13 @@ public class Normalizer implements Runnable {
         this.recordCount = recordCount;
         this.discardInvalid = discardInvalid;
         this.normalizedFile = normalizedFile;
-        this.progressListener = progressListener;
+        this.progressAdapter = new ProgressAdapter(progressListener);
         this.listener = listener;
     }
 
     public void run() {
         FileStore.MappingOutput fileSetOutput = null;
         boolean store = normalizedFile != null;
-        ProgressAdapter progressAdapter = new ProgressAdapter(progressListener);
         try {
             RecordMapping recordMapping = sipModel.getMappingModel().getRecordMapping();
             if (recordMapping == null) {
@@ -108,7 +108,7 @@ public class Normalizer implements Runnable {
             MetadataParser parser = new MetadataParser(sipModel.getDataSetStore().createXmlInputStream(), recordRoot, recordCount, progressAdapter);
             RecordValidator recordValidator = new RecordValidator(sipModel.getMetadataModel(), true);
             MetadataRecord record;
-            while ((record = parser.nextRecord()) != null && progressAdapter.running) {
+            while ((record = parser.nextRecord()) != null && running) {
                 try {
                     String output = mappingRunner.runMapping(record);
                     List<String> problems = new ArrayList<String>();
@@ -134,16 +134,13 @@ public class Normalizer implements Runnable {
                             }
                             catch (IOException e1) {
                                 sipModel.getUserNotifier().tellUser("Unable to write discarded record", e1);
+                                abort();
                             }
                         }
                     }
                     else {
-                        sipModel.getUserNotifier().tellUser("Problem normalizing " + record.toString(), e);
                         listener.invalidInput(e);
-                        if (store) {
-                            fileSetOutput.close(true);
-                        }
-                        progressAdapter.running = false;
+                        abort();
                     }
                 }
                 catch (RecordValidationException e) {
@@ -157,27 +154,24 @@ public class Normalizer implements Runnable {
                             }
                             catch (IOException e1) {
                                 sipModel.getUserNotifier().tellUser("Unable to write discarded record", e1);
+                                abort();
                             }
                         }
                     }
                     else {
-                        sipModel.getUserNotifier().tellUser("Invalid output record", e);
                         listener.invalidOutput(e);
-                        if (store) {
-                            fileSetOutput.close(true);
-                        }
-                        progressAdapter.running = false;
+                        abort();
                     }
                 }
                 catch (Exception e) {
                     sipModel.getUserNotifier().tellUser("Problem writing output", e);
-                    progressAdapter.running = false;
+                    abort();
                 }
             }
             if (store) {
                 fileSetOutput.getOutputWriter().write("</metadata>\n");
             }
-            fileSetOutput.close(!progressAdapter.running);
+            fileSetOutput.close(!running);
         }
         catch (XMLStreamException e) {
             throw new RuntimeException("XML Problem", e);
@@ -199,16 +193,23 @@ public class Normalizer implements Runnable {
             }
         }
         finally {
-            listener.finished(progressAdapter.running);
+            listener.finished(running);
+            if (!running) { // aborted, so metadataparser will not call finished()
+                progressAdapter.finished();
+            }
         }
+    }
+
+    private void abort() {
+        running = false;
     }
 
     private void writeNamespace(Writer writer, MetadataNamespace namespace) throws IOException {
         writer.write(String.format(" xmlns:%s=\"%s\"", namespace.getPrefix(), namespace.getUri()));
     }
 
+    // just so we receive the cancel signal
     private class ProgressAdapter implements ProgressListener {
-        private volatile boolean running = true;
         private ProgressListener progressListener;
 
         private ProgressAdapter(ProgressListener progressListener) {

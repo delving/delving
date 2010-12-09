@@ -38,6 +38,7 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -197,6 +198,26 @@ public class RefinementPanel extends JPanel {
             public void actionPerformed(ActionEvent actionEvent) {
                 FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
                 if (fieldMapping != null) {
+                    int nonemptyEntries = 0;
+                    for (String value : fieldMapping.dictionary.values()) {
+                        if (!value.trim().isEmpty()) {
+                            nonemptyEntries++;
+                        }
+                    }
+                    if (nonemptyEntries > 0) {
+                        int response = JOptionPane.showConfirmDialog(
+                                parent,
+                                String.format(
+                                        "Are you sure that you want to discard the %d entries set?",
+                                        nonemptyEntries
+                                ),
+                                "Delete Dictionary",
+                                JOptionPane.OK_CANCEL_OPTION
+                        );
+                        if (response != JOptionPane.OK_OPTION) {
+                            return;
+                        }
+                    }
                     fieldMapping.dictionary = null;
                     CodeGenerator codeGenerator = new CodeGenerator();
                     SourceVariable sourceVariable = getSourceVariable(fieldMapping);
@@ -214,10 +235,6 @@ public class RefinementPanel extends JPanel {
             }
         });
         sipModel.addUpdateListener(new SipModel.UpdateListener() {
-            @Override
-            public void templateApplied() {
-            }
-
             @Override
             public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
             }

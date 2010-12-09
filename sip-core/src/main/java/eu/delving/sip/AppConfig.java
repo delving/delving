@@ -32,20 +32,20 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("sip-creator-configuration")
 public class AppConfig {
-    private String serverHost;
+    private String serverHostPort;
     private String accessKey;
     private String recentDirectory;
     private String normalizeDirectory;
 
-    public String getServerHost() {
-        if (serverHost == null) {
-            serverHost = "localhost";
+    public String getServerHostPort() {
+        if (serverHostPort == null) {
+            serverHostPort = "localhost:8983";
         }
-        return serverHost;
+        return serverHostPort;
     }
 
-    public void setServerHost(String serverHost) {
-        this.serverHost = serverHost;
+    public void setServerHostPort(String serverHostPort) {
+        this.serverHostPort = serverHostPort;
     }
 
     public String getAccessKey() {

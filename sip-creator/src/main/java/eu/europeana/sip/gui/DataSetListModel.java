@@ -188,7 +188,10 @@ public class DataSetListModel extends AbstractListModel {
                         html.append("<p>Data set is queued for indexing, which should start shortly.</p>");
                         break;
                     case UPLOADED:
-                        html.append("<p>Data Set is fully uploaded, and it can now be indexed.</p>");
+                        html.append(String.format(
+                                "<p>Data Set is fully uploaded with %d records.</p>",
+                                dataSetInfo.recordCount
+                        ));
                         break;
                     default:
                         throw new RuntimeException();

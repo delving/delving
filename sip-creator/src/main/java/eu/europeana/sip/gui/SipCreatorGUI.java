@@ -106,9 +106,11 @@ public class SipCreatorGUI extends JFrame {
 
             @Override
             public void setList(List<DataSetInfo> list) {
-                for (DataSetInfo dataSetInfo : list) {
-                    dataSetListModel.setDataSetInfo(dataSetInfo);
-                    dataSetActions.setDataSetInfo(dataSetInfo);
+                if (list != null) {
+                    for (DataSetInfo dataSetInfo : list) {
+                        dataSetListModel.setDataSetInfo(dataSetInfo);
+                        dataSetActions.setDataSetInfo(dataSetInfo);
+                    }
                 }
             }
 
@@ -168,7 +170,7 @@ public class SipCreatorGUI extends JFrame {
                 br.close();
             }
             catch (IOException e) {
-                throw new FileStoreException("Unable to read the file "+fileStoreDirectory.getAbsolutePath());
+                throw new FileStoreException("Unable to read the file " + fileStoreDirectory.getAbsolutePath());
             }
         }
         return fileStoreDirectory;
@@ -227,7 +229,7 @@ public class SipCreatorGUI extends JFrame {
 
     private JMenu createRepositoryMenu() {
         JMenu repository = new JMenu("Repository");
-        repository.add(new ServerHostAction());
+        repository.add(new ServerHostPortAction());
         repository.add(new AccessKeyAction());
         connectedBox.addItemListener(new ItemListener() {
             @Override
@@ -298,17 +300,17 @@ public class SipCreatorGUI extends JFrame {
         }
     }
 
-    private class ServerHostAction extends AbstractAction {
+    private class ServerHostPortAction extends AbstractAction {
 
-        public ServerHostAction() {
-            super("Server Host Name");
+        public ServerHostPortAction() {
+            super("Server Network Address");
         }
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            String serverHost = JOptionPane.showInputDialog(SipCreatorGUI.this, "Server Host Name", sipModel.getServerHost());
-            if (serverHost != null && !serverHost.isEmpty()) {
-                sipModel.setServerHost(serverHost);
+            String serverHostPort = JOptionPane.showInputDialog(SipCreatorGUI.this, "Server network address host:port (eg. delving.eu:8080).", sipModel.getServerHostPort());
+            if (serverHostPort != null && !serverHostPort.isEmpty()) {
+                sipModel.setServerHostPort(serverHostPort);
             }
         }
     }
@@ -322,7 +324,7 @@ public class SipCreatorGUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             JPasswordField passwordField = new JPasswordField(sipModel.getAccessKey());
-            Object[] msg = { "Server Access Key", passwordField };
+            Object[] msg = {"Server Access Key", passwordField};
             int result = JOptionPane.showConfirmDialog(SipCreatorGUI.this, msg, "Permission", JOptionPane.OK_CANCEL_OPTION);
             if (result == JOptionPane.OK_OPTION) {
                 sipModel.setServerAccessKey(new String(passwordField.getPassword()));
