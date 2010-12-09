@@ -136,8 +136,10 @@ public class SipModel {
         fieldCompileModel.addListener(new CompileModel.Listener() {
             @Override
             public void stateChanged(CompileModel.State state) {
-                if (state == CompileModel.State.COMMITTED) {
-                    mappingSaveTimer.mappingChanged(null);
+                switch (state) {
+                    case COMMITTED:
+                    case REGENERATED:
+                        mappingSaveTimer.mappingChanged(null);
                 }
             }
         });

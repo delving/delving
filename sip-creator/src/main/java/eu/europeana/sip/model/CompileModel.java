@@ -79,7 +79,8 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
         PRISTINE,
         EDITED,
         ERROR,
-        COMMITTED
+        COMMITTED,
+        REGENERATED
     }
 
     public CompileModel(Type type, MetadataModel metadataModel, ToolCodeResource toolCodeResource) {
@@ -102,10 +103,16 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     }
 
     public void setSelectedPath(String selectedPath) {
-        this.selectedPath = selectedPath;
-        log.info("Selected path "+selectedPath);
+        if (this.selectedPath != null && this.selectedPath.equals(selectedPath)) {
+            log.info("Selected path unchanged at "+selectedPath);
+            notifyStateChange(State.REGENERATED);
+        }
+        else {
+            this.selectedPath = selectedPath;
+            log.info("Selected path changed to "+selectedPath);
+            notifyStateChange(State.PRISTINE);
+        }
         SwingUtilities.invokeLater(new DocumentSetter(codeDocument, getDisplayCode()));
-        notifyStateChange(State.PRISTINE);
         compileSoon();
     }
 
