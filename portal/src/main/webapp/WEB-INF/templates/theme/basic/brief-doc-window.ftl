@@ -1,14 +1,13 @@
 <#compress>
-<#--<#assign queryStringForPresentation = queryStringForPresentation/>-->
-<#--<#assign queryToSave = queryToSave />-->
+
 <#assign view = "table"/>
 <#if RequestParameters.view??>
     <#assign view = "${RequestParameters.view}"/>
 </#if>
 <#if RequestParameters.start??>
     <#assign start = "${RequestParameters.start}"/>
-    <#else>
-        <#assign start = "1"/>
+<#else>
+    <#assign start = "1"/>
 </#if>
 <#if RequestParameters.query??>
     <#assign justTheQuery = "${RequestParameters.query}"/>
@@ -17,6 +16,7 @@
 <#include "includeMarcos.ftl">
 
 <@addHeader "${portalDisplayName}", "",["results.js"],[]/>
+
 <script type="text/javascript">
     var msgSearchSaveSuccess = "<@spring.message '_portal.ui.message.success.search.saved'/>";
     var msgSearchSaveFail = "<@spring.message '_mine.user.notification.failure.search.saved'/>";

@@ -154,10 +154,12 @@
     <#if contentOnly!="true">
         <footer class="grid_12">
             <div class="inner">
-
+                <div id="footer-dynamic-content"></div>
             </div>
         </footer>
-
+        <script type="text/javascript">
+            delvingPageCall("#footer-dynamic-content", portalName+"/footer.dml?embedded=true"," "," "," ");
+        </script>
 
         </div><#-- // container_12 -->
         <#if trackingCode??>

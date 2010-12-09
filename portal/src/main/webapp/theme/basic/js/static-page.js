@@ -17,6 +17,7 @@ $(document).ready(function() {
         theme_advanced_statusbar_location : "bottom",
 //        content_css : baseThemePath+"/css/reset.css,"+baseThemePath+"/css/text.css,"+baseThemePath+"/css/960.css,"+baseThemePath+"/css/screen.css",
         content_css : baseThemePath+"/css/reset.css,"+baseThemePath+"/css/text.css,"+baseThemePath+"/css/960.css,"+baseThemePath+"/css/screen.css",
+        extended_valid_elements : "dl|dt|dd",        
         external_image_list_url : portalName+"/_.img?javascript=true",
         template_external_list_url : baseThemePath+"/js/tiny-templates.js",
         external_link_list_url : portalName+"/_.dml?javascript=true"

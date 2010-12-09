@@ -652,19 +652,19 @@ h3.header.light-blue {
     background: #A1D3F8;
 }
 
-dl.info-box .green {
+dl.info-box .green, h3.header.green {
 	background: #669933 url(../images/gradients-sprite.png) repeat-x 0 -50px;
 	background: -moz-linear-gradient(100% 100% 90deg, #336600, #669933);
   	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#669933), to(#336600));
 }
 
-dl.info-box .red {
+dl.info-box .red, h3.header.red  {
 	background: #663333 url(../images/gradients-sprite.png) repeat-x 0 -100px;
 	background: -moz-linear-gradient(100% 100% 90deg, #663333, #993333);
   	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#993333), to(#663333));
 }
 
-dl.info-box .gold {
+dl.info-box .gold,h3.header.gold {
 	background: #f9ae40 url(../images/gradients-sprite.png) repeat-x 0 -150px;
 	background: -moz-linear-gradient(100% 100% 90deg, #f9ae40, #ffcc33);
   	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffcc33), to(#f9ae40));
@@ -722,6 +722,7 @@ dl.menu dd {
     padding: 4px 0 4px 4px;
     clear: both;
     height: auto;
+    overflow: hidden;
 }
 dl.menu dd.container {
     border-bottom: none;

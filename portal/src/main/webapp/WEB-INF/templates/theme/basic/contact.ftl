@@ -1,5 +1,3 @@
-<#assign thisPage = "contact.html"/>
-<#assign  pageId = "contact"/>
 <#include "includeMarcos.ftl">
 
 <@addHeader "${portalDisplayName}", "",[],[]/>
