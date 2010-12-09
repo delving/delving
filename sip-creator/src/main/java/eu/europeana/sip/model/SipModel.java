@@ -540,7 +540,7 @@ public class SipModel {
     private void normalizeMessage(RecordMapping recordMapping) {
         Date date = new Date(recordMapping.getNormalizeTime());
         String message = String.format(
-                "Completed at %tT on %tY-%tm-%td with %d normalized, and %d discarded",
+                "<html>Completed at %tT on %tY-%tm-%td<br>with %d normalized, and %d discarded",
                 date, date, date, date,
                 recordMapping.getRecordsNormalized(),
                 recordMapping.getRecordsDiscarded()
