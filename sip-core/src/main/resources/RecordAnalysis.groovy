@@ -18,7 +18,7 @@ class RecordAnalysis {
 
   def consumeRecord(input) {
     recordCount++;
-    int fieldCount = input.breadthFirst().size();
+    int fieldCount = input."**".size();
     if (fieldCount > maxNodes) {
       maxNodes = fieldCount;
     }

@@ -24,7 +24,6 @@ package eu.europeana.sip.core;
 import groovy.lang.DelegatingMetaClass;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClass;
-import groovy.xml.QName;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,12 +36,8 @@ import java.util.List;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
+@SuppressWarnings("unchecked")
 public class GroovyNodeList extends ArrayList<Object> {
-    static {
-        // wrap the standard MetaClass with the delegate
-        setMetaClass(GroovyNodeList.class, GroovySystem.getMetaClassRegistry().getMetaClass(GroovyNodeList.class));
-    }
-
     public GroovyNodeList() {
     }
 
@@ -50,9 +45,68 @@ public class GroovyNodeList extends ArrayList<Object> {
         super(collection);
     }
 
-    public GroovyNodeList(int size) {
-        super(size);
+    /**
+     * Provides lookup of elements by non-namespaced name.
+     *
+     * @param name the name or shortcut key for nodes of interest
+     * @return the nodes of interest which match name
+     */
+    public GroovyNodeList getAt(String name) {
+        GroovyNodeList answer = new GroovyNodeList();
+        for (Object child : this) {
+            if (child instanceof GroovyNode) {
+                GroovyNode childNode = (GroovyNode) child;
+                Object temp = childNode.get(name);
+                if (temp instanceof Collection) {
+                    answer.addAll((Collection<Object>) temp);
+                }
+                else {
+                    answer.add(temp);
+                }
+            }
+        }
+        return answer;
     }
+
+    /**
+     * Returns the text value of all of the elements in the collection.
+     *
+     * @return the text value of all the elements in the collection or null
+     */
+    public String text() {
+        String previousText = null;
+        StringBuffer buffer = null;
+        for (Object child : this) {
+            String text = null;
+            if (child instanceof String) {
+                text = (String) child;
+            }
+            else if (child instanceof GroovyNode) {
+                text = ((GroovyNode) child).text();
+            }
+            if (text != null) {
+                if (previousText == null) {
+                    previousText = text;
+                }
+                else {
+                    if (buffer == null) {
+                        buffer = new StringBuffer();
+                        buffer.append(previousText);
+                    }
+                    buffer.append(text);
+                }
+            }
+        }
+        if (buffer != null) {
+            return buffer.toString();
+        }
+        if (previousText != null) {
+            return previousText;
+        }
+        return "";
+    }
+
+    // privates
 
     protected static void setMetaClass(final Class nodelistClass, final MetaClass metaClass) {
         final MetaClass newMetaClass = new DelegatingMetaClass(metaClass) {
@@ -89,85 +143,27 @@ public class GroovyNodeList extends ArrayList<Object> {
         GroovySystem.getMetaClassRegistry().setMetaClass(nodelistClass, newMetaClass);
     }
 
-    /**
-     * Provides lookup of elements by non-namespaced name.
-     *
-     * @param name the name or shortcut key for nodes of interest
-     * @return the nodes of interest which match name
-     */
-    public GroovyNodeList getAt(String name) {
-        GroovyNodeList answer = new GroovyNodeList();
-        for (Iterator iter = iterator(); iter.hasNext();) {
-            Object child = iter.next();
-            if (child instanceof GroovyNode) {
-                GroovyNode childNode = (GroovyNode) child;
-                Object temp = childNode.get(name);
-                if (temp instanceof Collection) {
-                    answer.addAll((Collection<Object>)temp);
-                }
-                else {
-                    answer.add(temp);
-                }
-            }
-        }
-        return answer;
+    static {
+        setMetaClass(GroovyNodeList.class, GroovySystem.getMetaClassRegistry().getMetaClass(GroovyNodeList.class));
     }
 
-    /**
-     * Provides lookup of elements by QName.
-     *
-     * @param name the name or shortcut key for nodes of interest
-     * @return the nodes of interest which match name
-     */
-    public GroovyNodeList getAt(QName name) {
-        GroovyNodeList answer = new GroovyNodeList();
-        for (Iterator iter = iterator(); iter.hasNext();) {
-            Object child = iter.next();
-            if (child instanceof GroovyNode) {
-                GroovyNode childNode = (GroovyNode) child;
-                GroovyNodeList temp = childNode.getAt(name);
-                answer.addAll(temp);
-            }
-        }
-        return answer;
-    }
-
-    /**
-     * Returns the text value of all of the elements in the collection.
-     *
-     * @return the text value of all the elements in the collection or null
-     */
-    public String text() {
-        String previousText = null;
-        StringBuffer buffer = null;
-        for (Iterator iter = this.iterator(); iter.hasNext();) {
-            Object child = iter.next();
-            String text = null;
-            if (child instanceof String) {
-                text = (String) child;
-            }
-            else if (child instanceof GroovyNode) {
-                text = ((GroovyNode) child).text();
-            }
-            if (text != null) {
-                if (previousText == null) {
-                    previousText = text;
-                }
-                else {
-                    if (buffer == null) {
-                        buffer = new StringBuffer();
-                        buffer.append(previousText);
-                    }
-                    buffer.append(text);
-                }
-            }
-        }
-        if (buffer != null) {
-            return buffer.toString();
-        }
-        if (previousText != null) {
-            return previousText;
-        }
-        return "";
-    }
+//    /**
+//     * Provides lookup of elements by QName.
+//     *
+//     * @param name the name or shortcut key for nodes of interest
+//     * @return the nodes of interest which match name
+//     */
+//    public GroovyNodeList getAt(QName name) {
+//        GroovyNodeList answer = new GroovyNodeList();
+//        for (Iterator iter = iterator(); iter.hasNext();) {
+//            Object child = iter.next();
+//            if (child instanceof GroovyNode) {
+//                GroovyNode childNode = (GroovyNode) child;
+//                GroovyNodeList temp = childNode.getAt(name);
+//                answer.addAll(temp);
+//            }
+//        }
+//        return answer;
+//    }
+//
 }
