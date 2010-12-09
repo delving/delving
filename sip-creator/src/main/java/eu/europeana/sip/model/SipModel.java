@@ -366,7 +366,7 @@ public class SipModel {
         return facts;
     }
 
-    public void normalize(File normalizeDirectory, boolean discardInvalid, ProgressListener progressListener) {
+    public void normalize(File normalizeDirectory, boolean discardInvalid, final ProgressListener progressListener) {
         checkSwingThread();
         normalizeMessage(false, "Normalizing and validating...");
         executor.execute(new Normalizer(
@@ -379,6 +379,7 @@ public class SipModel {
                 new Normalizer.Listener() {
                     @Override
                     public void invalidInput(final MappingException exception) {
+                        userNotifier.tellUser("Problem normalizing " + exception.getMetadataRecord().toString(), exception);
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
@@ -389,6 +390,7 @@ public class SipModel {
 
                     @Override
                     public void invalidOutput(final RecordValidationException exception) {
+                        userNotifier.tellUser("Invalid output record", exception);
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
