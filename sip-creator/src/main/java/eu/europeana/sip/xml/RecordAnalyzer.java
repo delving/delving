@@ -24,6 +24,7 @@ package eu.europeana.sip.xml;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.ProgressListener;
 import eu.europeana.sip.core.GroovyCodeResource;
+import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.model.SipModel;
 import groovy.lang.GroovyClassLoader;
 import groovy.xml.MarkupBuilder;
@@ -80,9 +81,9 @@ public class RecordAnalyzer implements Runnable {
                     sipModel.getRecordCount(),
                     progressAdapter
             );
-            Object record;
+            MetadataRecord record;
             while ((record = parser.nextRecord()) != null && running) {
-                consumeRecordMethod.invoke(groovyInstance, record);
+                consumeRecordMethod.invoke(groovyInstance, record.getRootNode());
             }
         }
         catch (XMLStreamException e) {

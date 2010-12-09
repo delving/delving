@@ -13,17 +13,24 @@
      */
 
 class RecordAnalysis {
-  int recordCount = 0;
+  int maxNodes;
+  int recordCount;
 
   def consumeRecord(input) {
-    System.out.println("consuming")
     recordCount++;
+    int fieldCount = input.breadthFirst().size();
+    if (fieldCount > maxNodes) {
+      maxNodes = fieldCount;
+    }
   }
 
   def produceHtml(output) {
     output.html {
       body {
         h1 "record count $recordCount"
+        ul {
+          li "max fields $maxNodes"
+        }
       }
     }
   }

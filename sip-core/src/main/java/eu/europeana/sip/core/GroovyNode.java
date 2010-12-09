@@ -46,8 +46,6 @@ public class GroovyNode {
         setMetaClass(GroovySystem.getMetaClassRegistry().getMetaClass(GroovyNode.class), GroovyNode.class);
     }
 
-    private static final long serialVersionUID = 4121232434670542643L;
-
     private GroovyNode parent;
 
     private Object name;
@@ -191,6 +189,14 @@ public class GroovyNode {
         return "";
     }
 
+    public int size() {
+        if (value instanceof Collection) {
+            return ((Collection)value).size();
+        }
+        else {
+            return 0;
+        }
+    }
 
     public Iterator iterator() {
         return children().iterator();
