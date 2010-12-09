@@ -1,4 +1,4 @@
-<#compress>
+
 
     <#if pagePathList??>
 
@@ -112,26 +112,35 @@
         ${page.getContent(locale)}
 
     <#else>
+
         <#assign locale = locale/>
         <#assign thisPage = "static-page.dml"/>
         <#assign pageId = page.path/>
             <#include "includeMarcos.ftl">
 
-            <@addHeader "${portalDisplayName}", "",[],[]/>
+            <@addHeader "${portalDisplayName}", "",["edit_area/edit_area_full.js"],[]/>
 
             <section role="main" class="grid_12">
                 <div id="content" class="content-preview" >
                     ${page.getContent(locale)}
                 </div>
                 <div class="clear"></div>
+
                 <#if edit??>
                     <#if edit>
-                        <div id="pageForm">
-                            <form action="${page.path}" method="POST" id="form-edit">
-                                <a href="javascript:toggleEditor('editor');" class=""><@spring.message '_cms.html.editor.show.hide' /></a>
 
-                                <textarea name="content" id="editor" style="width: 100%;height:400px;">${page.getContent(locale)}</textarea>
-                                <hr/>
+                    <div id="editor-controls">
+                        <button id="edit-source" class="button">EDIT SOURCE</button>
+                        <button id="edit-wysiwyg" class="button">EDIT WYSIWYG</button>
+                    </div>
+                        <div id="pageForm">
+
+                            <form action="${page.path}" method="POST" id="form-edit">
+                                <#--<a href="javascript:toggleEditor('editor');" class=""><@spring.message '_cms.html.editor.show.hide' /></a>-->
+
+                                <textarea name="content" id="editor" style="width: 100%;height:400px;">${page.getContent(locale)?html}</textarea>
+       
+                                    <hr/>
                                 <input type="submit" name="submit" class="button btn-strong" value="<@spring.message '_cms.save' />"/>
                                 <a href="${page.path}" class="button"><@spring.message '_cms.cancel' /></a>
                                 <hr/>
@@ -139,7 +148,7 @@
                         </div>
                         <div class="clear"></div>
                     <#else>
-                        <hr/>
+                      <div>
                         <#if page.id??>
                             <p><a href="${page.path}?edit=true&version=${page.id}" class="button"><@spring.message '_cms.page.edit' /></a></p>
                         <#else>
@@ -149,7 +158,7 @@
                         <p><a href="/${portalName}/_.dml" class="button"><@spring.message '_cms.page.list' /></a></p>
 
                         <#if versionList?? && page.id??>
-                        <div class="grid_12 alpha">
+                        <div >
                             <hr/>
                             <h3><@spring.message '_cms.version.management' /></h3>
                             <p>
@@ -166,16 +175,13 @@
                             </ul>
                         </div>
                         </#if>
+                    </div>
                     </#if>
                 </#if>
             </section>
-    
-        <script type="text/javascript" src="/${portalName}/${portalTheme}/js/tiny_mce/tiny_mce.js"></script>
+
+        <script type="text/javascript" src="/${portalName}/${portalTheme}/js/tiny_mce/tiny_mce_src.js"></script>
         <script type="text/javascript" src="/${portalName}/${portalTheme}/js/static-page.js"></script>
         <@addFooter/>
      </div>   
     </#if>
-
-
-
-</#compress>
