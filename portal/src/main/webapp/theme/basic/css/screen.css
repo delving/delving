@@ -786,3 +786,11 @@ table.zebra tbody tr:nth-child(odd) td {
 table.zebra tbody tr:nth-child(even) td{
     background-color:#eeeee0;
 }
+
+#editor-controls {
+   margin: 1em 0;
+   padding: .5em 0;
+   border-top: 1px solid #ccc;
+   border-bottom: 1px solid #ccc;
+   overflow: hidden;
+}
