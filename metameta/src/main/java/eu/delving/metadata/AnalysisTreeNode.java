@@ -43,7 +43,7 @@ public class AnalysisTreeNode implements AnalysisTree.Node, Serializable {
     private List<AnalysisTreeNode> children = new ArrayList<AnalysisTreeNode>();
     private Tag tag;
     private boolean recordRoot, uniqueElement;
-    private Statistics statistics;
+    private FieldStatistics fieldStatistics;
 
     AnalysisTreeNode(Tag tag) {
         this.tag = tag;
@@ -54,14 +54,14 @@ public class AnalysisTreeNode implements AnalysisTree.Node, Serializable {
         this.tag = tag;
     }
 
-    AnalysisTreeNode(AnalysisTreeNode parent, Statistics statistics) {
+    AnalysisTreeNode(AnalysisTreeNode parent, FieldStatistics fieldStatistics) {
         this.parent = parent;
-        this.statistics = statistics;
-        this.tag = statistics.getPath().peek();
+        this.fieldStatistics = fieldStatistics;
+        this.tag = fieldStatistics.getPath().peek();
     }
 
-    public void setStatistics(Statistics statistics) {
-        this.statistics = statistics;
+    public void setStatistics(FieldStatistics fieldStatistics) {
+        this.fieldStatistics = fieldStatistics;
     }
 
     public List<AnalysisTreeNode> getChildren() {
@@ -69,8 +69,8 @@ public class AnalysisTreeNode implements AnalysisTree.Node, Serializable {
     }
 
     @Override
-    public Statistics getStatistics() {
-        return statistics;
+    public FieldStatistics getStatistics() {
+        return fieldStatistics;
     }
 
     @Override
@@ -127,7 +127,7 @@ public class AnalysisTreeNode implements AnalysisTree.Node, Serializable {
 
     @Override
     public boolean couldBeRecordRoot() {
-        return statistics != null && !statistics.hasValues();
+        return fieldStatistics != null && !fieldStatistics.hasValues();
     }
 
     @Override
@@ -185,13 +185,13 @@ public class AnalysisTreeNode implements AnalysisTree.Node, Serializable {
 
     @Override
     public boolean getAllowsChildren() {
-        return statistics != null && !statistics.hasValues();
+        return fieldStatistics != null && !fieldStatistics.hasValues();
 //        return !children.isEmpty();
     }
 
     @Override
     public boolean isLeaf() {
-        return statistics != null && statistics.hasValues();
+        return fieldStatistics != null && fieldStatistics.hasValues();
     }
 
     @Override

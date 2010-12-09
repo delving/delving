@@ -41,7 +41,7 @@ public class AnalysisTree implements Serializable {
     private AnalysisTreeNode root;
 
     public interface Node extends TreeNode, Comparable<Node> {
-        Statistics getStatistics();
+        FieldStatistics getStatistics();
 
         TreePath getTreePath();
 
@@ -86,8 +86,8 @@ public class AnalysisTree implements Serializable {
         return new AnalysisTree(new AnalysisTreeNode(Tag.create(rootTag)));
     }
 
-    public static AnalysisTree create(List<Statistics> statisticsList) {
-        AnalysisTreeNode root = createSubtree(statisticsList, new Path(), null);
+    public static AnalysisTree create(List<FieldStatistics> fieldStatisticsList) {
+        AnalysisTreeNode root = createSubtree(fieldStatisticsList, new Path(), null);
         if (root == null) {
             root = new AnalysisTreeNode(Tag.create("No statistics"));
         }
@@ -141,18 +141,18 @@ public class AnalysisTree implements Serializable {
         }
     }
 
-    private static AnalysisTreeNode createSubtree(List<Statistics> statisticsList, Path path, AnalysisTreeNode parent) {
-        Map<Tag, List<Statistics>> statisticsMap = new HashMap<Tag, List<Statistics>>();
-        for (Statistics statistics : statisticsList) {
-            Path subPath = new Path(statistics.getPath(), path.size());
-            if (subPath.equals(path) && statistics.getPath().size() == path.size() + 1) {
-                Tag tag = statistics.getPath().getTag(path.size());
+    private static AnalysisTreeNode createSubtree(List<FieldStatistics> fieldStatisticsList, Path path, AnalysisTreeNode parent) {
+        Map<Tag, List<FieldStatistics>> statisticsMap = new HashMap<Tag, List<FieldStatistics>>();
+        for (FieldStatistics fieldStatistics : fieldStatisticsList) {
+            Path subPath = new Path(fieldStatistics.getPath(), path.size());
+            if (subPath.equals(path) && fieldStatistics.getPath().size() == path.size() + 1) {
+                Tag tag = fieldStatistics.getPath().getTag(path.size());
                 if (tag != null) {
-                    List<Statistics> list = statisticsMap.get(tag);
+                    List<FieldStatistics> list = statisticsMap.get(tag);
                     if (list == null) {
-                        statisticsMap.put(tag, list = new ArrayList<Statistics>());
+                        statisticsMap.put(tag, list = new ArrayList<FieldStatistics>());
                     }
-                    list.add(statistics);
+                    list.add(fieldStatistics);
                 }
             }
         }
@@ -161,16 +161,16 @@ public class AnalysisTree implements Serializable {
         }
         Tag tag = path.peek();
         AnalysisTreeNode node = tag == null ? null : new AnalysisTreeNode(parent, tag);
-        for (Map.Entry<Tag, List<Statistics>> entry : statisticsMap.entrySet()) {
+        for (Map.Entry<Tag, List<FieldStatistics>> entry : statisticsMap.entrySet()) {
             Path childPath = new Path(path);
             childPath.push(entry.getKey());
-            Statistics statisticsForChild = null;
-            for (Statistics statistics : entry.getValue()) {
-                if (statistics.getPath().equals(childPath)) {
-                    statisticsForChild = statistics;
+            FieldStatistics fieldStatisticsForChild = null;
+            for (FieldStatistics fieldStatistics : entry.getValue()) {
+                if (fieldStatistics.getPath().equals(childPath)) {
+                    fieldStatisticsForChild = fieldStatistics;
                 }
             }
-            AnalysisTreeNode child = createSubtree(statisticsList, childPath, node);
+            AnalysisTreeNode child = createSubtree(fieldStatisticsList, childPath, node);
             if (child != null) {
                 if (node == null) {
                     node = child;
@@ -178,14 +178,14 @@ public class AnalysisTree implements Serializable {
                 else {
                     node.add(child);
                 }
-                child.setStatistics(statisticsForChild);
+                child.setStatistics(fieldStatisticsForChild);
             }
-            else if (statisticsForChild != null) {
+            else if (fieldStatisticsForChild != null) {
                 if (node == null) {
-                    node = new AnalysisTreeNode(node, statisticsForChild);
+                    node = new AnalysisTreeNode(node, fieldStatisticsForChild);
                 }
                 else {
-                    node.add(new AnalysisTreeNode(node, statisticsForChild));
+                    node.add(new AnalysisTreeNode(node, fieldStatisticsForChild));
                 }
             }
         }

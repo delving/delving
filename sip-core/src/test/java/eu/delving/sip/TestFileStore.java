@@ -22,13 +22,13 @@
 package eu.delving.sip;
 
 import eu.delving.metadata.Facts;
+import eu.delving.metadata.FieldStatistics;
 import eu.delving.metadata.MappingModel;
 import eu.delving.metadata.MetadataException;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.MetadataModelImpl;
 import eu.delving.metadata.Path;
 import eu.delving.metadata.RecordMapping;
-import eu.delving.metadata.Statistics;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
@@ -131,15 +131,15 @@ public class TestFileStore {
     public void manipulateStatistics() throws IOException, FileStoreException {
         FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC);
         store.importFile(sampleFile(), null);
-        List<Statistics> stats = store.getStatistics();
+        List<FieldStatistics> stats = store.getStatistics();
         Assert.assertEquals("Should be one files", 1, new File(DIR, SPEC).listFiles().length);
         Assert.assertNull("No stats should be here", stats);
-        stats = new ArrayList<Statistics>();
-        Statistics statistics = new Statistics(new Path("/stat/path"));
-        statistics.recordOccurrence();
-        statistics.recordValue("booger");
-        statistics.finish();
-        stats.add(statistics);
+        stats = new ArrayList<FieldStatistics>();
+        FieldStatistics fieldStatistics = new FieldStatistics(new Path("/stat/path"));
+        fieldStatistics.recordOccurrence();
+        fieldStatistics.recordValue("booger");
+        fieldStatistics.finish();
+        stats.add(fieldStatistics);
         store.setStatistics(stats);
         Assert.assertEquals("Should be two files ", 2, new File(DIR, SPEC).listFiles().length);
         stats = fileStore.getDataSetStores().get(SPEC).getStatistics();

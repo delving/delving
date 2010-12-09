@@ -22,17 +22,16 @@
 package eu.europeana.sip.xml;
 
 import eu.delving.metadata.MetadataNamespace;
-import eu.delving.metadata.Path;
 import eu.delving.metadata.RecordMapping;
 import eu.delving.metadata.RecordValidator;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.ProgressListener;
+import eu.europeana.sip.core.GroovyCodeResource;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordValidationException;
-import eu.europeana.sip.core.ToolCodeResource;
 import eu.europeana.sip.model.SipModel;
 
 import javax.xml.stream.XMLStreamException;
@@ -51,8 +50,6 @@ import java.util.List;
 
 public class Normalizer implements Runnable {
     private SipModel sipModel;
-    private Path recordRoot;
-    private int recordCount;
     private boolean discardInvalid;
     private File normalizedFile;
     private ProgressAdapter progressAdapter;
@@ -69,16 +66,12 @@ public class Normalizer implements Runnable {
 
     public Normalizer(
             SipModel sipModel,
-            Path recordRoot,
-            int recordCount,
             boolean discardInvalid,
             File normalizedFile,
             ProgressListener progressListener,
             Listener listener
     ) {
         this.sipModel = sipModel;
-        this.recordRoot = recordRoot;
-        this.recordCount = recordCount;
         this.discardInvalid = discardInvalid;
         this.normalizedFile = normalizedFile;
         this.progressAdapter = new ProgressAdapter(progressListener);
@@ -93,7 +86,7 @@ public class Normalizer implements Runnable {
             if (recordMapping == null) {
                 return;
             }
-            ToolCodeResource toolCodeResource = new ToolCodeResource();
+            GroovyCodeResource groovyCodeResource = new GroovyCodeResource();
             fileSetOutput = sipModel.getDataSetStore().createMappingOutput(recordMapping, normalizedFile);
             if (store) {
                 Writer out = fileSetOutput.getOutputWriter();
@@ -104,8 +97,13 @@ public class Normalizer implements Runnable {
                 writeNamespace(out, MetadataNamespace.EUROPEANA);
                 out.write(">\n");
             }
-            MappingRunner mappingRunner = new MappingRunner(toolCodeResource.getCode() + recordMapping.toCompileCode(sipModel.getMetadataModel().getRecordDefinition()));
-            MetadataParser parser = new MetadataParser(sipModel.getDataSetStore().createXmlInputStream(), recordRoot, recordCount, progressAdapter);
+            MappingRunner mappingRunner = new MappingRunner(groovyCodeResource.getMappingToolCode() + recordMapping.toCompileCode(sipModel.getMetadataModel().getRecordDefinition()));
+            MetadataParser parser = new MetadataParser(
+                    sipModel.getDataSetStore().createXmlInputStream(),
+                    sipModel.getRecordRoot(),
+                    sipModel.getRecordCount(),
+                    progressAdapter
+            );
             RecordValidator recordValidator = new RecordValidator(sipModel.getMetadataModel(), true);
             MetadataRecord record;
             while ((record = parser.nextRecord()) != null && running) {

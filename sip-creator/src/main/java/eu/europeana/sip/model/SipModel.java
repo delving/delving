@@ -25,24 +25,25 @@ import eu.delving.metadata.AnalysisTree;
 import eu.delving.metadata.Facts;
 import eu.delving.metadata.FieldDefinition;
 import eu.delving.metadata.FieldMapping;
+import eu.delving.metadata.FieldStatistics;
 import eu.delving.metadata.MappingModel;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.Path;
 import eu.delving.metadata.RecordMapping;
 import eu.delving.metadata.RecordValidator;
 import eu.delving.metadata.SourceVariable;
-import eu.delving.metadata.Statistics;
 import eu.delving.sip.AppConfig;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.ProgressListener;
+import eu.europeana.sip.core.GroovyCodeResource;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordValidationException;
-import eu.europeana.sip.core.ToolCodeResource;
 import eu.europeana.sip.xml.AnalysisParser;
 import eu.europeana.sip.xml.MetadataParser;
 import eu.europeana.sip.xml.Normalizer;
+import eu.europeana.sip.xml.RecordAnalyzer;
 import org.apache.log4j.Logger;
 
 import javax.swing.ListModel;
@@ -75,8 +76,7 @@ public class SipModel {
     private FileStore.DataSetStore dataSetStore;
     private Facts facts;
     private UserNotifier userNotifier;
-    private List<Statistics> statisticsList;
-    private AnalysisParser analysisParser;
+    private List<FieldStatistics> fieldStatisticsList;
     private AnalysisTree analysisTree;
     private DefaultTreeModel analysisTreeModel;
     private FieldListModel fieldListModel;
@@ -91,12 +91,13 @@ public class SipModel {
     private VariableListModel variableListModel = new VariableListModel();
     private List<UpdateListener> updateListeners = new CopyOnWriteArrayList<UpdateListener>();
     private List<ParseListener> parseListeners = new CopyOnWriteArrayList<ParseListener>();
+    private GroovyCodeResource groovyCodeResource = new GroovyCodeResource();
 
     public interface UpdateListener {
 
         void updatedDataSetStore(FileStore.DataSetStore dataSetStore);
 
-        void updatedStatistics(Statistics statistics);
+        void updatedStatistics(FieldStatistics fieldStatistics);
 
         void updatedRecordRoot(Path recordRoot, int recordCount);
 
@@ -121,10 +122,9 @@ public class SipModel {
         analysisTree = AnalysisTree.create("Select a Data Set from the File menu");
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
         fieldListModel = new FieldListModel(metadataModel);
-        ToolCodeResource toolCodeResource = new ToolCodeResource();
-        recordCompileModel = new CompileModel(CompileModel.Type.RECORD, metadataModel, toolCodeResource);
+        recordCompileModel = new CompileModel(CompileModel.Type.RECORD, metadataModel, groovyCodeResource);
         recordCompileModel.setRecordValidator(new RecordValidator(metadataModel, false));
-        fieldCompileModel = new CompileModel(CompileModel.Type.FIELD, metadataModel, toolCodeResource);
+        fieldCompileModel = new CompileModel(CompileModel.Type.FIELD, metadataModel, groovyCodeResource);
         parseListeners.add(recordCompileModel);
         parseListeners.add(fieldCompileModel);
         fieldMappingListModel = new FieldMappingListModel();
@@ -241,7 +241,7 @@ public class SipModel {
                 @Override
                 public void run() {
                     try {
-                        final List<Statistics> statistics = dataSetStore.getStatistics();
+                        final List<FieldStatistics> statistics = dataSetStore.getStatistics();
                         final Facts facts = dataSetStore.getFacts();
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
@@ -324,13 +324,21 @@ public class SipModel {
         }
     }
 
-    public void analyze(final AnalysisListener listener) {
+    public void analyzeRecords(ProgressListener progressListener, RecordAnalyzer.Listener recordAnalyzerListener) {
+        try {
+            executor.execute(new RecordAnalyzer(this, groovyCodeResource, progressListener, recordAnalyzerListener));
+        }
+        catch (Exception e) {
+            userNotifier.tellUser("Unable to start Record Analyzer", e);
+        }
+    }
+
+    public void analyzeFields(final AnalysisListener listener) {
         checkSwingThread();
-        abortAnalyze();
-        this.analysisParser = new AnalysisParser(dataSetStore, new AnalysisParser.Listener() {
+        executor.execute(new AnalysisParser(dataSetStore, new AnalysisParser.Listener() {
 
             @Override
-            public void success(final List<Statistics> list) {
+            public void success(final List<FieldStatistics> list) {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -350,16 +358,7 @@ public class SipModel {
             public void progress(long elementCount) {
                 listener.analysisProgress(elementCount);
             }
-        });
-        executor.execute(analysisParser);
-    }
-
-    public void abortAnalyze() {
-        checkSwingThread();
-        if (analysisParser != null) {
-            analysisParser.abort();
-            analysisParser = null;
-        }
+        }));
     }
 
     public Facts getFacts() {
@@ -371,8 +370,6 @@ public class SipModel {
         normalizeMessage(false, "Normalizing and validating...");
         executor.execute(new Normalizer(
                 this,
-                getRecordRoot(),
-                getRecordCount(),
                 discardInvalid,
                 normalizeDirectory,
                 progressListener,
@@ -460,9 +457,9 @@ public class SipModel {
     }
 
     public long getElementCount() {
-        if (statisticsList != null) {
+        if (fieldStatisticsList != null) {
             long total = 0L;
-            for (Statistics stats : statisticsList) {
+            for (FieldStatistics stats : fieldStatisticsList) {
                 total += stats.getTotal();
             }
             return total;
@@ -568,17 +565,17 @@ public class SipModel {
         }
     }
 
-    public void setStatistics(Statistics statistics) {
+    public void setStatistics(FieldStatistics fieldStatistics) {
         for (UpdateListener updateListener : updateListeners) {
-            updateListener.updatedStatistics(statistics);
+            updateListener.updatedStatistics(fieldStatistics);
         }
     }
 
-    private void setStatisticsList(List<Statistics> statisticsList) {
+    private void setStatisticsList(List<FieldStatistics> fieldStatisticsList) {
         checkSwingThread();
-        this.statisticsList = statisticsList;
-        if (statisticsList != null) {
-            analysisTree = AnalysisTree.create(statisticsList);
+        this.fieldStatisticsList = fieldStatisticsList;
+        if (fieldStatisticsList != null) {
+            analysisTree = AnalysisTree.create(fieldStatisticsList);
         }
         else {
             analysisTree = AnalysisTree.create("Analysis not yet performed");

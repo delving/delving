@@ -24,9 +24,9 @@ package eu.europeana.sip.gui;
 import eu.delving.metadata.CodeGenerator;
 import eu.delving.metadata.FieldDefinition;
 import eu.delving.metadata.FieldMapping;
+import eu.delving.metadata.FieldStatistics;
 import eu.delving.metadata.Path;
 import eu.delving.metadata.SourceVariable;
-import eu.delving.metadata.Statistics;
 import eu.delving.sip.FileStore;
 import eu.europeana.sip.model.FieldListModel;
 import eu.europeana.sip.model.FieldMappingListModel;
@@ -171,12 +171,12 @@ public class MappingPanel extends JPanel {
             }
 
             @Override
-            public void updatedStatistics(final Statistics statistics) {
-                if (statistics == null) {
+            public void updatedStatistics(final FieldStatistics fieldStatistics) {
+                if (fieldStatistics == null) {
                     statisticsView.setText("<html><h3>No Statistics</h3>");
                 }
                 else {
-                    statisticsView.setText(statistics.toHtml());
+                    statisticsView.setText(fieldStatistics.toHtml());
                     statisticsView.setCaretPosition(0);
                 }
             }

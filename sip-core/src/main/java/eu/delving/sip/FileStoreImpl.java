@@ -23,11 +23,11 @@ package eu.delving.sip;
 
 import com.thoughtworks.xstream.XStream;
 import eu.delving.metadata.Facts;
+import eu.delving.metadata.FieldStatistics;
 import eu.delving.metadata.MetadataException;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.RecordDefinition;
 import eu.delving.metadata.RecordMapping;
-import eu.delving.metadata.Statistics;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -274,15 +274,15 @@ public class FileStoreImpl implements FileStore {
         }
 
         @Override
-        public List<Statistics> getStatistics() throws FileStoreException {
+        public List<FieldStatistics> getStatistics() throws FileStoreException {
             File statisticsFile = new File(directory, STATISTICS_FILE_NAME);
             if (statisticsFile.exists()) {
                 try {
                     ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(statisticsFile)));
                     @SuppressWarnings("unchecked")
-                    List<Statistics> statisticsList = (List<Statistics>) in.readObject();
+                    List<FieldStatistics> fieldStatisticsList = (List<FieldStatistics>) in.readObject();
                     in.close();
-                    return statisticsList;
+                    return fieldStatisticsList;
                 }
                 catch (Exception e) {
                     if (statisticsFile.delete()) {
@@ -297,11 +297,11 @@ public class FileStoreImpl implements FileStore {
         }
 
         @Override
-        public void setStatistics(List<Statistics> statisticsList) throws FileStoreException {
+        public void setStatistics(List<FieldStatistics> fieldStatisticsList) throws FileStoreException {
             File statisticsFile = new File(directory, STATISTICS_FILE_NAME);
             try {
                 ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(statisticsFile)));
-                out.writeObject(statisticsList);
+                out.writeObject(fieldStatisticsList);
                 out.close();
             }
             catch (IOException e) {

@@ -22,8 +22,8 @@
 package eu.delving.sip;
 
 import eu.delving.metadata.Facts;
+import eu.delving.metadata.FieldStatistics;
 import eu.delving.metadata.RecordMapping;
-import eu.delving.metadata.Statistics;
 
 import java.io.File;
 import java.io.InputStream;
@@ -66,9 +66,9 @@ public interface FileStore {
 
         InputStream createXmlInputStream() throws FileStoreException;
 
-        List<Statistics> getStatistics() throws FileStoreException;
+        List<FieldStatistics> getStatistics() throws FileStoreException;
 
-        void setStatistics(List<Statistics> statisticsList) throws FileStoreException;
+        void setStatistics(List<FieldStatistics> fieldStatisticsList) throws FileStoreException;
 
         RecordMapping getRecordMapping(String metadataPrefix) throws FileStoreException;
 

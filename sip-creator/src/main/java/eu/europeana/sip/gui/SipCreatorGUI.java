@@ -57,6 +57,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
@@ -177,10 +178,17 @@ public class SipCreatorGUI extends JFrame {
     }
 
     private JPanel createSouth() {
-        JPanel p = new JPanel();
-        for (Action action : dataSetActions.getActions()) {
-            p.add(new JButton(action));
+        JPanel local = new JPanel();
+        for (Action action : dataSetActions.getLocalActions()) {
+            local.add(new JButton(action));
         }
+        JPanel remote = new JPanel();
+        for (Action action : dataSetActions.getRemoteActions()) {
+            remote.add(new JButton(action));
+        }
+        JPanel p = new JPanel(new GridLayout(0,1));
+        p.add(local);
+        p.add(remote);
         return p;
     }
 
@@ -221,7 +229,7 @@ public class SipCreatorGUI extends JFrame {
 
     private JMenu createActionMenu() {
         JMenu actions = new JMenu("Actions");
-        for (Action action : dataSetActions.getActions()) {
+        for (Action action : dataSetActions.getLocalActions()) {
             actions.add(action);
         }
         return actions;

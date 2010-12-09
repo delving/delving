@@ -21,6 +21,7 @@
 
 package eu.europeana.sip.gui;
 
+import eu.delving.metadata.Facts;
 import eu.delving.sip.DataSetCommand;
 import eu.delving.sip.DataSetInfo;
 import eu.delving.sip.DataSetState;
@@ -61,31 +62,50 @@ import java.util.List;
 public class DataSetActions {
     private static final Dimension SIZE = new Dimension(1024 - 60, 768 - 60);
     private JFrame frame;
+    private RecordStatisticsDialog recordStatisticsDialog;
     private AnalysisFactsDialog analysisFactsDialog;
     private MappingDialog mappingDialog;
     private SipModel sipModel;
     private DataSetClient dataSetClient;
     private DataSetListModel.Entry entry;
+    private List<DataSetAction> localActions = new ArrayList<DataSetAction>();
+    private List<DataSetAction> remoteActions = new ArrayList<DataSetAction>();
     private List<DataSetAction> actions = new ArrayList<DataSetAction>();
 
     public DataSetActions(JFrame frame, SipModel sipModel, DataSetClient dataSetClient) {
         this.frame = frame;
         this.sipModel = sipModel;
         this.dataSetClient = dataSetClient;
+        this.recordStatisticsDialog = new RecordStatisticsDialog(sipModel);
         this.analysisFactsDialog = new AnalysisFactsDialog(sipModel);
         this.mappingDialog = new MappingDialog(sipModel);
-        actions.add(createAnalyzeFactsAction());
-        for (String metadataPrefix : sipModel.getMetadataModel().getPrefixes()) {
-            actions.add(createEditMappingAction(metadataPrefix));
-        }
-        actions.add(createUploadAction());
+        createLocalActions(sipModel);
+        createRemoteActions();
+        actions.addAll(localActions);
+        actions.addAll(remoteActions);
+    }
+
+    private void createRemoteActions() {
+        remoteActions.add(createUploadAction());
         for (DataSetCommand command : DataSetCommand.values()) {
-            actions.add(createCommandAction(command));
+            remoteActions.add(createCommandAction(command));
         }
     }
 
-    public List<Action> getActions() {
-        return new ArrayList<Action>(actions);
+    private void createLocalActions(SipModel sipModel) {
+        localActions.add(createAnalyzeFactsAction());
+        for (String metadataPrefix : sipModel.getMetadataModel().getPrefixes()) {
+            localActions.add(createEditMappingAction(metadataPrefix));
+        }
+        localActions.add(createRecordStatisticsAction());
+    }
+
+    public List<Action> getLocalActions() {
+        return new ArrayList<Action>(localActions);
+    }
+
+    public List<Action> getRemoteActions() {
+        return new ArrayList<Action>(remoteActions);
     }
 
     public void setEntry(DataSetListModel.Entry entry) {
@@ -119,6 +139,33 @@ public class DataSetActions {
         }
 
         abstract boolean isEnabled(DataSetListModel.Entry entry);
+    }
+
+    private DataSetAction createRecordStatisticsAction() {
+        return new DataSetAction("Record Statistics") {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                sipModel.setDataSetStore(entry.getDataSetStore());
+                recordStatisticsDialog.reveal();
+            }
+
+            @Override
+            boolean isEnabled(DataSetListModel.Entry entry) {
+                FileStore.DataSetStore store = entry.getDataSetStore();
+                if (store != null) {
+                    try {
+                        Facts facts = store.getFacts();
+                        if (facts != null) {
+                            return facts.getRecordRootPath() != null;
+                        }
+                    }
+                    catch (FileStoreException e) {
+                        return false;
+                    }
+                }
+                return false;
+            }
+        };
     }
 
     private DataSetAction createAnalyzeFactsAction() {
@@ -294,6 +341,24 @@ public class DataSetActions {
                 throw new RuntimeException();
         }
         return name;
+    }
+
+    private class RecordStatisticsDialog extends JDialog {
+        private SipModel sipModel;
+
+        private RecordStatisticsDialog(SipModel sipModel) throws HeadlessException {
+            super(frame, "Analysis & Facts", true);
+            this.sipModel = sipModel;
+            getContentPane().add(new RecordStatisticsPanel(sipModel));
+            getContentPane().add(createFinishedPanel(this), BorderLayout.SOUTH);
+            setSize(SIZE);
+            setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - SIZE.width) / 2, (Toolkit.getDefaultToolkit().getScreenSize().height - SIZE.height) / 2);
+        }
+
+        public void reveal() {
+            setTitle(String.format("Record Statistics for '%s'", sipModel.getDataSetStore().getSpec()));
+            setVisible(true);
+        }
     }
 
     private class AnalysisFactsDialog extends JDialog {

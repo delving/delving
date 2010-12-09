@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 EDL FOUNDATION
+ * Copyright 2010 DELVING BV
  *
  *  Licensed under the EUPL, Version 1.0 or? as soon they
  *  will be approved by the European Commission - subsequent
@@ -23,8 +23,8 @@ package eu.europeana.sip.gui;
 
 import eu.delving.metadata.AnalysisTree;
 import eu.delving.metadata.AnalysisTreeNode;
+import eu.delving.metadata.FieldStatistics;
 import eu.delving.metadata.Path;
-import eu.delving.metadata.Statistics;
 import eu.delving.sip.FileStore;
 import eu.europeana.sip.model.SipModel;
 
@@ -127,7 +127,7 @@ public class AnalysisFactsPanel extends JPanel {
 
     private JPanel createStatisticsPanel() {
         JPanel p = new JPanel(new BorderLayout(5, 5));
-        p.setBorder(BorderFactory.createTitledBorder("Statistics"));
+        p.setBorder(BorderFactory.createTitledBorder("Field Statistics"));
         statisticsView.setContentType("text/html");
         p.add(scroll(statisticsView), BorderLayout.CENTER);
         return p;
@@ -153,15 +153,15 @@ public class AnalysisFactsPanel extends JPanel {
             }
 
             @Override
-            public void updatedStatistics(final Statistics statistics) {
+            public void updatedStatistics(final FieldStatistics fieldStatistics) {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        if (statistics == null) {
+                        if (fieldStatistics == null) {
                             statisticsView.setText("<html><h3>No Statistics</h3>");
                         }
                         else {
-                            statisticsView.setText(statistics.toHtml());
+                            statisticsView.setText(fieldStatistics.toHtml());
                         }
                         statisticsView.setCaretPosition(0);
                     }
@@ -232,7 +232,7 @@ public class AnalysisFactsPanel extends JPanel {
     }
 
     private void performAnalysis() {
-        sipModel.analyze(new SipModel.AnalysisListener() {
+        sipModel.analyzeFields(new SipModel.AnalysisListener() {
 
             @Override
             public void finished(boolean success) {

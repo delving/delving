@@ -24,10 +24,10 @@ import eu.delving.services.exceptions.RecordParseException;
 import eu.delving.services.exceptions.ResumptionTokenNotFoundException;
 import eu.delving.sip.AccessKey;
 import eu.delving.sip.DataSetState;
+import eu.europeana.sip.core.GroovyCodeResource;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
-import eu.europeana.sip.core.ToolCodeResource;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.dom4j.Document;
@@ -879,10 +879,10 @@ public class MetaRepoImpl implements MetaRepo {
 
         private MappingRunner getMappingRunner() throws MetadataException {
             if (mappingRunner == null) {
-                ToolCodeResource toolCodeResource = new ToolCodeResource();
+                GroovyCodeResource groovyCodeResource = new GroovyCodeResource();
                 RecordMapping recordMapping = getRecordMapping();
                 String compileCode = recordMapping.toCompileCode(metadataModel.getRecordDefinition());
-                mappingRunner = new MappingRunner(toolCodeResource.getCode() + compileCode);
+                mappingRunner = new MappingRunner(groovyCodeResource.getMappingToolCode() + compileCode);
             }
             return mappingRunner;
         }

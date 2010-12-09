@@ -86,7 +86,7 @@ public class SourceVariable implements Comparable<SourceVariable> {
         return node != null && node.getStatistics() != null;
     }
 
-    public Statistics getStatistics() {
+    public FieldStatistics getStatistics() {
         return node.getStatistics();
     }
 

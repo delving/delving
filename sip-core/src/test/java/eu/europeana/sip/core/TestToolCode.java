@@ -18,11 +18,11 @@ public class TestToolCode {
 
     private GroovyShell groovyShell = new GroovyShell();
     private Script script;
-    private ToolCodeResource toolCodeResource = new ToolCodeResource();
+    private GroovyCodeResource groovyCodeResource = new GroovyCodeResource();
 
     @Before
     public void compile() {
-        script = groovyShell.parse(toolCodeResource.getCode());
+        script = groovyShell.parse(groovyCodeResource.getMappingToolCode());
     }
 
     @Test

@@ -34,28 +34,35 @@ import java.net.URL;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class ToolCodeResource {
-    private static final URL CODE_RESOURCE = ToolCodeResource.class.getResource("/ToolCode.groovy");
-    private String resourceCode;
+public class GroovyCodeResource {
+    private static final URL MAPPING_TOOL_CODE_RESOURCE = GroovyCodeResource.class.getResource("/MappingTool.groovy");
+    private static final URL RECORD_ANALYSIS_CODE_RESOURCE = GroovyCodeResource.class.getResource("/RecordAnalysis.groovy");
+    private String mappingToolCode;
+    private String recordAnalysisCode;
 
-    public ToolCodeResource() {
+    public GroovyCodeResource() {
         try {
-            resourceCode = readResourceCode();
+            mappingToolCode = readResourceCode(MAPPING_TOOL_CODE_RESOURCE);
+            recordAnalysisCode = readResourceCode(RECORD_ANALYSIS_CODE_RESOURCE);
         }
         catch (IOException e) {
-            resourceCode = "println 'Could not read tool code: " + e.toString() + "'";
+            mappingToolCode = "println 'Could not read groovy code: " + e.toString() + "'";
         }
     }
 
-    public String getCode() {
-        return resourceCode;
+    public String getMappingToolCode() {
+        return mappingToolCode;
     }
 
-    private String readResourceCode() throws IOException {
-        if (CODE_RESOURCE == null) {
+    public String getRecordAnalysisCode() {
+        return recordAnalysisCode;
+    }
+
+    private String readResourceCode(URL resource) throws IOException {
+        if (MAPPING_TOOL_CODE_RESOURCE == null) {
             throw new IOException("Cannot find resource");
         }
-        InputStream in = CODE_RESOURCE.openStream();
+        InputStream in = resource.openStream();
         Reader reader = new InputStreamReader(in);
         return readCode(reader);
     }

@@ -26,11 +26,11 @@ import eu.delving.metadata.MappingModel;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.RecordMapping;
 import eu.delving.metadata.RecordValidator;
+import eu.europeana.sip.core.GroovyCodeResource;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordValidationException;
-import eu.europeana.sip.core.ToolCodeResource;
 import org.apache.log4j.Logger;
 
 import javax.swing.SwingUtilities;
@@ -64,7 +64,7 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     private CompileTimer compileTimer = new CompileTimer();
     private MetadataModel metadataModel;
     private Type type;
-    private ToolCodeResource toolCodeResource;
+    private GroovyCodeResource groovyCodeResource;
     private RecordValidator recordValidator;
     private String selectedPath;
     private String editedCode;
@@ -83,10 +83,10 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
         REGENERATED
     }
 
-    public CompileModel(Type type, MetadataModel metadataModel, ToolCodeResource toolCodeResource) {
+    public CompileModel(Type type, MetadataModel metadataModel, GroovyCodeResource groovyCodeResource) {
         this.type = type;
         this.metadataModel = metadataModel;
-        this.toolCodeResource = toolCodeResource;
+        this.groovyCodeResource = groovyCodeResource;
     }
 
     @Override
@@ -261,7 +261,7 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
                 mappingCode = getCompileCode(editedCode);
                 log.info("Edited code used");
             }
-            MappingRunner mappingRunner = new MappingRunner(toolCodeResource.getCode() + mappingCode);
+            MappingRunner mappingRunner = new MappingRunner(groovyCodeResource.getMappingToolCode() + mappingCode);
             try {
                 String output = mappingRunner.runMapping(metadataRecord);
                 if (recordValidator != null) {
@@ -294,7 +294,6 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
                 }
             }
             catch (MappingException e) {
-                System.out.println(mappingCode); // todo remove
                 compilationComplete(e.getMessage());
                 notifyStateChange(State.ERROR);
             }

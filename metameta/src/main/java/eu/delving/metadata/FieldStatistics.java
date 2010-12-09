@@ -33,13 +33,13 @@ import java.util.Set;
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
  */
 
-public class Statistics implements Comparable<Statistics>, Serializable {
+public class FieldStatistics implements Comparable<FieldStatistics>, Serializable {
     private Path path;
     private int total;
     private ValueStats valueStats;
     private String lazyHtml;
 
-    public Statistics(Path path) {
+    public FieldStatistics(Path path) {
         this.path = path;
     }
 
@@ -82,8 +82,8 @@ public class Statistics implements Comparable<Statistics>, Serializable {
     }
 
     @Override
-    public int compareTo(Statistics statistics) {
-        return path.compareTo(statistics.path);
+    public int compareTo(FieldStatistics fieldStatistics) {
+        return path.compareTo(fieldStatistics.path);
     }
 
     public String toHtml() {

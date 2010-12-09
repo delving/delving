@@ -21,8 +21,8 @@
 
 package eu.europeana.sip.gui;
 
+import eu.delving.metadata.FieldStatistics;
 import eu.delving.metadata.Path;
-import eu.delving.metadata.Statistics;
 import eu.delving.sip.FileStore;
 import eu.europeana.sip.model.SipModel;
 
@@ -57,7 +57,7 @@ public class MappingMenu extends JMenu {
             }
 
             @Override
-            public void updatedStatistics(Statistics statistics) {
+            public void updatedStatistics(FieldStatistics fieldStatistics) {
             }
 
             @Override
