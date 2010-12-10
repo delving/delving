@@ -333,7 +333,6 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
                 int docLength = document.getLength();
                 try {
                     document.remove(0, docLength);
-                    System.out.println(content);
                     HTMLEditorKit.ParserCallback callback = htmlDocument.getReader(0); 
                     htmlDocument.getParser().parse(new StringReader(content), callback, true);
                     callback.flush();

@@ -21,6 +21,7 @@
 
 package eu.europeana.sip.core;
 
+import groovy.lang.Closure;
 import groovy.lang.DelegatingMetaClass;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClass;
@@ -66,11 +67,6 @@ public class GroovyNode {
         if (parent != null) {
             getParentList(parent).add(this);
         }
-    }
-
-    public boolean append(GroovyNode child) {
-        child.parent = this;
-        return getParentList(this).add(child);
     }
 
     public String text() {
@@ -164,7 +160,14 @@ public class GroovyNode {
         return getByName(key);
     }
 
-    public String [] split(String regex) {
+    public Object multiply(Closure closure) {
+        for (Object child : children()) {
+            closure.call(child);
+        }
+        return null;
+    }
+
+    public String [] mod(String regex) { // operator %
         return text().split(regex);
     }
 
@@ -172,35 +175,7 @@ public class GroovyNode {
         return text();
     }
 
-    // privates =============================
-
-    private List<Object> breadthFirstRest() {
-        List<Object> answer = new GroovyNodeList();
-        List<Object> nextLevelChildren = getDirectChildren();
-        while (!nextLevelChildren.isEmpty()) {
-            List<Object> working = new GroovyNodeList(nextLevelChildren);
-            nextLevelChildren = new GroovyNodeList();
-            for (Object aWorking : working) {
-                GroovyNode childNode = (GroovyNode) aWorking;
-                answer.add(childNode);
-                List<Object> children = childNode.getDirectChildren();
-                nextLevelChildren.addAll(children);
-            }
-        }
-        return answer;
-    }
-
-    private List<Object> getDirectChildren() {
-        List<Object> answer = new GroovyNodeList();
-        for (Iterator iter = InvokerHelper.asIterator(value); iter.hasNext();) {
-            Object child = iter.next();
-            if (child instanceof GroovyNode) {
-                GroovyNode childNode = (GroovyNode) child;
-                answer.add(childNode);
-            }
-        }
-        return answer;
-    }
+    // privates ===================================================================================
 
     private List<Object> getParentList(GroovyNode parent) {
         Object parentValue = parent.value();
@@ -236,7 +211,7 @@ public class GroovyNode {
         return answer;
     }
 
-    public List<Object> depthFirst() {
+    private List<Object> depthFirst() {
         List<Object> answer = new GroovyNodeList();
         answer.add(this);
         answer.addAll(depthFirstRest());
@@ -275,6 +250,22 @@ public class GroovyNode {
 //     * @param name the QName of interest
 //     * @return the nodes matching name
 //     */
+//    private List<Object> breadthFirstRest() {
+//        List<Object> answer = new GroovyNodeList();
+//        List<Object> nextLevelChildren = getDirectChildren();
+//        while (!nextLevelChildren.isEmpty()) {
+//            List<Object> working = new GroovyNodeList(nextLevelChildren);
+//            nextLevelChildren = new GroovyNodeList();
+//            for (Object aWorking : working) {
+//                GroovyNode childNode = (GroovyNode) aWorking;
+//                answer.add(childNode);
+//                List<Object> children = childNode.getDirectChildren();
+//                nextLevelChildren.addAll(children);
+//            }
+//        }
+//        return answer;
+//    }
+//
 //    public GroovyNodeList getAt(QName name) {
 //        GroovyNodeList answer = new GroovyNodeList();
 //        for (Object child : children()) {
@@ -284,6 +275,18 @@ public class GroovyNode {
 //                if (name.matches(childNodeName)) {
 //                    answer.add(childNode);
 //                }
+//            }
+//        }
+//        return answer;
+//    }
+//
+//    private List<Object> getDirectChildren() {
+//        List<Object> answer = new GroovyNodeList();
+//        for (Iterator iter = InvokerHelper.asIterator(value); iter.hasNext();) {
+//            Object child = iter.next();
+//            if (child instanceof GroovyNode) {
+//                GroovyNode childNode = (GroovyNode) child;
+//                answer.add(childNode);
 //            }
 //        }
 //        return answer;

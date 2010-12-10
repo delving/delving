@@ -21,6 +21,7 @@
 
 package eu.europeana.sip.core;
 
+import groovy.lang.Closure;
 import groovy.lang.DelegatingMetaClass;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClass;
@@ -106,7 +107,16 @@ public class GroovyNodeList extends ArrayList<Object> {
         return "";
     }
 
-    // privates ================================================================
+    public Object multiply(Closure closure) {
+        for (Object child : this) {
+            closure.call(child);
+        }
+        return null;
+    }
+
+
+
+    // privates ===========================================================================================
 
     protected static void setMetaClass(final Class nodelistClass, final MetaClass metaClass) {
         final MetaClass newMetaClass = new DelegatingMetaClass(metaClass) {
