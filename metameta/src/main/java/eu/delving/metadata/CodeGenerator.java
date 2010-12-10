@@ -127,7 +127,7 @@ public class CodeGenerator {
 
     private void copyCode(AnalysisTree.Node node, FieldMapping fieldMapping, boolean dictionaryPreferred) {
         FieldDefinition fieldDefinition = fieldMapping.getFieldDefinition();
-        if (fieldDefinition.validation != null && fieldDefinition.validation.multivalued) {
+        if (fieldDefinition.validation == null || fieldDefinition.validation.multivalued) {
             each(fieldMapping, node.getVariableName());
             codeLine(node, fieldMapping, "it", dictionaryPreferred);
             endBlock(fieldMapping);
@@ -175,7 +175,7 @@ public class CodeGenerator {
     }
 
     private void each(FieldMapping fieldMapping, String variable) {
-        fieldMapping.addCodeLine(String.format("%s.each {", variable));
+        fieldMapping.addCodeLine(String.format("%s * {", variable));
     }
 
     private void forPartIn(FieldMapping fieldMapping, String variable) {

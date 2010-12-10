@@ -41,13 +41,13 @@ public class FieldDefinition implements Comparable<FieldDefinition> {
     public String localName;
 
     @XStreamAsAttribute
-    public boolean briefDoc = false;
+    public boolean briefDoc;
 
     @XStreamAsAttribute
-    public boolean fullDoc = true;
+    public boolean fullDoc;
 
     @XStreamAsAttribute
-    public boolean systemField = false;
+    public boolean systemField;
 
     @XStreamAsAttribute
     public String fieldType;
@@ -112,6 +112,11 @@ public class FieldDefinition implements Comparable<FieldDefinition> {
         return path.compareTo(fieldDefinition.path);
     }
 
+    private Object readResolve() {
+        fullDoc = true;
+        return this;
+    }
+
     @XStreamAlias("validation")
     public static class Validation {
 
@@ -122,36 +127,42 @@ public class FieldDefinition implements Comparable<FieldDefinition> {
         public String requiredGroup;
 
         @XStreamAsAttribute
-        public boolean url = false;
+        public boolean url;
 
         @XStreamAsAttribute
-        public boolean object = false;
+        public boolean object;
 
         @XStreamAsAttribute
-        public boolean unique = false;
+        public boolean unique;
 
         @XStreamAsAttribute
-        public boolean id = false;
+        public boolean id;
 
         @XStreamAsAttribute
-        public boolean type = false;
+        public boolean type;
 
         @XStreamAsAttribute
-        public boolean multivalued = true;
+        public boolean multivalued;
 
         @XStreamAsAttribute
-        public boolean required = true;
+        public boolean required;
 
         @XStreamOmitField
         public FactDefinition factDefinition;
 
         public Converter converter;
+
+        private Object readResolve() {
+            multivalued = true;
+            required = true;
+            return this;
+        }
     }
 
     public static class Converter {
 
         @XStreamAsAttribute
-        public boolean multipleOutput = false;
+        public boolean multipleOutput;
 
         @XStreamAsAttribute
         public String pattern;
