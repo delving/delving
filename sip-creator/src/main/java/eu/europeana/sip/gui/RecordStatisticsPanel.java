@@ -142,7 +142,7 @@ public class RecordStatisticsPanel extends JPanel {
                             recordCountLimit > 0 ? recordCountLimit : recordCount
                     );
                     sipModel.analyzeRecords(
-                            recordCount,
+                            recordCountLimit,
                             new ProgressListener.Adapter(progressMonitor, this),
                             new RecordAnalyzer.Listener() {
                                 @Override

@@ -49,7 +49,7 @@ public class RecordAnalyzer implements Runnable {
     private Method produceHtmlMethod;
     private volatile boolean running = true;
     private String recordAnalysisCode;
-    private int recordCount;
+    private int recordCountLimit;
 
     public interface Listener {
         void finished(String html);
@@ -58,13 +58,13 @@ public class RecordAnalyzer implements Runnable {
     public RecordAnalyzer(
             SipModel sipModel,
             String recordAnalysisCode,
-            int recordCount,
+            int recordCountLimit,
             ProgressListener progressListener,
             Listener listener
     ) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InstantiationException {
         this.sipModel = sipModel;
         this.recordAnalysisCode = recordAnalysisCode;
-        this.recordCount = recordCount;
+        this.recordCountLimit = recordCountLimit;
         this.progressAdapter = new ProgressAdapter(progressListener);
         this.listener = listener;
         setupGroovyClass();
@@ -87,11 +87,11 @@ public class RecordAnalyzer implements Runnable {
             );
             MetadataRecord record;
             while ((record = parser.nextRecord()) != null && running) {
-                consumeRecordMethod.invoke(groovyInstance, record.getRootNode());
-                if (recordCount > 0 && record.getRecordNumber() > recordCount) {
+                if (recordCountLimit > 0 && record.getRecordNumber() > recordCountLimit) {
                     parser.close();
                     break;
                 }
+                consumeRecordMethod.invoke(groovyInstance, record.getRootNode());
             }
         }
         catch (XMLStreamException e) {
