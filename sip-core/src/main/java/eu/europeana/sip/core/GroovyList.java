@@ -38,11 +38,11 @@ import java.util.List;
  */
 
 @SuppressWarnings("unchecked")
-public class GroovyNodeList extends ArrayList<Object> {
-    public GroovyNodeList() {
+public class GroovyList extends ArrayList<Object> {
+    public GroovyList() {
     }
 
-    public GroovyNodeList(Collection<Object> collection) {
+    public GroovyList(Collection<Object> collection) {
         super(collection);
     }
 
@@ -52,8 +52,8 @@ public class GroovyNodeList extends ArrayList<Object> {
      * @param name the name or shortcut key for nodes of interest
      * @return the nodes of interest which match name
      */
-    public GroovyNodeList getAt(String name) {
-        GroovyNodeList answer = new GroovyNodeList();
+    public GroovyList getAt(String name) {
+        GroovyList answer = new GroovyList();
         for (Object child : this) {
             if (child instanceof GroovyNode) {
                 GroovyNode childNode = (GroovyNode) child;
@@ -122,7 +122,7 @@ public class GroovyNodeList extends ArrayList<Object> {
         final MetaClass newMetaClass = new DelegatingMetaClass(metaClass) {
             @Override
             public Object getAttribute(final Object object, final String attribute) {
-                GroovyNodeList nl = (GroovyNodeList) object;
+                GroovyList nl = (GroovyList) object;
                 Iterator it = nl.iterator();
                 List<Object> result = new ArrayList<Object>();
                 while (it.hasNext()) {
@@ -134,7 +134,7 @@ public class GroovyNodeList extends ArrayList<Object> {
 
             @Override
             public void setAttribute(final Object object, final String attribute, final Object newValue) {
-                GroovyNodeList nl = (GroovyNodeList) object;
+                GroovyList nl = (GroovyList) object;
                 for (Object aNl : nl) {
                     GroovyNode node = (GroovyNode) aNl;
                     node.attributes().put(attribute, (String) newValue);
@@ -143,8 +143,8 @@ public class GroovyNodeList extends ArrayList<Object> {
 
             @Override
             public Object getProperty(Object object, String property) {
-                if (object instanceof GroovyNodeList) {
-                    GroovyNodeList nl = (GroovyNodeList) object;
+                if (object instanceof GroovyList) {
+                    GroovyList nl = (GroovyList) object;
                     return nl.getAt(property);
                 }
                 return super.getProperty(object, property);
@@ -154,7 +154,7 @@ public class GroovyNodeList extends ArrayList<Object> {
     }
 
     static {
-        setMetaClass(GroovyNodeList.class, GroovySystem.getMetaClassRegistry().getMetaClass(GroovyNodeList.class));
+        setMetaClass(GroovyList.class, GroovySystem.getMetaClassRegistry().getMetaClass(GroovyList.class));
     }
 
 //    /**
