@@ -23,7 +23,6 @@ package eu.europeana.sip.xml;
 
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.ProgressListener;
-import eu.europeana.sip.core.GroovyCodeResource;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.model.SipModel;
 import groovy.lang.GroovyClassLoader;
@@ -49,6 +48,8 @@ public class RecordAnalyzer implements Runnable {
     private Method consumeRecordMethod;
     private Method produceHtmlMethod;
     private volatile boolean running = true;
+    private String recordAnalysisCode;
+    private int recordCount;
 
     public interface Listener {
         void finished(String html);
@@ -56,18 +57,21 @@ public class RecordAnalyzer implements Runnable {
 
     public RecordAnalyzer(
             SipModel sipModel,
-            GroovyCodeResource groovyCodeResource,
+            String recordAnalysisCode,
+            int recordCount,
             ProgressListener progressListener,
             Listener listener
     ) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InstantiationException {
         this.sipModel = sipModel;
+        this.recordAnalysisCode = recordAnalysisCode;
+        this.recordCount = recordCount;
         this.progressAdapter = new ProgressAdapter(progressListener);
         this.listener = listener;
-        setupGroovyClass(groovyCodeResource);
+        setupGroovyClass();
     }
 
-    private void setupGroovyClass(GroovyCodeResource groovyCodeResource) throws NoSuchMethodException, InstantiationException, IllegalAccessException {
-        Class groovyClass = new GroovyClassLoader(getClass().getClassLoader()).parseClass(groovyCodeResource.getRecordAnalysisCode());
+    private void setupGroovyClass() throws NoSuchMethodException, InstantiationException, IllegalAccessException {
+        Class groovyClass = new GroovyClassLoader(getClass().getClassLoader()).parseClass(recordAnalysisCode);
         this.consumeRecordMethod = groovyClass.getMethod("consumeRecord", Object.class);
         this.produceHtmlMethod = groovyClass.getMethod("produceHtml", Object.class);
         this.groovyInstance = groovyClass.newInstance();
@@ -84,6 +88,10 @@ public class RecordAnalyzer implements Runnable {
             MetadataRecord record;
             while ((record = parser.nextRecord()) != null && running) {
                 consumeRecordMethod.invoke(groovyInstance, record.getRootNode());
+                if (recordCount > 0 && record.getRecordNumber() > recordCount) {
+                    parser.close();
+                    break;
+                }
             }
         }
         catch (XMLStreamException e) {

@@ -36,7 +36,6 @@ import eu.delving.sip.AppConfig;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.ProgressListener;
-import eu.europeana.sip.core.GroovyCodeResource;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordValidationException;
@@ -91,7 +90,6 @@ public class SipModel {
     private VariableListModel variableListModel = new VariableListModel();
     private List<UpdateListener> updateListeners = new CopyOnWriteArrayList<UpdateListener>();
     private List<ParseListener> parseListeners = new CopyOnWriteArrayList<ParseListener>();
-    private GroovyCodeResource groovyCodeResource = new GroovyCodeResource();
 
     public interface UpdateListener {
 
@@ -122,9 +120,10 @@ public class SipModel {
         analysisTree = AnalysisTree.create("Select a Data Set from the File menu");
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
         fieldListModel = new FieldListModel(metadataModel);
-        recordCompileModel = new CompileModel(CompileModel.Type.RECORD, metadataModel, groovyCodeResource);
+        String mappingToolCode = fileStore.getCode(FileStore.MAPPING_TOOL_FILE_NAME);
+        recordCompileModel = new CompileModel(CompileModel.Type.RECORD, metadataModel, mappingToolCode);
         recordCompileModel.setRecordValidator(new RecordValidator(metadataModel, false));
-        fieldCompileModel = new CompileModel(CompileModel.Type.FIELD, metadataModel, groovyCodeResource);
+        fieldCompileModel = new CompileModel(CompileModel.Type.FIELD, metadataModel, mappingToolCode);
         parseListeners.add(recordCompileModel);
         parseListeners.add(fieldCompileModel);
         fieldMappingListModel = new FieldMappingListModel();
@@ -324,9 +323,15 @@ public class SipModel {
         }
     }
 
-    public void analyzeRecords(ProgressListener progressListener, RecordAnalyzer.Listener recordAnalyzerListener) {
+    public void analyzeRecords(int recordCount, ProgressListener progressListener, RecordAnalyzer.Listener recordAnalyzerListener) {
         try {
-            executor.execute(new RecordAnalyzer(this, groovyCodeResource, progressListener, recordAnalyzerListener));
+            executor.execute(new RecordAnalyzer(
+                    this,
+                    fileStore.getCode(FileStore.RECORD_ANALYSIS_FILE_NAME),
+                    recordCount,
+                    progressListener,
+                    recordAnalyzerListener
+            ));
         }
         catch (Exception e) {
             userNotifier.tellUser("Unable to start Record Analyzer", e);

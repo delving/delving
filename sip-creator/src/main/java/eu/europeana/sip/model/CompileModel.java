@@ -26,7 +26,6 @@ import eu.delving.metadata.MappingModel;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.RecordMapping;
 import eu.delving.metadata.RecordValidator;
-import eu.europeana.sip.core.GroovyCodeResource;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
@@ -64,10 +63,10 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     private CompileTimer compileTimer = new CompileTimer();
     private MetadataModel metadataModel;
     private Type type;
-    private GroovyCodeResource groovyCodeResource;
     private RecordValidator recordValidator;
     private String selectedPath;
     private String editedCode;
+    private String mappingToolCode;
 
     public enum Type {
         RECORD,
@@ -83,10 +82,10 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
         REGENERATED
     }
 
-    public CompileModel(Type type, MetadataModel metadataModel, GroovyCodeResource groovyCodeResource) {
+    public CompileModel(Type type, MetadataModel metadataModel, String mappingToolCode) {
         this.type = type;
         this.metadataModel = metadataModel;
-        this.groovyCodeResource = groovyCodeResource;
+        this.mappingToolCode = mappingToolCode;
     }
 
     @Override
@@ -261,7 +260,7 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
                 mappingCode = getCompileCode(editedCode);
                 log.info("Edited code used");
             }
-            MappingRunner mappingRunner = new MappingRunner(groovyCodeResource.getMappingToolCode() + mappingCode);
+            MappingRunner mappingRunner = new MappingRunner(mappingToolCode + mappingCode);
             try {
                 String output = mappingRunner.runMapping(metadataRecord);
                 if (recordValidator != null) {
@@ -352,12 +351,6 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     private void notifyStateChange(State state) {
         for (Listener listener : listeners) {
             listener.stateChanged(state);
-        }
-    }
-
-    private static void checkSwingThread() {
-        if (!SwingUtilities.isEventDispatchThread()) {
-            throw new RuntimeException("Expected Swing thread");
         }
     }
 

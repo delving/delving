@@ -29,21 +29,8 @@ import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.RecordDefinition;
 import eu.delving.metadata.RecordMapping;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
+import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -108,6 +95,33 @@ public class FileStoreImpl implements FileStore {
     }
 
     @Override
+    public String getCode(String fileName) throws FileStoreException {
+        File codeFile = new File(home, fileName);
+        try {
+            if (codeFile.exists()) {
+                return readFileCode(codeFile);
+            }
+            else {
+                return readResourceCode(fileName);
+            }
+        }
+        catch (IOException e) {
+            throw new FileStoreException("Unable to get code " + fileName, e);
+        }
+    }
+
+    @Override
+    public void setCode(String fileName, String code) throws FileStoreException {
+        File codeFile = new File(home, fileName);
+        try {
+            writeCode(codeFile, code);
+        }
+        catch (IOException e) {
+            throw new FileStoreException("Unable to set code "+fileName, e);
+        }
+    }
+
+    @Override
     public void setTemplate(String name, RecordMapping recordMapping) throws FileStoreException {
         File templateFile = new File(home, String.format(MAPPING_FILE_PATTERN, name));
         try {
@@ -122,7 +136,7 @@ public class FileStoreImpl implements FileStore {
 
     @Override
     public Map<String, RecordMapping> getTemplates() {
-        Map<String,RecordMapping> templates = new TreeMap<String,RecordMapping>();
+        Map<String, RecordMapping> templates = new TreeMap<String, RecordMapping>();
         for (File templateFile : home.listFiles(new MappingFileFilter())) {
             try {
                 FileInputStream fis = new FileInputStream(templateFile);
@@ -142,7 +156,7 @@ public class FileStoreImpl implements FileStore {
 
     @Override
     public void deleteTemplate(String name) {
-        File templateFile = new File(home,String.format(MAPPING_FILE_PATTERN, name));
+        File templateFile = new File(home, String.format(MAPPING_FILE_PATTERN, name));
         if (templateFile.exists()) {
             templateFile.delete();
         }
@@ -634,5 +648,37 @@ public class FileStoreImpl implements FileStore {
             }
         }
         return mostRecent;
+    }
+
+    private void writeCode(File file, String code) throws IOException {
+        FileWriter out = new FileWriter(file);
+        out.write(code);
+        out.close();
+    }
+
+    private String readFileCode(File file) throws IOException {
+        FileReader in = new FileReader(file);
+        return readCode(in);
+    }
+
+    private String readResourceCode(String fileName) throws IOException {
+        URL resource = getClass().getResource("/" + fileName);
+        InputStream in = resource.openStream();
+        Reader reader = new InputStreamReader(in);
+        return readCode(reader);
+    }
+
+    private String readCode(Reader reader) throws IOException {
+        BufferedReader in = new BufferedReader(reader);
+        StringBuilder out = new StringBuilder();
+        String line;
+        while ((line = in.readLine()) != null) {
+            if (line.isEmpty() || line.startsWith("//")) {
+                continue;
+            }
+            out.append(line).append('\n');
+        }
+        in.close();
+        return out.toString();
     }
 }

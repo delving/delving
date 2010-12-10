@@ -44,6 +44,10 @@ public interface FileStore {
 
     void setAppConfig(AppConfig appConfig) throws FileStoreException;
 
+    String getCode(String fileName) throws FileStoreException;
+
+    void setCode(String fileName, String code) throws FileStoreException;
+
     void setTemplate(String name, RecordMapping recordMapping) throws FileStoreException;
 
     Map<String, RecordMapping> getTemplates();
@@ -111,4 +115,6 @@ public interface FileStore {
     String MAPPING_FILE_PATTERN = "mapping_%s.xml";
     String MAPPING_FILE_PREFIX = "mapping_";
     String MAPPING_FILE_SUFFIX = ".xml";
+    String MAPPING_TOOL_FILE_NAME = "MappingTool.groovy";
+    String RECORD_ANALYSIS_FILE_NAME = "RecordAnalysis.groovy";
 }

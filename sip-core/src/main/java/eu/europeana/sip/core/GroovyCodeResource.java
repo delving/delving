@@ -36,14 +36,11 @@ import java.net.URL;
 
 public class GroovyCodeResource {
     private static final URL MAPPING_TOOL_CODE_RESOURCE = GroovyCodeResource.class.getResource("/MappingTool.groovy");
-    private static final URL RECORD_ANALYSIS_CODE_RESOURCE = GroovyCodeResource.class.getResource("/RecordAnalysis.groovy");
     private String mappingToolCode;
-    private String recordAnalysisCode;
 
     public GroovyCodeResource() {
         try {
             mappingToolCode = readResourceCode(MAPPING_TOOL_CODE_RESOURCE);
-            recordAnalysisCode = readResourceCode(RECORD_ANALYSIS_CODE_RESOURCE);
         }
         catch (IOException e) {
             mappingToolCode = "println 'Could not read groovy code: " + e.toString() + "'";
@@ -52,10 +49,6 @@ public class GroovyCodeResource {
 
     public String getMappingToolCode() {
         return mappingToolCode;
-    }
-
-    public String getRecordAnalysisCode() {
-        return recordAnalysisCode;
     }
 
     private String readResourceCode(URL resource) throws IOException {

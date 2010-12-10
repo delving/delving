@@ -97,7 +97,10 @@ public class Normalizer implements Runnable {
                 writeNamespace(out, MetadataNamespace.EUROPEANA);
                 out.write(">\n");
             }
-            MappingRunner mappingRunner = new MappingRunner(groovyCodeResource.getMappingToolCode() + recordMapping.toCompileCode(sipModel.getMetadataModel().getRecordDefinition()));
+            MappingRunner mappingRunner = new MappingRunner(
+                    groovyCodeResource.getMappingToolCode() +
+                            recordMapping.toCompileCode(sipModel.getMetadataModel().getRecordDefinition())
+            );
             MetadataParser parser = new MetadataParser(
                     sipModel.getDataSetStore().createXmlInputStream(),
                     sipModel.getRecordRoot(),
@@ -207,6 +210,7 @@ public class Normalizer implements Runnable {
     }
 
     // just so we receive the cancel signal
+
     private class ProgressAdapter implements ProgressListener {
         private ProgressListener progressListener;
 
