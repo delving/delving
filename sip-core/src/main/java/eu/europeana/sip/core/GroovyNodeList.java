@@ -106,7 +106,7 @@ public class GroovyNodeList extends ArrayList<Object> {
         return "";
     }
 
-    // privates
+    // privates ================================================================
 
     protected static void setMetaClass(final Class nodelistClass, final MetaClass metaClass) {
         final MetaClass newMetaClass = new DelegatingMetaClass(metaClass) {

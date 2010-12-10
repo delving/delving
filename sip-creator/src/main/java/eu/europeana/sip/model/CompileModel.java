@@ -37,8 +37,12 @@ import javax.swing.Timer;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -57,7 +61,8 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private RecordMapping recordMapping;
     private MetadataRecord metadataRecord;
-    private Document inputDocument = new PlainDocument();
+    private HTMLEditorKit editorKit = new HTMLEditorKit();
+    private HTMLDocument inputDocument = (HTMLDocument) editorKit.createDefaultDocument();
     private Document codeDocument = new PlainDocument();
     private Document outputDocument = new PlainDocument();
     private CompileTimer compileTimer = new CompileTimer();
@@ -103,12 +108,12 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
 
     public void setSelectedPath(String selectedPath) {
         if (this.selectedPath != null && this.selectedPath.equals(selectedPath)) {
-            log.info("Selected path unchanged at "+selectedPath);
+            log.info("Selected path unchanged at " + selectedPath);
             notifyStateChange(State.REGENERATED);
         }
         else {
             this.selectedPath = selectedPath;
-            log.info("Selected path changed to "+selectedPath);
+            log.info("Selected path changed to " + selectedPath);
             notifyStateChange(State.PRISTINE);
         }
         SwingUtilities.invokeLater(new DocumentSetter(codeDocument, getDisplayCode()));
@@ -151,7 +156,7 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
                 }
             }
             else {
-                log.warn("Field mapping not found for "+selectedPath);
+                log.warn("Field mapping not found for " + selectedPath);
             }
             compileSoon();
         }
@@ -164,7 +169,7 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     public void updatedRecord(MetadataRecord metadataRecord) {
         this.metadataRecord = metadataRecord;
         if (metadataRecord == null) {
-            SwingUtilities.invokeLater(new DocumentSetter(inputDocument, "No input"));
+            SwingUtilities.invokeLater(new DocumentSetter(inputDocument, "<html><h1>No input</h1>"));
             SwingUtilities.invokeLater(new DocumentSetter(outputDocument, ""));
         }
         else {
@@ -237,10 +242,10 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
 
     private void updateInputDocument(MetadataRecord metadataRecord) {
         if (metadataRecord != null) {
-            SwingUtilities.invokeLater(new DocumentSetter(inputDocument, metadataRecord.toString()));
+            SwingUtilities.invokeLater(new DocumentSetter(inputDocument, metadataRecord.toHtml()));
         }
         else {
-            SwingUtilities.invokeLater(new DocumentSetter(inputDocument, "No Input"));
+            SwingUtilities.invokeLater(new DocumentSetter(inputDocument, "<html><h1>No Input</h1>"));
         }
     }
 
@@ -323,13 +328,32 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
 
         @Override
         public void run() {
-            int docLength = document.getLength();
-            try {
-                document.remove(0, docLength);
-                document.insertString(0, content, null);
+            if (document instanceof HTMLDocument) {
+                HTMLDocument htmlDocument = (HTMLDocument) document;
+                int docLength = document.getLength();
+                try {
+                    document.remove(0, docLength);
+                    System.out.println(content);
+                    HTMLEditorKit.ParserCallback callback = htmlDocument.getReader(0); 
+                    htmlDocument.getParser().parse(new StringReader(content), callback, true);
+                    callback.flush();
+                }
+                catch (BadLocationException e) {
+                    throw new RuntimeException(e);
+                }
+                catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-            catch (BadLocationException e) {
-                throw new RuntimeException(e);
+            else {
+                int docLength = document.getLength();
+                try {
+                    document.remove(0, docLength);
+                    document.insertString(0, content, null);
+                }
+                catch (BadLocationException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }

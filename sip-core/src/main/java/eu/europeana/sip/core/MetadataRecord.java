@@ -98,6 +98,16 @@ public class MetadataRecord {
         }
     }
 
+    public String toHtml() {
+        StringBuilder out = new StringBuilder("<html><table border=1 width=100%>");
+        out.append(String.format("<tr><th colspan=2>Record %d</th></tr>\n",recordNumber));
+        for (MetadataVariable variable : getVariables()) {
+            out.append(String.format("<tr><td width=40%%>%s</td><td width=60%%><strong>%s</strong></td></tr>\n", variable.getName(), variable.getValue()));
+        }
+        out.append("</table><html>");
+        return out.toString();
+    }
+
     public String toString() {
         StringBuilder out = new StringBuilder();
         out.append("Record #").append(recordNumber).append('\n');
