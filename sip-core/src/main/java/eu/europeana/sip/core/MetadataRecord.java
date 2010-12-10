@@ -22,6 +22,7 @@
 package eu.europeana.sip.core;
 
 import com.ctc.wstx.exc.WstxParsingException;
+import eu.delving.metadata.Sanitizer;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 
@@ -47,12 +48,10 @@ import java.util.Stack;
 public class MetadataRecord {
     private GroovyNode rootNode;
     private int recordNumber;
-    private Map<String,String> namespaces;
 
-    private MetadataRecord(GroovyNode rootNode, int recordNumber, Map<String,String> namespaces) {
+    private MetadataRecord(GroovyNode rootNode, int recordNumber) {
         this.rootNode = rootNode;
         this.recordNumber = recordNumber;
-        this.namespaces = namespaces;
     }
 
     public GroovyNode getRootNode() {
@@ -99,6 +98,16 @@ public class MetadataRecord {
         }
     }
 
+    public String toHtml() {
+        StringBuilder out = new StringBuilder("<html><table border=1 width=100%>");
+        out.append(String.format("<tr><th colspan=2>Record %d</th></tr>\n",recordNumber));
+        for (MetadataVariable variable : getVariables()) {
+            out.append(String.format("<tr><td width=40%%>%s</td><td width=60%%><strong>%s</strong></td></tr>\n", variable.getName(), variable.getValue()));
+        }
+        out.append("</table><html>");
+        return out.toString();
+    }
+
     public String toString() {
         StringBuilder out = new StringBuilder();
         out.append("Record #").append(recordNumber).append('\n');
@@ -116,7 +125,7 @@ public class MetadataRecord {
         }
 
         public MetadataRecord fromGroovyNode(GroovyNode rootNode, int recordNumber) {
-            return new MetadataRecord(rootNode, recordNumber, namespaces);
+            return new MetadataRecord(rootNode, recordNumber);
         }
 
         public MetadataRecord fromXml(String xmlRecord) throws XMLStreamException {
@@ -151,7 +160,7 @@ public class MetadataRecord {
                             else {
                                 GroovyNode parent = nodeStack.peek();
                                 String nodeName;
-                                if (null == input.getPrefix()) {
+                                if (input.getPrefix().isEmpty()) {
                                     nodeName = Sanitizer.tagToVariable(input.getLocalName());
                                 }
                                 else {
@@ -174,7 +183,7 @@ public class MetadataRecord {
                             break;
                         case XMLEvent.END_ELEMENT:
                             if (nodeStack.size() == 1) {
-                                return new MetadataRecord(nodeStack.peek(), -1, namespaces);
+                                return new MetadataRecord(nodeStack.peek(), -1);
                             }
                             GroovyNode node = nodeStack.pop();
                             String valueString = value.toString().replaceAll("\n", " ").replaceAll(" +", " ").trim();

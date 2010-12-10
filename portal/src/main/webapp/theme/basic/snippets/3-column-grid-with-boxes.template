@@ -1,0 +1,25 @@
+<div class="grid_4 alpha">
+    <dl class="info-box blue">
+        <dt>Header Title</dt>
+        <dd>
+            Information goes here
+        </dd>
+    </dl>
+</div>
+<div class="grid_4">
+    <dl class="info-box green">
+        <dt>Header Title</dt>
+        <dd>
+            Information goes here
+        </dd>
+    </dl>
+</div>
+<div class="grid_4 omega">
+    <dl class="info-box orange">
+        <dt>Header Title</dt>
+        <dd>
+            Information goes here
+        </dd>
+    </dl>
+</div> 
+<div class="clear></div>

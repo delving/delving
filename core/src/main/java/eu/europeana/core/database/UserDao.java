@@ -21,7 +21,11 @@
 
 package eu.europeana.core.database;
 
-import eu.europeana.core.database.domain.*;
+import eu.europeana.core.database.domain.EuropeanaId;
+import eu.europeana.core.database.domain.SavedItem;
+import eu.europeana.core.database.domain.SavedSearch;
+import eu.europeana.core.database.domain.SocialTag;
+import eu.europeana.core.database.domain.User;
 import eu.europeana.core.querymodel.query.QueryProblem;
 
 import java.util.List;
@@ -56,6 +60,14 @@ public interface UserDao {
      */
 
     List<User> fetchUsers(String pattern);
+
+    /**
+     * Fetch all the users and order them by role
+     *
+     * @return the list of users
+     */
+
+    List<User> fetchUsers();
 
     /**
      * Check purely to see if a particular username exists.  This is to prevent duplication.

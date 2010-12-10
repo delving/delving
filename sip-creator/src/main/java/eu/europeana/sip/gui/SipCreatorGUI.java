@@ -21,9 +21,9 @@
 
 package eu.europeana.sip.gui;
 
-import eu.delving.core.metadata.MetadataModel;
-import eu.delving.core.metadata.MetadataModelImpl;
-import eu.delving.core.metadata.Path;
+import eu.delving.metadata.MetadataModel;
+import eu.delving.metadata.MetadataModelImpl;
+import eu.delving.sip.DataSetInfo;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.FileStoreImpl;
@@ -32,17 +32,42 @@ import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.UserNotifier;
 import org.apache.log4j.Logger;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
-import javax.swing.JTabbedPane;
-import javax.swing.ProgressMonitor;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * The main GUI class for the sip creator
@@ -52,110 +77,185 @@ import java.util.Arrays;
  */
 
 public class SipCreatorGUI extends JFrame {
+    private static final String LOCAL_SETS = "Local Data Sets";
+    private static final String LOCAL_AND_REMOTE_SETS = "Local and Remote Data Sets";
+    private static final Dimension SIZE = new Dimension(1024 - 60, 768 - 60);
+    private static final int MARGIN = 15;
     private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel;
+    private JLabel titleLabel = new JLabel(LOCAL_SETS, JLabel.CENTER);
+    private DataSetClient dataSetClient;
+    private JCheckBoxMenuItem connectedBox = new JCheckBoxMenuItem("Connect");
+    private DataSetListModel dataSetListModel = new DataSetListModel();
+    private JList dataSetList = new JList(dataSetListModel);
+    private DataSetActions dataSetActions;
 
-    public SipCreatorGUI(String fileStoreDirectory, String serverUrl) throws FileStoreException {
-        super("SIP Creator");
+    public SipCreatorGUI() throws FileStoreException {
+        super("Delving SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        FileStore fileStore = new FileStoreImpl(new File(fileStoreDirectory));
-        this.sipModel = new SipModel(fileStore, loadMetadataModel(), new PopupExceptionHandler(), serverUrl);
-        sipModel.addUpdateListener(new SipModel.UpdateListener() {
+        MetadataModel metadataModel = loadMetadataModel();
+        File fileStoreDirectory = getFileStoreDirectory();
+        FileStore fileStore = new FileStoreImpl(fileStoreDirectory, metadataModel);
+        this.sipModel = new SipModel(fileStore, metadataModel, new PopupExceptionHandler());
+        this.dataSetClient = new DataSetClient(sipModel, new DataSetClient.Listener() {
 
             @Override
-            public void templateApplied() {
+            public void setInfo(DataSetInfo dataSetInfo) {
+                dataSetListModel.setDataSetInfo(dataSetInfo);
+                dataSetActions.setDataSetInfo(dataSetInfo);
             }
 
             @Override
-            public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
-                if (dataSetStore == null) {
-                    SipCreatorGUI.this.setTitle("SIP Creator");
+            public void setList(List<DataSetInfo> list) {
+                if (list != null) {
+                    for (DataSetInfo dataSetInfo : list) {
+                        dataSetListModel.setDataSetInfo(dataSetInfo);
+                        dataSetActions.setDataSetInfo(dataSetInfo);
+                    }
                 }
-                else {
-                    SipCreatorGUI.this.setTitle(String.format("SIP Creator - Data Set %s", dataSetStore.getSpec()));
-                }
             }
 
             @Override
-            public void updatedRecordRoot(Path recordRoot, int recordCount) {
-            }
-
-            @Override
-            public void normalizationMessage(boolean complete, String message) {
+            public void disconnected() {
+                connectedBox.setSelected(false);
             }
         });
-        JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Analysis", new AnalysisPanel(sipModel));
-        tabs.addTab("Mapping", new MappingPanel(sipModel));
-        tabs.addTab("Refinement", new RefinementPanel(sipModel));
-        tabs.addTab("Normalization", new NormalizationPanel(sipModel));
-        if (serverUrl != null) {
-            tabs.addTab("Repository", new DataSetPanel(sipModel));
-        }
-        getContentPane().add(tabs, BorderLayout.CENTER);
+        dataSetActions = new DataSetActions(this, sipModel, dataSetClient);
         setJMenuBar(createMenuBar());
-//        setSize(1024, 768);
-        setSize(Toolkit.getDefaultToolkit().getScreenSize());
+        JPanel main = new JPanel(new BorderLayout(MARGIN, MARGIN));
+        main.setBorder(BorderFactory.createEmptyBorder(MARGIN, MARGIN, MARGIN, MARGIN));
+        JPanel north = new JPanel(new BorderLayout());
+        north.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createEmptyBorder(MARGIN, MARGIN, 0, MARGIN),
+                        BorderFactory.createRaisedBevelBorder()
+                )
+        );
+        titleLabel.setBackground(Color.WHITE);
+        titleLabel.setOpaque(true);
+        titleLabel.setFont(new Font("Sans", Font.BOLD, 24));
+        JLabel northRight = new JLabel(new ImageIcon(getClass().getResource("/delving-logo-name.jpg")));
+        north.add(titleLabel, BorderLayout.CENTER);
+        north.add(northRight, BorderLayout.EAST);
+        getContentPane().add(north, BorderLayout.NORTH);
+        getContentPane().add(main, BorderLayout.CENTER);
+        main.add(createList(), BorderLayout.CENTER);
+        main.add(createSouth(), BorderLayout.SOUTH);
+        setSize(SIZE);
+        setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - SIZE.width) / 2, (Toolkit.getDefaultToolkit().getScreenSize().height - SIZE.height) / 2);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                for (FileStore.DataSetStore dataSetStore : sipModel.getFileStore().getDataSetStores().values()) {
+                    dataSetListModel.setDataSetStore(dataSetStore);
+                }
+            }
+        });
+        dataSetActions.setEntry(null);
+    }
+
+    private File getFileStoreDirectory() throws FileStoreException {
+        File fileStoreDirectory = new File(System.getProperty("user.home"), "/sip-creator-file-store");
+        if (fileStoreDirectory.isFile()) {
+            try {
+                BufferedReader br = new BufferedReader(new FileReader(fileStoreDirectory));
+                String line;
+                while ((line = br.readLine()) != null) {
+                    line = line.trim();
+                    if (!line.isEmpty()) {
+                        fileStoreDirectory = new File(line);
+                        log.info(String.format("Using %s as file store directory", fileStoreDirectory.getAbsolutePath()));
+                        break;
+                    }
+                }
+                br.close();
+            }
+            catch (IOException e) {
+                throw new FileStoreException("Unable to read the file " + fileStoreDirectory.getAbsolutePath());
+            }
+        }
+        return fileStoreDirectory;
+    }
+
+    private JPanel createSouth() {
+        JPanel local = new JPanel();
+        for (Action action : dataSetActions.getLocalActions()) {
+            local.add(new JButton(action));
+        }
+        JPanel remote = new JPanel();
+        for (Action action : dataSetActions.getRemoteActions()) {
+            remote.add(new JButton(action));
+        }
+        JPanel p = new JPanel(new GridLayout(0,1));
+        p.add(local);
+        p.add(remote);
+        return p;
+    }
+
+    private JComponent createList() {
+        dataSetList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        dataSetList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent event) {
+                if (event.getValueIsAdjusting()) return;
+                int selected = dataSetList.getSelectedIndex();
+                DataSetListModel.Entry selectedEntry = selected >= 0 ? dataSetListModel.getEntry(selected) : null;
+                dataSetActions.setEntry(selectedEntry);
+            }
+        });
+        dataSetList.setCellRenderer(new DataSetListModel.Cell());
+        dataSetList.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        dataSetList.setBackground(getBackground());
+        JScrollPane scroll = new JScrollPane(dataSetList);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        return scroll;
     }
 
     private JMenuBar createMenuBar() {
         JMenuBar bar = new JMenuBar();
-        FileMenu fileMenu = new FileMenu(this, sipModel, new FileMenu.SelectListener() {
+        bar.add(new ImportMenu(this, sipModel, new Runnable() {
             @Override
-            public boolean selectInputFile(File file) {
-                if (!file.exists()) {
-                    return false;
-                }
-                else {
-                    String spec = JOptionPane.showInputDialog(
-                            SipCreatorGUI.this,
-                            String.format(
-                                    "<html>You have selected the following file for importing:<br><br>" +
-                                            "<pre>      <strong>%s</strong></pre><br>" +
-                                            "To complete the import you must enter a Data Set Spec name which will serve<br>" +
-                                            "to identify it in the future. For consistency this cannot be changed later, so choose<br>" +
-                                            "carefully.",
-                                    file.getAbsolutePath()
-                            ),
-                            "Select and Enter Data Set Spec",
-                            JOptionPane.QUESTION_MESSAGE
-                    );
-                    if (spec == null || spec.trim().isEmpty()) {
-                        return false;
-                    }
-                    int doImport = JOptionPane.showConfirmDialog(
-                            SipCreatorGUI.this,
-                            String.format(
-                                    "<html>Are you sure you wish to import this file<br><br>" +
-                                            "<pre>     <strong>%s</strong></pre><br>" +
-                                            "as a new Data set by the name of<br><br>" +
-                                            "<pre>     <strong>%s</strong></pre>",
-                                    file.getAbsolutePath(),
-                                    spec
-                            ),
-                            "Verify your choice",
-                            JOptionPane.YES_NO_OPTION
-                    );
-                    if (doImport == JOptionPane.YES_OPTION) {
-                        ProgressMonitor progressMonitor = new ProgressMonitor(SipCreatorGUI.this, "Importing", "Storing data for " + spec, 0, 100);
-                        sipModel.createDataSetStore(spec, file, progressMonitor);
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
+            public void run() {
+                for (FileStore.DataSetStore dataSetStore : sipModel.getFileStore().getDataSetStores().values()) {
+                    dataSetListModel.setDataSetStore(dataSetStore);
                 }
             }
+        }));
+        bar.add(createRepositoryMenu());
+        bar.add(createActionMenu());
+        return bar;
+    }
 
+    private JMenu createActionMenu() {
+        JMenu actions = new JMenu("Actions");
+        for (Action action : dataSetActions.getLocalActions()) {
+            actions.add(action);
+        }
+        return actions;
+    }
+
+    private JMenu createRepositoryMenu() {
+        JMenu repository = new JMenu("Repository");
+        repository.add(new ServerHostPortAction());
+        repository.add(new AccessKeyAction());
+        connectedBox.addItemListener(new ItemListener() {
             @Override
-            public void selectDataSet(String spec) {
-                sipModel.setDataSetStore(spec);
+            public void itemStateChanged(ItemEvent itemEvent) {
+                boolean enabled = itemEvent.getStateChange() == ItemEvent.SELECTED;
+                dataSetClient.setListFetchingEnabled(enabled);
+                if (!enabled) {
+                    dataSetListModel.clear();
+                    for (FileStore.DataSetStore dataSetStore : sipModel.getFileStore().getDataSetStores().values()) {
+                        dataSetListModel.setDataSetStore(dataSetStore);
+                    }
+                }
+                titleLabel.setText(enabled ? LOCAL_AND_REMOTE_SETS : LOCAL_SETS);
+                dataSetList.clearSelection();
             }
         });
-        bar.add(fileMenu);
-        MappingTemplateMenu mappingTemplateMenu = new MappingTemplateMenu(this, sipModel);
-        bar.add(mappingTemplateMenu);
-        return bar;
+        repository.add(connectedBox);
+        return repository;
     }
 
     private MetadataModel loadMetadataModel() {
@@ -179,7 +279,9 @@ public class SipCreatorGUI extends JFrame {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    String html = String.format("<html><h3>%s</h3><p>%s</p></html>", message, exception.getMessage());
+                    String html = exception != null ?
+                            String.format("<html><h3>%s</h3><p>%s</p></html>", message, exception.getMessage()) :
+                            String.format("<html><h3>%s</h3></html>", message);
                     if (exception instanceof RecordValidationException) {
                         RecordValidationException rve = (RecordValidationException) exception;
                         StringBuilder problemHtml = new StringBuilder(String.format("<html><h3>%s</h3><ul>", message));
@@ -189,7 +291,7 @@ public class SipCreatorGUI extends JFrame {
                         problemHtml.append("</ul></html>");
                         html = problemHtml.toString();
                     }
-                    JOptionPane.showMessageDialog(SipCreatorGUI.this, html);
+                    JOptionPane.showMessageDialog(null, html);
                 }
             });
             if (exception != null) {
@@ -206,15 +308,43 @@ public class SipCreatorGUI extends JFrame {
         }
     }
 
+    private class ServerHostPortAction extends AbstractAction {
+
+        public ServerHostPortAction() {
+            super("Server Network Address");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            String serverHostPort = JOptionPane.showInputDialog(SipCreatorGUI.this, "Server network address host:port (eg. delving.eu:8080).", sipModel.getServerHostPort());
+            if (serverHostPort != null && !serverHostPort.isEmpty()) {
+                sipModel.setServerHostPort(serverHostPort);
+            }
+        }
+    }
+
+    private class AccessKeyAction extends AbstractAction {
+
+        public AccessKeyAction() {
+            super("Access Key");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            JPasswordField passwordField = new JPasswordField(sipModel.getAccessKey());
+            Object[] msg = {"Server Access Key", passwordField};
+            int result = JOptionPane.showConfirmDialog(SipCreatorGUI.this, msg, "Permission", JOptionPane.OK_CANCEL_OPTION);
+            if (result == JOptionPane.OK_OPTION) {
+                sipModel.setServerAccessKey(new String(passwordField.getPassword()));
+            }
+        }
+    }
+
     public static void main(final String[] args) throws ClassNotFoundException {
-//        if (args.length != 1) {
-//            throw new RuntimeException("SipCreatorGUI gets two parameters <server-url>");
-//        }
-        final String serverUrl = args.length > 0 ? args[0] : null;
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    SipCreatorGUI sipCreatorGUI = new SipCreatorGUI("sip-creator-file-store", serverUrl);
+                    SipCreatorGUI sipCreatorGUI = new SipCreatorGUI();
                     sipCreatorGUI.setVisible(true);
                 }
                 catch (FileStoreException e) {

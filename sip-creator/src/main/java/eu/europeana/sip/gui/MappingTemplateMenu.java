@@ -21,6 +21,7 @@
 
 package eu.europeana.sip.gui;
 
+import eu.delving.metadata.RecordMapping;
 import eu.europeana.sip.model.SipModel;
 import org.apache.log4j.Logger;
 
@@ -29,10 +30,7 @@ import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import java.util.Map;
 
 /**
  * The menu for handling files
@@ -42,8 +40,6 @@ import java.io.IOException;
  */
 
 public class MappingTemplateMenu extends JMenu {
-    private static final File DIRECTORY = new File(".");
-    private static final String EXTENSION = ".mapping.template";
     private Logger log = Logger.getLogger(getClass());
     private Component parent;
     private SipModel sipModel;
@@ -62,9 +58,10 @@ public class MappingTemplateMenu extends JMenu {
         JMenu deleteMenu = new JMenu("Delete a template");
         this.add(deleteMenu);
         this.addSeparator();
-        for (File file : DIRECTORY.listFiles(new ExtensionFilter())) {
-            this.add(new UseTemplateAction(file));
-            deleteMenu.add(new DeleteTemplateAction(file));
+        Map<String, RecordMapping> templates = sipModel.getFileStore().getTemplates();
+        for (Map.Entry<String,RecordMapping> entry : templates.entrySet()) {
+            this.add(new ApplyTemplateAction(entry.getKey(), entry.getValue()));
+            deleteMenu.add(new DeleteTemplateAction(entry.getKey()));
         }
     }
 
@@ -76,79 +73,42 @@ public class MappingTemplateMenu extends JMenu {
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            String name = JOptionPane.showInputDialog(parent, "Template Name?");
-//            if (name != null && !name.isEmpty()) { todo
-//                String templateCode = sipModel.getMappingTemplate();
-//                saveTemplate(name, templateCode);
-//            }
-        }
-    }
-
-    private class UseTemplateAction extends AbstractAction {
-        private File file;
-
-        private UseTemplateAction(File file) {
-            super("Apply the \"" + getTemplateName(file) +"\" template");
-            this.file = file;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent actionEvent) {
-//            sipModel.loadMappingTemplate(file); todo
-        }
-    }
-
-    private class DeleteTemplateAction extends AbstractAction {
-        private File file;
-
-        private DeleteTemplateAction(File file) {
-            super("Delete " + getTemplateName(file));
-            this.file = file;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent actionEvent) {
-            if (file.delete()) {
+            String name = JOptionPane.showInputDialog(parent, "What name should this template be given");
+            if (name != null && !name.isEmpty()) {
+                sipModel.saveAsTemplate(name);
                 refresh();
             }
         }
     }
 
-    private void saveTemplate(String name, String templateCode) {
-        FileWriter out = null;
-        try {
-            out = new FileWriter(name + EXTENSION);
-            out.write(templateCode);
-            out.close();
-            log.info("Created template: " + name);
-            refresh(); // pretty lazy
-        }
-        catch (IOException e) {
-            log.warn("Couldn't create the template: " + name, e);
-            if (out != null) {
-                try {
-                    out.close();
-                }
-                catch (IOException ee) {
-                    log.warn("Couldn't close", ee);
-                }
-            }
-        }
-    }
+    private class ApplyTemplateAction extends AbstractAction {
+        private String name;
+        private RecordMapping recordMapping;
 
-    private static String getTemplateName(File file) {
-        if (!file.getName().endsWith(EXTENSION)) {
-            throw new RuntimeException("File name does not end in " + EXTENSION);
+        private ApplyTemplateAction(String name, RecordMapping recordMapping) {
+            super(String.format("Apply the %s template", name));
+            this.name = name;
+            this.recordMapping = recordMapping;
         }
-        return file.getName().substring(0, file.getName().length() - EXTENSION.length());
-    }
-
-    private class ExtensionFilter implements FilenameFilter {
 
         @Override
-        public boolean accept(File dir, String name) {
-            return name.endsWith(EXTENSION);
+        public void actionPerformed(ActionEvent actionEvent) {
+            sipModel.applyTemplate(recordMapping);
         }
     }
 
+    private class DeleteTemplateAction extends AbstractAction {
+        private String name;
+
+        private DeleteTemplateAction(String name) {
+            super(String.format("Delete %s", name));
+            this.name = name;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            sipModel.getFileStore().deleteTemplate(name);
+            refresh();
+        }
+    }
 }

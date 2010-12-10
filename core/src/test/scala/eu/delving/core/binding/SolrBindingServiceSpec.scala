@@ -5,8 +5,8 @@ import org.scalatest.matchers.ShouldMatchers
 import org.junit.runner.RunWith
 import scala.collection.JavaConversions._
 import org.scalatest. {BeforeAndAfterAll, Spec}
-import eu.europeana.core.querymodel.query. {DocType, SolrTester}
 import xml. {MetaData, NodeSeq, Elem}
+import eu.europeana.core.querymodel.query.{DocType, SolrTester}
 
 /**
  *

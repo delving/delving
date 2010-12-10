@@ -51,21 +51,30 @@ public class MessageRefactor {
     }
 
     private static class Counter {
-        String key;
-        int count;
+        private String key;
+        private int count;
+        private File file;
+        private List<String> instances = new ArrayList<String>();
 
         private Counter(String key) {
             this.key = key;
+        }
+
+        public void addInstance(File file, String instance) {
+            this.file = file;
+            instances.add(instance);
+            count++;
         }
     }
 
     public static void main(String[] args) throws Exception {
         if (args.length < 2) {
-            System.out.println("MessageFileUpdater <portal-path> <message-file-path>");
+            System.out.println("MessageFileUpdater <portal-path> <message-file-path> [go]");
             System.exit(0);
         }
         String portalPath = args[0];
         String messageFilePath = args[1];
+        boolean go = args.length == 3;
         File portalDirectory = new File(portalPath);
         if (!portalDirectory.exists() || !"portal".equals(portalDirectory.getName()) || !new File(portalDirectory, "src/main").exists()) {
             System.out.println("First parameter " + portalPath + " must be the directory containing the portal project");
@@ -76,31 +85,28 @@ public class MessageRefactor {
             System.out.println("Second parameter " + messageFilePath + " must be the directory containing messages*.properties files");
             System.exit(1);
         }
-        Map<String, Map<String, String>> messageFileMaps = new TreeMap<String, Map<String,String>>();
+        Map<String, Map<String, String>> messageFileMaps = new TreeMap<String, Map<String, String>>();
         for (File messageFile : messageDirectory.listFiles()) {
             if (messageFile.getName().endsWith(PROPERTIES_EXTENSION)) {
-                Map<String,String> messageMap = MessageFileUtil.readMap(messageFile);
+                Map<String, String> messageMap = MessageFileUtil.readMap(messageFile);
                 messageFileMaps.put(messageFile.getName(), messageMap);
             }
         }
         Set<String> allKeys = new TreeSet<String>();
-        for (Map<String,String> messageMap : messageFileMaps.values()) {
+        for (Map<String, String> messageMap : messageFileMaps.values()) {
             allKeys.addAll(messageMap.keySet());
         }
-        File outFile = new File("MessageRefactor.output");
-        PrintStream out = new PrintStream(outFile, "UTF-8");
-        out.println("\n\nMissing Keys:");
-        for (Map.Entry<String,Map<String,String>> entry : messageFileMaps.entrySet()) {
-            Set<String> missingKeys = new TreeSet<String>(allKeys);
-            missingKeys.removeAll(entry.getValue().keySet());
-            if (!missingKeys.isEmpty()) {
-                for (String key : missingKeys) {
-                    out.println(String.format("%s: %s", entry.getKey(), key));
-                }
-            }
-        }
-        out.println("\n\nOccurrences:");
-        Map<String, Counter> counters = new TreeMap<String,Counter>();
+//        out.println("\n\nMissing Keys:");
+//        for (Map.Entry<String, Map<String, String>> entry : messageFileMaps.entrySet()) {
+//            Set<String> missingKeys = new TreeSet<String>(allKeys);
+//            missingKeys.removeAll(entry.getValue().keySet());
+//            if (!missingKeys.isEmpty()) {
+//                for (String key : missingKeys) {
+//                    out.println(String.format("%s: %s", entry.getKey(), key));
+//                }
+//            }
+//        }
+        Map<String, Counter> counters = new TreeMap<String, Counter>();
         Set<File> files = new TreeSet<File>();
         gatherFiles(new File(portalDirectory, "src/main"), files);
         for (File file : files) {
@@ -111,68 +117,103 @@ public class MessageRefactor {
                 for (String key : allKeys) {
                     Matcher matcher = Pattern.compile(key).matcher(line);
                     while (matcher.find()) {
-                        out.println(String.format(
-                                "%s:%d> %s [%s]",
-                                file.getName(),
-                                lineNumber,
-                                key,
-                                line
-                        ));
                         Counter counter = counters.get(key);
                         if (counter == null) {
                             counter = new Counter(key);
                             counters.put(key, counter);
                         }
+                        counter.addInstance(
+                                file,
+                                String.format(
+                                        "%s:%d> %s [%s]",
+                                        file.getName(),
+                                        lineNumber,
+                                        key,
+                                        line
+                                ));
                         counter.count++;
                     }
                 }
             }
         }
-        out.println("\n\nUsages:");
-        for (Counter counter : counters.values()) {
-            out.println(String.format("%s : %d", counter.key, counter.count));
-        }
         Set<String> unused = new TreeSet<String>(allKeys);
         unused.removeAll(counters.keySet());
-        out.println("\n\nUnused:");
-        for (String key : allKeys) {
-            out.println(key);
-        }
-        out.close();
-        File refactorFile = new File("MesssageRefactor.txt");
-        if (refactorFile.exists()) {
-            Map<String,String> map = MessageFileUtil.readMap(refactorFile);
-            for (Map.Entry<String,String> entry : map.entrySet()) {
-                if (entry.getValue().isEmpty()) {
-                    System.out.println(String.format("No refactor for %s, aborting", entry.getKey()));
-                    return;
-                }
-            }
-            for (File file : files) {
-                List<String> lines = readFile(file);
-                Writer writer = new FileWriter(file);
-                for (String line : lines) {
-                    for (Map.Entry<String,String> entry : map.entrySet()) {
-                        String changed = line.replaceAll(entry.getKey(), entry.getValue());
-                        if (!changed.equals(line)) {
-                            System.out.println("from> "+line+"\n  to> "+changed+"\n");
-                            writer.write(changed);
+        File outFile = new File("MessageRefactor.txt");
+        if (go) {
+            if (outFile.exists()) {
+                Map<String, String> refactorMap = MessageFileUtil.readMap(outFile);
+                for (File file : files) {
+                    List<String> lines = readFile(file);
+                    Writer writer = new FileWriter(file);
+                    for (String line : lines) {
+                        String lineWas = line;
+                        for (Map.Entry<String, String> entry : refactorMap.entrySet()) {
+                            if (!entry.getKey().equals(entry.getValue())) {
+                                line = line.replaceAll(entry.getKey(), entry.getValue());
+                            }
                         }
-                        else {
-                            writer.write(line);
+                        if (!lineWas.equals(line)) {
+                            System.out.println("from> " + lineWas + "\n  to> " + line + "\n");
                         }
+                        writer.write(line);
                         writer.write('\n');
                     }
+                    writer.close();
                 }
-                writer.close();
+                for (Map.Entry<String, Map<String, String>> mapEntry : messageFileMaps.entrySet()) {
+                    for (Map.Entry<String, String> entry : refactorMap.entrySet()) {
+                        String value = mapEntry.getValue().get(entry.getKey());
+                        if (value != null) {
+                            mapEntry.getValue().remove(entry.getKey());
+                            mapEntry.getValue().put(entry.getValue(), value);
+                        }
+                    }
+                    MessageFileUtil.writeMap(mapEntry.getValue(), new File(messageDirectory, mapEntry.getKey()));
+                }
+                outFile.renameTo(new File("MessageRefactor." + System.currentTimeMillis() + ".txt"));
             }
-        }
-        else {
-            Map<String,String> map = new TreeMap<String,String>();
-            for (String key : allKeys) {
-                map.put(key, "");
+            else {
+                PrintStream out = new PrintStream(outFile, "UTF-8");
+                for (String key : allKeys) {
+                    Counter counter = counters.get(key);
+                    out.println();
+                    if (key.startsWith("_")) {
+                        if (counter != null) {
+                            for (String instance : counter.instances) {
+                                out.println(String.format("# %s", instance));
+                            }
+                        }
+                        else {
+                            out.println("# Unused");
+                        }
+                        out.println();
+                        out.println(String.format("%s=%s", key, key));
+                    }
+                    else {
+                        String mungedKey = key.replaceAll("_t", "").toLowerCase();
+                        String candidateValue;
+                        out.println();
+                        if (counter != null) {
+                            for (String instance : counter.instances) {
+                                out.println(String.format("# %s", instance));
+                            }
+                            String fileName = counter.file.getName().toLowerCase();
+                            int dot = fileName.lastIndexOf(".");
+                            if (dot > 0) {
+                                fileName = fileName.substring(0, dot);
+                            }
+                            candidateValue = String.format("_%s.%s", fileName, mungedKey);
+                        }
+                        else {
+                            out.println("# Unused");
+                            candidateValue = String.format("_unused.%s", mungedKey);
+                        }
+                        out.println();
+                        out.println(String.format("%s=%s", key, candidateValue));
+                    }
+                }
+                out.close();
             }
-            MessageFileUtil.writeMap(map, refactorFile);
         }
     }
 }

@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -121,7 +122,7 @@ public class StaticController {
                 return getRedirect("");
             }
             clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.STATICPAGE, "view=" + path);
-            mav.addObject("locale", request.getLocale());
+            mav.addObject("locale", RequestContextUtils.getLocale(request));
             mav.addObject("page", page);
             mav.addObject("embedded", embedded);
         }
@@ -138,7 +139,7 @@ public class StaticController {
             if (content != null && content.trim().isEmpty()) {
                 content = null;
             }
-            staticRepo.putPage(path, content, request.getLocale());
+            staticRepo.putPage(path, content, RequestContextUtils.getLocale(request));
         }
         return getRedirect(path);
     }

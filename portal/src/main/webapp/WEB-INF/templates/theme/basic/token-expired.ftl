@@ -8,25 +8,16 @@
 </#if>
 <#include "includeMarcos.ftl">
 
-<@addHeader "Norvegiana", "",[],[]/>
+<@addHeader "${portalDisplayName}", "",[],[]/>
 
-<section class="grid_3">
-    <header id="branding">
-        <a href="/${portalName}/" title=""/>
-        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
-        </a>
-        <h1 class="large">${portalDisplayName}</h1>
-    </header>
-</section>
+<section role="main" class="grid_12">
 
-
-<section role="main" class="grid_9">
-
-        <h1>Error</h1>
+        <h1><@spring.message '_portal.ui.notification.error'/></h1>
         <br />
         <p>
-            The link you used to complete registration is invalid or has expired.
-            Please <a href="/${portalName}/login.html">register your email again</a> to finish registration.
+            <@spring.message '_portal.ui.notification.registrationIsExpired'/>
+            <@spring.message '_portal.ui.notification.pleaseRegisterAgain'/>
+
         </p>
 
 </section>

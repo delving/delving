@@ -513,7 +513,7 @@
 
    <!-- non-tokenized version of manufacturer to make it easier to sort or group
         results by manufacturer.  copied from "manu" via copyField -->
-   <field name="manu_exact" type="string" indexed="true" stored="false"/>
+   <!--<field name="manu_exact" type="string" indexed="true" stored="false"/>-->
 
    <field name="payloads" type="payloads" indexed="true" stored="true"/>
 
@@ -524,7 +524,7 @@
 
    <field name="spell" type="textSpell" indexed="true" stored="true" multiValued="true" />
 
-     <!-- Europeana special fields: These are the general search fields -->
+     <!-- Custom convenience search fields -->
              <field name="description" type="text" indexed="true" stored="false" multiValued="true" termVectors="true"/>
              <field name="location" type="text" indexed="true" stored="false" multiValued="true" />
              <field name="date" type="text" indexed="true" stored="false" multiValued="true" />
@@ -557,18 +557,18 @@
              <field name="europeana_collectionName" type="string" indexed="true" stored="true" required="true" multiValued="false" />
              <field name="europeana_collectionTitle" type="string" indexed="true" stored="true" required="true" multiValued="false" />
              <field name="europeana_type" type="string" indexed="true" stored="true" multiValued="false" />
-             <field name="europeana_userTag" type="text" indexed="true" stored="true" multiValued="true" />
+             <!--<field name="europeana_userTag" type="text" indexed="true" stored="true" multiValued="true" />-->
              <field name="europeana_unstored" type="text" indexed="true" stored="false" multiValued="true" />
-             <field name="europeana_object" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="europeana_country" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="europeana_source" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="europeana_isShownAt" type="string" indexed="true" stored="true" multiValued="true" />
-             <field name="europeana_isShownBy" type="string" indexed="true" stored="true" multiValued="true" />
-             <field name="europeana_language" type="string" indexed="true" stored="true" multiValued="true" />
-             <field name="europeana_year" type="string" indexed="true" stored="true" multiValued="true" />
-             <field name="europeana_provider" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="europeana_dataProvider" type="text" indexed="true" stored="true" multiValued="false" />
-             <field name="europeana_hasObject" type="boolean" indexed="true" stored="true" multiValued="false" />
+             <!--<field name="europeana_object" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="europeana_country" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="europeana_source" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="europeana_provider" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="europeana_dataProvider" type="text" indexed="true" stored="true" multiValued="false" />-->
+             <!--<field name="europeana_hasObject" type="boolean" indexed="true" stored="true" multiValued="false" />-->
+             <field name="europeana_isShownAt" type="string" indexed="true" stored="true" multiValued="true"/>
+             <field name="europeana_isShownBy" type="string" indexed="true" stored="true" multiValued="true"/>
+             <field name="europeana_language" type="string" indexed="true" stored="true" multiValued="true"/>
+             <field name="europeana_year" type="string" indexed="true" stored="true" multiValued="true"/>
              <field name="europeana_rights" type="string" indexed="true" stored="true" multiValued="false" />
 
              <!-- Europeana Facets -->
@@ -597,65 +597,65 @@
              <field name="abm_digitised" type="string" indexed="true" stored="true" multiValued="true"/>
              <field name="abm_address" type="string" indexed="true" stored="true" multiValued="true"/>
              <field name="abm_landedProperty" type="string" indexed="true" stored="true" multiValued="true"/>
-             <field name="abm_contentprovider" type="string" indexed="true" stored="true" multiValued="true"/>
+             <field name="abm_contentProvider" type="string" indexed="true" stored="true" multiValued="true"/>
 
 
      <!-- Dublin Core / ESE fields -->
 
-             <field name="dc_coverage" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dc_contributor" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dc_description" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dc_creator" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dc_date" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dc_format" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dc_identifier" type="string" indexed="true" stored="true" multiValued="true" />
-             <field name="dc_language" type="string" indexed="true" stored="true" multiValued="true" />
-             <field name="dc_publisher" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dc_relation" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dc_rights" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dc_source" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dc_subject" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dc_title" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dc_type" type="text" indexed="true" stored="true" multiValued="true" />
+             <!--<field name="dc_coverage" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dc_contributor" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dc_description" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dc_creator" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dc_date" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dc_format" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dc_identifier" type="string" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dc_language" type="string" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dc_publisher" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dc_relation" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dc_rights" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dc_source" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dc_subject" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dc_title" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dc_type" type="text" indexed="true" stored="true" multiValued="true" />-->
 
          <!-- Dublin Core Terms extended / ESE fields -->
 
-             <field name="dcterms_alternative" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dcterms_created" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dcterms_conformsTo" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dcterms_extent" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dcterms_hasFormat" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dcterms_hasPart" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dcterms_hasVersion" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dcterms_isFormatOf" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dcterms_isPartOf" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dcterms_isReferencedBy" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dcterms_isReplacedBy" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dcterms_isRequiredBy" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dcterms_issued" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dcterms_isVersionOf" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dcterms_medium" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dcterms_provenance" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dcterms_references" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dcterms_replaces" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dcterms_requires" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dcterms_spatial" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dcterms_tableOfContents" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="dcterms_temporal" type="text" indexed="true" stored="true" multiValued="true" />
+             <!--<field name="dcterms_alternative" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dcterms_created" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dcterms_conformsTo" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dcterms_extent" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dcterms_hasFormat" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dcterms_hasPart" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dcterms_hasVersion" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dcterms_isFormatOf" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dcterms_isPartOf" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dcterms_isReferencedBy" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dcterms_isReplacedBy" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dcterms_isRequiredBy" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dcterms_issued" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dcterms_isVersionOf" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dcterms_medium" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dcterms_provenance" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dcterms_references" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dcterms_replaces" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dcterms_requires" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dcterms_spatial" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dcterms_tableOfContents" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="dcterms_temporal" type="text" indexed="true" stored="true" multiValued="true" />-->
 
      <!-- Special fields for Instituut Collectie Nederland -->
 
-             <field name="icn_creatorYearOfBirth" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="icn_technique" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="icn_material" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="icn_location" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="icn_province" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="icn_purchasePrice" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="icn_collectionPart" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="icn_acquisitionMeans" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="icn_acquisitionYear" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="icn_acquiredWithHelpFrom" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="icn_physicalState" type="text" indexed="true" stored="true" multiValued="true" />
+             <!--<field name="icn_creatorYearOfBirth" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="icn_technique" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="icn_material" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="icn_location" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="icn_province" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="icn_purchasePrice" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="icn_collectionPart" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="icn_acquisitionMeans" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="icn_acquisitionYear" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="icn_acquiredWithHelpFrom" type="text" indexed="true" stored="true" multiValued="true" />-->
+             <!--<field name="icn_physicalState" type="text" indexed="true" stored="true" multiValued="true" />-->
              <field name="icn_collectionType" type="string" indexed="true" stored="true" multiValued="true" />
 
    <!-- Dynamic field definitions.  If a field name is not found, dynamicFields
@@ -696,8 +696,28 @@
         unknown fields indexed and/or stored by default -->
    <!--dynamicField name="*" type="ignored" multiValued="true" /-->
 
+     <!-- Any field prefixed with metadata will to the text field -->
+     <dynamicField name="md_*" type="text" indexed="true" stored="false" multiValued="true"/>
+
+     <!-- Any field prefixed with summ will be stored for the summary on the brief result page -->
+     <dynamicField name="summ_*" type="text" indexed="true" stored="true" multiValued="true"/>
+
+     <!--  This dynamic field will index any field prefixed with facet_* as a facet field.
+       No uppercasing is necessary any more. -->
+     <dynamicField name="facet_*" type="string" indexed="true" stored="true" multiValued="true" />
+
+    <!-- dynamic field for sort purposes -->
+     <field name="sort_*" type="alphaOnlySort" indexed="true" stored="false" multiValued="true" termVectors="true"/>
+
+     <!-- Temporary convenience fields to simplify the schema.xml-->
+     <dynamicField name="dc_*" type="text" indexed="true" stored="true" multiValued="true"/>
+     <dynamicField name="dcterms_*" type="text" indexed="true" stored="true" multiValued="true"/>
+     <dynamicField name="europeana_*" type="text" indexed="true" stored="true" multiValued="true"/>
+     <dynamicField name="icn_*" type="text" indexed="true" stored="true" multiValued="true"/>
+     <dynamicField name="abm_*" type="text" indexed="true" stored="true" multiValued="true"/>
+
      <!-- Note This field any fieldname string to be indexed!! -->
-   <dynamicField name="*" type="text" multiValued="true"/>
+     <dynamicField name="*" type="text" multiValued="true"/>
 
  </fields>
 
@@ -716,68 +736,61 @@
         is added to the index.  It's used either to index the same field differently,
         or to add multiple fields to the same field for easier/faster searching.  -->
 
-   <!--<copyField source="cat" dest="text"/>-->
-   <!--<copyField source="name" dest="text"/>-->
-   <!--<copyField source="manu" dest="text"/>-->
-   <!--<copyField source="features" dest="text"/>-->
-   <!--<copyField source="includes" dest="text"/>-->
-   <!--<copyField source="manu" dest="manu_exact"/>-->
-
    <!-- Europeana copy fields -->
+    <!-- TODO: remove most copyfields. To be replace with better indexer based on record definition -->
 
    <!-- Text copy-to-field -->
-   <copyField source="dcterms_alternative" dest="text" />
-   <copyField source="dcterms_conformsTo" dest="text" />
-   <copyField source="dc_contributor" dest="text" />
-   <copyField source="dc_coverage" dest="text" />
-   <copyField source="dcterms_created" dest="text" />
-   <copyField source="dc_creator" dest="text" />
-   <copyField source="dc_date" dest="text" />
-   <copyField source="dc_description" dest="text" />
-   <copyField source="dcterms_extent" dest="text" />
-   <copyField source="dcterms_hasFormat" dest="text" />
-   <copyField source="dc_format" dest="text" />
-   <copyField source="dcterms_hasPart" dest="text" />
-   <copyField source="dc_identifier" dest="text" />
-   <copyField source="dcterms_hasVersion" dest="text" />
-   <copyField source="dcterms_isPartOf" dest="text" />
-   <copyField source="dcterms_isReferencedBy" dest="text" />
-   <copyField source="dcterms_isReplacedBy" dest="text" />
-   <copyField source="dcterms_isRequiredBy" dest="text" />
-   <copyField source="europeana_isShownBy" dest="text" />
-   <copyField source="europeana_isShownAt" dest="text" />
-   <copyField source="dcterms_issued" dest="text" />
-   <copyField source="dcterms_isVersionOf" dest="text" />
-   <copyField source="dc_language" dest="text" />
-   <copyField source="dcterms_medium" dest="text" />
-   <copyField source="dcterms_provenance" dest="text" />
-   <copyField source="dc_publisher" dest="text" />
-   <copyField source="dc_relation" dest="text" />
-   <copyField source="dcterms_replaces" dest="text" />
-   <copyField source="dcterms_requires" dest="text" />
-   <copyField source="dc_rights" dest="text" />
-   <copyField source="dc_source" dest="text" />
-   <copyField source="dcterms_spatial" dest="text" />
-   <copyField source="dc_subject" dest="text" />
-   <copyField source="dcterms_tableOfContents" dest="text" />
-   <copyField source="dcterms_temporal" dest="text" />
-   <copyField source="dc_title" dest="text" />
-   <copyField source="dc_type" dest="text" />
-   <copyField source="europeana_type" dest="text" />
-   <copyField source="europeana_userTag" dest="text" />
-   <copyField source="dcterms_references" dest="text" />
+   <!--<copyField source="dcterms_alternative" dest="text" />-->
+   <!--<copyField source="dcterms_conformsTo" dest="text" />-->
+   <!--<copyField source="dc_contributor" dest="text" />-->
+   <!--<copyField source="dc_coverage" dest="text" />-->
+   <!--<copyField source="dcterms_created" dest="text" />-->
+   <!--<copyField source="dc_creator" dest="text" />-->
+   <!--<copyField source="dc_date" dest="text" />-->
+   <!--<copyField source="dc_description" dest="text" />-->
+   <!--<copyField source="dcterms_extent" dest="text" />-->
+   <!--<copyField source="dcterms_hasFormat" dest="text" />-->
+   <!--<copyField source="dc_format" dest="text" />-->
+   <!--<copyField source="dcterms_hasPart" dest="text" />-->
+   <!--<copyField source="dc_identifier" dest="text" />-->
+   <!--<copyField source="dcterms_hasVersion" dest="text" />-->
+   <!--<copyField source="dcterms_isPartOf" dest="text" />-->
+   <!--<copyField source="dcterms_isReferencedBy" dest="text" />-->
+   <!--<copyField source="dcterms_isReplacedBy" dest="text" />-->
+   <!--<copyField source="dcterms_isRequiredBy" dest="text" />-->
+   <!--<copyField source="europeana_isShownBy" dest="text" />-->
+   <!--<copyField source="europeana_isShownAt" dest="text" />-->
+   <!--<copyField source="dcterms_issued" dest="text" />-->
+   <!--<copyField source="dcterms_isVersionOf" dest="text" />-->
+   <!--<copyField source="dc_language" dest="text" />-->
+   <!--<copyField source="dcterms_medium" dest="text" />-->
+   <!--<copyField source="dcterms_provenance" dest="text" />-->
+   <!--<copyField source="dc_publisher" dest="text" />-->
+   <!--<copyField source="dc_relation" dest="text" />-->
+   <!--<copyField source="dcterms_replaces" dest="text" />-->
+   <!--<copyField source="dcterms_requires" dest="text" />-->
+   <!--<copyField source="dc_rights" dest="text" />-->
+   <!--<copyField source="dc_source" dest="text" />-->
+   <!--<copyField source="dcterms_spatial" dest="text" />-->
+   <!--<copyField source="dc_subject" dest="text" />-->
+   <!--<copyField source="dcterms_tableOfContents" dest="text" />-->
+   <!--<copyField source="dcterms_temporal" dest="text" />-->
+   <!--<copyField source="dc_title" dest="text" />-->
+   <!--<copyField source="dc_type" dest="text" />-->
+   <!--<copyField source="europeana_type" dest="text" />-->
+   <!--<copyField source="europeana_userTag" dest="text" />-->
+   <!--<copyField source="dcterms_references" dest="text" />-->
    <!--copyField source="europeana_editorsPick" dest="text" /-->
 
-
-
-   <copyField source="dc_coverage" dest="what" />
-   <copyField source="dcterms_temporal" dest="what" />
-   <copyField source="dc_subject" dest="what" />
-   <copyField source="dcterms_created" dest="when" />
-   <copyField source="dc_date" dest="when" />
-   <copyField source="dc_contributor" dest="who" />
-   <copyField source="dc_creator" dest="who" />
-   <copyField source="dcterms_spatial" dest="where" />
+   <!-- todo : remove this-->
+   <!--<copyField source="dc_coverage" dest="what" />-->
+   <!--<copyField source="dcterms_temporal" dest="what" />-->
+   <!--<copyField source="dc_subject" dest="what" />-->
+   <!--<copyField source="dcterms_created" dest="when" />-->
+   <!--<copyField source="dc_date" dest="when" />-->
+   <!--<copyField source="dc_contributor" dest="who" />-->
+   <!--<copyField source="dc_creator" dest="who" />-->
+   <!--<copyField source="dcterms_spatial" dest="where" />-->
 
 
     <!--Spellcheck fields-->
@@ -797,7 +810,7 @@
    <copyField source="dc_description" dest="description" />
    <copyField source="dcterms_tableOfContents" dest="description" />
 
-   <copyField source="dc_identifier" dest="identifier" />
+   <!--<copyField source="dc_identifier" dest="identifier" />-->
 
    <copyField source="dcterms_spatial" dest="location" />
 
@@ -812,20 +825,20 @@
    <copyField source="dc_title" dest="title_sort" />
    <copyField source="dcterms_alternative" dest="title" />
 
-   <copyField source="dcterms_extent" dest="format" />
-   <copyField source="dcterms_medium" dest="format" />
+   <!--<copyField source="dcterms_extent" dest="format" />-->
+   <!--<copyField source="dcterms_medium" dest="format" />-->
 
-   <copyField source="dcterms_hasFormat" dest="relation" />
-   <copyField source="dcterms_hasPart" dest="relation" />
-   <copyField source="dcterms_hasVersion" dest="relation" />
-   <copyField source="dcterms_isReferencedBy" dest="relation" />
-   <copyField source="dcterms_isReplacedBy" dest="relation" />
-   <copyField source="dcterms_isRequiredBy" dest="relation" />
-   <copyField source="dcterms_isVersionOf" dest="relation" />
-   <copyField source="dc_relation" dest="relation" />
-   <copyField source="dcterms_replaces" dest="relation" />
-   <copyField source="dcterms_requires" dest="relation" />
-   <!--<copyField source="dcterms_issued" dest="when" />-->
+   <!--<copyField source="dcterms_hasFormat" dest="relation" />-->
+   <!--<copyField source="dcterms_hasPart" dest="relation" />-->
+   <!--<copyField source="dcterms_hasVersion" dest="relation" />-->
+   <!--<copyField source="dcterms_isReferencedBy" dest="relation" />-->
+   <!--<copyField source="dcterms_isReplacedBy" dest="relation" />-->
+   <!--<copyField source="dcterms_isRequiredBy" dest="relation" />-->
+   <!--<copyField source="dcterms_isVersionOf" dest="relation" />-->
+   <!--<copyField source="dc_relation" dest="relation" />-->
+   <!--<copyField source="dcterms_replaces" dest="relation" />-->
+   <!--<copyField source="dcterms_requires" dest="relation" />-->
+   <!--&lt;!&ndash;<copyField source="dcterms_issued" dest="when" />&ndash;&gt;-->
    <!--<copyField source="dc_language" dest="LANGUAGE" />-->
    <!--Shouldn't this be when??-->
    <!--<copyField source="dc_type" dest="type" />-->

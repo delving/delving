@@ -23,9 +23,6 @@ package eu.delving.sip;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * This class
  *
@@ -35,8 +32,21 @@ import java.util.List;
 
 @XStreamAlias("sip-creator-configuration")
 public class AppConfig {
+    private String serverHostPort;
     private String accessKey;
-    private List<String> recentDirectories;
+    private String recentDirectory;
+    private String normalizeDirectory;
+
+    public String getServerHostPort() {
+        if (serverHostPort == null) {
+            serverHostPort = "localhost:8983";
+        }
+        return serverHostPort;
+    }
+
+    public void setServerHostPort(String serverHostPort) {
+        this.serverHostPort = serverHostPort;
+    }
 
     public String getAccessKey() {
         if (accessKey == null) {
@@ -49,11 +59,25 @@ public class AppConfig {
         this.accessKey = accessKey;
     }
 
-    public List<String> getRecentDirectories() {
-        if (recentDirectories == null) {
-            recentDirectories = new ArrayList<String>();
+    public String getRecentDirectory() {
+        if (recentDirectory == null) {
+            recentDirectory = System.getProperty("user.home");
         }
-        return recentDirectories;
+        return recentDirectory;
     }
 
+    public void setRecentDirectory(String directory) {
+        this.recentDirectory = directory;
+    }
+
+    public String getNormalizeDirectory() {
+        if (normalizeDirectory == null) {
+            normalizeDirectory = System.getProperty("user.home");
+        }
+        return normalizeDirectory;
+    }
+
+    public void setNormalizeDirectory(String directory) {
+        this.normalizeDirectory = directory;
+    }
 }

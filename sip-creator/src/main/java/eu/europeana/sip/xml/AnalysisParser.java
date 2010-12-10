@@ -21,9 +21,9 @@
 
 package eu.europeana.sip.xml;
 
-import eu.delving.core.metadata.Path;
-import eu.delving.core.metadata.Statistics;
-import eu.delving.core.metadata.Tag;
+import eu.delving.metadata.FieldStatistics;
+import eu.delving.metadata.Path;
+import eu.delving.metadata.Tag;
 import eu.delving.sip.FileStore;
 import org.apache.log4j.Logger;
 import org.codehaus.stax2.XMLInputFactory2;
@@ -49,14 +49,14 @@ public class AnalysisParser implements Runnable {
     private static final int ELEMENT_STEP = 10000;
     private final Logger LOG = Logger.getLogger(getClass());
     private Path path = new Path();
-    private Map<Path, Statistics> statisticsMap = new TreeMap<Path, Statistics>();
+    private Map<Path, FieldStatistics> statisticsMap = new TreeMap<Path, FieldStatistics>();
     private Listener listener;
     private FileStore.DataSetStore dataSetStore;
     private boolean abort;
 
     public interface Listener {
 
-        void success(List<Statistics> list);
+        void success(List<FieldStatistics> list);
 
         void failure(Exception exception);
 
@@ -125,13 +125,13 @@ public class AnalysisParser implements Runnable {
                 }
                 input.next();
             }
-            List<Statistics> statisticsList = new ArrayList<Statistics>(statisticsMap.values());
-            Collections.sort(statisticsList);
-            for (Statistics statistics : statisticsList) {
-                statistics.trim(true);
+            List<FieldStatistics> fieldStatisticsList = new ArrayList<FieldStatistics>(statisticsMap.values());
+            Collections.sort(fieldStatisticsList);
+            for (FieldStatistics fieldStatistics : fieldStatisticsList) {
+                fieldStatistics.finish();
             }
-            dataSetStore.setStatistics(statisticsList);
-            listener.success(statisticsList);
+            dataSetStore.setStatistics(fieldStatisticsList);
+            listener.success(fieldStatisticsList);
         }
         catch (Exception e) {
             LOG.error("Analysis Failed!", e);
@@ -141,15 +141,14 @@ public class AnalysisParser implements Runnable {
 
     private void recordValue(String value) {
         value = value.trim();
-        Statistics statistics = statisticsMap.get(path);
-        if (statistics == null) {
+        FieldStatistics fieldStatistics = statisticsMap.get(path);
+        if (fieldStatistics == null) {
             Path key = new Path(path);
-            statisticsMap.put(key, statistics = new Statistics(key));
+            statisticsMap.put(key, fieldStatistics = new FieldStatistics(key));
         }
         if (!value.isEmpty()) {
-            statistics.recordValue(value);
+            fieldStatistics.recordValue(value);
         }
-        statistics.recordOccurrence();
-        statistics.trim(false);
+        fieldStatistics.recordOccurrence();
     }
 }

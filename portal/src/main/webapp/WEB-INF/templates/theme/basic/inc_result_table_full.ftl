@@ -135,7 +135,7 @@
                         <#assign titleArr = result.fullDoc.dcTitle />
                         <#if isNonEmpty(titleArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dc_title_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.dc.title' />:</th>
                                 <td><@simple_list result.fullDoc.dcTitle '<br />'/></td>
                             </tr>
                         </#if>
@@ -144,7 +144,7 @@
                         <#assign altTitleArr = result.fullDoc.dcTermsAlternative />
                         <#if isNonEmpty(altTitleArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dcterms_alternative_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.dcterms.alternative' />:</th>
                                 <td><@simple_list result.fullDoc.dcTermsAlternative '<br />'/></td>
                             </tr>
                         </#if>
@@ -154,7 +154,7 @@
                         <#assign creatorArr = model.fullDoc.dcCreator />
                         <#if isNonEmpty(creatorArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dc_creator_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.dc.creator' />:</th>
                                 <td><@simple_list model.fullDoc.dcCreator ';&#160;'/></td>
                             </tr>
                         </#if>
@@ -164,7 +164,7 @@
                         <#assign contributorArr = model.fullDoc.dcContributor />
                         <#if isNonEmpty(contributorArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'Contributor_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.searchfield.contributor' />:</th>
                                 <td><@simple_list model.fullDoc.dcContributor ';&#160;'/></td>
                             </tr>
                         </#if>
@@ -173,7 +173,7 @@
                         <#assign dateArr = result.fullDoc.dcDate + result.fullDoc.dcTermsCreated + result.fullDoc.dcTermsIssued /></td>
                         <#if isNonEmpty(dateArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dc_date_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.dc.date' />:</th>
                                 <td><@simple_list dateArr ';&#160;'/></td>
                             </tr>
                         </#if>
@@ -181,7 +181,7 @@
                         <#-- DC TYPE   -------------------------------------------------------------------------------->
                         <#if isNonEmpty(typeArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dc_type_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.dc.type' />:</th>
                                 <td><@simple_list typeArr ';&#160;'/></td>
                             </tr>
                         </#if>
@@ -189,7 +189,7 @@
                         <#-- DC FORMAT   -------------------------------------------------------------------------------->
                          <#if isNonEmpty(formatArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dc_format_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.dc.format' />:</th>
                                 <td><@simple_list formatArr ';&#160;'/></td>
                             </tr>
                         </#if>
@@ -198,7 +198,7 @@
                         <#assign languageArr = result.fullDoc.dcLanguage />
                         <#if isNonEmpty(languageArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'languageDropDownList_t' />:</th>
+                                <th scope="row"><@spring.message '_portal.menu.languagedropdownlist' />:</th>
                                 <td><@simple_list languageArr ';&#160;'/></td>
                             </tr>
                         </#if>
@@ -207,10 +207,10 @@
                         <#assign descriptionArr = model.fullDoc.dcDescription />
                         <#if isNonEmpty(descriptionArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'Description_t' />:</th>
+                                <th scope="row"><@spring.message '_search.field.description' />:</th>
                                 <td>
                                     <@simple_list_truncated descriptionArr "<br/>" "800"/>
-                                    <#--<span id="opener"><@spring.message 'More_t' /></span>-->
+                                    <#--<span id="opener"><@spring.message '_portal.ui.message.more' /></span>-->
                                     <#--<div class="dialog">-->
                                        <#--<@simple_list descriptionArr "<br/>"/> -->
                                     <#--</div>-->
@@ -221,7 +221,7 @@
                       <#-- SUBJECTS, TEMPORAL, SPATIAL  ----------------------------------------------------------------->
                         <#if isNonEmpty(arrsubj)>
                             <tr>
-                                <th scope="row"><@spring.message 'Subject_t' />:</th>
+                                <th scope="row"><@spring.message '_search.field.subject' />:</th>
                                 <td><@simple_list arrsubj ';&#160;'/></td>
                             </tr>
                         </#if>
@@ -229,7 +229,7 @@
                         <#-- DC IDENTIFIER   -------------------------------------------------------------------------->
                         <#if isNonEmpty(indentifierArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dc_identifier_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.dc.identifier' />:</th>
                                 <td><@simple_list indentifierArr ';&#160;'/></td>
                             </tr>
                         </#if>
@@ -237,7 +237,7 @@
                         <#-- DC SOURCE     -------------------------------------------------------------------------------->
                         <#if isNonEmpty(sourceArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dc_source_t' />:</td>
+                                <th scope="row"><@spring.message '_metadata.dc.source' />:</td>
                                 <td><@simple_list sourceArr '<br/>'/></td>
                             </tr>
                         </#if>
@@ -246,7 +246,7 @@
                         <#assign rightsArr = result.fullDoc.dcRights />
                         <#if isNonEmpty(rightsArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dc_rights_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.dc.rights' />:</th>
                                 <td><@simple_list rightsArr ';&#160;'/></td>
                             </tr>
                         </#if>
@@ -254,7 +254,7 @@
                      <#-- DC PUBLISHER------------------------------------------------------------------------------>
                          <#if isNonEmpty(publisherArr) >
                             <tr>
-                                <th scope="row"><@spring.message 'dc_publisher_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.dc.publisher' />:</th>
                                 <td><@simple_list publisherArr ';&#160;'/></td>
                             </tr>
                         </#if>
@@ -263,7 +263,7 @@
                      <#-- Europeana PROVIDER   -------------------------------------------------------------------------------->
                         <#if isNonEmpty(providerArr) >
                             <tr>
-                                <th scope="row"><@spring.message 'Provider_t' />:</th>
+                                <th scope="row"><@spring.message '_search.field.provider' />:</th>
                                 <td>
                                 <#if isNonEmpty(result.fullDoc.europeanaProvider) && isNonEmpty(result.fullDoc.europeanaCountry)>
                                     ${result.fullDoc.europeanaProvider[0]} ;&#160; ${result.fullDoc.europeanaCountry[0]}
@@ -280,7 +280,7 @@
                         <#-- DC RELATIONS------------------------------------------------------------------------------>
                         <#if isNonEmpty(relationsArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dc_relation_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.dc.relation' />:</th>
                                 <td><@simple_list relationsArr '<br/>'/></td>
                             </tr>
                         </#if>
@@ -292,10 +292,10 @@
                             <#--href="#"-->
                             <#--class="fg-button ui-state-default fg-button-icon-left ui-corner-all"-->
                             <#--onclick="toggleObject('moremetadata');toggleObject('lesslink');toggleObject('morelink');return false;"-->
-                            <#--alt="<@spring.message 'More_t' />"-->
-                            <#--title="<@spring.message 'More_t' />"-->
+                            <#--alt="<@spring.message '_portal.ui.message.more' />"-->
+                            <#--title="<@spring.message '_portal.ui.message.more' />"-->
                         <#-->-->
-                            <#--<span class="ui-icon ui-icon-circle-plus"></span><@spring.message 'More_t' />-->
+                            <#--<span class="ui-icon ui-icon-circle-plus"></span><@spring.message '_portal.ui.message.more' />-->
                         <#--</a>-->
                     <#--</p>-->
 
@@ -304,10 +304,10 @@
                             <#--href="#"-->
                             <#--class="fg-button ui-state-default fg-button-icon-left ui-corner-all"-->
                             <#--onclick="toggleObject('lesslink');toggleObject('morelink');toggleObject('moremetadata'); return false;"-->
-                            <#--alt="<@spring.message 'Less_t' />"-->
-                            <#--title="<@spring.message 'Less_t' />"-->
+                            <#--alt="<@spring.message '_portal.ui.message.less' />"-->
+                            <#--title="<@spring.message '_portal.ui.message.less' />"-->
                         <#-->-->
-                            <#--<span class="ui-icon ui-icon-circle-minus"></span><@spring.message 'Less_t' />-->
+                            <#--<span class="ui-icon ui-icon-circle-minus"></span><@spring.message '_portal.ui.message.less' />-->
                         <#--</a>-->
                     <#--</p>-->
                     <#--<div class="clearfix"></div>-->
@@ -318,7 +318,7 @@
                         <#-- DC TERMS PROVENANCE----------------------------------------------------------------------->
                         <#--<#if isNonEmpty(provenanceArr)>-->
                             <#--<tr>-->
-                                <#--<th scope="row"><@spring.message 'dcterms_provenance_t' />:</th>-->
+                                <#--<th scope="row"><@spring.message '_metadata.dcterms.provenance' />:</th>-->
                                 <#--<td><@simple_list provenanceArr ';&#160;'/></td>-->
                             <#--</tr>-->
                         <#--</#if>-->
@@ -338,11 +338,11 @@
                                 <a
                                     href="/${portalName}/redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
                                     target="_blank"
-                                    alt="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
-                                    title="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
+                                    alt="<@spring.message '_action.view.in.original.context' /> - <@spring.message '_action.OpenInNewWindow'/>"
+                                    title="<@spring.message '_action.view.in.original.context' /> - <@spring.message '_action.OpenInNewWindow'/>"
                                     class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
                                 >
-                                    <span class="ui-icon ui-icon-newwin"></span><@spring.message 'ViewInOriginalContext_t' />
+                                    <span class="ui-icon ui-icon-newwin"></span><@spring.message '_action.view.in.original.context' />
                                 </a>
                             </td>
                         </tr>

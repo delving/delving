@@ -31,21 +31,21 @@
     <developers>
         <developer>
             <name>Sjoerd Siebinga</name>
-            <email>sjoerd.siebinga@gmail.com</email>
+            <email>sjoerd@delving.eu</email>
             <roles>
-                <role>architect</role>
+                <role>developer</role>
             </roles>
         </developer>
         <developer>
             <name>Gerald de Jong</name>
-            <email>geralddejong@gmail.com</email>
+            <email>gerald@delving.eu</email>
             <roles>
-                <role>consultant</role>
+                <role>developer</role>
             </roles>
         </developer>
         <developer>
-            <name>Borys Omelayenko</name>
-            <email>borys.omelayenko@gmail.com</email>
+            <name>Eric van der Meulen</name>
+            <email>eric@delving.eu</email>
             <roles>
                 <role>developer</role>
             </roles>
@@ -53,21 +53,6 @@
     </developers>
 
     <repositories>
-        <repository>
-            <id>releases</id>
-            <url>http://europeanalabs.eu/artifactory/repo</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>snapshots</id>
-            <url>http://europeanalabs.eu/artifactory/repo</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-        <!-- Repositories from Artifactory, to be activated if the above Artifactory is broken, ticket #393 -->
         <repository>
             <id>repo1</id>
             <url>http://repo1.maven.org/maven2</url>
@@ -114,10 +99,6 @@
             <url>http://download.java.net/maven/2</url>
         </repository>
         <repository>
-            <id>tel-project</id>
-            <url>http://dev.theeuropeanlibrary.org/dev/maven_rep</url>
-        </repository>
-        <repository>
             <id>atlassian</id>
             <url>http://repository.atlassian.com/</url>
         </repository>
@@ -143,14 +124,10 @@
         </repository>
     </repositories>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>snapshots</id>
-            <url>http://europeanalabs.eu/artifactory/repo</url>
-        </pluginRepository>
-    </pluginRepositories>
+    <pluginRepositories/>
 
     <modules>
+        <module>metameta</module>
         <module>core</module>
         <module>portal</module>
         <module>sip-creator</module>
@@ -167,7 +144,6 @@
             <plugin>
                 <groupId>org.scala-tools</groupId>
                 <artifactId>maven-scala-plugin</artifactId>
-
                 <executions>
                     <execution>
                         <id>compile</id>
@@ -176,7 +152,6 @@
                         </goals>
                         <phase>compile</phase>
                     </execution>
-
                     <execution>
                         <id>test-compile</id>
                         <goals>
@@ -184,7 +159,6 @@
                         </goals>
                         <phase>test-compile</phase>
                     </execution>
-
                     <execution>
                         <phase>process-resources</phase>
                         <goals>
@@ -192,14 +166,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -380,6 +346,11 @@
                 <artifactId>org.springframework.oxm</artifactId>
                 <version>${spring.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.springframework.security</groupId>
@@ -397,19 +368,12 @@
                 <version>${spring.version}</version>
             </dependency>
 
-
             <!-- presentation -->
             <dependency>
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>
                 <version>2.3.16</version>
             </dependency>
-            <dependency>
-                <groupId>org.json</groupId>
-                <artifactId>json</artifactId>
-                <version>20070829</version>
-            </dependency>
-
 
             <!-- other -->
             <dependency>
@@ -423,24 +387,9 @@
                 <version>1.3.4</version>
             </dependency>
             <dependency>
-                <groupId>org.codehaus.woodstox</groupId>
-                <artifactId>wstx-lgpl</artifactId>
-                <version>3.2.0</version>
-            </dependency>
-            <dependency>
                 <groupId>com.thoughtworks.xstream</groupId>
                 <artifactId>xstream</artifactId>
                 <version>1.3.1</version>
-            </dependency>
-            <dependency>
-                <groupId>net.sourceforge.htmlunit</groupId>
-                <artifactId>htmlunit</artifactId>
-                <version>2.7</version>
-            </dependency>
-            <dependency>
-                <groupId>org.htmlparser</groupId>
-                <artifactId>htmlparser</artifactId>
-                <version>1.6</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -449,18 +398,8 @@
             </dependency>
             <dependency>
                 <groupId>org.codehaus.woodstox</groupId>
-                <artifactId>wstx-asl</artifactId>
-                <version>3.2.7</version>
-            </dependency>
-            <dependency>
-                <groupId>org.dspace.oclc</groupId>
-                <artifactId>oclc-srw</artifactId>
-                <version>1.0.20080328</version>
-            </dependency>
-            <dependency>
-                <groupId>org.dspace</groupId>
-                <artifactId>cql-java</artifactId>
-                <version>1.0</version>
+                <artifactId>woodstox-core-asl</artifactId>
+                <version>4.0.9</version>
             </dependency>
             <dependency>
                 <groupId>quartz</groupId>
@@ -484,11 +423,6 @@
                 <version>2.9.1</version>
             </dependency>
             <dependency>
-                <groupId>org.osuosl.srw</groupId>
-                <artifactId>srw_lucene</artifactId>
-                <version>1.0</version>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.solr</groupId>
                 <artifactId>solr-solrj</artifactId>
                 <version>1.4.1</version>
@@ -497,8 +431,13 @@
                 <groupId>org.apache.solr</groupId>
                 <artifactId>solr-core</artifactId>
                 <version>1.4.1</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>woodstox</groupId>
+                        <artifactId>wstx-asl</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
-
 
             <dependency>
                 <groupId>org.scalatest</groupId>
@@ -510,7 +449,7 @@
                 <groupId>org.scala-lang</groupId>
                 <artifactId>scala-compiler</artifactId>
                 <version>${scala.version}</version>
-                <scope>compile</scope>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.scala-lang</groupId>
@@ -522,11 +461,17 @@
                 <artifactId>groovy-all</artifactId>
                 <version>1.7.3</version>
             </dependency>
+
+            <dependency>
+                <groupId>dom4j</groupId>
+                <artifactId>dom4j</artifactId>
+                <version>1.6.1</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <properties>
         <jdkLevel>1.6</jdkLevel>
-        <spring.version>3.0.2.RELEASE</spring.version>
+        <spring.version>3.0.5.RELEASE</spring.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <scala.version>2.8.1</scala.version>

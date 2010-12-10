@@ -73,6 +73,7 @@ public class AdministrationController {
             if (!adminForm.getNewRole().isEmpty()) {
                 Role role = Role.valueOf(adminForm.getNewRole());
                 switch (role) {
+                    case ROLE_USER:
                     case ROLE_RESEARCH_USER:
                         targetUser.setRole(role);
                         userDao.updateUser(targetUser);

@@ -23,6 +23,7 @@ package eu.europeana.core.util.web;
 
 import eu.europeana.core.querymodel.query.EuropeanaQueryException;
 import eu.europeana.core.querymodel.query.QueryProblem;
+import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -78,53 +79,68 @@ public class ExceptionResolver implements HandlerExceptionResolver {
 
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object object, Exception exception) {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        QueryProblem queryProblem = QueryProblem.NONE;
-        if (exception instanceof EuropeanaQueryException) {
-            queryProblem = ((EuropeanaQueryException) exception).getFetchProblem();
+        if (request.getRequestURI().endsWith(".ajax")) {
+            return ajaxFailure(request, response, exception);
         }
-        Boolean debugMode = Boolean.valueOf(debug);
-        String stackTrace = getStackTrace(exception);
-        if (queryProblem == QueryProblem.NONE || queryProblem == QueryProblem.SOLR_UNREACHABLE) {
-            try {
-                Map<String, Object> model = new TreeMap<String, Object>();
-                model.put("hostName", request.getServerName());
-                model.put("request", ControllerUtil.formatFullRequestUrl(request));
-                model.put("stackTrace", stackTrace);
-                model.put("cacheUrl", cacheUrl);
-                model.put("portalName", portalName);
-                model.put("portalTheme", portalTheme);
-                model.put("portalColor", portalColor);
-                model.put("portalDisplayName", portalDisplayName);
-                model.put("agent", request.getHeader("User-Agent"));
-                model.put("referer", request.getHeader("referer"));
-                model.put(EmailSender.SUBJECT, queryProblem.getFragment());
-                if (!debugMode) { // don't send email in debugMode
-                    emailSender.sendEmail(model);
+        else {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            QueryProblem queryProblem = QueryProblem.NONE;
+            if (exception instanceof EuropeanaQueryException) {
+                queryProblem = ((EuropeanaQueryException) exception).getFetchProblem();
+            }
+            Boolean debugMode = Boolean.valueOf(debug);
+            String stackTrace = getStackTrace(exception);
+            if (queryProblem == QueryProblem.NONE || queryProblem == QueryProblem.SOLR_UNREACHABLE) {
+                try {
+                    Map<String, Object> model = new TreeMap<String, Object>();
+                    model.put("hostName", request.getServerName());
+                    model.put("request", ControllerUtil.formatFullRequestUrl(request));
+                    model.put("stackTrace", stackTrace);
+                    model.put("cacheUrl", cacheUrl);
+                    model.put("portalName", portalName);
+                    model.put("portalTheme", portalTheme);
+                    model.put("portalColor", portalColor);
+                    model.put("portalDisplayName", portalDisplayName);
+                    model.put("agent", request.getHeader("User-Agent"));
+                    model.put("referer", request.getHeader("referer"));
+                    model.put(EmailSender.SUBJECT, queryProblem.getFragment());
+                    if (!debugMode) { // don't send email in debugMode
+                        emailSender.sendEmail(model);
+                    }
+                    else {
+                        log.error(stackTrace);
+                    }
                 }
-                else {
-                    log.error(stackTrace);
+                catch (Exception e) {
+                    log.warn("Unable to send email to "+emailSender.getToEmail(), e);
                 }
             }
-            catch (Exception e) {
-                log.warn("Unable to send email to "+emailSender.getToEmail(), e);
-            }
+            String errorMessage = MessageFormat.format("errorMessage={0}", queryProblem.toString());
+            clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.EXCEPTION_CAUGHT, errorMessage);
+            ModelAndView mav = new ModelAndView("exception");
+            mav.addObject("debug", debugMode);
+            mav.addObject("interfaceLanguage", ControllerUtil.getLocale(request));
+            mav.addObject("cacheUrl", cacheUrl);
+            mav.addObject("portalName", portalName);
+            mav.addObject("portalTheme", portalTheme);
+            mav.addObject("portalColor", portalColor);
+            mav.addObject("portalDisplayName", portalDisplayName);
+            mav.addObject("queryProblem", queryProblem);
+            mav.addObject("exception", exception);
+            mav.addObject("stackTrace", stackTrace);
+            mav.addObject("includedMacros", includedMacros);
+            return mav;
         }
-        String errorMessage = MessageFormat.format("errorMessage={0}", queryProblem.toString());
-        clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.EXCEPTION_CAUGHT, errorMessage);
-        ModelAndView mav = new ModelAndView("exception");
-        mav.addObject("debug", debugMode);
-        mav.addObject("interfaceLanguage", ControllerUtil.getLocale(request));
-        mav.addObject("cacheUrl", cacheUrl);
-        mav.addObject("portalName", portalName);
-        mav.addObject("portalTheme", portalTheme);
-        mav.addObject("portalColor", portalColor);
-        mav.addObject("portalDisplayName", portalDisplayName);
-        mav.addObject("queryProblem", queryProblem);
-        mav.addObject("exception", exception);
-        mav.addObject("stackTrace", stackTrace);
-        mav.addObject("includedMacros", includedMacros);
-        return mav;
+    }
+
+    private ModelAndView ajaxFailure(HttpServletRequest request, HttpServletResponse response, Exception e) {
+        response.setStatus(HttpStatus.SC_NOT_FOUND);
+        ModelAndView page = ControllerUtil.createModelAndViewPage("xml/ajax");
+        page.addObject("success", false);
+        page.addObject("exception", getStackTrace(e));
+        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.AJAX_ERROR);
+        log.warn("Problem handling AJAX request", e);
+        return page;
     }
 
     private static String getStackTrace(Exception exception) {

@@ -21,7 +21,13 @@
 
 package eu.europeana.sip.gui;
 
-import eu.delving.core.metadata.FieldMapping;
+import eu.delving.metadata.AnalysisTree;
+import eu.delving.metadata.CodeGenerator;
+import eu.delving.metadata.FieldMapping;
+import eu.delving.metadata.FieldStatistics;
+import eu.delving.metadata.Path;
+import eu.delving.metadata.SourceVariable;
+import eu.delving.sip.FileStore;
 import eu.europeana.sip.model.CompileModel;
 import eu.europeana.sip.model.FieldMappingListModel;
 import eu.europeana.sip.model.SipModel;
@@ -29,8 +35,10 @@ import eu.europeana.sip.model.SipModel;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -44,14 +52,12 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.List;
 
 /**
  * A Graphical interface for analysis
@@ -64,11 +70,15 @@ public class RefinementPanel extends JPanel {
     private SipModel sipModel;
     private JTextArea groovyCodeArea;
     private JButton removeMappingButton = new JButton("Remove Selected Mapping");
-    private JButton valueMappingButton = new JButton("Edit Value Mapping");
+    private JButton dictionaryCreate = new JButton("Create");
+    private JButton dictionaryEdit = new JButton("Edit");
+    private JButton dictionaryDelete = new JButton("Delete");
     private JList mappingList;
+    private JDialog parent;
 
-    public RefinementPanel(SipModel sipModel) {
+    public RefinementPanel(JDialog parent, SipModel sipModel) {
         super(new BorderLayout());
+        this.parent = parent;
         this.sipModel = sipModel;
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         split.setLeftComponent(createLeftSide());
@@ -79,47 +89,70 @@ public class RefinementPanel extends JPanel {
     }
 
     private JPanel createLeftSide() {
-        JPanel p = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.BOTH;
-        // input panel
-        gbc.gridx = gbc.gridy = 0;
-        gbc.weightx = 1; 
-        gbc.weighty = 0.95;
-        p.add(createFieldMappingListPanel(), gbc);
-        gbc.gridy++;
-        gbc.weighty = 0.05;
-        p.add(removeMappingButton, gbc);
+        JPanel p = new JPanel(new BorderLayout(5, 5));
+        p.add(createFieldMappingListPanel(), BorderLayout.CENTER);
+        p.add(removeMappingButton, BorderLayout.SOUTH);
         p.setPreferredSize(new Dimension(600, 800));
         return p;
     }
 
     private JPanel createRightSide() {
-        JPanel p = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.BOTH;
-        // record panel
-        gbc.gridheight = 1;
-        gbc.weightx = 1;
-        gbc.weighty = 0.3;
-        gbc.gridy = gbc.gridx = 0;
-        p.add(new RecordPanel(sipModel, sipModel.getFieldCompileModel()), gbc);
-        // value map button
-        gbc.gridy++;
-        gbc.weighty = 0.05;
-        valueMappingButton.setEnabled(false);
-        p.add(valueMappingButton, gbc);
-        // code panel
-        gbc.gridy++;
-        gbc.weighty = 0.3;
-        p.add(createGroovyPanel(), gbc);
-        // output panel
-        gbc.gridy++;
-        p.add(createOutputPanel(), gbc);
+        JPanel p = new JPanel(new GridLayout(0, 1, 5, 5));
+        p.add(new RecordPanel(sipModel, sipModel.getFieldCompileModel()));
+        p.add(createGroovyPanel());
+        p.add(createOutputPanel());
         p.setPreferredSize(new Dimension(600, 800));
         return p;
+    }
+
+    private JPanel createFieldMappingListPanel() {
+        JPanel p = new JPanel(new BorderLayout());
+        p.setBorder(BorderFactory.createTitledBorder("Field Mappings"));
+        mappingList = new JList(sipModel.getFieldMappingListModel());
+        mappingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        mappingList.setCellRenderer(new FieldMappingListModel.CellRenderer());
+        p.add(scroll(mappingList));
+        return p;
+    }
+
+    private JPanel createGroovyPanel() {
+        JPanel p = new JPanel(new BorderLayout());
+        p.setBorder(BorderFactory.createTitledBorder("Groovy Code"));
+        groovyCodeArea = new JTextArea(sipModel.getFieldCompileModel().getCodeDocument());
+        JScrollPane scroll = new JScrollPane(groovyCodeArea);
+        p.add(scroll, BorderLayout.CENTER);
+        p.add(createGroovySouth(), BorderLayout.SOUTH);
+        return p;
+    }
+
+    private JPanel createGroovySouth() {
+        JPanel p = new JPanel();
+        p.setBorder(BorderFactory.createTitledBorder("Dictionary"));
+        dictionaryCreate.setEnabled(false);
+        dictionaryEdit.setEnabled(false);
+        dictionaryDelete.setEnabled(false);
+        p.add(dictionaryCreate);
+        p.add(dictionaryEdit);
+        p.add(dictionaryDelete);
+        return p;
+    }
+
+    private JPanel createOutputPanel() {
+        JPanel p = new JPanel(new BorderLayout());
+        p.setBorder(BorderFactory.createTitledBorder("Output Record"));
+        JTextArea outputArea = new JTextArea(sipModel.getFieldCompileModel().getOutputDocument());
+        outputArea.setEditable(false);
+        p.add(scroll(outputArea), BorderLayout.CENTER);
+        p.add(new JLabel("Note: URLs can be launched by double-clicking them.", JLabel.CENTER), BorderLayout.SOUTH);
+        return p;
+    }
+
+    private JScrollPane scroll(JComponent content) {
+        JScrollPane scroll = new JScrollPane(content);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scroll.setPreferredSize(new Dimension(300, 800));
+        return scroll;
     }
 
     private void wireUp() {
@@ -132,30 +165,91 @@ public class RefinementPanel extends JPanel {
                 }
             }
         });
-        valueMappingButton.addActionListener(new ActionListener() {
+        dictionaryCreate.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
+                if (fieldMapping != null) {
+                    CodeGenerator codeGenerator = new CodeGenerator();
+                    SourceVariable sourceVariable = getSourceVariable(fieldMapping);
+                    fieldMapping.createDictionary(sourceVariable.getNode().getStatistics().getHistogramValues());
+                    codeGenerator.generateCodeFor(fieldMapping, sourceVariable, "", true);
+                    setFieldMapping(fieldMapping);
+                }
+            }
+        });
+        dictionaryEdit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ValueMapDialog dialog = new ValueMapDialog(
-                        (Frame)SwingUtilities.getWindowAncestor(RefinementPanel.this),
-                        sipModel.getFieldCompileModel().getSelectedFieldMapping()
-                );
-                dialog.setVisible(true);
+                final FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
+                if (fieldMapping != null) {
+                    DictionaryDialog dialog = new DictionaryDialog(parent, fieldMapping, new Runnable() {
+                        @Override
+                        public void run() {
+                            setFieldMapping(fieldMapping);
+                        }
+                    });
+                    dialog.setVisible(true);
+                }
+            }
+        });
+        dictionaryDelete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
+                if (fieldMapping != null) {
+                    int nonemptyEntries = 0;
+                    for (String value : fieldMapping.dictionary.values()) {
+                        if (!value.trim().isEmpty()) {
+                            nonemptyEntries++;
+                        }
+                    }
+                    if (nonemptyEntries > 0) {
+                        int response = JOptionPane.showConfirmDialog(
+                                parent,
+                                String.format(
+                                        "Are you sure that you want to discard the %d entries set?",
+                                        nonemptyEntries
+                                ),
+                                "Delete Dictionary",
+                                JOptionPane.OK_CANCEL_OPTION
+                        );
+                        if (response != JOptionPane.OK_OPTION) {
+                            return;
+                        }
+                    }
+                    fieldMapping.dictionary = null;
+                    CodeGenerator codeGenerator = new CodeGenerator();
+                    SourceVariable sourceVariable = getSourceVariable(fieldMapping);
+                    codeGenerator.generateCodeFor(fieldMapping, sourceVariable, "", false);
+                    setFieldMapping(fieldMapping);
+                }
             }
         });
         mappingList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
+                if (e.getValueIsAdjusting()) return;
                 FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
-                if (fieldMapping != null) {
-                    sipModel.getFieldCompileModel().setSelectedPath(fieldMapping.getFieldDefinition().path.toString());
-                    valueMappingButton.setEnabled(fieldMapping.valueMap != null);
-                    removeMappingButton.setEnabled(true);
-                }
-                else {
-                    sipModel.getFieldCompileModel().setSelectedPath(null);
-                    valueMappingButton.setEnabled(false);
-                    removeMappingButton.setEnabled(false);
-                }
+                setFieldMapping(fieldMapping);
+            }
+        });
+        sipModel.addUpdateListener(new SipModel.UpdateListener() {
+            @Override
+            public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
+            }
+
+            @Override
+            public void updatedStatistics(FieldStatistics fieldStatistics) {
+
+            }
+
+            @Override
+            public void updatedRecordRoot(Path recordRoot, int recordCount) {
+            }
+
+            @Override
+            public void normalizationMessage(boolean complete, String message) {
             }
         });
         sipModel.getFieldCompileModel().getCodeDocument().addDocumentListener(new DocumentListener() {
@@ -187,41 +281,46 @@ public class RefinementPanel extends JPanel {
         sipModel.getFieldCompileModel().addListener(new ModelStateListener());
     }
 
-    private JPanel createFieldMappingListPanel() {
-        JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Field Mappings"));
-        mappingList = new JList(sipModel.getFieldMappingListModel());
-        mappingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        mappingList.setCellRenderer(new FieldMappingListModel.CellRenderer());
-        p.add(scroll(mappingList));
-        return p;
+    private void setFieldMapping(FieldMapping fieldMapping) {
+        if (fieldMapping != null) {
+            sipModel.getFieldCompileModel().setSelectedPath(fieldMapping.getFieldDefinition().path.toString());
+            AnalysisTree.Node node = getNode(fieldMapping);
+            if (node != null) {
+                dictionaryCreate.setEnabled(fieldMapping.dictionary == null && CodeGenerator.isDictionaryPossible(fieldMapping.getFieldDefinition(), node));
+            }
+            else {
+                dictionaryCreate.setEnabled(false);
+            }
+            dictionaryEdit.setEnabled(fieldMapping.dictionary != null);
+            dictionaryDelete.setEnabled(fieldMapping.dictionary != null);
+            removeMappingButton.setEnabled(true);
+        }
+        else {
+            sipModel.getFieldCompileModel().setSelectedPath(null);
+            removeMappingButton.setEnabled(false);
+            dictionaryCreate.setEnabled(false);
+            dictionaryEdit.setEnabled(false);
+            dictionaryDelete.setEnabled(false);
+        }
     }
 
-    private JPanel createGroovyPanel() {
-        JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Groovy Code"));
-        groovyCodeArea = new JTextArea(sipModel.getFieldCompileModel().getCodeDocument());
-        JScrollPane scroll = new JScrollPane(groovyCodeArea);
-        p.add(scroll);
-        return p;
+    private AnalysisTree.Node getNode(FieldMapping fieldMapping) {
+        SourceVariable sourceVariable = getSourceVariable(fieldMapping);
+        return sourceVariable != null ? sourceVariable.getNode() : null;
     }
 
-    private JPanel createOutputPanel() {
-        JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Output Record"));
-        JTextArea outputArea = new JTextArea(sipModel.getFieldCompileModel().getOutputDocument());
-        outputArea.setEditable(false);
-        p.add(scroll(outputArea), BorderLayout.CENTER);
-        p.add(new JLabel("Note: URLs can be launched by double-clicking them.", JLabel.CENTER), BorderLayout.SOUTH);
-        return p;
-    }
-
-    private JScrollPane scroll(JComponent content) {
-        JScrollPane scroll = new JScrollPane(content);
-        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scroll.setPreferredSize(new Dimension(300, 800));
-        return scroll;
+    private SourceVariable getSourceVariable(FieldMapping fieldMapping) {
+        List<String> variableNames = fieldMapping.getVariableNames();
+        SourceVariable found = null;
+        if (variableNames.size() == 1) {
+            String variableName = variableNames.get(0);
+            for (SourceVariable sourceVariable : sipModel.getVariables()) {
+                if (sourceVariable.getVariableName().equals(variableName)) {
+                    found = sourceVariable;
+                }
+            }
+        }
+        return found;
     }
 
     private class ModelStateListener implements CompileModel.Listener {

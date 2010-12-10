@@ -21,16 +21,16 @@
 
 package eu.delving.sip;
 
-import eu.delving.core.metadata.RecordDefinition;
-import eu.delving.core.metadata.RecordMapping;
-import eu.delving.core.metadata.SourceDetails;
-import eu.delving.core.metadata.Statistics;
+import eu.delving.metadata.Facts;
+import eu.delving.metadata.FieldStatistics;
+import eu.delving.metadata.RecordMapping;
 
 import java.io.File;
 import java.io.InputStream;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * This interface describes how files are stored by the sip-creator
@@ -44,39 +44,60 @@ public interface FileStore {
 
     void setAppConfig(AppConfig appConfig) throws FileStoreException;
 
-    Set<String> getDataSetSpecs();
+    String getCode(String fileName) throws FileStoreException;
 
-    DataSetStore getDataSetStore(String spec) throws FileStoreException;
+    void setCode(String fileName, String code) throws FileStoreException;
 
-    DataSetStore createDataSetStore(String spec, File inputFile, CreateProgress createProgress) throws FileStoreException;
+    void setTemplate(String name, RecordMapping recordMapping) throws FileStoreException;
+
+    Map<String, RecordMapping> getTemplates();
+
+    void deleteTemplate(String name);
+
+    Map<String, DataSetStore> getDataSetStores();
+
+    DataSetStore createDataSetStore(String spec) throws FileStoreException;
 
     public interface DataSetStore {
+
         String getSpec();
+
+        boolean hasSource();
+
+        void importFile(File inputFile, ProgressListener progressListener) throws FileStoreException;
+
+        void clearSource() throws FileStoreException;
 
         InputStream createXmlInputStream() throws FileStoreException;
 
-        List<Statistics> getStatistics() throws FileStoreException;
+        List<FieldStatistics> getStatistics() throws FileStoreException;
 
-        void setStatistics(List<Statistics> statisticsList) throws FileStoreException;
+        void setStatistics(List<FieldStatistics> fieldStatisticsList) throws FileStoreException;
 
-        RecordMapping getRecordMapping(RecordDefinition recordDefinition) throws FileStoreException;
+        RecordMapping getRecordMapping(String metadataPrefix) throws FileStoreException;
 
         void setRecordMapping(RecordMapping recordMapping) throws FileStoreException;
 
-        SourceDetails getSourceDetails() throws FileStoreException;
+        Facts getFacts() throws FileStoreException;
 
-        void setSourceDetails(SourceDetails details) throws FileStoreException;
+        void setFacts(Facts facts) throws FileStoreException;
 
-        MappingOutput createMappingOutput(RecordMapping recordMapping, File normalizedFile) throws FileStoreException;
+        MappingOutput createMappingOutput(RecordMapping recordMapping, File normalizedDirectory) throws FileStoreException;
 
         void delete() throws FileStoreException;
 
-        File getSourceFile() throws FileStoreException;
+        File getFactsFile();
+
+        File getSourceFile();
+
+        Collection<File> getMappingFiles();
+
+        List<String> getMappingPrefixes();
     }
 
     public interface MappingOutput {
 
-        Writer getNormalizedWriter();
+        Writer getOutputWriter();
 
         Writer getDiscardedWriter();
 
@@ -87,18 +108,13 @@ public interface FileStore {
         void close(boolean abort) throws FileStoreException;
     }
 
-    public interface CreateProgress {
-        void setTotal(int total);
-        boolean setProgress(int progress);
-        void finished();
-    }
-
     String APP_CONFIG_FILE_NAME = "app-config.xml";
-    String SOURCE_FILE_PREFIX = "source.";
-    String SOURCE_FILE_SUFFIX = ".xml.gz";
+    String SOURCE_FILE_NAME = "source.xml.gz";
     String STATISTICS_FILE_NAME = "statistics.ser";
-    String SOURCE_DETAILS_FILE_NAME = "source-details.txt";
-    String MAPPING_FILE_PREFIX = "mapping.";
-    String DISCARDED_FILE_PREFIX = "discarded.";
-
+    String FACTS_FILE_NAME = "facts.txt";
+    String MAPPING_FILE_PATTERN = "mapping_%s.xml";
+    String MAPPING_FILE_PREFIX = "mapping_";
+    String MAPPING_FILE_SUFFIX = ".xml";
+    String MAPPING_TOOL_FILE_NAME = "MappingTool.groovy";
+    String RECORD_ANALYSIS_FILE_NAME = "RecordAnalysis.groovy";
 }

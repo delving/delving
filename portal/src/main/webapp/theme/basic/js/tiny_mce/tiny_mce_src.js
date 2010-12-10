@@ -5144,7 +5144,7 @@ tinymce.create('static tinymce.util.XHR', {
 				fix_content_duplication : true,
 				convert_fonts_to_spans : false,
 				font_size_classes : 0,
-				apply_source_formatting : 0,
+				apply_source_formatting : 1,
 				indent_mode : 'simple',
 				indent_char : '\t',
 				indent_levels : 1,

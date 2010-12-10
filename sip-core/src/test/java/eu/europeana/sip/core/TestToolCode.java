@@ -1,5 +1,6 @@
 package eu.europeana.sip.core;
 
+import eu.delving.metadata.Sanitizer;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 import junit.framework.Assert;
@@ -17,11 +18,11 @@ public class TestToolCode {
 
     private GroovyShell groovyShell = new GroovyShell();
     private Script script;
-    private ToolCodeResource toolCodeResource = new ToolCodeResource();
+    private GroovyCodeResource groovyCodeResource = new GroovyCodeResource();
 
     @Before
     public void compile() {
-        script = groovyShell.parse(toolCodeResource.getCode());
+        script = groovyShell.parse(groovyCodeResource.getMappingToolCode());
     }
 
     @Test
@@ -45,6 +46,21 @@ public class TestToolCode {
         for (String[] d : cases) {
             String result = script.invokeMethod("extractYear", d[0]).toString();
             Assert.assertEquals("failing to extract \"" + d[0] + "\"", d[1], result);
+            System.out.println("Successful: " + d[0] + " --> " + d[1]);
+        }
+    }
+
+    @Test
+    public void testSanitizer() {
+        String [][] cases = {
+                {"entry with '        apostrophe", "entry with \\\' apostrophe"},
+                {"entry with \n         enter", "entry with enter"},
+        };
+        for (String[] d : cases) {
+            String groovyResult = script.invokeMethod("sanitize", d[0]).toString();
+            String javaResult = Sanitizer.sanitizeGroovy(d[0]);
+            Assert.assertEquals("java mismatch \"" + d[0] + "\"", d[1], javaResult);
+            Assert.assertEquals("groovy mismatch \"" + d[0] + "\"", d[1], groovyResult);
             System.out.println("Successful: " + d[0] + " --> " + d[1]);
         }
     }

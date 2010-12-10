@@ -10,20 +10,12 @@
 </#if>
 <#include "includeMarcos.ftl">
 
-<@addHeader "Norvegiana", "",[],[]/>
-
-
-    <div class="grid_12" id="branding">
-        <h1 class="gigantic">
-            <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana" align="absmiddle"/>${portalDisplayName}
-        </h1>
-    </div>
-
+<@addHeader "${portalDisplayName}", "",[],[]/>
 
 <section role="main" class="grid_4 prefix_4">
 
-    <h3 style="margin: 60px 0 20px 0">Something went wrong! An email has been sent to inform our technical staff.</h3>
-    <p style="margin: 0 0 240px 0">Please try another search.</p>
+    <h3 style="margin: 60px 0 20px 0"><@spring.message '_portal.ui.notification.generalErrorMessage'/></h3>
+    <p style="margin: 0 0 240px 0"><@spring.message '_portal.ui.notification.tryAnotherSearch'/></p>
 
 </section>
 

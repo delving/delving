@@ -21,7 +21,7 @@
 
 package eu.europeana.sip.core;
 
-import eu.delving.core.metadata.MetadataNamespace;
+import eu.delving.metadata.MetadataNamespace;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.lang.MissingPropertyException;

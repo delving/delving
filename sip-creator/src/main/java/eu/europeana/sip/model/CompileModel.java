@@ -21,16 +21,15 @@
 
 package eu.europeana.sip.model;
 
-import eu.delving.core.metadata.FieldMapping;
-import eu.delving.core.metadata.MappingModel;
-import eu.delving.core.metadata.MetadataModel;
-import eu.delving.core.metadata.RecordMapping;
+import eu.delving.metadata.FieldMapping;
+import eu.delving.metadata.MappingModel;
+import eu.delving.metadata.MetadataModel;
+import eu.delving.metadata.RecordMapping;
+import eu.delving.metadata.RecordValidator;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordValidationException;
-import eu.europeana.sip.core.RecordValidator;
-import eu.europeana.sip.core.ToolCodeResource;
 import org.apache.log4j.Logger;
 
 import javax.swing.SwingUtilities;
@@ -38,8 +37,12 @@ import javax.swing.Timer;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -58,16 +61,17 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private RecordMapping recordMapping;
     private MetadataRecord metadataRecord;
-    private Document inputDocument = new PlainDocument();
+    private HTMLEditorKit editorKit = new HTMLEditorKit();
+    private HTMLDocument inputDocument = (HTMLDocument) editorKit.createDefaultDocument();
     private Document codeDocument = new PlainDocument();
     private Document outputDocument = new PlainDocument();
     private CompileTimer compileTimer = new CompileTimer();
     private MetadataModel metadataModel;
     private Type type;
-    private ToolCodeResource toolCodeResource;
     private RecordValidator recordValidator;
     private String selectedPath;
     private String editedCode;
+    private String mappingToolCode;
 
     public enum Type {
         RECORD,
@@ -79,13 +83,14 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
         PRISTINE,
         EDITED,
         ERROR,
-        COMMITTED
+        COMMITTED,
+        REGENERATED
     }
 
-    public CompileModel(Type type, MetadataModel metadataModel, ToolCodeResource toolCodeResource) {
+    public CompileModel(Type type, MetadataModel metadataModel, String mappingToolCode) {
         this.type = type;
         this.metadataModel = metadataModel;
-        this.toolCodeResource = toolCodeResource;
+        this.mappingToolCode = mappingToolCode;
     }
 
     @Override
@@ -102,10 +107,16 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     }
 
     public void setSelectedPath(String selectedPath) {
-        this.selectedPath = selectedPath;
-        log.info("Selected path "+selectedPath);
+        if (this.selectedPath != null && this.selectedPath.equals(selectedPath)) {
+            log.info("Selected path unchanged at " + selectedPath);
+            notifyStateChange(State.REGENERATED);
+        }
+        else {
+            this.selectedPath = selectedPath;
+            log.info("Selected path changed to " + selectedPath);
+            notifyStateChange(State.PRISTINE);
+        }
         SwingUtilities.invokeLater(new DocumentSetter(codeDocument, getDisplayCode()));
-        notifyStateChange(State.PRISTINE);
         compileSoon();
     }
 
@@ -145,7 +156,7 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
                 }
             }
             else {
-                log.warn("Field mapping not found for "+selectedPath);
+                log.warn("Field mapping not found for " + selectedPath);
             }
             compileSoon();
         }
@@ -158,7 +169,7 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     public void updatedRecord(MetadataRecord metadataRecord) {
         this.metadataRecord = metadataRecord;
         if (metadataRecord == null) {
-            SwingUtilities.invokeLater(new DocumentSetter(inputDocument, "No input"));
+            SwingUtilities.invokeLater(new DocumentSetter(inputDocument, "<html><h1>No input</h1>"));
             SwingUtilities.invokeLater(new DocumentSetter(outputDocument, ""));
         }
         else {
@@ -188,7 +199,12 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     private String getDisplayCode() {
         switch (type) {
             case RECORD:
-                return recordMapping.toDisplayCode(metadataModel.getRecordDefinition());
+                if (recordMapping != null) {
+                    return recordMapping.toDisplayCode(metadataModel.getRecordDefinition());
+                }
+                else {
+                    return "// no mapping";
+                }
             case FIELD:
                 if (selectedPath == null) {
                     return "// no code";
@@ -204,14 +220,9 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     private String getCompileCode() {
         switch (type) {
             case RECORD:
-                return recordMapping.toCompileCode(metadataModel.getRecordDefinition());
+                return recordMapping != null ? recordMapping.toCompileCode(metadataModel.getRecordDefinition()) : "";
             case FIELD:
-                if (selectedPath == null) {
-                    return "print 'nothing selected'";
-                }
-                else {
-                    return recordMapping.toCompileCode(metadataModel.getRecordDefinition(), selectedPath);
-                }
+                return selectedPath != null ? recordMapping.toCompileCode(metadataModel.getRecordDefinition(), selectedPath) : "";
             default:
                 throw new RuntimeException();
         }
@@ -231,10 +242,10 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
 
     private void updateInputDocument(MetadataRecord metadataRecord) {
         if (metadataRecord != null) {
-            SwingUtilities.invokeLater(new DocumentSetter(inputDocument, metadataRecord.toString()));
+            SwingUtilities.invokeLater(new DocumentSetter(inputDocument, metadataRecord.toHtml()));
         }
         else {
-            SwingUtilities.invokeLater(new DocumentSetter(inputDocument, "No Input"));
+            SwingUtilities.invokeLater(new DocumentSetter(inputDocument, "<html><h1>No Input</h1>"));
         }
     }
 
@@ -254,7 +265,7 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
                 mappingCode = getCompileCode(editedCode);
                 log.info("Edited code used");
             }
-            MappingRunner mappingRunner = new MappingRunner(toolCodeResource.getCode() + mappingCode);
+            MappingRunner mappingRunner = new MappingRunner(mappingToolCode + mappingCode);
             try {
                 String output = mappingRunner.runMapping(metadataRecord);
                 if (recordValidator != null) {
@@ -317,13 +328,31 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
 
         @Override
         public void run() {
-            int docLength = document.getLength();
-            try {
-                document.remove(0, docLength);
-                document.insertString(0, content, null);
+            if (document instanceof HTMLDocument) {
+                HTMLDocument htmlDocument = (HTMLDocument) document;
+                int docLength = document.getLength();
+                try {
+                    document.remove(0, docLength);
+                    HTMLEditorKit.ParserCallback callback = htmlDocument.getReader(0); 
+                    htmlDocument.getParser().parse(new StringReader(content), callback, true);
+                    callback.flush();
+                }
+                catch (BadLocationException e) {
+                    throw new RuntimeException(e);
+                }
+                catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-            catch (BadLocationException e) {
-                throw new RuntimeException(e);
+            else {
+                int docLength = document.getLength();
+                try {
+                    document.remove(0, docLength);
+                    document.insertString(0, content, null);
+                }
+                catch (BadLocationException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
@@ -345,12 +374,6 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     private void notifyStateChange(State state) {
         for (Listener listener : listeners) {
             listener.stateChanged(state);
-        }
-    }
-
-    private static void checkSwingThread() {
-        if (!SwingUtilities.isEventDispatchThread()) {
-            throw new RuntimeException("Expected Swing thread");
         }
     }
 

@@ -196,30 +196,30 @@ public class RegisterPageController {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password2", "password2.required", "Repeat Password is required");
 
             if (!validUserName(form.getUserName())) {
-                errors.rejectValue("userName", "username.invalidChars", "Username may only contain letters, digits, spaces and underscores");
+                errors.rejectValue("userName", "_mine.user.validation.username.invalid.chars", "Username may only contain letters, digits, spaces and underscores");
             }
             if (form.getUserName().length() > User.USER_NAME_LENGTH) {
-                errors.rejectValue("userName", "username.tooLong", "Username is too long");
+                errors.rejectValue("userName", "_mine.user.validation.username.long", "Username is too long");
             }
 
             if (userDao.userNameExists(form.getUserName())) {
-                errors.rejectValue("userName", "username.exists", "Username already exists");
+                errors.rejectValue("userName", "_mine.user.validation.username.exists", "Username already exists");
             }
 
             if (!form.getPassword().equals(form.getPassword2())) {
-                errors.rejectValue("password", "password.mismatch", "Passwords do not match");
+                errors.rejectValue("password", "_mine.user.validation.password.mismatch", "Passwords do not match");
             }
 
             // password less then 6 characters
             if (form.getPassword().length() < 6) {
-                errors.rejectValue("password", "password.tooShort", "Password is too short");
+                errors.rejectValue("password", "_mine.user.validation.password.tooshort", "Password is too short");
             }
 
             if (form.getPassword().length() > 30) {
-                errors.rejectValue("password", "password.tooLong", "Password is too long");
+                errors.rejectValue("password", "_mine.user.validation.password.long", "Password is too long");
             }
             if (!form.getDisclaimer()) {
-                errors.rejectValue("disclaimer", "disclaimer.unchecked", "Disclaimer must be accepted");
+                errors.rejectValue("disclaimer", "_mine.user.validation.disclaimer.unchecked", "Disclaimer must be accepted");
             }
         }
 

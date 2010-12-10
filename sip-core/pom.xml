@@ -26,7 +26,7 @@
     <artifactId>sip-core</artifactId>
     <packaging>jar</packaging>
     <name>SIP-Core</name>
-    <version>0.1.1</version>
+    <version>0.1.6</version>
     <description>Core SIP Classes</description>
     <inceptionYear>2010</inceptionYear>
 
@@ -38,17 +38,33 @@
 
     <developers>
         <developer>
-            <name>Gerald de Jong</name>
-            <email>geralddejong@gmail.com</email>
+            <name>Sjoerd Siebinga</name>
+            <email>sjoerd@delving.eu</email>
             <roles>
-                <role>consultant</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Gerald de Jong</name>
+            <email>gerald@delving.eu</email>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Eric van der Meulen</name>
+            <email>eric@delving.eu</email>
+            <roles>
+                <role>developer</role>
             </roles>
         </developer>
     </developers>
+
     <organization>
         <name>Delving</name>
         <url>http://www.delving.eu</url>
     </organization>
+    
     <build>
         <plugins>
             <plugin>
@@ -64,9 +80,13 @@
 
     <dependencies>
         <dependency>
-            <groupId>eu.europeana</groupId>
-            <artifactId>core</artifactId>
-            <version>0.1.1</version>
+            <groupId>eu.delving</groupId>
+            <artifactId>metameta</artifactId>
+            <version>0.1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
         </dependency>
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
@@ -78,7 +98,7 @@
         </dependency>
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
-            <artifactId>wstx-lgpl</artifactId>
+            <artifactId>woodstox-core-asl</artifactId>
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>
@@ -87,8 +107,13 @@
         </dependency>
         <dependency>
             <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
             <artifactId>scala-compiler</artifactId>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

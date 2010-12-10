@@ -21,11 +21,12 @@
 
 package eu.europeana.sip.gui;
 
-import eu.delving.core.metadata.CodeGenerator;
-import eu.delving.core.metadata.FieldDefinition;
-import eu.delving.core.metadata.FieldMapping;
-import eu.delving.core.metadata.Path;
-import eu.delving.core.metadata.SourceVariable;
+import eu.delving.metadata.CodeGenerator;
+import eu.delving.metadata.FieldDefinition;
+import eu.delving.metadata.FieldMapping;
+import eu.delving.metadata.FieldStatistics;
+import eu.delving.metadata.Path;
+import eu.delving.metadata.SourceVariable;
 import eu.delving.sip.FileStore;
 import eu.europeana.sip.model.FieldListModel;
 import eu.europeana.sip.model.FieldMappingListModel;
@@ -34,10 +35,10 @@ import eu.europeana.sip.model.SipModel;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JEditorPane;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
@@ -45,15 +46,11 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -70,33 +67,24 @@ import java.util.List;
 
 public class MappingPanel extends JPanel {
     private static final String CREATE = "Create mapping";
-    private static final String CREATE_FOR = "<html><center>Create mapping for<br><b>%s</b>";
+    private static final String CREATE_FOR = "Create mapping for '%s'";
     private static final Dimension PREFERRED_SIZE = new Dimension(300, 700);
     private SipModel sipModel;
-    private CodeGenerator codeGenerator = new CodeGenerator();
     private JTextField constantField = new JTextField("?");
     private JButton createMappingButton = new JButton(String.format(CREATE_FOR, "?"));
     private ObviousMappingDialog obviousMappingDialog;
     private JButton createObviousMappingButton = new JButton("Create obvious mappings");
     private JButton removeMappingButton = new JButton("Remove the selected mapping");
     private JList variablesList, mappingList, fieldList;
+    private JEditorPane statisticsView = new JEditorPane();
 
     public MappingPanel(SipModel sipModel) {
-        super(new GridBagLayout());
+        super(new GridLayout(2, 2, 5, 5));
         this.sipModel = sipModel;
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.gridx = gbc.gridy = 0;
-        gbc.weightx = gbc.weighty = 1;
-        add(createInputPanel(), gbc);
-        gbc.gridx++;
-        add(createFieldsPanel(), gbc);
-        gbc.gridx = 0;
-        gbc.gridy++;
-        add(createStatisticsPanel(), gbc);
-        gbc.gridx++;
-        add(createFieldMappingListPanel(), gbc);
+        add(createInputPanel());
+        add(createFieldsPanel());
+        add(createStatisticsPanel());
+        add(createFieldMappingListPanel());
         wireUp();
     }
 
@@ -136,13 +124,9 @@ public class MappingPanel extends JPanel {
         JPanel p = new JPanel(new BorderLayout(5, 5));
         p.setPreferredSize(PREFERRED_SIZE);
         p.setBorder(BorderFactory.createTitledBorder("Statistics"));
-        JPanel tablePanel = new JPanel(new BorderLayout());
-        JTable statsTable = new JTable(sipModel.getStatisticsTableModel(), createStatsColumnModel());
-        statsTable.getTableHeader().setReorderingAllowed(false);
-        statsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tablePanel.add(statsTable.getTableHeader(), BorderLayout.NORTH);
-        tablePanel.add(scroll(statsTable), BorderLayout.CENTER);
-        p.add(tablePanel, BorderLayout.CENTER);
+        statisticsView.setEditable(false);
+        statisticsView.setContentType("text/html");
+        p.add(scroll(statisticsView), BorderLayout.CENTER);
         return p;
     }
 
@@ -153,39 +137,19 @@ public class MappingPanel extends JPanel {
         mappingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         mappingList.setCellRenderer(new FieldMappingListModel.CellRenderer());
         p.add(scroll(mappingList), BorderLayout.CENTER);
-        p.add(createButtonPanel(), BorderLayout.EAST);
+        p.add(createButtonPanel(), BorderLayout.SOUTH);
         return p;
     }
 
     private JPanel createButtonPanel() {
-        JPanel p = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(20, 5, 20, 5);
-        gbc.gridy = gbc.gridx = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        JPanel p = new JPanel(new GridLayout(0, 1, 2, 2));
         createMappingButton.setEnabled(false);
-        p.add(createMappingButton, gbc);
-        gbc.gridy++;
+        p.add(createMappingButton);
         createObviousMappingButton.setEnabled(false);
-        p.add(createObviousMappingButton, gbc);
-        gbc.gridy++;
+        p.add(createObviousMappingButton);
         removeMappingButton.setEnabled(false);
-        p.add(removeMappingButton, gbc);
-//        p.setPreferredSize(new Dimension(250, 300));
+        p.add(removeMappingButton);
         return p;
-    }
-
-    private DefaultTableColumnModel createStatsColumnModel() {
-        DefaultTableColumnModel columnModel = new DefaultTableColumnModel();
-        columnModel.addColumn(new TableColumn(0));
-        columnModel.getColumn(0).setHeaderValue("Percent");
-        columnModel.getColumn(0).setMaxWidth(80);
-        columnModel.addColumn(new TableColumn(1));
-        columnModel.getColumn(1).setHeaderValue("Count");
-        columnModel.getColumn(1).setMaxWidth(80);
-        columnModel.addColumn(new TableColumn(2));
-        columnModel.getColumn(2).setHeaderValue("Value");
-        return columnModel;
     }
 
     private JScrollPane scroll(JComponent content) {
@@ -199,15 +163,22 @@ public class MappingPanel extends JPanel {
     private void wireUp() {
         sipModel.addUpdateListener(new SipModel.UpdateListener() {
             @Override
-            public void templateApplied() {
-            }
-
-            @Override
             public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
                 variablesList.clearSelection();
                 fieldList.clearSelection();
                 mappingList.clearSelection();
                 prepareCreateMappingButtons();
+            }
+
+            @Override
+            public void updatedStatistics(final FieldStatistics fieldStatistics) {
+                if (fieldStatistics == null) {
+                    statisticsView.setText("<html><h3>No Statistics</h3>");
+                }
+                else {
+                    statisticsView.setText(fieldStatistics.toHtml());
+                    statisticsView.setCaretPosition(0);
+                }
             }
 
             @Override
@@ -221,13 +192,17 @@ public class MappingPanel extends JPanel {
         createMappingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                FieldDefinition fieldDefinition = (FieldDefinition)fieldList.getSelectedValue();
+                FieldDefinition fieldDefinition = (FieldDefinition) fieldList.getSelectedValue();
                 if (fieldDefinition != null) {
-                    sipModel.addFieldMapping(codeGenerator.createFieldMapping(fieldDefinition, createSelectedVariableList(), constantField.getText()));
+                    CodeGenerator generator = new CodeGenerator();
+                    FieldMapping fieldMapping = new FieldMapping(fieldDefinition);
+                    generator.generateCodeFor(fieldMapping, createSelectedVariableList(), constantField.getText(), false);
+                    sipModel.addFieldMapping(fieldMapping);
                 }
                 variablesList.clearSelection();
                 fieldList.clearSelection();
-                mappingList.setSelectedIndex(mappingList.getModel().getSize() - 1);
+                int index = mappingList.getModel().getSize() - 1;
+                mappingList.clearSelection();
 //                prepareCreateMappingButtons();
             }
         });
@@ -272,10 +247,16 @@ public class MappingPanel extends JPanel {
         variablesList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                SourceVariable sourceVariable = (SourceVariable) variablesList.getSelectedValue();
-                if (sourceVariable != null) {
-                    sipModel.selectNode(sourceVariable.getNode());
-                    constantField.setText("?");
+                if (e.getValueIsAdjusting()) return;
+                final SourceVariable sourceVariable = (SourceVariable) variablesList.getSelectedValue();
+                if (sourceVariable != null && sourceVariable.hasStatistics()) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            sipModel.setStatistics(sourceVariable.getStatistics());
+                            constantField.setText("?");
+                        }
+                    });
                 }
             }
         });
@@ -324,7 +305,8 @@ public class MappingPanel extends JPanel {
                     createMappingButton.setText(CREATE);
                     createMappingButton.setEnabled(false);
                 }
-                List<FieldMapping> obvious = codeGenerator.createObviousMappings(sipModel.getUnmappedFields(), sipModel.getVariables(), sipModel.getConstantFieldModel().getDefinitions());
+                CodeGenerator codeGenerator = new CodeGenerator();
+                List<FieldMapping> obvious = codeGenerator.createObviousMappings(sipModel.getUnmappedFields(), sipModel.getVariables());
                 if (obvious.isEmpty()) {
                     obviousMappingDialog = null;
                     createObviousMappingButton.setEnabled(false);

@@ -37,21 +37,21 @@
 <div id="main" class="grid_9">
     <div id="savedItems">
                     <ul>
-                        <li><a href="#fragment-0" onclick="$.cookie('ui-tabs-3', '0', { expires: 1 });" title="<@spring.message 'UserInformation_t' />"><span><@spring.message 'UserInformation_t' /></span></a></li>
-                        <li><a href="#fragment-1" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });" title="<@spring.message 'SavedItems_t'/>"><span><@spring.message 'SavedItems_t'/></span></a></li>
-                        <li><a href="#fragment-2" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });" title="<@spring.message 'SavedSearches_t'/>"><span><@spring.message 'SavedSearches_t'/></span></a></li>
-                        <li><a href="#fragment-3" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });" title="<@spring.message 'SavedTags_t'/>"><span><@spring.message 'SavedTags_t'/></span></a></li>
+                        <li><a href="#fragment-0" onclick="$.cookie('ui-tabs-3', '0', { expires: 1 });" title="<@spring.message '_mine.user.information' />"><span><@spring.message '_mine.user.information' /></span></a></li>
+                        <li><a href="#fragment-1" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });" title="<@spring.message '_mine.saved.items'/>"><span><@spring.message '_mine.saved.items'/></span></a></li>
+                        <li><a href="#fragment-2" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });" title="<@spring.message '_mine.saved.searches'/>"><span><@spring.message '_mine.saved.searches'/></span></a></li>
+                        <li><a href="#fragment-3" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });" title="<@spring.message '_mine.saved.tags'/>"><span><@spring.message '_mine.saved.tags'/></span></a></li>
                     </ul>
                    <div id="fragment-0">
                       <table width="100%" class="tbl-list" summary="table with user information" id="tbl-user" >
                         <tr>
                             <td width="150">
-                                <h4><@spring.message 'Username_t' />:</h4>
+                                <h4><@spring.message '_mine.username' />:</h4>
                             </td>
                             <td>${user.userName}</td>
                         </tr>
                         <tr>
-                          <td><h4><@spring.message 'EmailAddress_t'/>:<h/4></td>
+                          <td><h4><@spring.message '_mine.email.address'/>:<h/4></td>
                           <td>${user.email}</td>
                         </tr>
                         <#if user.firstName??>
@@ -105,17 +105,17 @@
                                             <br/>
                                             creator: <em>${item.author}</em>
                                             <br/>
-                                            <@spring.message 'DateSaved_t'/>: <em>${item.dateSaved?datetime}</em>
+                                            <@spring.message '_mine.date.saved'/>: <em>${item.dateSaved?datetime}</em>
                                             <br/><br/>
                                         </td>
                                         <td width="60">
-                                            <a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeRequest('SavedItem',${item.id?string("0")});"><span class="ui-icon ui-icon-trash"></span><@spring.message 'Delete_t'/></a>
+                                            <a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeRequest('SavedItem',${item.id?string("0")});"><span class="ui-icon ui-icon-trash"></span><@spring.message '_mine.delete'/></a>
                                         </td>
                                     </tr>
                                 </#list>
 
                             <#else>
-                                <tr><td><@spring.message 'NoSavedItems_t'/></td></tr>
+                                <tr><td><@spring.message '_mine.nosaveditems'/></td></tr>
                             </#if>
                         </table>
                     </div>
@@ -127,13 +127,13 @@
                                         <td width="5"><a href="/${portalName}/brief-doc.html?${search.query}"><span class="ui-icon ui-icon-search"></span></a></td>
                                         <td valign="top" class="item-info">
                                             <a href="/${portalName}/brief-doc.html?${search.query}">${search.queryString}</a>
-                                            <p><@spring.message 'DateSaved_t'/>: <em>${search.dateSaved?datetime}</em></p>
+                                            <p><@spring.message '_mine.date.saved'/>: <em>${search.dateSaved?datetime}</em></p>
                                         </td>
-                                        <td width="60"><a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeRequest('SavedSearch',${search.id?string("0")});"><span class="ui-icon ui-icon-trash"></span><@spring.message 'Delete_t'/></a></td>
+                                        <td width="60"><a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeRequest('SavedSearch',${search.id?string("0")});"><span class="ui-icon ui-icon-trash"></span><@spring.message '_mine.delete'/></a></td>
                                     </tr>
                                 </#list>
                             <#else>
-                                <tr><td><@spring.message 'NoSavedSearches_t'/></td></tr>
+                                <tr><td><@spring.message '_mine.nosavedsearches'/></td></tr>
                             </#if>
                         </table>
                     </div>
@@ -178,16 +178,16 @@
                                      </td>
                                      <td valign="top" class="item-info">
                                          <a href="/${portalName}/record/${tag.europeanaUri}.html">${tag.title}</a><br/>
-                                         <p><@spring.message 'DateSaved_t'/>: <em>${tag.dateSaved?datetime}</em></p>
+                                         <p><@spring.message '_mine.date.saved'/>: <em>${tag.dateSaved?datetime}</em></p>
                                      </td>
-                                     <td width="60"><a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeRequest('SocialTag',${tag.id?string("0")});"><span class="ui-icon ui-icon-trash"></span><@spring.message 'Delete_t'/></a></td>
+                                     <td width="60"><a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeRequest('SocialTag',${tag.id?string("0")});"><span class="ui-icon ui-icon-trash"></span><@spring.message '_mine.delete'/></a></td>
                                    </tr>
                                 </#list>
 
 
                             </#list>
                         <#else>
-                            <tr><td><@spring.message 'NoSavedTags_t'/></td></tr>
+                            <tr><td><@spring.message '_mine.nosavedtags'/></td></tr>
                         </#if>
                     </table>
 

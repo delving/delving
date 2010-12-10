@@ -1,85 +1,95 @@
 <#compress>
 <#include "includeMarcos.ftl">
 <@addCustomAssigns/>
-<@addHeader "Norvegiana", "",["results.js","fancybox/jquery.fancybox-1.3.1.pack.js"],["fancybox/jquery.fancybox-1.3.1.css"]/>
+<@addHeader "${portalDisplayName}", "",["results.js","fancybox/jquery.fancybox-1.3.1.pack.js"],["fancybox/jquery.fancybox-1.3.1.css"]/>
 <script type="text/javascript">
-    var msgItemSaveSuccess = "<@spring.message 'ItemSaved_t'/>";
-    var msgItemSaveFail = "<@spring.message 'ItemSavedFailed_t'/>";
+    var msgItemSaveSuccess = "<@spring.message '_mine.itemsaved'/>";
+    var msgItemSaveFail = "<@spring.message '_mine.itemsavefailed'/>";
 </script>
 <section id="sidebar" class="grid_3" role="complementary">
-    <header id="branding" role="banner">
-        <a href="/${portalName}/" title=""/>
-        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="${portalDisplayName}"/>
-        </a>
-        <h1 class="large">${portalDisplayName}</h1>
-    </header>
-    
-    <div id="facet-list">
-       <h5><@spring.message 'RelatedContent_t' />:</h5>
-        <table summary="related items" id="tbl-related-items" width="100%">
-            <#assign max=3/><!-- max shown in list -->
+
+    <dl class="menu">
+        <dt><@spring.message '_portal.ui.message.relatedcontent' /></dt>
+            <#assign max=5/><!-- max shown in list -->
             <#list result.relatedItems as doc>
-                <#if doc_index &gt; 2><#break/></#if>
-                <tr>
-                    <td width="45" valign="top">
-                        <div class="related-thumb-container">
-                            <#if queryStringForPaging??>
-                            <a href='${doc.fullDocUrl()}?query=europeana_uri:"${doc.id?url('utf-8')}"&amp;start=${doc.index()?c}&amp;view=${view}&amp;startPage=1&amp;pageId=brd&amp;tab='>
-                                <#else>
-                                <a href="${doc.fullDocUrl()}">
-                            </#if>
-                            <#if useCache="true">
-                                <img src="${cacheUrl}uri=${doc.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" alt="Click here to view related item" width="40"/>
-                                <#else>
-                                    <img src="${doc.thumbnail}" alt="Click here to view related item" width="40" onerror="showDefault(this,'${doc.type}')"/>
-                            </#if>
-
-                        </a>
-                        </div>
-                    </td>
-
-                    <td class="item-titles" valign="top" width="130">
-                        <#if queryStringForPaging??>
-                            <a href='${doc.fullDocUrl()}?query=europeana_uri:"${doc.id?url('utf-8')}"&amp;start=${doc.index()?c}&amp;startPage=1&amp;pageId=brd'><@stringLimiter "${doc.title}" "50"/></a>
-                            <#else>
-                                <a href="${doc.fullDocUrl()}"><@stringLimiter "${doc.title}" "50"/></a>
-                        </#if>
-                    </td>
-                </tr>
+                <#if doc_index &gt; (max-1)><#break/></#if>
+             <dd>
+                 <#if useCache="true">
+                         <img src="${cacheUrl}uri=${doc.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" onerror="showDefaultSmall(this,'${doc.type}')" alt="Click here to view related item" width="25"/>
+                     <#else>
+                         <img src="${doc.thumbnail}" alt="Click here to view related item" width="25" onerror="showDefaultSmall(this,'${doc.type}')"/>
+                 </#if>
+                  <#if queryStringForPaging??>
+                    <a href='${doc.fullDocUrl()}?query=europeana_uri:"${doc.id?url('utf-8')}"&amp;start=${doc.index()?c}&amp;startPage=1&amp;pageId=brd'><@stringLimiter "${doc.title}" "40"/></a>
+                  <#else>
+                       <a href="${doc.fullDocUrl()}"><@stringLimiter "${doc.title}" "40"/></a>
+                </#if>
+             </dd>
 
             </#list>
-            <#if result.relatedItems?size &gt; max>
-                <tr>
-                    <td id="see-all" colspan="2"><a href='/${portalName}/brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message 'SeeAllRelatedItems_t' /></a></td>
-                </tr>
+            <#if result.relatedItems?size &gt; max-1>
+                <dd>
+                     <a href='/${portalName}/brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message '_action.see.all.related.items' /></a>
+                </dd>
             </#if>
-        </table>
+    </dl>
 
-         <h5><@spring.message 'Actions_t' />:</h5>
 
-        <#if addThisTrackingCode??>
-            <p>
-                <@addThis "${addThisTrackingCode}"/>
-            </p>
-        </#if>
 
-        <#if user??>
-            <p>
-            <a href="inc_related_content.ftl#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');return false;"><@spring.message 'SaveToPersonalPage' /></a>
-
-            <div id="msg-save-item" class="msg-hide"></div>
-            </p>
-
+                                              
+        <dl class="menu">
+            <dt><@spring.message '_portal.ui.message.actions' /></dt>
             <#if result.fullDoc.europeanaType == "IMAGE">
                 <#if result.fullDoc.europeanaIsShownBy[0]?? && imageAnnotationToolBaseUrl?? && imageAnnotationToolBaseUrl!="">
-                <p>
-                    <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}&id=${result.fullDoc.id}" target="_blank"><@spring.message 'AddAnnotation_t' /></a>
-                </p>
+                <dd>
+                    <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}&id=${result.fullDoc.id}" target="_blank"><@spring.message '_action.add.annotation' /></a>
+                </dd>
                 </#if>
             </#if>
+            <#if addThisTrackingCode??>
+                <dd>
+                    <@addThis "${addThisTrackingCode}"/>
+                </dd>
+            </#if>
+            <#if user??>
+
+
+                <dd>
+                    <a href="#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.getFieldValue("europeana_object").getFirst()?js_string}','${result.fullDoc.europeanaType}');"><@spring.message '_action.save.to.mine' /></a>
+                </dd>
+
+                <#if result.fullDoc.europeanaType == "IMAGE">
+                	<#if result.fullDoc.europeanaIsShownBy[0]?? && imageAnnotationToolBaseUrl?? && imageAnnotationToolBaseUrl!="">
+	                    <dd>
+		                    <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}&id=${result.fullDoc.id}" target="_blank"><@spring.message '_action.add.annotation' /></a>
+		                </dd>
+	                </#if>
+                </#if>
+
+            <#else>
+                <dd>
+                    <a href="/${portalName}/login.html" class="disabled" onclick="highLight('#mustlogin'); writeMessage('div#msg-save-item','<@spring.message '_mine.user.notification.login.required'/>'); return false;"><@spring.message '_action.add.tag' /></a>
+                </dd>
+
+                <dd>
+                    <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); writeMessage('div#msg-save-item','<@spring.message '_mine.user.notification.login.required'/>'); return false;"><@spring.message '_action.save.to.mine' /></a>
+                </dd>
+
+
+            </#if>
+            <div id="msg-save-item" class="msg-hide"></div>
+        </dl>
+
+
 
             <#--<p>-->
-            <#--<h6><@spring.message 'AddATag_t' /></h6>-->
+            <#--<a href="inc_related_content.ftl#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');return false;"><@spring.message '_action.save.to.mine' /></a>-->
+
+            <#--<div id="msg-save-item" class="msg-hide"></div>-->
+            <#--</p>-->
+
+            <#--<p>-->
+            <#--<h6><@spring.message '_action.add.tag' /></h6>-->
 
 
             <#--<form action="inc_related_content.ftl#" method="post" onsubmit="addTag('SocialTag', document.getElementById('tag').value,'${result.fullDoc.id}','${result.fullDoc.thumbnails[0]?js_string}','${postTitle}','${result.fullDoc.europeanaType}'); return false;" id="form-addtag" name="form-addtag" accept-charset="UTF-8">-->
@@ -88,49 +98,13 @@
             <#--</form>-->
             <#--<div id="msg-save-tag" class="hide"></div>-->
         <#--</p>-->
-
-
-
-            <#else>
-                <div class="related-links">
-                    <#--<p>-->
-                        <#--<a href="/${portalName}/login.html" class="disabled" onclick="highLight('#mustlogin'); writeMessage('div#msg-save-item','<@spring.message 'login.required'/>'); return false;"><@spring.message 'AddATag_t' /></a>-->
-                    <#--</p>-->
-
-                    <p>
-                        <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); writeMessage('div#msg-save-item','<@spring.message 'login.required'/>'); return false;"><@spring.message 'SaveToPersonalPage' /></a>
-                    </p>
-                </div>
-                <div id="msg-save-item" class="msg-hide"></div>
-
-        </#if>
-    </div>
-
 </section>
 
 
 <section id="item" class="grid_9" role="main">
 
-    <div id="userBar" role="navigation">
-        <div class="inner">
-        <@userBar/>
-        </div>
-    </div>
-
-    <div class="clear"></div>
-
-    <div id="search" role="search">
-        <div class="inner">
-            <@simpleSearch/>
-        </div>
-    </div>
-
-    <div class="clear"></div>
-
      <div id="nav_query_breadcrumbs">
-        <div class="inner">
-            <h4><@resultsFullQueryBreadcrumbs/></h4>
-        </div>
+            <@resultsFullQueryBreadcrumbs/>
     </div>
 
     <div class="clear"></div>
@@ -145,7 +119,6 @@
 
     <div class="clear"></div>
 
-    <div class="inner">
 
         <div id="itemImage" class="grid_4 alpha">
             <div class="inner">
@@ -157,7 +130,7 @@
             <@resultFullList/>
         </div>
 
-    </div>
+
 
 </section>
 

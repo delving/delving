@@ -25,8 +25,8 @@
     <groupId>eu.europeana</groupId>
     <artifactId>portal</artifactId>
     <packaging>war</packaging>
-    <name>Europeana Portal Web Application</name>
-    <version>0.1.1</version>
+    <name>Portal Web Application</name>
+    <version>0.1.6</version>
     <description></description>
     <inceptionYear>2009</inceptionYear>
 
@@ -39,19 +39,27 @@
     <developers>
         <developer>
             <name>Sjoerd Siebinga</name>
-            <email>sjoerd.siebinga@gmail.com</email>
+            <email>sjoerd@delving.eu</email>
             <roles>
-                <role>architect</role>
+                <role>developer</role>
             </roles>
         </developer>
         <developer>
             <name>Gerald de Jong</name>
-            <email>geralddejong@gmail.com</email>
+            <email>gerald@delving.eu</email>
             <roles>
-                <role>consultant</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Eric van der Meulen</name>
+            <email>eric@delving.eu</email>
+            <roles>
+                <role>developer</role>
             </roles>
         </developer>
     </developers>
+
     <organization>
         <name>Europeana</name>
         <url>http://www.europeana.eu</url>
@@ -100,7 +108,7 @@
 		<dependency>
 			<groupId>eu.europeana</groupId>
 			<artifactId>core</artifactId>
-			<version>0.1.1</version>
+			<version>0.1.6</version>
 		</dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>
@@ -129,11 +137,6 @@
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-compiler</artifactId>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.scala-lang</groupId>

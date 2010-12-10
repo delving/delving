@@ -5,33 +5,43 @@
     <artifactId>services</artifactId>
     <packaging>war</packaging>
     <name>Services</name>
-    <version>0.1.1</version>
+    <version>0.1.6</version>
     <inceptionYear>2010</inceptionYear>
     <parent>
         <groupId>eu.europeana</groupId>
         <artifactId>europeana</artifactId>
         <version>1</version>
     </parent>
+    
     <developers>
         <developer>
-            <name>Gerald de Jong</name>
-            <email>geralddejong@gmail.com</email>
+            <name>Sjoerd Siebinga</name>
+            <email>sjoerd@delving.eu</email>
             <roles>
-                <role>consultant</role>
+                <role>developer</role>
             </roles>
         </developer>
         <developer>
-            <name>Sjoerd Siebinga</name>
-            <email>sjoerd.siebinga@gmail.com</email>
+            <name>Gerald de Jong</name>
+            <email>gerald@delving.eu</email>
             <roles>
-                <role>consultant</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Eric van der Meulen</name>
+            <email>eric@delving.eu</email>
+            <roles>
+                <role>developer</role>
             </roles>
         </developer>
     </developers>
+
     <organization>
         <name>Delving</name>
         <url>http://www.delving.eu</url>
     </organization>
+    
     <pluginRepositories>
         <pluginRepository>
             <id>Codehaus Snapshots</id>
@@ -114,12 +124,12 @@
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>core</artifactId>
-            <version>0.1.1</version>
+            <version>0.1.6</version>
         </dependency>
         <dependency>
             <groupId>eu.delving</groupId>
             <artifactId>sip-core</artifactId>
-            <version>0.1.1</version>
+            <version>0.1.6</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
@@ -165,7 +175,6 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
         </dependency>
-
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
@@ -195,7 +204,7 @@
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-compiler</artifactId>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.scala-lang</groupId>
@@ -206,7 +215,4 @@
             <artifactId>joda-time</artifactId>
         </dependency>
     </dependencies>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 </project>

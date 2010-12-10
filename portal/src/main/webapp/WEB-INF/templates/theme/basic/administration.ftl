@@ -1,126 +1,104 @@
 <#import "spring.ftl" as spring />
 <#assign thisPage = "administration.html"/>
 <#assign pageId = "ad"/>
+<#include "includeMarcos.ftl">
+
+<@addHeader "${portalDisplayName}", "",["jquery.tablesorter.min.js","administration.js"],[]/>
+
+<section role="main" class="main grid_12" id="administration-page">
 
 
+        <h1><@spring.message '_cms.administration.users' /></h1>
 
-            <#include "includeMarcos.ftl">
-
-            <@addHeader "Norvegiana", "",[],[]/>
-
-            <section id="sidebar" class="grid_3" role="complementary">
-                <header id="branding" role="banner">
-                    <a href="/${portalName}/" title=""/>
-                    <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
-                    </a>
-                    <h1 class="large">${portalDisplayName}</h1>
-                </header>
-            </section>
-
-            <section role="main">
-
-            <header>
-                <h1><@spring.message 'dms.administration.users' /></h1>
-            </header>
-
-            <div id="administration-page" class="grid_9">
-
-            <ol>
-                <li><@spring.message 'dms.user.change.role.step.1' /></li>
-                <li><@spring.message 'dms.user.change.role.step.2' /></li>
-                <li><@spring.message 'dms.user.change.role.step.3' /></li>
-                <li><@spring.message 'dms.user.change.role.step.4' /></li>
-            </ol>
+        <div class="grid_6 alpha">
 
 
-
-
-
-
-        <#if !userList??>
-
+         <h4><@spring.message '_cms.user.find' /></h4>
             <form method="post" action="administration.html" id="search-form">
-                <table width="400">
-                    <tr>
-                        <th colspan="2"><@spring.message 'dms.user.find' /></th>
-                     </tr>
-                    <tr></tr>
-                        <td><input type="search" name="searchPattern"/></td>
-                        <td><input type="submit" value="<@spring.message 'dms.find' />"/> </td>
-                    </tr>
-                </table>
-                <#if targetUser??>
-                    <p>
-                        ${targetUser.email} <@spring.message 'dms.user.role.set.to' />: 
-                        <#if targetUser.role = 'ROLE_ADMINISTRATOR'>
-                            <@spring.message 'dms.user.role.administrator' />
-                        </#if>
-                        <#if targetUser.role = 'ROLE_USER'>
-                            <@spring.message 'dms.user.role.public' />
-                        </#if>
-                    </p>
-                </#if>
-            </form>
-        </#if>
-
-        <#if userList??>
-            <#if userList?size &gt; 0>
                 <table>
                     <tr>
-                        <th><@spring.message 'EmailAddress_t' /></th>
-                        <th><@spring.message 'dms.user.role.current' /></th>
-                        <th><@spring.message 'dms.user.role.new' /></th>
-                        <th>&#160;</th>
+                        <td width="150"><input type="text" id="searchPattern" name="searchPattern"/></td>
+                        <td><input type="submit" class="btn-strong" value="<@spring.message '_cms.find' />"/> </td>
                     </tr>
-
-                    <#list userList as userEdit>
-                        <form method="post" action="administration.html" id="set-form">
-                            <input type="hidden" name="userEmail" value="${userEdit.email}"/>
-                            <tr>
-                                <td width="150">${userEdit.email}</td>
-                                <td width="150">
-                                    <#switch userEdit.role>
-                                        <#case "ROLE_GOD">
-                                            <@spring.message 'dms.user.role.super' />
-                                        <#break>
-                                        <#case "ROLE_ADMINISTRATOR">
-                                              <@spring.message 'dms.user.role.administrator' />
-                                        <#break>
-                                        <#case "ROLE_USER">
-                                              <@spring.message 'dms.user.role.public' />
-                                        <#break>
-                                    </#switch>
-                                </td>
-                                <td width="200">
-                                    <select name="newRole" id="newRole">
-                                        <option value="NONE"><@spring.message 'dms.user.role.choose' /></option>
-                                        <#if user.role=="ROLE_GOD"><option value="ROLE_ADMINISTRATOR"><@spring.message 'dms.user.role.administrator' /></option></#if>
-                                        <option value="ROLE_USER"><@spring.message 'dms.user.role.public' /></option>
-                                    </select>
-                                </td>
-                                <td><input type="submit" value="<@spring.message 'dms.change' />"/> </td>
-                            </tr>
-                        </form>
-                    </#list>
                 </table>
-            <#else>
-                <h4><@spring.message 'dms.user.not.found' /></h4>
-                <p><a href="/${portalName}/administration.html"><@spring.message 'dms.user.find' /></a></p>
-            </#if>
+            </form>
+           <#if userList?? && userList?size=0>
+               <h6>Geen gebruiker(s) gevonden</h6>
+           </#if>
+        </div>
+
+        <#if userList?? && (userList?size &gt; 0)>
+        <div class="grid_12 alpha">
+            <table  class="tablesorter zebra" width="100%" id="tbl-users-found">
+                <thead>
+                <tr>
+                    <th><@spring.message '_mine.email.address' /></th>
+                    <th><@spring.message '_cms.user.role.current' /></th>
+                    <th><@spring.message '_cms.user.role.new' /></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <#list userList as userEdit>
+                  <form method="post" action="administration.html" class="set-form" name="set-form_${userEdit_index}">
+                        <input type="hidden" id="userEmail" name="userEmail" value="${userEdit.email}"/>
+                        <tr>
+                            <td width="150">${userEdit.email}</td>
+                            <td width="150">
+                                <#switch userEdit.role>
+                                    <#case "ROLE_GOD">
+                                        <@spring.message '_cms.user.role.super' />
+                                    <#break>
+                                    <#case "ROLE_ADMINISTRATOR">
+                                          <@spring.message '_cms.user.role.administrator' />
+                                    <#break>
+                                    <#case "ROLE_USER">
+                                          <@spring.message '_cms.user.role.public' />
+                                    <#break>
+                                </#switch>
+                            </td>
+                            <td width="200" id="uRoleList">
+                                <select name="newRole" class="newRole">
+                                    <option value="NONE"><@spring.message '_cms.user.role.choose' /></option>
+                                    <#if user.role=="ROLE_GOD"><option value="ROLE_ADMINISTRATOR"><@spring.message '_cms.user.role.administrator' /></option></#if>
+                                    <option value="ROLE_USER"><@spring.message '_cms.user.role.public' /></option>
+                                </select>
+                            </td>
+                            <td><input type="submit" class="button btn-strong" value="<@spring.message '_cms.change' />" class="btn-strong"/> </td>
+                            <td><button id="rem-user" class="btn-strong delete"><@spring.message '_cms.delete' /></button> </td>
+                        </tr>
+                   </form>
+                </#list>
+
+                </tbody>
+            </table>
+
+          </div>
         </#if>
 
-
-    </div>
+        <div id="all-users-list" class="grid_12 alpha"></div>
 
 </section>
 
 <script type="text/javascript">
-    $("form#set-form").submit(function(){
-        if($("select#newRole").val()=="NONE"){
-            return false;
-        }
+    <#if targetUser??>
 
-    })
+        var msgString = "${targetUser.email} now has the role of: ";
+            <#if targetUser.role = 'ROLE_ADMINISTRATOR'>
+                msgString += "<@spring.message '_cms.user.role.administrator' />";
+            </#if>
+            <#if targetUser.role = 'ROLE_USER'>
+                msgString += "<@spring.message '_cms.user.role.public' />";
+            </#if>
+        showMessage("success",msgString);
+
+    </#if>
+    <#if RequestParameters.userRemoved??>
+        <#if RequestParameters.userRemoved = "true">
+            showMessage("success","User has been successfully removed");
+        </#if>
+    </#if>
 </script>
-
 <@addFooter/>

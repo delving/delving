@@ -30,6 +30,7 @@ public class StaticRepo {
     static final String CONTENT = "content";
     static final String HIDDEN = "hidden";
     static final String DEFAULT_LANGUAGE = "en";
+    static final String MONGO_ID = "_id";
 
     @Autowired
     private Mongo mongo;
@@ -178,7 +179,7 @@ public class StaticRepo {
         }
 
         public ObjectId getId() {
-            return (ObjectId) object.get("_id");
+            return (ObjectId) object.get(MONGO_ID);
         }
 
         public String getPath() {
@@ -213,7 +214,7 @@ public class StaticRepo {
         }
 
         public Date getDate() {
-            ObjectId id = (ObjectId) object.get("_id");
+            ObjectId id = (ObjectId) object.get(MONGO_ID);
             if (id == null) {
                 throw new IllegalStateException("Object has no _id field!");
             }
@@ -243,7 +244,7 @@ public class StaticRepo {
         private BasicDBObject copyObject() {
             BasicDBObject fresh = new BasicDBObject();
             for (String key : object.keySet()) {
-                if (!key.equals("_id")) {
+                if (!key.equals(MONGO_ID)) {
                     fresh.put(key, object.get(key));
                 }
             }

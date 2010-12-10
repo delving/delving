@@ -87,7 +87,7 @@ object SolrBindingService {
       doc =>
         docIds add (SolrDocId(doc))
     }
-    asList(docIds)
+    asJavaList(docIds)
   }
 
   def getBriefDocs(queryResponse: QueryResponse): JList[BriefDocItem] = getBriefDocs(queryResponse.getResults)
@@ -98,7 +98,7 @@ object SolrBindingService {
       doc =>
         briefDocs add (BriefDocItem(doc))
     }
-    asList(briefDocs)
+    asJavaList(briefDocs)
   }
 
   def getFullDoc(queryResponse: QueryResponse): FullDocItem = {
@@ -115,7 +115,7 @@ object SolrBindingService {
       doc =>
         fullDocs add (FullDocItem(doc))
     }
-    asList(fullDocs)
+    asJavaList(fullDocs)
   }
 
   def createFacetMap(links : JList[FacetQueryLinks]) = FacetMap(links.toList)
@@ -192,6 +192,12 @@ case class FieldValue (key: String, solrDocument: SolrDocument) {
    * by Apache Solr
    */
   def getKeyAsXml = key.replaceFirst("_", ":")
+
+
+  /**
+   * This gives back the key formatted as a metadata key as specified in the message.properties files.
+   */
+  def getKeyAsMessageKey = "_metadata.%s" format (key.replaceFirst("_", "."))
 
   /**
    * Only give back the first item from the fieldMap retrieved with 'key' in the SolrDocument as a String. When the key

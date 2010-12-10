@@ -21,9 +21,9 @@
 
 package eu.europeana.sip.model;
 
-import eu.delving.core.metadata.FieldMapping;
-import eu.delving.core.metadata.MappingModel;
-import eu.delving.core.metadata.RecordMapping;
+import eu.delving.metadata.FieldMapping;
+import eu.delving.metadata.MappingModel;
+import eu.delving.metadata.RecordMapping;
 
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
@@ -54,10 +54,12 @@ public class FieldMappingListModel extends AbstractListModel implements MappingM
     @Override
     public void mappingChanged(RecordMapping recordMapping) {
         clear();
-        for (FieldMapping fieldMapping : recordMapping.getFieldMappings()) {
-            list.add(fieldMapping);
+        if (recordMapping != null) {
+            for (FieldMapping fieldMapping : recordMapping.getFieldMappings()) {
+                list.add(fieldMapping);
+            }
+            fireIntervalAdded(this, 0, getSize());
         }
-        fireIntervalAdded(this, 0, getSize());
     }
 
     private void clear() {

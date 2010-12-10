@@ -21,7 +21,7 @@
 
 package eu.europeana.sip.gui;
 
-import eu.delving.core.metadata.FieldMapping;
+import eu.delving.metadata.FieldMapping;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -51,7 +51,7 @@ public class ObviousMappingDialog extends JDialog {
     }
 
     public ObviousMappingDialog(Frame owner, List<FieldMapping> mappings, final Creator creator) {
-        super(owner, "Obvious Mappings");
+        super(owner, "Obvious Mappings", true);
         JPanel boxPanel = new JPanel(new GridLayout(0, 2, 5, 5));
         boxPanel.setBorder(BorderFactory.createTitledBorder("Fields"));
         for (FieldMapping mapping : mappings) {

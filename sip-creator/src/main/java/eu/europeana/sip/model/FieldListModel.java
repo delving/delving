@@ -21,11 +21,11 @@
 
 package eu.europeana.sip.model;
 
-import eu.delving.core.metadata.FieldDefinition;
-import eu.delving.core.metadata.FieldMapping;
-import eu.delving.core.metadata.MappingModel;
-import eu.delving.core.metadata.MetadataModel;
-import eu.delving.core.metadata.RecordMapping;
+import eu.delving.metadata.FieldDefinition;
+import eu.delving.metadata.FieldMapping;
+import eu.delving.metadata.MappingModel;
+import eu.delving.metadata.MetadataModel;
+import eu.delving.metadata.RecordMapping;
 
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
@@ -77,10 +77,11 @@ public class FieldListModel extends AbstractListModel {
     public static class CellRenderer extends DefaultListCellRenderer {
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            FieldDefinition europeanaField = (FieldDefinition) value;
-            String string = europeanaField.getFieldNameString();
-            if (europeanaField.requiredGroup != null) {
-                string += " (required: "+ europeanaField.requiredGroup+")";
+            FieldDefinition fieldDefinition = (FieldDefinition) value;
+            String string = fieldDefinition.getFieldNameString();
+            FieldDefinition.Validation validation = fieldDefinition.validation;
+            if (validation != null && validation.requiredGroup != null) {
+                string += " (required: " + validation.requiredGroup + ")";
             }
             return super.getListCellRendererComponent(list, string, index, isSelected, cellHasFocus);
         }
@@ -104,16 +105,18 @@ public class FieldListModel extends AbstractListModel {
             int sizeBefore = getSize();
             unmappedFields.clear();
             fireIntervalRemoved(this, 0, sizeBefore);
-            nextVariable:
-            for (FieldDefinition fieldDefinition : fieldDefinitions) {
-                for (FieldMapping fieldMapping : recordMapping.getFieldMappings()) {
-                    if (fieldMapping.fieldDefinition == fieldDefinition) {
-                        continue nextVariable;
+            if (recordMapping != null) {
+                nextVariable:
+                for (FieldDefinition fieldDefinition : fieldDefinitions) {
+                    for (FieldMapping fieldMapping : recordMapping.getFieldMappings()) {
+                        if (fieldMapping.fieldDefinition == fieldDefinition) {
+                            continue nextVariable;
+                        }
                     }
+                    unmappedFields.add(fieldDefinition);
                 }
-                unmappedFields.add(fieldDefinition);
+                fireIntervalAdded(this, 0, getSize());
             }
-            fireIntervalAdded(this, 0, getSize());
         }
     }
 }

@@ -21,30 +21,31 @@
 
 package eu.europeana.sip.gui;
 
-import eu.delving.core.metadata.Path;
+import eu.delving.metadata.FieldStatistics;
+import eu.delving.metadata.Path;
 import eu.delving.sip.FileStore;
+import eu.delving.sip.ProgressListener;
 import eu.europeana.sip.model.SipModel;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.BoundedRangeModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.ProgressMonitor;
+import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.File;
 
 /**
  * Turn diverse source xml data into standardized output for import into the europeana portal database and search
@@ -57,30 +58,18 @@ public class NormalizationPanel extends JPanel {
     private SipModel sipModel;
     private JCheckBox discardInvalidBox = new JCheckBox("Discard Invalid Records");
     private JCheckBox storeNormalizedBox = new JCheckBox("Store Normalized XML");
-    private JButton normalizeButton = new JButton("Normalize");
-    private JButton abortButton = new JButton("Abort");
     private JLabel normalizeMessageLabel = new JLabel("?", JLabel.CENTER);
+    private JFileChooser chooser = new JFileChooser("Normalized Data Output Directory");
 
     public NormalizationPanel(SipModel sipModel) {
-        super(new GridBagLayout());
+        super(new BorderLayout(5, 5));
         this.sipModel = sipModel;
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.gridy = 0;
-        gbc.weightx = 0.333;
-        gbc.weighty = 0.99;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.gridx = gbc.gridy = 0;
-        add(new RecordPanel(sipModel, sipModel.getRecordCompileModel()), gbc);
-        gbc.gridx++;
-        add(createCodePanel(), gbc);
-        gbc.gridx++;
-        add(createOutputPanel(), gbc);
-        gbc.weighty = 0.01;
-        gbc.gridwidth = 3;
-        gbc.gridx = 0;
-        gbc.gridy++;
-        add(createNormalizePanel(), gbc);
+        JPanel center = new JPanel(new GridLayout(1, 0, 5, 5));
+        center.add(new RecordPanel(sipModel, sipModel.getRecordCompileModel()));
+        center.add(createCodePanel());
+        center.add(createOutputPanel());
+        add(center, BorderLayout.CENTER);
+        add(createNormalizePanel(), BorderLayout.SOUTH);
         wireUp();
     }
 
@@ -112,61 +101,28 @@ public class NormalizationPanel extends JPanel {
 
     private JPanel createNormalizePanel() {
         JPanel p = new JPanel(new BorderLayout(5, 5));
-        p.add(createNormalizeCenter(), BorderLayout.CENTER);
+        p.add(normalizeMessageLabel, BorderLayout.CENTER);
         p.add(createNormalizeEast(), BorderLayout.EAST);
         return p;
     }
 
-    private JPanel createNormalizeCenter() {
-        JProgressBar progressBar = new JProgressBar(sipModel.getNormalizeProgress());
-        progressBar.setBorderPainted(true);
-        progressBar.setStringPainted(true);
-        JPanel p = new JPanel(new GridLayout(0, 1, 5, 5));
-        p.setBorder(BorderFactory.createTitledBorder("Progress"));
-        p.add(progressBar);
-        p.add(normalizeMessageLabel);
-        return p;
-    }
-
     private JPanel createNormalizeEast() {
-        JPanel p = new JPanel(new GridLayout(2, 0, 5, 5));
+        JPanel p = new JPanel(new GridLayout(1, 0, 5, 5));
         p.setBorder(BorderFactory.createTitledBorder("Control"));
         p.add(discardInvalidBox);
         p.add(storeNormalizedBox);
-        p.add(normalizeButton);
-        p.add(abortButton);
-        BoundedRangeModel m = sipModel.getNormalizeProgress();
-        abortButton.setEnabled(m.getValue() > m.getMinimum() && m.getValue() < m.getMaximum());
+        p.add(new JButton(normalizeAction));
         return p;
     }
 
     private void wireUp() {
-        sipModel.getNormalizeProgress().addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                BoundedRangeModel m = sipModel.getNormalizeProgress();
-                abortButton.setEnabled(m.getValue() > m.getMinimum() && m.getValue() < m.getMaximum());
-            }
-        });
-        normalizeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sipModel.normalize(discardInvalidBox.isSelected(), storeNormalizedBox.isSelected());
-            }
-        });
-        abortButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sipModel.abortNormalize();
-            }
-        });
         sipModel.addUpdateListener(new SipModel.UpdateListener() {
             @Override
-            public void templateApplied() {
+            public void updatedDataSetStore(FileStore.DataSetStore store) {
             }
 
             @Override
-            public void updatedDataSetStore(FileStore.DataSetStore store) {
+            public void updatedStatistics(FieldStatistics fieldStatistics) {
             }
 
             @Override
@@ -179,4 +135,64 @@ public class NormalizationPanel extends JPanel {
             }
         });
     }
+
+    private Action normalizeAction = new AbstractAction("Normalize") {
+
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            if (storeNormalizedBox.isSelected()) {
+                File normalizeDirectory = new File(sipModel.getNormalizeDirectory());
+                chooser.setCurrentDirectory(normalizeDirectory);
+                chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                chooser.setFileFilter(new FileFilter() {
+                    @Override
+                    public boolean accept(File file) {
+                        return file.isDirectory();
+                    }
+
+                    @Override
+                    public String getDescription() {
+                        return "Directories";
+                    }
+                });
+                chooser.setMultiSelectionEnabled(false);
+                int choiceMade = chooser.showOpenDialog(NormalizationPanel.this);
+                if (choiceMade == JFileChooser.APPROVE_OPTION) {
+                    normalizeDirectory = chooser.getSelectedFile();
+                    sipModel.setNormalizeDirectory(normalizeDirectory);
+                    normalizeTo(normalizeDirectory);
+                }
+            }
+            else {
+                normalizeTo(null);
+            }
+        }
+
+        private void normalizeTo(File normalizeDirectory) {
+            String message;
+            if (normalizeDirectory != null) {
+                message = String.format(
+                        "<html><h3>Transforming the raw data of '%s' into '%s' format</h3><br>" +
+                                "Writing to %s ",
+                        sipModel.getDataSetStore().getSpec(),
+                        sipModel.getMappingModel().getRecordMapping().getPrefix(),
+                        normalizeDirectory
+                );
+            }
+            else {
+                message = String.format(
+                        "<html><h3>Transforming the raw data of '%s' into '%s' format</h3>",
+                        sipModel.getDataSetStore().getSpec(),
+                        sipModel.getMappingModel().getRecordMapping().getPrefix()
+                );
+            }
+            ProgressMonitor progressMonitor = new ProgressMonitor(
+                    SwingUtilities.getRoot(NormalizationPanel.this),
+                    "<html><h2>Normalizing</h2>",
+                    message,
+                    0,100
+            );
+            sipModel.normalize(normalizeDirectory, discardInvalidBox.isSelected(), new ProgressListener.Adapter(progressMonitor, this));
+        }
+    };
 }

@@ -1,8 +1,8 @@
 package eu.europeana.core.database.dao;
 
+import eu.delving.domain.Language;
 import eu.europeana.core.database.UserDao;
 import eu.europeana.core.database.domain.EuropeanaId;
-import eu.europeana.core.database.domain.Language;
 import eu.europeana.core.database.domain.Role;
 import eu.europeana.core.database.domain.SavedSearch;
 import eu.europeana.core.database.domain.SocialTag;

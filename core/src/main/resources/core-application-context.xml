@@ -94,7 +94,6 @@
     </bean>
 
     <util:list id="includedMacros">
-        <value>delving-macros.ftl</value>
     </util:list>
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -170,7 +169,7 @@
         <property name="maxRetries" value="#{launchProperties['solr.retries']}"/>
     </bean>
 
-    <bean id="metadataModel" class="eu.delving.core.metadata.MetadataModelImpl">
+    <bean id="metadataModel" class="eu.delving.metadata.MetadataModelImpl">
         <property name="recordDefinitionResources">
             <list>
                 <value>/abm-record-definition.xml</value>
@@ -205,7 +204,7 @@
             </props>
         </property>
         <property name="templateLoaderPaths"
-                  value="#{launchProperties['portal.freemarker.path']}, WEB-INF/templates/theme/macros/"/>
+                  value="#{launchProperties['portal.freemarker.path']}"/>
     </bean>
 
     <bean id="clickStreamLogger" class="eu.europeana.core.util.web.ClickStreamLoggerImpl"/>
@@ -240,12 +239,6 @@
         <property name="fromEmail" value="#{launchProperties['system.from']}"/>
         <property name="toEmail" value="#{launchProperties['admin.to']}"/>
         <property name="subject" value="Password has been changed"/>
-    </bean>
-
-    <bean id="emailSenderForSendToFriend" class="eu.europeana.core.util.web.EmailSender">
-        <property name="template" value="/email/to-friend"/>
-        <property name="subject" value="A link from Europeana"/>
-        <!--todo: this should be multilingual-->
     </bean>
 
     <bean id="emailSenderForUserFeedback" class="eu.europeana.core.util.web.EmailSender">

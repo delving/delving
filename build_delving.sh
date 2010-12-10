@@ -6,7 +6,8 @@ INSTALL="mvn clean install -Dmaven.test.skip=true"
 PACKAGE="mvn clean package -Dmaven.test.skip=true"
 
 # Installation of jar is m2 repository
-cd core; $INSTALL
+cd metameta; $INSTALL
+cd ../core; $INSTALL
 cd ../sip-core; $INSTALL
 
 # Packaging of War files

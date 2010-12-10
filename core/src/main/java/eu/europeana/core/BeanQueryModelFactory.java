@@ -23,7 +23,7 @@ package eu.europeana.core;
 
 import eu.delving.core.binding.FacetMap;
 import eu.delving.core.binding.SolrBindingService;
-import eu.delving.core.metadata.MetadataModel;
+import eu.delving.metadata.MetadataModel;
 import eu.europeana.core.database.UserDao;
 import eu.europeana.core.database.domain.SocialTag;
 import eu.europeana.core.database.domain.User;
