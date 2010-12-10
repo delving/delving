@@ -69,8 +69,8 @@ public class MetadataRecord {
     }
 
     private void getVariables(GroovyNode groovyNode, List<MetadataVariable> variables) {
-        if (groovyNode.value() instanceof GroovyNodeList) {
-            GroovyNodeList list = (GroovyNodeList) groovyNode.value();
+        if (groovyNode.value() instanceof GroovyList) {
+            GroovyList list = (GroovyList) groovyNode.value();
             for (Object member : list) {
                 GroovyNode childNode = (GroovyNode) member;
                 getVariables(childNode, variables);

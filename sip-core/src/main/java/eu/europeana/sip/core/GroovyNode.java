@@ -26,10 +26,8 @@ import groovy.lang.DelegatingMetaClass;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClass;
 import groovy.xml.QName;
-import org.codehaus.groovy.runtime.InvokerHelper;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -52,7 +50,7 @@ public class GroovyNode {
     private Object value;
 
     public GroovyNode(GroovyNode parent, Object name) {
-        this(parent, name, new GroovyNodeList());
+        this(parent, name, new GroovyList());
     }
 
     public GroovyNode(GroovyNode parent, Object name, Object value) {
@@ -106,13 +104,13 @@ public class GroovyNode {
 
     public List children() {
         if (value == null) {
-            return new GroovyNodeList();
+            return new GroovyList();
         }
         if (value instanceof List) {
             return (List) value;
         }
         // we're probably just a String
-        GroovyNodeList result = new GroovyNodeList();
+        GroovyList result = new GroovyList();
         result.add(value);
         return result;
     }
@@ -154,8 +152,8 @@ public class GroovyNode {
         if ("*".equals(key)) {
             return children();
         }
-        if ("**".equals(key)) {
-            return depthFirst();
+        if ("_".equals(key)) {
+            return getValueNodes();
         }
         return getByName(key);
     }
@@ -184,15 +182,15 @@ public class GroovyNode {
             parentList = (List<Object>) parentValue;
         }
         else {
-            parentList = new GroovyNodeList();
+            parentList = new GroovyList();
             parentList.add(parentValue);
             parent.setValue(parentList);
         }
         return parentList;
     }
 
-    private GroovyNodeList getByName(String name) {
-        GroovyNodeList answer = new GroovyNodeList();
+    private GroovyList getByName(String name) {
+        GroovyList answer = new GroovyList();
         for (Object child : children()) {
             if (child instanceof GroovyNode) {
                 GroovyNode childNode = (GroovyNode) child;
@@ -211,25 +209,29 @@ public class GroovyNode {
         return answer;
     }
 
-    private List<Object> depthFirst() {
-        List<Object> answer = new GroovyNodeList();
-        answer.add(this);
-        answer.addAll(depthFirstRest());
+    private List<Object> getValueNodes() {
+        GroovyList answer = new GroovyList();
+        getValueNodes(answer);
         return answer;
     }
 
-    private List<Object> depthFirstRest() {
-        List<Object> answer = new GroovyNodeList();
-        for (Iterator iter = InvokerHelper.asIterator(value); iter.hasNext();) {
-            Object child = iter.next();
-            if (child instanceof GroovyNode) {
-                GroovyNode childNode = (GroovyNode) child;
-                List<Object> children = childNode.depthFirstRest();
-                answer.add(childNode);
-                answer.addAll(children);
+    private void getValueNodes(GroovyList answer) {
+        if (value instanceof GroovyList) {
+            for (Object object : ((GroovyList)value)) {
+                if (object instanceof GroovyNode) {
+                    ((GroovyNode)object).getValueNodes(answer);
+                }
+                else {
+                    getValueNodes((GroovyList)object);
+                }
             }
         }
-        return answer;
+        else if (value instanceof String && !((String)value).trim().isEmpty()) {
+            answer.add(this);
+        }
+        else {
+            throw new RuntimeException(value.getClass().getName());
+        }
     }
 
 //    /**
@@ -239,7 +241,7 @@ public class GroovyNode {
 //     * @return the list of (breadth-first) ordered nodes
 //     */
 //    public List<Object> breadthFirst() {
-//        List<Object> answer = new GroovyNodeList();
+//        List<Object> answer = new GroovyList();
 //        answer.add(this);
 //        answer.addAll(breadthFirstRest());
 //        return answer;
@@ -251,11 +253,11 @@ public class GroovyNode {
 //     * @return the nodes matching name
 //     */
 //    private List<Object> breadthFirstRest() {
-//        List<Object> answer = new GroovyNodeList();
+//        List<Object> answer = new GroovyList();
 //        List<Object> nextLevelChildren = getDirectChildren();
 //        while (!nextLevelChildren.isEmpty()) {
-//            List<Object> working = new GroovyNodeList(nextLevelChildren);
-//            nextLevelChildren = new GroovyNodeList();
+//            List<Object> working = new GroovyList(nextLevelChildren);
+//            nextLevelChildren = new GroovyList();
 //            for (Object aWorking : working) {
 //                GroovyNode childNode = (GroovyNode) aWorking;
 //                answer.add(childNode);
@@ -266,8 +268,8 @@ public class GroovyNode {
 //        return answer;
 //    }
 //
-//    public GroovyNodeList getAt(QName name) {
-//        GroovyNodeList answer = new GroovyNodeList();
+//    public GroovyList getAt(QName name) {
+//        GroovyList answer = new GroovyList();
 //        for (Object child : children()) {
 //            if (child instanceof GroovyNode) {
 //                GroovyNode childNode = (GroovyNode) child;
@@ -281,7 +283,7 @@ public class GroovyNode {
 //    }
 //
 //    private List<Object> getDirectChildren() {
-//        List<Object> answer = new GroovyNodeList();
+//        List<Object> answer = new GroovyList();
 //        for (Iterator iter = InvokerHelper.asIterator(value); iter.hasNext();) {
 //            Object child = iter.next();
 //            if (child instanceof GroovyNode) {
