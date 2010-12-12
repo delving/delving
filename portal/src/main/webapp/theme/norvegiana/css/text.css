@@ -1,0 +1,58 @@
+body {
+    font: 12px/1.5 'Lucida Grande', Helvetica, Arial, sans-serif;
+}
+
+a:focus {
+    outline: none;
+}
+
+hr {
+    border: 0 #ccccc0 solid;
+    border-top-width: 1px;
+    clear: both;
+    height: 0
+}
+
+h1 {
+    font-size: 2em;
+    font-weight: bold;
+}
+
+h2 {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+h3 {
+    /*font-size: 21px*/
+    font-size: 1.25em;
+    font-weight: bold;
+}
+
+h4 {
+    font-size: 19px
+}
+
+h5 {
+    font-size: 17px
+}
+
+h6 {
+    font-size: 1em
+}
+
+ol {
+    list-style: decimal
+}
+
+ul {
+    list-style: disc
+}
+
+li {
+    margin-left: 30px
+}
+
+p, dl, hr, h1, h2, h3, h4, h5, h6, ol, ul, pre, table, address, fieldset {
+    margin-bottom: 20px
+}

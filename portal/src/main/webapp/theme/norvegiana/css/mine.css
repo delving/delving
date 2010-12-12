@@ -1,0 +1,50 @@
+.tbl-list .item-img {
+    width: 40px;
+}
+
+.tbl-list .item-info em {
+    font-weight: bold;
+}
+
+.tbl-list .item-info span.ui-icon {
+    float: left;
+    margin-right: .25em;
+}
+
+.tbl-list td.item-info-header {
+    background: #fff;
+}
+
+.tbl-list .item-info p {
+    padding: 0;
+    margin: 0;
+}
+
+.ui-tabs .ui-tabs-hide {
+    display: none;
+}
+
+.ui-widget-content {
+    background: none;
+    border: none;
+    color: #333333;
+}
+
+ul.ui-widget-header {
+    background: #fff;
+    border: none;
+    border-bottom: 1px solid #CCCCCC;
+
+}
+
+td {
+    vertical-align: top;
+    padding: .5em;
+}
+
+.ui-tabs .ui-tabs-panel {
+    background: none repeat scroll 0 0 transparent;
+    border-width: 0;
+    display: block;
+    padding: 0;
+}

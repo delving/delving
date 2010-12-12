@@ -1,0 +1,149 @@
+/*
+	Less Framework 2, version 2.0
+	by Joni Korpi
+	-----------------------------
+	http://lessframework.com
+*/
+
+
+
+/*
+	Resets
+	------
+*/
+
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6,
+p, blockquote, pre, a, abbr, address, cite, code, del, dfn, em,
+img, ins, q, small, strong, sub, sup, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+article, aside, figure, figure img, figcaption, hgroup,
+footer, header, nav, section, video, object {
+	display: block;
+}
+
+a img {border: 0;}
+
+figure {position: relative;}
+figure img {width: 100%;}
+
+
+
+/*
+	Typography presets
+	------------------
+*/
+
+.gigantic {
+	font-size: 105px;
+	line-height: 120px;
+	letter-spacing: -2px;
+}
+
+.huge, h1 {
+	font-size: 68px;
+	line-height: 72px;
+	letter-spacing: -2px;
+}
+
+.large, h2 {
+	font-size: 42px;
+	line-height: 48px;
+	letter-spacing: -1px;
+}
+
+.big, h3 {
+	font-size: 26px;
+	line-height: 36px;
+}
+
+.normal, body {
+	font: 16px/1.5 Helvetica, Arial, sans-serif;
+}
+
+.small, small {
+	font-size: 13px;
+	line-height: 18px;
+}
+
+
+::selection 	 {background: rgb(255,255,0);}
+::-moz-selection {background: rgb(255,255,0);}
+
+
+
+/*
+	Default 5-column, 768 px layout for iPads, netbooks, and IE
+	(All other layouts inherit styles from this layout)
+	-----------------------------------------------------------
+	1      2      3      4      5
+	120px  264px  408px  552px  696px   (24px gutters)
+*/
+
+body {
+	background: rgb(232,232,232);
+	padding: 60px 36px 0;
+	width: 696px;
+}
+
+#example {
+	height: 600px;
+	background: rgb(60,97,158);
+}
+
+
+
+/*
+	2-column, 320 px layout for smartphones
+	---------------------------------------
+	1      2
+	120px  264px   (24px gutters)
+*/
+
+@media only screen and (max-width: 767px) {
+
+	body {
+		padding: 48px 28px 0;
+		width: 264px;
+	}
+
+}
+
+
+
+/*
+	8-column, 1224 px layout for desktops and laptops
+	------------------------------------------------------------------------
+	1      2      3      4      5      6      7      8
+	120px  264px  408px  552px  696px  840px  984px  1128px   (24px gutters)
+*/
+
+@media only screen and (min-width: 1224px) {
+
+	body {
+		padding: 72px 48px 0;
+		width: 1128px;
+	}
+
+}
+
+
+
+/*
+	Overrides for iPhone 4 and other high device-pixel-ratio devices
+	----------------------------------------------------------------
+*/
+
+@media
+	only screen and (-webkit-min-device-pixel-ratio: 1.5),
+	only screen and (min-device-pixel-ratio: 1.5) {
+
+	#example {
+		background: rgb(255,158,97);
+	}
+
+}
