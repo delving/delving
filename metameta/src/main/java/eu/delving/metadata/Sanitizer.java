@@ -74,11 +74,9 @@ public class Sanitizer {
     }
 
     public static String sanitizeGroovy(String thing) {
-        String newThing = thing.replaceAll("'", "\\\\'")
+        return thing.replaceAll("'", "\\\\'")
                 .replaceAll("\n", " ")
-                .replaceAll(" +", " "); // ToolCode also has an identical sanitize for during lookup
-        System.out.println(thing+" >java> "+thing);
-        return newThing;
+                .replaceAll(" +", " ");
     }
 
 }

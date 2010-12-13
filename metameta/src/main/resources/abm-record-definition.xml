@@ -12,7 +12,7 @@
         <field prefix="abm" localName="municipality" fulldoc="true" briefdoc="false" fieldType="text" facetPrefix="muni">
             <description></description>
             <validation unique="false" multivalue="true" required="false">
-                <converter pattern="extractYear(%s)"/>
+                <converter pattern=".extractYear()"/>
             </validation>
          </field>
         <field prefix="abm" localName="aboutPerson" fulldoc="true" facetPrefix="ap"/>
@@ -98,13 +98,13 @@
         </field>
         <field prefix="europeana" localName="uri" briefdoc="true">
             <validation id="true" requiredGroup="URI">
-                <converter pattern="createEuropeanaURI(%s, spec)"/>
+                <converter call=".toId(spec)"/>
             </validation>
         </field>
         <field prefix="europeana" localName="userTag" searchField="usertags"/>
         <field prefix="europeana" localName="year" fulldoc="false" fieldType="string" facetPrefix="year">
             <validation>
-                <converter multipleOutput="true" pattern="extractYear(%s)"/>
+                <converter multipleOutput="true" call=".extractYear()"/>
             </validation>
         </field>
     </root>

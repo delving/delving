@@ -23,7 +23,6 @@ package eu.europeana.sip.core;
 
 import eu.delving.metadata.MetadataNamespace;
 import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
 import groovy.lang.MissingPropertyException;
 import groovy.lang.Script;
 import groovy.xml.MarkupBuilder;
@@ -42,10 +41,12 @@ import java.io.StringWriter;
  */
 
 public class MappingRunner {
+    private GroovyCodeResource groovyCodeResource;
     private String code;
     private Script script;
 
-    public MappingRunner(String code) {
+    public MappingRunner(GroovyCodeResource groovyCodeResource, String code) {
+        this.groovyCodeResource = groovyCodeResource;
         this.code = code;
     }
 
@@ -64,16 +65,14 @@ public class MappingRunner {
             }
             binding.setVariable("input", metadataRecord.getRootNode());
             if (script == null) {
-                script = new GroovyShell(binding).parse(code);
+                script = groovyCodeResource.createShell().parse(code);
             }
-            else {
-                script.setBinding(binding);
-            }
+            script.setBinding(binding);
             script.run();
             return writer.toString();
         }
         catch (MissingPropertyException e) {
-            throw new MappingException(metadataRecord, "Missing Property "+e.getProperty(), e);
+            throw new MappingException(metadataRecord, "Missing Property " + e.getProperty(), e);
         }
         catch (MultipleCompilationErrorsException e) {
             StringBuilder out = new StringBuilder();
