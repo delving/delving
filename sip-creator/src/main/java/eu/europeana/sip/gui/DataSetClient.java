@@ -80,8 +80,8 @@ public class DataSetClient {
         executor.execute(new CommandSender(spec, command));
     }
 
-    public void uploadFile(FileType fileType, File file, ProgressListener progressListener, Runnable success) {
-        executor.execute(new FileUploader(fileType, file, progressListener, success));
+    public void uploadFile(FileType fileType, File file, ProgressListener progressListener) {
+        executor.execute(new FileUploader(fileType, file, progressListener));
     }
 
     private class ListFetcher implements Runnable {
@@ -173,13 +173,11 @@ public class DataSetClient {
         private File file;
         private FileType fileType;
         private ProgressListener progressListener;
-        private Runnable success;
 
-        public FileUploader(FileType fileType, File file, ProgressListener progressListener, Runnable success) {
+        public FileUploader(FileType fileType, File file, ProgressListener progressListener) {
             this.fileType = fileType;
             this.file = file;
             this.progressListener = progressListener;
-            this.success = success;
         }
 
         @Override
@@ -188,43 +186,19 @@ public class DataSetClient {
             progressListener.setTotal(totalBlocks);
             try {
                 file = Hasher.hashFile(file);
-                log.info("Checking " + file);
-                final DataSetResponse checkResponse = checkFile();
-                switch (checkResponse.getResponseCode()) {
-                    case READY_TO_RECEIVE:
-                        log.info("Server is ready to receive " + file);
-                        final DataSetResponse uploadResponse = uploadFile();
-                        if (uploadResponse.getResponseCode() == DataSetResponseCode.THANK_YOU) {
-                            log.info("Upload response " + checkResponse);
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    progressListener.finished();
-                                    success.run();
-                                }
-                            });
-                        }
-                        else {
-                            notifyUser(uploadResponse);
-                        }
-                        break;
-                    case GOT_IT_ALREADY:
-                        success.run();
-                        break;
-                    default:
-                        log.info("Check response " + checkResponse);
-                        notifyUser(checkResponse);
-                        break;
+                log.info("Uploading " + file);
+                final DataSetResponse response = uploadFile();
+                boolean success = response.getResponseCode() == DataSetResponseCode.THANK_YOU;
+                progressListener.finished(success);
+                if (!success) {
+                    notifyUser(response);
                 }
             }
             catch (Exception e) {
                 log.warn("Unable to upload file " + file.getAbsolutePath(), e);
+                progressListener.finished(false);
                 notifyUser(e);
             }
-        }
-
-        private DataSetResponse checkFile() throws IOException {
-            return execute(new HttpGet(createRequestUrl()));
         }
 
         private DataSetResponse uploadFile() throws IOException {
@@ -379,7 +353,7 @@ public class DataSetClient {
             case THANK_YOU:
             case GOT_IT_ALREADY:
             case READY_TO_RECEIVE:
-                log.info("Received "+responseCode);
+                log.info("Received " + responseCode);
                 break;
             case ACCESS_KEY_FAILURE:
                 sipModel.getUserNotifier().tellUser("The Access Key is not correct for this Repository");

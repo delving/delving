@@ -28,7 +28,6 @@ import eu.delving.metadata.RecordMapping;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Writer;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -64,6 +63,8 @@ public interface FileStore {
 
         boolean hasSource();
 
+        Facts getFacts();
+
         void importFile(File inputFile, ProgressListener progressListener) throws FileStoreException;
 
         void clearSource() throws FileStoreException;
@@ -78,8 +79,6 @@ public interface FileStore {
 
         void setRecordMapping(RecordMapping recordMapping) throws FileStoreException;
 
-        Facts getFacts() throws FileStoreException;
-
         void setFacts(Facts facts) throws FileStoreException;
 
         MappingOutput createMappingOutput(RecordMapping recordMapping, File normalizedDirectory) throws FileStoreException;
@@ -90,7 +89,7 @@ public interface FileStore {
 
         File getSourceFile();
 
-        Collection<File> getMappingFiles();
+        File getMappingFile(String metadataPrefix);
 
         List<String> getMappingPrefixes();
     }

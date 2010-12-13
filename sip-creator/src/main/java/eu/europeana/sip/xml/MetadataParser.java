@@ -153,7 +153,7 @@ public class MetadataParser {
             if (!input.hasNext()) {
                 inputStream.close();
                 if (progressListener != null) {
-                    progressListener.finished();
+                    progressListener.finished(true);
                 }
                 break;
             }

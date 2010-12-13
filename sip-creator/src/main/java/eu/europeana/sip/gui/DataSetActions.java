@@ -21,12 +21,10 @@
 
 package eu.europeana.sip.gui;
 
-import eu.delving.metadata.Facts;
 import eu.delving.sip.DataSetCommand;
 import eu.delving.sip.DataSetInfo;
 import eu.delving.sip.DataSetState;
 import eu.delving.sip.FileStore;
-import eu.delving.sip.FileStoreException;
 import eu.delving.sip.FileType;
 import eu.delving.sip.Hasher;
 import eu.delving.sip.ProgressListener;
@@ -50,7 +48,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -86,7 +83,11 @@ public class DataSetActions {
     }
 
     private void createRemoteActions() {
-        remoteActions.add(createUploadAction());
+        remoteActions.add(createUploadFactsAction());
+        remoteActions.add(createUploadSourceAction());
+        for (String prefix : sipModel.getMetadataModel().getPrefixes()) {
+            remoteActions.add(createUploadMappingAction(prefix));
+        }
         for (DataSetCommand command : DataSetCommand.values()) {
             remoteActions.add(createCommandAction(command));
         }
@@ -142,7 +143,7 @@ public class DataSetActions {
     }
 
     private DataSetAction createRecordStatisticsAction() {
-        return new DataSetAction("Record Statistics") {
+        return new DataSetAction("Gather Record Statistics") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 sipModel.setDataSetStore(entry.getDataSetStore());
@@ -151,25 +152,14 @@ public class DataSetActions {
 
             @Override
             boolean isEnabled(DataSetListModel.Entry entry) {
-                FileStore.DataSetStore store = entry.getDataSetStore();
-                if (store != null) {
-                    try {
-                        Facts facts = store.getFacts();
-                        if (facts != null) {
-                            return facts.getRecordRootPath() != null;
-                        }
-                    }
-                    catch (FileStoreException e) {
-                        return false;
-                    }
-                }
-                return false;
+                return entry.getDataSetStore() != null &&
+                        entry.getDataSetStore().getFacts().isValid();
             }
         };
     }
 
     private DataSetAction createAnalyzeFactsAction() {
-        return new DataSetAction("Analysis & Facts") {
+        return new DataSetAction("Edit Analysis & Facts") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 sipModel.setDataSetStore(entry.getDataSetStore());
@@ -199,68 +189,81 @@ public class DataSetActions {
         };
     }
 
-    private DataSetAction createUploadAction() {
-        return new DataSetAction("Upload to Repository") {
+    private boolean canUpload(File file, DataSetListModel.Entry entry) {
+        if (entry.getDataSetStore() == null || entry.getDataSetInfo() == null || file == null) {
+            return false;
+        }
+        String hash = Hasher.getHash(file.getName());
+        return !entry.getDataSetInfo().hasHash(hash);
+    }
 
+    private DataSetAction createUploadFactsAction() {
+        return new DataSetAction("Upload Facts") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                final FileStore.DataSetStore store = entry.getDataSetStore();
-                try {
-                    if (!store.getFacts().isValid()) {
-                        sipModel.getUserNotifier().tellUser("Sorry, but the Facts are not yet valid");
-                        return;
-                    }
-                }
-                catch (FileStoreException e) {
-                    sipModel.getUserNotifier().tellUser("Unable to read Facts for this data set");
-                    return;
-                }
-                sipModel.setDataSetStore(entry.getDataSetStore());
-                setEnabled(false);
-                ProgressMonitor progressMonitor = new ProgressMonitor(frame, "Uploading", "Uploading files for " + store.getSpec(), 0, 100);
-                final ProgressListener progressListener = new ProgressListener.Adapter(progressMonitor);
-                dataSetClient.uploadFile(FileType.FACTS, store.getFactsFile(), progressListener, new Runnable() {
+                FileStore.DataSetStore store = entry.getDataSetStore();
+                ProgressMonitor progressMonitor = new ProgressMonitor(frame, "Uploading", String.format("Uploading facts for %s", store.getSpec()), 0, 100);
+                final ProgressListener progressListener = new ProgressListener.Adapter(progressMonitor) {
                     @Override
-                    public void run() {
-                        dataSetClient.uploadFile(FileType.SOURCE, store.getSourceFile(), progressListener, new Runnable() {
-                            @Override
-                            public void run() {
-                                Collection<File> mappingFiles = store.getMappingFiles();
-                                if (!mappingFiles.isEmpty()) {
-                                    if (mappingFiles.size() > 1) {
-                                        throw new RuntimeException("Not yet ready for multiple mappings");
-                                    }
-                                    File mappingFile = mappingFiles.iterator().next();
-                                    dataSetClient.uploadFile(FileType.MAPPING, mappingFile, progressListener, new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            DataSetActions.this.setEntry(entry);
-                                        }
-                                    });
-                                }
-                            }
-                        });
+                    public void swingFinished(boolean success) {
+                        setEnabled(!success);
                     }
-                });
+                };
+                dataSetClient.uploadFile(FileType.FACTS, store.getFactsFile(), progressListener);
             }
 
             @Override
             boolean isEnabled(DataSetListModel.Entry entry) {
                 FileStore.DataSetStore store = entry.getDataSetStore();
-                if (store == null) {
-                    return false;
-                }
-                for (File file : store.getMappingFiles()) {
-                    if (readyForUpload(file)) {
-                        return true;
-                    }
-                }
-                return readyForUpload(store.getFactsFile()) || readyForUpload(store.getSourceFile());
+                return !(store == null || !store.getFacts().isValid()) && canUpload(entry.getDataSetStore().getFactsFile(), entry);
             }
 
-            private boolean readyForUpload(File file) {
-                return Hasher.getHash(file) == null;
+        };
+    }
+
+    private DataSetAction createUploadSourceAction() {
+        return new DataSetAction("Upload Source") {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                final FileStore.DataSetStore store = entry.getDataSetStore();
+                ProgressMonitor progressMonitor = new ProgressMonitor(frame, "Uploading", String.format("Uploading source for %s", store.getSpec()), 0, 100);
+                final ProgressListener progressListener = new ProgressListener.Adapter(progressMonitor) {
+                    @Override
+                    public void swingFinished(boolean success) {
+                        setEnabled(!success);
+                    }
+                };
+                dataSetClient.uploadFile(FileType.SOURCE, store.getSourceFile(), progressListener);
             }
+
+            @Override
+            boolean isEnabled(DataSetListModel.Entry entry) {
+                return canUpload(entry.getDataSetStore().getSourceFile(), entry);
+            }
+
+        };
+    }
+
+    private DataSetAction createUploadMappingAction(final String prefix) {
+        return new DataSetAction(String.format("Upload %s Mapping", prefix)) {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                final FileStore.DataSetStore store = entry.getDataSetStore();
+                ProgressMonitor progressMonitor = new ProgressMonitor(frame, "Uploading", String.format("Uploading %s mapping for %s ", prefix, store.getSpec()), 0, 100);
+                final ProgressListener progressListener = new ProgressListener.Adapter(progressMonitor) {
+                    @Override
+                    public void swingFinished(boolean success) {
+                        setEnabled(!success);
+                    }
+                };
+                dataSetClient.uploadFile(FileType.MAPPING, store.getMappingFile(prefix), progressListener);
+            }
+
+            @Override
+            boolean isEnabled(DataSetListModel.Entry entry) {
+                return canUpload(entry.getDataSetStore().getMappingFile(prefix), entry);
+            }
+
         };
     }
 

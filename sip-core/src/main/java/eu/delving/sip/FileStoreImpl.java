@@ -204,6 +204,25 @@ public class FileStoreImpl implements FileStore {
         }
 
         @Override
+        public Facts getFacts() {
+            File factsFile = getFactsFile();
+            Facts facts = null;
+            if (factsFile.exists()) {
+                try {
+                    facts = Facts.read(new FileInputStream(factsFile));
+                }
+                catch (Exception e) {
+                    // eat this exception
+                }
+            }
+            if (facts == null) {
+                facts = new Facts();
+            }
+            return facts;
+        }
+
+
+        @Override
         public void importFile(File inputFile, ProgressListener progressListener) throws FileStoreException {
             int fileBlocks = (int) (inputFile.length() / BLOCK_SIZE);
             if (progressListener != null) progressListener.setTotal(fileBlocks);
@@ -236,11 +255,12 @@ public class FileStoreImpl implements FileStore {
                     }
                     hasher.update(buffer, bytesRead);
                 }
-                if (progressListener != null) progressListener.finished();
+                if (progressListener != null) progressListener.finished(!cancelled);
                 inputStream.close();
                 gzipOutputStream.close();
             }
             catch (Exception e) {
+                if (progressListener != null) progressListener.finished(false);
                 throw new FileStoreException("Unable to capture XML input into " + source.getAbsolutePath(), e);
             }
             if (cancelled) {
@@ -355,24 +375,6 @@ public class FileStoreImpl implements FileStore {
         }
 
         @Override
-        public Facts getFacts() throws FileStoreException {
-            File factsFile = getFactsFile();
-            Facts facts = null;
-            if (factsFile.exists()) {
-                try {
-                    facts = Facts.read(new FileInputStream(factsFile));
-                }
-                catch (Exception e) {
-                    throw new FileStoreException(String.format("Unable to read facts from %s", factsFile.getAbsolutePath()));
-                }
-            }
-            if (facts == null) {
-                facts = new Facts();
-            }
-            return facts;
-        }
-
-        @Override
         public void setFacts(Facts facts) throws FileStoreException {
             File factsFile = new File(directory, FACTS_FILE_NAME);
             try {
@@ -407,14 +409,14 @@ public class FileStoreImpl implements FileStore {
         }
 
         @Override
-        public Collection<File> getMappingFiles() {
-            return findMappingFiles(directory);
+        public File getMappingFile(String metadataPrefix) {
+            return findMappingFile(directory, metadataPrefix);
         }
 
         @Override
         public List<String> getMappingPrefixes() {
             List<String> prefixes = new ArrayList<String>();
-            for (File mappingFile : getMappingFiles()) {
+            for (File mappingFile : findMappingFiles(directory)) {
                 String name = Hasher.getName(mappingFile);
                 name = name.substring(FileStore.MAPPING_FILE_PREFIX.length());
                 name = name.substring(0, name.length() - FileStore.MAPPING_FILE_SUFFIX.length());
@@ -428,12 +430,8 @@ public class FileStoreImpl implements FileStore {
             return getSpec();
         }
 
-        private File mappingFile(RecordMapping recordMapping) {
-            return new File(directory, String.format(MAPPING_FILE_PATTERN, recordMapping.getPrefix()));
-        }
-
-        private File mappingFile(RecordDefinition recordDefinition) {
-            return new File(directory, String.format(MAPPING_FILE_PATTERN, recordDefinition.prefix));
+        private File mappingFile(String prefix) {
+            return new File(directory, String.format(MAPPING_FILE_PATTERN, prefix));
         }
 
         private void delete(File file) throws FileStoreException {

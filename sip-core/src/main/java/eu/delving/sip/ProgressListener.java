@@ -21,7 +21,6 @@
 
 package eu.delving.sip;
 
-import javax.swing.Action;
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingUtilities;
 
@@ -38,29 +37,14 @@ public interface ProgressListener {
 
     boolean setProgress(int progress);
 
-    void finished();
+    void finished(boolean success);
 
-    public class Adapter implements ProgressListener {
+    public abstract class Adapter implements ProgressListener {
         private long lastProgress;
         private ProgressMonitor progressMonitor;
-        private Action launchAction;
-        private Runnable finishedRunnable;
 
         public Adapter(ProgressMonitor progressMonitor) {
-            this(progressMonitor, (Action) null);
-        }
-
-        public Adapter(ProgressMonitor progressMonitor, Action launchAction) {
             this.progressMonitor = progressMonitor;
-            this.launchAction = launchAction;
-            if (launchAction != null) {
-                launchAction.setEnabled(false);
-            }
-        }
-
-        public Adapter(ProgressMonitor progressMonitor, Runnable finishedRunnable) {
-            this.progressMonitor = progressMonitor;
-            this.finishedRunnable = finishedRunnable;
         }
 
         @Override
@@ -86,28 +70,29 @@ public interface ProgressListener {
             }
             boolean cancelled = progressMonitor.isCanceled();
             if (cancelled) {
-                if (launchAction != null) {
-                    launchAction.setEnabled(true);
-                }
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressMonitor.close();
+                        swingFinished(false);
+                    }
+                });
             }
             return !cancelled;
         }
 
         @Override
-        public void finished() {
+        public void finished(final boolean success) {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
                     progressMonitor.close();
-                    if (launchAction != null) {
-                        launchAction.setEnabled(true);
-                    }
-                    if (finishedRunnable != null) {
-                        finishedRunnable.run();
-                    }
+                    swingFinished(success);
                 }
             });
         }
+
+        public abstract void swingFinished(boolean success);
     }
 
 }

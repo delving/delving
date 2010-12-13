@@ -155,7 +155,14 @@ public class ImportMenu extends JMenu {
                 if (store.hasSource()) {
                     store.clearSource();
                 }
-                sipModel.createDataSetStore(store, file, new ProgressListener.Adapter(progressMonitor, dataStoreCreated));
+                sipModel.createDataSetStore(store, file, new ProgressListener.Adapter(progressMonitor) {
+                    @Override
+                    public void swingFinished(boolean success) {
+                        if (success) {
+                            dataStoreCreated.run();
+                        }
+                    }
+                });
                 return true;
             }
             catch (FileStoreException e) {
