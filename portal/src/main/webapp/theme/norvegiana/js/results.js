@@ -125,8 +125,8 @@ function saveItem(className,postTitle,postAuthor,objUri,thumbnail,type){
 function checkSize(obj,type,w){
 
     if(type=="brief"){
-        if (w > 200) {
-            $("#"+obj).css("width","200px");
+        if (w > 150) {
+            $("#"+obj).css("width","150px");
         }
     }
     else {
