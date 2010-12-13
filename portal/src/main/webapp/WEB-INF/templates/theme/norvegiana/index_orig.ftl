@@ -1,5 +1,5 @@
 <#compress>
-
+<#assign thisPage = "index.html"/>
 <#include "includeMarcos.ftl"/>
 
 <@addHeader "${portalDisplayName}", "",["index.js"],[]/>

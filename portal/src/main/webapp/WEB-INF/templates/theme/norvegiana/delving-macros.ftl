@@ -29,17 +29,23 @@
  -->
 <#macro adminBlock>
     <#if user?? && (user.role == ('ROLE_ADMINISTRATOR') || user.role == ('ROLE_GOD'))>
-    <section id="adminBlock" class="grid_12">
-        <table class="user-options">
-            <tbody>
-                    <#--<th scope="rows"><@spring.message '_cms.administration.title' /></th>-->
-                    <td><a class="ui-widget button adm <#if thisPage == 'static-page.dml'>ui-state-active</#if>" href="/${portalName}/_.dml"><span class="ui-icon ui-icon-document"></span><@spring.message '_cms.administration.pages' /></a></td>
-                    <td><a class="ui-widget button adm <#if thisPage == 'static-image.dml'>ui-state-active</#if>" href="/${portalName}/_.img"><span class="ui-icon ui-icon-image"></span><@spring.message '_cms.administration.images' /></a></td>
-                    <td><a class="ui-widget button adm <#if thisPage == 'administration.html'>ui-state-active</#if>" href="/${portalName}/administration.html"><span class="ui-icon ui-icon-person"></span><@spring.message '_cms.administration.users' /></a></td>
-                </tr>
-            </tbody>
-        </table>
+    <section id="adminBlock">
+        <#--<table class="user-options">-->
+            <#--<tbody>-->
+                    <#--&lt;#&ndash;<th scope="rows"><@spring.message '_cms.administration.title' /></th>&ndash;&gt;-->
+                    <#--<td><a class="ui-widget button adm <#if thisPage == 'static-page.dml'>ui-state-active</#if>" href="/${portalName}/_.dml"><span class="ui-icon ui-icon-document"></span><@spring.message '_cms.administration.pages' /></a></td>-->
+                    <#--<td><a class="ui-widget button adm <#if thisPage == 'static-image.dml'>ui-state-active</#if>" href="/${portalName}/_.img"><span class="ui-icon ui-icon-image"></span><@spring.message '_cms.administration.images' /></a></td>-->
+                    <#--<td><a class="ui-widget button adm <#if thisPage == 'administration.html'>ui-state-active</#if>" href="/${portalName}/administration.html"><span class="ui-icon ui-icon-person"></span><@spring.message '_cms.administration.users' /></a></td>-->
+                <#--</tr>-->
+            <#--</tbody>-->
+        <#--</table>--> 
+        <ul id="admin-menu">
+            <li><a class="<#if thisPage == 'static-page.dml'>active</#if>" href="/${portalName}/_.dml"><@spring.message '_cms.administration.pages' /></a></li>
+            <li><a class="<#if thisPage == 'static-image.dml'>active</#if>" href="/${portalName}/_.img"><@spring.message '_cms.administration.images' /></a></li>
+            <li><a class="<#if thisPage == 'administration.html'>active</#if>" href="/${portalName}/administration.html"><@spring.message '_cms.administration.users' /></a></li>
+        </ul>
     </section>
+
     <div class="clear"></div>
     </#if>
 </#macro>
@@ -91,7 +97,7 @@
                 var portalName = "/${portalName}";
                 var baseThemePath = "/${portalName}/${portalTheme}";
             </script>
-            <@addCss ["reset.css","text.css","960.css","jquery-ui-1.8.7.custom.css","screen.css"], "screen"/>
+            <@addCss ["reset.css","text.css","960-fluid.css","jquery-ui-1.8.7.custom.css","screen.css"], "screen"/>
             <#if pageCssFiles?size &gt; 0>
                 <@addCss pageCssFiles/>
             </#if>
@@ -106,7 +112,8 @@
             ${javascriptFiles}
         </head>
         <body class="${bodyClass}">
-         <div class="container_12">
+
+          <div class="container_12">
 
             <@adminBlock/>
 
@@ -114,33 +121,47 @@
                 <@showMessages/>
             </div>
 
-            <div id="userBar">
-                <div class="grid_2" id="name">
-                    <h1>Norvegiana</h1>
+            <#if (thisPage?? && thisPage != "index.html")>
+
+                <div id="header">
+                    <a href="/${portalName}/" alt="Home">
+                        <img id="branding" src="/${portalName}/${portalTheme}/images/logo.png" alt="" align="absmiddle"/>
+                    </a>
+                    <div id="userBar" role="navigation">
+                        <#include "language_select.ftl"/><@userBar/>
+                    </div>
+                    <div id="name" class="grid_3"><h1>${portalDisplayName}</h1></div>
+                    <div id="search" class="grid_9 ui-corner-all">
+                        <@simpleSearch/>
+                            <noscript>
+                            <@spring.message '_portal.ui.message.noscript' />
+                            </noscript>
+                    </div>
                 </div>
-                <div class="grid_10">
-                    <#include "language_select.ftl"/><@userBar/>
+
+            <#else>
+
+                <div id="header" class="home">
+                    <a href="/${portalName}/" alt="Home">
+                        <img id="branding" src="/${portalName}/${portalTheme}/images/logo-2.png" alt="" align="absmiddle" />
+                    </a>
+                    <div id="userBar" role="navigation">
+                        <#include "language_select.ftl"/><@userBar/>
+                    </div>
+                    <div id="name" class="grid_3"><h1>${portalDisplayName}</h1></div>
+                    <div id="search" class="grid_9">
+                        <@simpleSearch/>
+                            <noscript>
+                            <@spring.message '_portal.ui.message.noscript' />
+                            </noscript>
+                    </div>
                 </div>
-            </div>
 
-            <div id="header">
-            <a href="/${portalName}/" alt="Home" class="grid_3">
-                <img id="branding" src="/${portalName}/${portalTheme}/images/logo.png" alt="" align="absmiddle" width="150"/>
-            </a>
+            </#if>
 
-
-
-            <div id="search">
-                <@simpleSearch/>
-                    <noscript>
-                    <@spring.message '_portal.ui.message.noscript' />
-                    </noscript>
-            </div>
-            </div>
 
 
             <div class="clear"></div>
-
     </#if>
 </#macro>
 
@@ -160,7 +181,7 @@
 
 <#macro addFooter >
     <#if contentOnly!="true">
-        <footer class="grid_12">
+        <footer>
             <div class="inner">
                 <div id="footer-dynamic-content"></div>
             </div>
@@ -708,16 +729,19 @@
 <#macro resultsBriefUserActions>
 <#assign seq = briefDocs/>
     <#if seq?size &gt; 0>
-        <h4><@spring.message '_portal.ui.message.actions'/>:</h4>
-            <#-- TODO: use a hidden form instead of hrefs to function without javascript? --> 
-            <p class="linetop">
+        <dl class="menu">
+            <dt>
+               <@spring.message '_portal.ui.message.actions'/>
+            </dt>
+            <dd>
                 <#if user??>
                     <a id="saveQuery" href="#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message '_action.save.this.search'/></a>
                 <#else>
-                    <a href="#" onclick="highLight('a#login'); writeMessage('div#msg-save-search','<@spring.message '_mine.user.notification.login.required'/>'); return false" class="disabled"><@spring.message '_action.save.this.search'/></a>
+                    <a href="#" onclick="highLight('a#login, a#register'); showMessage('error','<@spring.message '_mine.user.notification.login.required'/>'); return false" class="disabled"><@spring.message '_action.save.this.search'/></a>
                 </#if>
-            </p>
-            <div id="msg-save-search" class="msg-hide"></div>
+            </dd>
+        </dl>
+        <div id="msg-save-search" class="msg-hide"></div>
     </#if>
 </#macro>
 
@@ -932,27 +956,32 @@
 </#macro>
 
 <#macro resultFullList>
-    <table summary="This table contains the metadata for the object being viewed" class="item">
+    <table summary="This table contains the metadata for the object being viewed" width="100%">
         <caption>Object metadata</caption>
         <tbody>
-            <#--<@resultFullDataRow "dc_title"/>-->
-            <#--<@resultFullDataRow "dc_creator"/>-->
-            <#--<@resultFullDataRow "dc_description"/>-->
-            <#--<@resultFullDataRow "dc_type"/>-->
-            <#--<@resultFullDataRow "dc_subject"/>-->
-            <#--<@resultFullDataRow "dc_date"/>-->
-            <#--<@resultFullDataRow "dc_format"/>-->
-            <#--<@resultFullDataRow "dc_contributer"/>-->
-            <#--<@resultFullDataRow "dc_identifier"/>-->
+            <@resultFullDataRow "dc_title"/>
+            <@resultFullDataRow "dc_date"/>
+            <@resultFullDataRow "dc_creator"/>
+            <@resultFullDataRow "dc_description"/>
+            <@resultFullDataRow "dc_language"/>
+            <@resultFullDataRow "dc_source"/>
+            <@resultFullDataRow "dc_rights"/>
+            <@resultFullDataRow "europeana_provider"/>
+            <@resultFullDataRow "dc_identifier"/>
+            <@resultFullDataRow "dc_publisher"/>
+            <@resultFullDataRow "dc_coverage"/>
+            <@resultFullDataRow "dc_type"/>
+            <@resultFullDataRow "dc_relation"/>
 
-        <#list result.fullDoc.getFieldValuesFiltered(false, ['europeana_uri', 'delving_pmhId', 'europeana_collectionName', 'europeana_collectionTitle',
-        'europeana_object', 'europeana_isShownAt', 'europeana_isShownBy', 'europeana_language', 'europeana_rights', 'europeana_type']) as field>
-            <tr>
-                <#--<th scrope="row">${field.getKeyAsXml()}</th>-->
-                <th scope="row"><@spring.messageText '${field.getKeyAsMessageKey()}', '${field.getKeyAsXml()}' />:</th>
-                <td>${field.getFirst()}</td>
-            </tr>
-        </#list>
+
+        <#--<#list result.fullDoc.getFieldValuesFiltered(false, ['europeana_uri', 'delving_pmhId', 'europeana_collectionName', 'europeana_collectionTitle',-->
+        <#--'europeana_object', 'europeana_isShownAt', 'europeana_isShownBy', 'europeana_language', 'europeana_rights', 'europeana_type']) as field>-->
+            <#--<tr>-->
+                <#--&lt;#&ndash;<th scrope="row">${field.getKeyAsXml()}</th>&ndash;&gt;-->
+                <#--<th scope="row"><@spring.messageText '${field.getKeyAsMessageKey()}', '${field.getKeyAsXml()}' />:</th>-->
+                <#--<td>${field.getFirst()}</td>-->
+            <#--</tr>-->
+        <#--</#list>-->
         </tbody>
     </table>
 </#macro>
@@ -961,7 +990,7 @@
     <#assign keyVal = result.fullDoc.getFieldValue(key)/>
     <#if keyVal.isNotEmpty()>
         <tr>
-            <th scope="row"><@spring.messageText '${field.getKeyAsMessageKey()}', '${field.getKeyAsXml()}' />:</th>
+            <th scope="row"><@spring.messageText '${keyVal.getKeyAsMessageKey()}', '${keyVal.getKeyAsXml()}' />:</th>
             <td>${keyVal.getFirst()}</td>
         </tr>
     </#if>
@@ -1012,15 +1041,15 @@
  -->
 <#macro userBar>
 <ul>
-        <li><a id="home" href="/${portalName}/">Home<#-- todo add message tag --></a></li>
+   <li><a id="home" href="/${portalName}/">Home<#-- todo add message tag --></a></li>
     <#if !user??>
         <li><a id="login" href="/${portalName}/login.html"><@spring.message '_mine.login'/></a></li>
         <li><a id="register" href="/${portalName}/register-request.html"><@spring.message '_mine.user.register.register'/></a></li>
     </#if>
     <#if user??>
     <li>
-        <@spring.message '_mine.loggedinas' />: <strong>${user.userName?html}</strong> | <a
-            href="/${portalName}/logout.html"><@spring.message '_mine.logout' /></a>
+        <@spring.message '_mine.loggedinas' />: <strong>${user.userName?html}</strong> |
+            <a id="logout" href="/${portalName}/logout.html"><@spring.message '_mine.logout' /></a>
     </li>
     <#if user.savedItems??>
     <li>
@@ -1038,14 +1067,6 @@
         (<span id="savedSearchesCount">${user.savedSearches?size}</span>)
     </li>
     </#if>
-    <#--<#if user.socialTags??>-->
-    <#--<li>-->
-        <#--<a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });">-->
-            <#--<@spring.message '_mine.saved.tags' />-->
-        <#--</a>-->
-        <#--(<span id="savedTagsCount">${user.socialTags?size}</span>)-->
-    <#--</li>-->
-    <#--</#if>-->
     </#if>
 </ul>
 <#--<div id="overlayContainer"></div>-->

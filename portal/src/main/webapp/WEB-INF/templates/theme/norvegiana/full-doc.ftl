@@ -119,17 +119,17 @@
 
     <div class="clear"></div>
 
-
-        <div id="itemImage" class="grid_4 alpha">
-            <div class="inner">
+    <div id="itemData">
+        <div id="itemImage">
+   
             <@resultFullImage/>
-            </div>
+
         </div>
 
-        <div id="itemMetaData" class="grid_5 omega">
+        <div id="itemMetaData">
             <@resultFullList/>
         </div>
-
+    </div>
 
 
 </section>
