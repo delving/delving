@@ -32,7 +32,9 @@ import eu.delving.metadata.RecordMapping;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -50,6 +52,7 @@ public class FileStoreImpl implements FileStore {
     private File home;
     private MetadataModel metadataModel;
     public static final int BLOCK_SIZE = 4096;
+    public static final int MAX_HASH_HISTORY = 3;
 
     public FileStoreImpl(File home, MetadataModel metadataModel) throws FileStoreException {
         this.home = home;
@@ -117,7 +120,7 @@ public class FileStoreImpl implements FileStore {
             writeCode(codeFile, code);
         }
         catch (IOException e) {
-            throw new FileStoreException("Unable to set code "+fileName, e);
+            throw new FileStoreException("Unable to set code " + fileName, e);
         }
     }
 
@@ -565,7 +568,6 @@ public class FileStoreImpl implements FileStore {
     }
 
     private Collection<File> findMappingFiles(File dir) {
-        List<File> mappingFiles = new ArrayList<File>();
         File[] files = dir.listFiles(new MappingFileFilter());
         Map<String, List<File>> map = new TreeMap<String, List<File>>();
         for (File file : files) {
@@ -577,6 +579,7 @@ public class FileStoreImpl implements FileStore {
             }
             list.add(file);
         }
+        List<File> mappingFiles = new ArrayList<File>();
         for (Map.Entry<String, List<File>> entry : map.entrySet()) {
             if (entry.getValue().size() == 1) {
                 mappingFiles.add(entry.getValue().get(0));
@@ -637,15 +640,34 @@ public class FileStoreImpl implements FileStore {
     }
 
     private File getMostRecent(File[] files) {
-        long maxLastModified = 0;
-        File mostRecent = null;
-        for (File file : files) {
-            if (file.lastModified() > maxLastModified) {
-                maxLastModified = file.lastModified();
-                mostRecent = file;
+        if (files.length > 0) {
+            Arrays.sort(files, new Comparator<File>() {
+                @Override
+                public int compare(File a, File b) {
+                    long lastA = a.lastModified();
+                    long lastB = b.lastModified();
+                    if (lastA > lastB) {
+                        return -1;
+                    }
+                    else if (lastA < lastB) {
+                        return 1;
+                    }
+                    else {
+                        return 0;
+                    }
+                }
+            });
+            if (files.length > MAX_HASH_HISTORY) {
+                for (int walk = MAX_HASH_HISTORY; walk<files.length; walk++) {
+                    //noinspection ResultOfMethodCallIgnored
+                    files[walk].delete();
+                }
             }
+            return files[0];
         }
-        return mostRecent;
+        else {
+            return null;
+        }
     }
 
     private void writeCode(File file, String code) throws IOException {
