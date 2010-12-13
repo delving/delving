@@ -51,7 +51,8 @@ import java.util.List;
 public class Normalizer implements Runnable {
     private SipModel sipModel;
     private boolean discardInvalid;
-    private File normalizedFile;
+    private File normalizeDirectory;
+    private GroovyCodeResource groovyCodeResource;
     private ProgressAdapter progressAdapter;
     private Listener listener;
     private volatile boolean running = true;
@@ -67,27 +68,28 @@ public class Normalizer implements Runnable {
     public Normalizer(
             SipModel sipModel,
             boolean discardInvalid,
-            File normalizedFile,
+            File normalizeDirectory,
+            GroovyCodeResource groovyCodeResource,
             ProgressListener progressListener,
             Listener listener
     ) {
         this.sipModel = sipModel;
         this.discardInvalid = discardInvalid;
-        this.normalizedFile = normalizedFile;
+        this.normalizeDirectory = normalizeDirectory;
+        this.groovyCodeResource = groovyCodeResource;
         this.progressAdapter = new ProgressAdapter(progressListener);
         this.listener = listener;
     }
 
     public void run() {
         FileStore.MappingOutput fileSetOutput = null;
-        boolean store = normalizedFile != null;
+        boolean store = normalizeDirectory != null;
         try {
             RecordMapping recordMapping = sipModel.getMappingModel().getRecordMapping();
             if (recordMapping == null) {
                 return;
             }
-            GroovyCodeResource groovyCodeResource = new GroovyCodeResource();
-            fileSetOutput = sipModel.getDataSetStore().createMappingOutput(recordMapping, normalizedFile);
+            fileSetOutput = sipModel.getDataSetStore().createMappingOutput(recordMapping, normalizeDirectory);
             if (store) {
                 Writer out = fileSetOutput.getOutputWriter();
                 out.write("<?xml version='1.0' encoding='UTF-8'?>\n");
@@ -98,8 +100,8 @@ public class Normalizer implements Runnable {
                 out.write(">\n");
             }
             MappingRunner mappingRunner = new MappingRunner(
-                    groovyCodeResource.getMappingToolCode() +
-                            recordMapping.toCompileCode(sipModel.getMetadataModel().getRecordDefinition())
+                    groovyCodeResource,
+                    recordMapping.toCompileCode(sipModel.getMetadataModel().getRecordDefinition())
             );
             MetadataParser parser = new MetadataParser(
                     sipModel.getDataSetStore().createXmlInputStream(),

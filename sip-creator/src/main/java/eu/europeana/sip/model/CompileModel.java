@@ -26,6 +26,7 @@ import eu.delving.metadata.MappingModel;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.RecordMapping;
 import eu.delving.metadata.RecordValidator;
+import eu.europeana.sip.core.GroovyCodeResource;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
@@ -71,7 +72,7 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     private RecordValidator recordValidator;
     private String selectedPath;
     private String editedCode;
-    private String mappingToolCode;
+    private GroovyCodeResource groovyCodeResource;
 
     public enum Type {
         RECORD,
@@ -87,10 +88,10 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
         REGENERATED
     }
 
-    public CompileModel(Type type, MetadataModel metadataModel, String mappingToolCode) {
+    public CompileModel(Type type, MetadataModel metadataModel, GroovyCodeResource groovyCodeResource) {
         this.type = type;
         this.metadataModel = metadataModel;
-        this.mappingToolCode = mappingToolCode;
+        this.groovyCodeResource = groovyCodeResource;
     }
 
     @Override
@@ -265,7 +266,7 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
                 mappingCode = getCompileCode(editedCode);
                 log.info("Edited code used");
             }
-            MappingRunner mappingRunner = new MappingRunner(mappingToolCode + mappingCode);
+            MappingRunner mappingRunner = new MappingRunner(groovyCodeResource, mappingCode);
             try {
                 String output = mappingRunner.runMapping(metadataRecord);
                 if (recordValidator != null) {

@@ -36,6 +36,7 @@ import eu.delving.sip.AppConfig;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.ProgressListener;
+import eu.europeana.sip.core.GroovyCodeResource;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordValidationException;
@@ -71,6 +72,7 @@ public class SipModel {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private FileStore fileStore;
     private MetadataModel metadataModel;
+    private GroovyCodeResource groovyCodeResource;
     private AppConfig appConfig;
     private FileStore.DataSetStore dataSetStore;
     private Facts facts;
@@ -112,18 +114,19 @@ public class SipModel {
         void updatedRecord(MetadataRecord metadataRecord);
     }
 
-    public SipModel(FileStore fileStore, MetadataModel metadataModel, UserNotifier userNotifier) throws FileStoreException {
+    public SipModel(FileStore fileStore, MetadataModel metadataModel, GroovyCodeResource groovyCodeResource, UserNotifier userNotifier) throws FileStoreException {
         this.fileStore = fileStore;
         this.appConfig = fileStore.getAppConfig();
         this.metadataModel = metadataModel;
+        this.groovyCodeResource = groovyCodeResource;
         this.userNotifier = userNotifier;
         analysisTree = AnalysisTree.create("Select a Data Set from the File menu");
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
         fieldListModel = new FieldListModel(metadataModel);
-        String mappingToolCode = fileStore.getCode(FileStore.MAPPING_TOOL_FILE_NAME);
-        recordCompileModel = new CompileModel(CompileModel.Type.RECORD, metadataModel, mappingToolCode);
+//        String mappingToolCode = fileStore.getCode(FileStore.MAPPING_TOOL_FILE_NAME); todo: make it runtime changeable in groovy code resource
+        recordCompileModel = new CompileModel(CompileModel.Type.RECORD, metadataModel, groovyCodeResource);
         recordCompileModel.setRecordValidator(new RecordValidator(metadataModel, false));
-        fieldCompileModel = new CompileModel(CompileModel.Type.FIELD, metadataModel, mappingToolCode);
+        fieldCompileModel = new CompileModel(CompileModel.Type.FIELD, metadataModel, groovyCodeResource);
         parseListeners.add(recordCompileModel);
         parseListeners.add(fieldCompileModel);
         fieldMappingListModel = new FieldMappingListModel();
@@ -377,6 +380,7 @@ public class SipModel {
                 this,
                 discardInvalid,
                 normalizeDirectory,
+                groovyCodeResource,
                 progressListener,
                 new Normalizer.Listener() {
                     @Override

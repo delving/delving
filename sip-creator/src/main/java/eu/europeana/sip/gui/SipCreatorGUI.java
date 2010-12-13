@@ -27,6 +27,7 @@ import eu.delving.sip.DataSetInfo;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.FileStoreImpl;
+import eu.europeana.sip.core.GroovyCodeResource;
 import eu.europeana.sip.core.RecordValidationException;
 import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.UserNotifier;
@@ -79,7 +80,8 @@ public class SipCreatorGUI extends JFrame {
         MetadataModel metadataModel = loadMetadataModel();
         File fileStoreDirectory = getFileStoreDirectory();
         FileStore fileStore = new FileStoreImpl(fileStoreDirectory, metadataModel);
-        this.sipModel = new SipModel(fileStore, metadataModel, new PopupExceptionHandler());
+        GroovyCodeResource groovyCodeResource = new GroovyCodeResource();
+        this.sipModel = new SipModel(fileStore, metadataModel, groovyCodeResource, new PopupExceptionHandler());
         this.dataSetClient = new DataSetClient(sipModel, new DataSetClient.Listener() {
 
             @Override

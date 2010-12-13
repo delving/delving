@@ -218,7 +218,7 @@ public class RecordMapping {
                     out.indent(-1);
                     out.line("]");
                     out.line(String.format(
-                            "def %s_lookup = { def v = %s_Dictionary[sanitize(it)]; return v ? v : it }\n",
+                            "def %s_lookup = { def v = %s_Dictionary[it.sanitize()]; return v ? v : it }\n",
                             name, name
                     ));
                 }
@@ -227,12 +227,16 @@ public class RecordMapping {
         }
         if (editedCode == null) {
             if (forCompile) {
+                out.line("use (MappingCategory) {");
+                out.indent(1);
                 out.line("output.");
                 out.indent(1);
             }
             Set<String> usedPaths = new TreeSet<String>();
             toCode("", recordDefinition.root, out, usedPaths, selectedPath, forCompile);
             if (forCompile) {
+                out.indent(-1);
+                out.line("}");
                 out.indent(-1);
             }
             if (selectedPath == null && usedPaths.size() != fieldMappings.size()) {
@@ -243,6 +247,8 @@ public class RecordMapping {
         }
         else {
             if (forCompile) {
+                out.line("use (MappingCategory) {");
+                out.indent(1);
                 out.line("output.");
                 out.line(String.format("%s {", recordDefinition.root.getTag()));
             }
@@ -250,6 +256,8 @@ public class RecordMapping {
                 out.line(line);
             }
             if (forCompile) {
+                out.line("}");
+                out.indent(-1);
                 out.line("}");
             }
         }

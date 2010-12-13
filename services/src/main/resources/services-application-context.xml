@@ -37,6 +37,8 @@
 
     <bean id="metaRepoConfig" class="eu.delving.services.core.MetaConfigImpl"/>
 
+    <bean id="groovyCodeResource" class="eu.europeana.sip.core.GroovyCodeResource"/>
+
     <bean id="metadataRepository" class="eu.delving.services.core.MetaRepoImpl">
         <property name="responseListSize" value="#{launchProperties['services.pmh.responseListSize']}"/>
         <property name="harvestStepSecondsToLive" value="180"/>

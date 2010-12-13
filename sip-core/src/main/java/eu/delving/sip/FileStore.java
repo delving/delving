@@ -114,6 +114,5 @@ public interface FileStore {
     String MAPPING_FILE_PATTERN = "mapping_%s.xml";
     String MAPPING_FILE_PREFIX = "mapping_";
     String MAPPING_FILE_SUFFIX = ".xml";
-    String MAPPING_TOOL_FILE_NAME = "MappingTool.groovy";
     String RECORD_ANALYSIS_FILE_NAME = "RecordAnalysis.groovy";
 }

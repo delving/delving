@@ -165,6 +165,6 @@ public class FieldDefinition implements Comparable<FieldDefinition> {
         public boolean multipleOutput;
 
         @XStreamAsAttribute
-        public String pattern;
+        public String call;
     }
 }

@@ -78,6 +78,9 @@ public class MetaRepoImpl implements MetaRepo {
     @Autowired
     private MetadataModel metadataModel;
 
+    @Autowired
+    private GroovyCodeResource groovyCodeResource;
+
     @Value("#{launchProperties['services.mongo.dbName']}")
     private String mongoDatabaseName = null;
 
@@ -879,10 +882,9 @@ public class MetaRepoImpl implements MetaRepo {
 
         private MappingRunner getMappingRunner() throws MetadataException {
             if (mappingRunner == null) {
-                GroovyCodeResource groovyCodeResource = new GroovyCodeResource();
                 RecordMapping recordMapping = getRecordMapping();
                 String compileCode = recordMapping.toCompileCode(metadataModel.getRecordDefinition());
-                mappingRunner = new MappingRunner(groovyCodeResource.getMappingToolCode() + compileCode);
+                mappingRunner = new MappingRunner(groovyCodeResource, compileCode);
             }
             return mappingRunner;
         }
