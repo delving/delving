@@ -26,6 +26,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -93,9 +96,15 @@ public class RecordDefinition {
     // handy static methods
 
     public static RecordDefinition read(InputStream in) throws MetadataException {
-        RecordDefinition recordDefinition = (RecordDefinition) stream().fromXML(in);
-        recordDefinition.initialize();
-        return recordDefinition;
+        try {
+            Reader inReader = new InputStreamReader(in, "UTF-8");
+            RecordDefinition recordDefinition = (RecordDefinition) stream().fromXML(inReader);
+            recordDefinition.initialize();
+            return recordDefinition;
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static String toString(RecordDefinition recordDefinition) {

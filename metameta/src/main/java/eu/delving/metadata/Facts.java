@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.List;
@@ -93,7 +94,8 @@ public class Facts {
             if (listDefinition == null) {
                 XStream stream = new XStream();
                 stream.processAnnotations(FactDefinition.List.class);
-                listDefinition = (FactDefinition.List) stream.fromXML(Facts.class.getResource("/fact-definition-list.xml").openStream());
+                Reader reader = new InputStreamReader(Facts.class.getResource("/fact-definition-list.xml").openStream(), "UTF-8");
+                listDefinition = (FactDefinition.List) stream.fromXML(reader);
                 for (FactDefinition factDefinition : listDefinition.factDefinitions) {
                     FIELD_SET.add(factDefinition.name);
                 }

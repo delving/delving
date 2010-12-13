@@ -27,7 +27,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -324,7 +326,8 @@ public class DataSetClient {
     private DataSetResponse translate(HttpResponse httpResponse) throws IOException {
         if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             HttpEntity entity = httpResponse.getEntity();
-            DataSetResponse response = (DataSetResponse) xstream().fromXML(entity.getContent());
+            Reader reader = new InputStreamReader(entity.getContent(), "UTF-8");
+            DataSetResponse response = (DataSetResponse) xstream().fromXML(reader);
             entity.consumeContent();
             return response;
         }

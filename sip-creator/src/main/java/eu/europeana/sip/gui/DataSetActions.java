@@ -159,7 +159,7 @@ public class DataSetActions {
     }
 
     private DataSetAction createAnalyzeFactsAction() {
-        return new DataSetAction("Edit Analysis & Facts") {
+        return new DataSetAction("Analyze Fields & Edit Facts") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 sipModel.setDataSetStore(entry.getDataSetStore());

@@ -73,16 +73,12 @@ public class Sanitizer {
        return sb.toString();
     }
 
-    public static String sanitizeGroovy(String s) {
-        return s.replaceAll("'", "\\\\'")
+    public static String sanitizeGroovy(String thing) {
+        String newThing = thing.replaceAll("'", "\\\\'")
                 .replaceAll("\n", " ")
                 .replaceAll(" +", " "); // ToolCode also has an identical sanitize for during lookup
-    }
-
-    public static String mungePath(String path) {
-        return path.replaceAll("/", "_")
-                .replaceAll(":", "_")
-                .replaceAll("-", "_");
+        System.out.println(thing+" >java> "+thing);
+        return newThing;
     }
 
 }

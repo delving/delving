@@ -70,9 +70,9 @@ public class FileStoreImpl implements FileStore {
         AppConfig config = null;
         if (appConfigFile.exists()) {
             try {
-                FileInputStream fis = new FileInputStream(appConfigFile);
-                config = (AppConfig) getAppConfigStream().fromXML(fis);
-                fis.close();
+                Reader reader = new InputStreamReader(new FileInputStream(appConfigFile));
+                config = (AppConfig) getAppConfigStream().fromXML(reader);
+                reader.close();
             }
             catch (Exception e) {
                 throw new FileStoreException(String.format("Unable to read application configuration from %s", appConfigFile.getAbsolutePath()));
@@ -88,9 +88,9 @@ public class FileStoreImpl implements FileStore {
     public void setAppConfig(AppConfig appConfig) throws FileStoreException {
         File appConfigFile = new File(home, APP_CONFIG_FILE_NAME);
         try {
-            FileOutputStream fos = new FileOutputStream(appConfigFile);
-            getAppConfigStream().toXML(appConfig, fos);
-            fos.close();
+            Writer writer = new OutputStreamWriter(new FileOutputStream(appConfigFile), "UTF-8");
+            getAppConfigStream().toXML(appConfig, writer);
+            writer.close();
         }
         catch (IOException e) {
             throw new FileStoreException(String.format("Unable to save application config to %s", appConfigFile.getAbsolutePath()), e);

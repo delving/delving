@@ -27,7 +27,12 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import org.apache.log4j.Logger;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -317,7 +322,13 @@ public class RecordMapping {
     }
 
     public static void write(RecordMapping mapping, OutputStream out) {
-        stream().toXML(mapping, out);
+        try {
+            Writer outWriter = new OutputStreamWriter(out, "UTF-8");
+            stream().toXML(mapping, outWriter);
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static String toXml(RecordMapping mapping) {
@@ -325,10 +336,16 @@ public class RecordMapping {
     }
 
     public static RecordMapping read(InputStream is, MetadataModel metadataModel) throws MetadataException {
-        RecordMapping recordMapping = (RecordMapping) stream().fromXML(is);
-        RecordDefinition recordDefinition = metadataModel.getRecordDefinition(recordMapping.prefix);
-        recordMapping.apply(recordDefinition);
-        return recordMapping;
+        try {
+            Reader isReader = new InputStreamReader(is, "UTF-8");
+            RecordMapping recordMapping = (RecordMapping) stream().fromXML(isReader);
+            RecordDefinition recordDefinition = metadataModel.getRecordDefinition(recordMapping.prefix);
+            recordMapping.apply(recordDefinition);
+            return recordMapping;
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static RecordMapping read(String string, MetadataModel metadataModel) throws MetadataException {
