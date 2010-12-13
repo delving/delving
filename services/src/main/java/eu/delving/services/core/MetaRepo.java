@@ -76,7 +76,6 @@ public interface MetaRepo {
 
     public interface DataSet {
         String getSpec();
-        boolean hasHash(String hash);
 
         boolean hasDetails();
         Details createDetails();
@@ -103,6 +102,7 @@ public interface MetaRepo {
         Record getRecord(ObjectId id, String metadataPrefix, String accessKey) throws MappingNotFoundException, AccessKeyException;
         List<? extends Record> getRecords(String prefix, int start, int count, Date from, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException;
 
+        List<String> getHashes();
         void save();
 
         String SPEC = "spec";
@@ -115,6 +115,7 @@ public interface MetaRepo {
         String DATA_SET_STATE = "state";
         String RECORDS_INDEXED = "rec_indexed";
         String DETAILS = "details";
+
     }
 
     public interface Details {

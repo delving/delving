@@ -114,43 +114,6 @@ public class DataSetController {
         }
     }
 
-    @RequestMapping(value = "/dataset/submit/{dataSetSpec}/{fileType}/{fileName}", method = RequestMethod.GET)
-    public ModelAndView checkFile(
-            @PathVariable String dataSetSpec,
-            @PathVariable String fileType,
-            @PathVariable String fileName,
-            @RequestParam(required = false) String accessKey
-    ) {
-        try {
-            checkAccessKey(accessKey);
-            FileType type = FileType.valueOf(fileType);
-            log.info(String.format("check type %s for %s: %s", type, dataSetSpec, fileName));
-            String hash = Hasher.getHash(fileName);
-            if (hash == null) {
-                throw new RuntimeException("No hash available for file name " + fileName);
-            }
-            DataSetResponseCode response;
-            switch (type) {
-                case FACTS:
-                    response = checkFacts(dataSetSpec, hash);
-                    break;
-                case SOURCE:
-                    response = checkSource(dataSetSpec, hash);
-                    break;
-                case MAPPING:
-                    response = checkMapping(dataSetSpec, hash);
-                    break;
-                default:
-                    response = DataSetResponseCode.SYSTEM_ERROR;
-                    break;
-            }
-            return view(response);
-        }
-        catch (Exception e) {
-            return view(e);
-        }
-    }
-
     @RequestMapping(value = "/dataset/submit/{dataSetSpec}/{fileType}/{fileName}", method = RequestMethod.POST)
     public ModelAndView acceptFile(
             @PathVariable String dataSetSpec,
@@ -194,7 +157,7 @@ public class DataSetController {
         if (dataSet == null) {
             return DataSetResponseCode.DATA_SET_NOT_FOUND;
         }
-        if (dataSet.hasHash(hash)) {
+        if (hasHash(hash,dataSet)) {
             return DataSetResponseCode.GOT_IT_ALREADY;
         }
         dataSet.setMapping(recordMapping);
@@ -203,25 +166,12 @@ public class DataSetController {
         return DataSetResponseCode.THANK_YOU;
     }
 
-    private DataSetResponseCode checkMapping(String dataSetSpec, String hash) {
-        MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
-        if (dataSet == null) {
-            return DataSetResponseCode.DATA_SET_NOT_FOUND;
-        }
-        if (dataSet.hasHash(hash)) {
-            return DataSetResponseCode.GOT_IT_ALREADY;
-        }
-        else {
-            return DataSetResponseCode.READY_TO_RECEIVE;
-        }
-    }
-
     private DataSetResponseCode receiveSource(InputStream inputStream, String dataSetSpec, String hash) throws RecordParseException {
         MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
         if (dataSet == null) {
             return DataSetResponseCode.DATA_SET_NOT_FOUND;
         }
-        if (dataSet.hasHash(hash)) {
+        if (hasHash(hash, dataSet)) {
             return DataSetResponseCode.GOT_IT_ALREADY;
         }
         dataSet.parseRecords(inputStream);
@@ -230,38 +180,12 @@ public class DataSetController {
         return DataSetResponseCode.THANK_YOU;
     }
 
-    private DataSetResponseCode checkSource(String dataSetSpec, String hash) {
-        MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
-        if (dataSet == null) {
-            return DataSetResponseCode.DATA_SET_NOT_FOUND;
-        }
-        if (dataSet.hasHash(hash)) {
-            return DataSetResponseCode.GOT_IT_ALREADY;
-        }
-        else {
-            return DataSetResponseCode.READY_TO_RECEIVE;
-        }
-    }
-
-    private DataSetResponseCode checkFacts(String dataSetSpec, String hash) {
-        MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
-        if (dataSet == null) {
-            dataSet = metaRepo.createDataSet(dataSetSpec);
-        }
-        if (dataSet.hasHash(hash)) {
-            return DataSetResponseCode.GOT_IT_ALREADY;
-        }
-        else {
-            return DataSetResponseCode.READY_TO_RECEIVE;
-        }
-    }
-
     private DataSetResponseCode receiveFacts(Facts facts, String dataSetSpec, String hash) {
         MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
         if (dataSet == null) {
             dataSet = metaRepo.createDataSet(dataSetSpec);
         }
-        if (dataSet.hasHash(hash)) {
+        if (hasHash(hash, dataSet)) {
             return DataSetResponseCode.GOT_IT_ALREADY;
         }
         MetaRepo.Details details = dataSet.createDetails();
@@ -392,6 +316,15 @@ public class DataSetController {
         return new ModelAndView("dataSetXmlView", BindingResult.MODEL_KEY_PREFIX + "response", response);
     }
 
+    private boolean hasHash(String hash, MetaRepo.DataSet dataSet) {
+        for (String ours : dataSet.getHashes()) {
+            if (ours.equals(hash)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private DataSetInfo getInfo(MetaRepo.DataSet dataSet) {
         DataSetInfo info = new DataSetInfo();
         info.spec = dataSet.getSpec();
@@ -400,6 +333,7 @@ public class DataSetController {
         info.errorMessage = dataSet.getErrorMessage();
         info.recordsIndexed = dataSet.getRecordsIndexed();
         info.name = dataSet.getDetails().getName();
+        info.hashes = dataSet.getHashes();
         return info;
     }
 }

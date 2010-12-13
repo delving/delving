@@ -83,9 +83,11 @@ def createEuropeanaURI(identifier, collectionId) {
   return ["$collectionId/$hash"];
 }
 
-def sanitize(thing) { // same effect as in eu.delving.metadata.Sanitizer.sanitizeGroovy
-  thing = (thing.toString() =~ /'/).replaceAll("\\\\'");
+def sanitize(thing) { // same effect as in eu.delving.metadata.Sanitizer.sanitizeGroovy, except apostrophe removal
+  def oldThing = thing;
+//  thing = (thing.toString() =~ /'/).replaceAll("\\\\'");
   thing = (thing =~ /\n/).replaceAll(' ');
   thing = (thing =~ / +/).replaceAll(' ');
+  println "${oldThing}>groovy>${thing}";
   return thing
 }

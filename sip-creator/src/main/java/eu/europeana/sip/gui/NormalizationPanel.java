@@ -192,7 +192,12 @@ public class NormalizationPanel extends JPanel {
                     message,
                     0,100
             );
-            sipModel.normalize(normalizeDirectory, discardInvalidBox.isSelected(), new ProgressListener.Adapter(progressMonitor, this));
+            sipModel.normalize(normalizeDirectory, discardInvalidBox.isSelected(), new ProgressListener.Adapter(progressMonitor){
+                @Override
+                public void swingFinished(boolean success) {
+                    setEnabled(true);
+                }
+            });
         }
     };
 }

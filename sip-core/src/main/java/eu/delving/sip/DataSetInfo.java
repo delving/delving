@@ -2,6 +2,8 @@ package eu.delving.sip;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import java.util.List;
+
 /**
  *
  *
@@ -16,4 +18,16 @@ public class DataSetInfo {
     public Integer recordsIndexed;
     public Integer recordCount;
     public String errorMessage;
+    public List<String> hashes;
+
+    public boolean hasHash(String hash) {
+        if (hashes != null) {
+            for (String ours : hashes) {
+                if (ours.equals(hash)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

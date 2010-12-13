@@ -196,7 +196,7 @@ public class Normalizer implements Runnable {
         finally {
             listener.finished(running);
             if (!running) { // aborted, so metadataparser will not call finished()
-                progressAdapter.finished();
+                progressAdapter.finished(false);
             }
         }
     }
@@ -233,8 +233,8 @@ public class Normalizer implements Runnable {
         }
 
         @Override
-        public void finished() {
-            progressListener.finished();
+        public void finished(boolean success) {
+            progressListener.finished(success);
         }
     }
 }
