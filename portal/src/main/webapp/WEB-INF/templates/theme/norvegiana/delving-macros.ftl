@@ -11,7 +11,7 @@
 <#if RequestParameters.view??>
     <#assign view = RequestParameters.view/>
 </#if>
-<#assign useCache = "true">
+<#assign useCache = "false">
 <#assign javascriptFiles = ""/>
 <#assign cssFiles = ""/>
 <#assign contentOnly = "false"/>
@@ -97,7 +97,7 @@
                 var portalName = "/${portalName}";
                 var baseThemePath = "/${portalName}/${portalTheme}";
             </script>
-            <@addCss ["reset.css","text.css","960-fluid.css","jquery-ui-1.8.7.custom.css","screen.css"], "screen"/>
+            <@addCss ["reset.css","text.css","960.css","jquery-ui-1.8.7.custom.css","screen.css"], "screen"/>
             <#if pageCssFiles?size &gt; 0>
                 <@addCss pageCssFiles/>
             </#if>
@@ -121,45 +121,21 @@
                 <@showMessages/>
             </div>
 
-            <#if (thisPage?? && thisPage != "index.html")>
-
-                <div id="header">
-                    <a href="/${portalName}/" alt="Home">
-                        <img id="branding" src="/${portalName}/${portalTheme}/images/logo.png" alt="" align="absmiddle"/>
-                    </a>
-                    <div id="userBar" role="navigation">
-                        <#include "language_select.ftl"/><@userBar/>
-                    </div>
-                    <div id="name" class="grid_3"><h1>${portalDisplayName}</h1></div>
-                    <div id="search" class="grid_9 ui-corner-all">
-                        <@simpleSearch/>
-                            <noscript>
-                            <@spring.message '_portal.ui.message.noscript' />
-                            </noscript>
-                    </div>
+            <div id="header">
+                <a href="/${portalName}/" alt="Home">
+                    <img id="branding" src="/${portalName}/${portalTheme}/images/logo-name.png" alt="" align="absmiddle"/>
+                </a>
+                <div id="userBar" role="navigation">
+                    <#include "language_select.ftl"/><@userBar/>
                 </div>
-
-            <#else>
-
-                <div id="header" class="home">
-                    <a href="/${portalName}/" alt="Home">
-                        <img id="branding" src="/${portalName}/${portalTheme}/images/logo-2.png" alt="" align="absmiddle" />
-                    </a>
-                    <div id="userBar" role="navigation">
-                        <#include "language_select.ftl"/><@userBar/>
-                    </div>
-                    <div id="name" class="grid_3"><h1>${portalDisplayName}</h1></div>
-                    <div id="search" class="grid_9">
-                        <@simpleSearch/>
-                            <noscript>
-                            <@spring.message '_portal.ui.message.noscript' />
-                            </noscript>
-                    </div>
+                <#--<h1>${portalDisplayName}</h1>-->
+                <div id="search" class="grid_9 ui-corner-all">
+                    <@simpleSearch/>
+                        <noscript>
+                        <@spring.message '_portal.ui.message.noscript' />
+                        </noscript>
                 </div>
-
-            </#if>
-
-
+            </div>
 
             <div class="clear"></div>
     </#if>
@@ -180,7 +156,9 @@
 </#macro>
 
 <#macro addFooter >
-    <#if contentOnly!="true">
+    <#if contentOnly!="true">   
+
+        <div class="clear"></div>
         <footer>
             <div class="inner">
                 <div id="footer-dynamic-content"></div>
