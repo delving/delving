@@ -133,10 +133,10 @@
                     </div>
                         <div id="pageForm">
 
-                            <form action="${page.path}" method="POST" id="form-edit">
+                            <form action="${page.path}" method="POST" id="form-edit" accept-charset="utf-8">
                                 <#--<a href="javascript:toggleEditor('editor');" class=""><@spring.message '_cms.html.editor.show.hide' /></a>-->
 
-                                <textarea name="content" id="editor" style="width: 100%;height:400px;">${page.getContent(locale)}</textarea>
+                                <textarea name="content" id="editor" style="width: 100%;height:400px;">${page.getContent(locale)?html}</textarea>
 
                                     <hr/>
                                 <input type="submit" name="submit" class="button btn-strong" value="<@spring.message '_cms.save' />"/>
