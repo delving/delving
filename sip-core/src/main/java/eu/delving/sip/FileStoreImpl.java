@@ -32,7 +32,9 @@ import eu.delving.metadata.RecordMapping;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -50,6 +52,7 @@ public class FileStoreImpl implements FileStore {
     private File home;
     private MetadataModel metadataModel;
     public static final int BLOCK_SIZE = 4096;
+    public static final int MAX_HASH_HISTORY = 3;
 
     public FileStoreImpl(File home, MetadataModel metadataModel) throws FileStoreException {
         this.home = home;
@@ -67,9 +70,9 @@ public class FileStoreImpl implements FileStore {
         AppConfig config = null;
         if (appConfigFile.exists()) {
             try {
-                FileInputStream fis = new FileInputStream(appConfigFile);
-                config = (AppConfig) getAppConfigStream().fromXML(fis);
-                fis.close();
+                Reader reader = new InputStreamReader(new FileInputStream(appConfigFile));
+                config = (AppConfig) getAppConfigStream().fromXML(reader);
+                reader.close();
             }
             catch (Exception e) {
                 throw new FileStoreException(String.format("Unable to read application configuration from %s", appConfigFile.getAbsolutePath()));
@@ -85,9 +88,9 @@ public class FileStoreImpl implements FileStore {
     public void setAppConfig(AppConfig appConfig) throws FileStoreException {
         File appConfigFile = new File(home, APP_CONFIG_FILE_NAME);
         try {
-            FileOutputStream fos = new FileOutputStream(appConfigFile);
-            getAppConfigStream().toXML(appConfig, fos);
-            fos.close();
+            Writer writer = new OutputStreamWriter(new FileOutputStream(appConfigFile), "UTF-8");
+            getAppConfigStream().toXML(appConfig, writer);
+            writer.close();
         }
         catch (IOException e) {
             throw new FileStoreException(String.format("Unable to save application config to %s", appConfigFile.getAbsolutePath()), e);
@@ -117,7 +120,7 @@ public class FileStoreImpl implements FileStore {
             writeCode(codeFile, code);
         }
         catch (IOException e) {
-            throw new FileStoreException("Unable to set code "+fileName, e);
+            throw new FileStoreException("Unable to set code " + fileName, e);
         }
     }
 
@@ -204,6 +207,25 @@ public class FileStoreImpl implements FileStore {
         }
 
         @Override
+        public Facts getFacts() {
+            File factsFile = getFactsFile();
+            Facts facts = null;
+            if (factsFile.exists()) {
+                try {
+                    facts = Facts.read(new FileInputStream(factsFile));
+                }
+                catch (Exception e) {
+                    // eat this exception
+                }
+            }
+            if (facts == null) {
+                facts = new Facts();
+            }
+            return facts;
+        }
+
+
+        @Override
         public void importFile(File inputFile, ProgressListener progressListener) throws FileStoreException {
             int fileBlocks = (int) (inputFile.length() / BLOCK_SIZE);
             if (progressListener != null) progressListener.setTotal(fileBlocks);
@@ -236,11 +258,12 @@ public class FileStoreImpl implements FileStore {
                     }
                     hasher.update(buffer, bytesRead);
                 }
-                if (progressListener != null) progressListener.finished();
+                if (progressListener != null) progressListener.finished(!cancelled);
                 inputStream.close();
                 gzipOutputStream.close();
             }
             catch (Exception e) {
+                if (progressListener != null) progressListener.finished(false);
                 throw new FileStoreException("Unable to capture XML input into " + source.getAbsolutePath(), e);
             }
             if (cancelled) {
@@ -355,24 +378,6 @@ public class FileStoreImpl implements FileStore {
         }
 
         @Override
-        public Facts getFacts() throws FileStoreException {
-            File factsFile = getFactsFile();
-            Facts facts = null;
-            if (factsFile.exists()) {
-                try {
-                    facts = Facts.read(new FileInputStream(factsFile));
-                }
-                catch (Exception e) {
-                    throw new FileStoreException(String.format("Unable to read facts from %s", factsFile.getAbsolutePath()));
-                }
-            }
-            if (facts == null) {
-                facts = new Facts();
-            }
-            return facts;
-        }
-
-        @Override
         public void setFacts(Facts facts) throws FileStoreException {
             File factsFile = new File(directory, FACTS_FILE_NAME);
             try {
@@ -407,14 +412,14 @@ public class FileStoreImpl implements FileStore {
         }
 
         @Override
-        public Collection<File> getMappingFiles() {
-            return findMappingFiles(directory);
+        public File getMappingFile(String metadataPrefix) {
+            return findMappingFile(directory, metadataPrefix);
         }
 
         @Override
         public List<String> getMappingPrefixes() {
             List<String> prefixes = new ArrayList<String>();
-            for (File mappingFile : getMappingFiles()) {
+            for (File mappingFile : findMappingFiles(directory)) {
                 String name = Hasher.getName(mappingFile);
                 name = name.substring(FileStore.MAPPING_FILE_PREFIX.length());
                 name = name.substring(0, name.length() - FileStore.MAPPING_FILE_SUFFIX.length());
@@ -428,12 +433,8 @@ public class FileStoreImpl implements FileStore {
             return getSpec();
         }
 
-        private File mappingFile(RecordMapping recordMapping) {
-            return new File(directory, String.format(MAPPING_FILE_PATTERN, recordMapping.getPrefix()));
-        }
-
-        private File mappingFile(RecordDefinition recordDefinition) {
-            return new File(directory, String.format(MAPPING_FILE_PATTERN, recordDefinition.prefix));
+        private File mappingFile(String prefix) {
+            return new File(directory, String.format(MAPPING_FILE_PATTERN, prefix));
         }
 
         private void delete(File file) throws FileStoreException {
@@ -567,7 +568,6 @@ public class FileStoreImpl implements FileStore {
     }
 
     private Collection<File> findMappingFiles(File dir) {
-        List<File> mappingFiles = new ArrayList<File>();
         File[] files = dir.listFiles(new MappingFileFilter());
         Map<String, List<File>> map = new TreeMap<String, List<File>>();
         for (File file : files) {
@@ -579,6 +579,7 @@ public class FileStoreImpl implements FileStore {
             }
             list.add(file);
         }
+        List<File> mappingFiles = new ArrayList<File>();
         for (Map.Entry<String, List<File>> entry : map.entrySet()) {
             if (entry.getValue().size() == 1) {
                 mappingFiles.add(entry.getValue().get(0));
@@ -639,15 +640,34 @@ public class FileStoreImpl implements FileStore {
     }
 
     private File getMostRecent(File[] files) {
-        long maxLastModified = 0;
-        File mostRecent = null;
-        for (File file : files) {
-            if (file.lastModified() > maxLastModified) {
-                maxLastModified = file.lastModified();
-                mostRecent = file;
+        if (files.length > 0) {
+            Arrays.sort(files, new Comparator<File>() {
+                @Override
+                public int compare(File a, File b) {
+                    long lastA = a.lastModified();
+                    long lastB = b.lastModified();
+                    if (lastA > lastB) {
+                        return -1;
+                    }
+                    else if (lastA < lastB) {
+                        return 1;
+                    }
+                    else {
+                        return 0;
+                    }
+                }
+            });
+            if (files.length > MAX_HASH_HISTORY) {
+                for (int walk = MAX_HASH_HISTORY; walk<files.length; walk++) {
+                    //noinspection ResultOfMethodCallIgnored
+                    files[walk].delete();
+                }
             }
+            return files[0];
         }
-        return mostRecent;
+        else {
+            return null;
+        }
     }
 
     private void writeCode(File file, String code) throws IOException {

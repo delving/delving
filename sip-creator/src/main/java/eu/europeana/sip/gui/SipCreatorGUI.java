@@ -32,24 +32,7 @@ import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.UserNotifier;
 import org.apache.log4j.Logger;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
@@ -140,7 +123,7 @@ public class SipCreatorGUI extends JFrame {
         getContentPane().add(north, BorderLayout.NORTH);
         getContentPane().add(main, BorderLayout.CENTER);
         main.add(createList(), BorderLayout.CENTER);
-        main.add(createSouth(), BorderLayout.SOUTH);
+        main.add(createEast(), BorderLayout.EAST);
         setSize(SIZE);
         setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - SIZE.width) / 2, (Toolkit.getDefaultToolkit().getScreenSize().height - SIZE.height) / 2);
         SwingUtilities.invokeLater(new Runnable() {
@@ -177,18 +160,22 @@ public class SipCreatorGUI extends JFrame {
         return fileStoreDirectory;
     }
 
-    private JPanel createSouth() {
-        JPanel local = new JPanel();
+    private JPanel createEast() {
+        JPanel local = new JPanel(new GridLayout(0, 1, 5, 5));
+        local.setBorder(BorderFactory.createTitledBorder("Local Actions"));
         for (Action action : dataSetActions.getLocalActions()) {
             local.add(new JButton(action));
         }
-        JPanel remote = new JPanel();
+        JPanel remote = new JPanel(new GridLayout(0, 1, 5, 5));
+        remote.setBorder(BorderFactory.createTitledBorder("Remote Actions"));
         for (Action action : dataSetActions.getRemoteActions()) {
             remote.add(new JButton(action));
         }
-        JPanel p = new JPanel(new GridLayout(0,1));
+        JPanel p = new JPanel();
+        p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
         p.add(local);
         p.add(remote);
+        p.add(Box.createVerticalGlue());
         return p;
     }
 
@@ -223,13 +210,22 @@ public class SipCreatorGUI extends JFrame {
             }
         }));
         bar.add(createRepositoryMenu());
-        bar.add(createActionMenu());
+        bar.add(createLocalActionMenu());
+        bar.add(createRemoteActionMenu());
         return bar;
     }
 
-    private JMenu createActionMenu() {
-        JMenu actions = new JMenu("Actions");
+    private JMenu createLocalActionMenu() {
+        JMenu actions = new JMenu("Local Actions");
         for (Action action : dataSetActions.getLocalActions()) {
+            actions.add(action);
+        }
+        return actions;
+    }
+
+    private JMenu createRemoteActionMenu() {
+        JMenu actions = new JMenu("Remote Actions");
+        for (Action action : dataSetActions.getRemoteActions()) {
             actions.add(action);
         }
         return actions;

@@ -93,6 +93,7 @@ public class RecordAnalyzer implements Runnable {
                 }
                 consumeRecordMethod.invoke(groovyInstance, record.getRootNode());
             }
+            progressAdapter.finished(true);
         }
         catch (XMLStreamException e) {
             abort();
@@ -119,7 +120,6 @@ public class RecordAnalyzer implements Runnable {
             sipModel.getUserNotifier().tellUser("Class Problem", e);
         }
         finally {
-            progressAdapter.finished();
             if (!running) { // aborted, so metadataparser will not call finished()
                 listener.finished("<html><h1>Analysis Aborted</h1>");
             }
@@ -138,6 +138,7 @@ public class RecordAnalyzer implements Runnable {
     }
 
     private void abort() {
+        progressAdapter.finished(false);
         running = false;
     }
 
@@ -165,8 +166,8 @@ public class RecordAnalyzer implements Runnable {
         }
 
         @Override
-        public void finished() {
-            progressListener.finished();
+        public void finished(boolean success) {
+            progressListener.finished(success);
         }
     }
 }

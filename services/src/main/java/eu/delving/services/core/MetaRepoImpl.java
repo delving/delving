@@ -418,17 +418,6 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public boolean hasHash(String hash) {
-            Set<String> hashes = new TreeSet<String>();
-            addHash(FACTS_HASH, hashes);
-            addHash(SOURCE_HASH, hashes);
-            for (String metadataPrefix : metadataModel.getPrefixes()) {
-                addHash(MAPPING_HASH_PREFIX + metadataPrefix, hashes);
-            }
-            return hashes.contains(hash);
-        }
-
-        @Override
         public boolean hasDetails() {
             return object.get(DETAILS) != null;
         }
@@ -447,13 +436,6 @@ public class MetaRepoImpl implements MetaRepo {
                 throw new MetaRepoSystemException("No Details found");
             }
             return new DetailsImpl((DBObject) detailsObject);
-        }
-
-        private void addHash(String hashAttribute, Set<String> hashes) {
-            String hash = (String) object.get(hashAttribute);
-            if (hash != null) {
-                hashes.add(hash);
-            }
         }
 
         @Override
@@ -518,6 +500,24 @@ public class MetaRepoImpl implements MetaRepo {
                 ((MappingInternal) mapping).executeMapping(list, namespaces);
             }
             return list;
+        }
+
+        @Override
+        public List<String> getHashes() {
+            List<String> hashes = new ArrayList<String>();
+            addHash(FACTS_HASH, hashes);
+            addHash(SOURCE_HASH, hashes);
+            for (String metadataPrefix : metadataModel.getPrefixes()) {
+                addHash(MAPPING_HASH_PREFIX + metadataPrefix, hashes);
+            }
+            return hashes;
+        }
+
+        private void addHash(String hashAttribute, List<String> hashes) {
+            String hash = (String) object.get(hashAttribute);
+            if (hash != null) {
+                hashes.add(hash);
+            }
         }
 
         private Mapping getMapping(String prefix, String accessKey) throws AccessKeyException, MappingNotFoundException {
