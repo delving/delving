@@ -19,8 +19,8 @@ public class MappingCategory {
     return null;
   }
 
-  static List mod(GroovyList list, String regex) {
-    def all = []
+  static GroovyList mod(GroovyList list, String regex) {
+    GroovyList all = new GroovyList();
     for (Object node: list) {
       if (node instanceof GroovyNode) {
         all += mod(node, regex);
@@ -29,8 +29,8 @@ public class MappingCategory {
     return all;
   }
 
-  static List mod(GroovyNode node, String regex) { // operator %
-    return Arrays.asList(node.text().split(regex));
+  static GroovyList mod(GroovyNode node, String regex) { // operator %
+    return new GroovyList(node.text().split(regex));
   }
 
   static String extractYear(GroovyList target) {

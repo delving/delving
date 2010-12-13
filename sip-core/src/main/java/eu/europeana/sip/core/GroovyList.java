@@ -26,6 +26,7 @@ import groovy.lang.GroovySystem;
 import groovy.lang.MetaClass;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -43,6 +44,10 @@ public class GroovyList extends ArrayList<Object> {
 
     public GroovyList(Collection<Object> collection) {
         super(collection);
+    }
+
+    public GroovyList(String [] array) {
+        addAll(Arrays.asList(array));
     }
 
     /**
