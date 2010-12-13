@@ -13,7 +13,7 @@
     <table>
         <tr>
             <td width="100"><label for="email"><@spring.message '_mine.email.address' /></label></td>
-            <td><input id="register_email" type='text' name='email' id="email" value='' accept-charset="UTF-8"></td>
+            <td><input type='text' name='email' id="email" value='' accept-charset="UTF-8"></td>
         </tr>
         <tr>
             <td></td>
@@ -25,18 +25,33 @@
 </form>
 
 <#if state == "success">
-    <p id="success" class="success">
-        <@spring.message '_mine.user.register.email.has.been.sent' />: <span class="fg-gold">${email}</span>.
-        <@spring.message '_mine.user.register.please.follow.link' />.
-    </p>
+    <script type="text/javascript">
+          showMessage("success","<@spring.message '_mine.user.register.email.has.been.sent' />: {email}"+"\n<@spring.message '_mine.user.register.please.follow.link' />")
+    </script>
+    <noscript>
+        <p id="success" class="success">
+            <@spring.message '_mine.user.register.email.has.been.sent' />: {email}.
+            <@spring.message '_mine.user.register.please.follow.link' />.
+        </p>
+    </noscript>
 </#if>
 
 <#if state == "formatFailure">
-    <strong><@spring.message '_portal.ui.notification.error' />: </strong><@spring.message '_mine.user.notification.emailformaterror' />.
+    <script type="text/javascript">
+          showMessage("error","<@spring.message '_portal.ui.notification.error' />: </strong><@spring.message '_mine.user.notification.emailformaterror' />")
+    </script>
+    <noscript>
+        <strong><@spring.message '_portal.ui.notification.error' />: </strong><@spring.message '_mine.user.notification.emailformaterror' />.
+    </noscript>
 </#if>
 
 <#if state == "existenceFailure">
-    <strong><@spring.message '_portal.ui.notification.error' />: </strong><@spring.message '_mine.user.register-request.emailalreadyregistered' />.
+    <script type="text/javascript">
+          showMessage("error","<@spring.message '_portal.ui.notification.error' />: </strong><@spring.message '_mine.user.register-request.emailalreadyregistered' />")
+    </script>
+    <noscript>
+        <strong><@spring.message '_portal.ui.notification.error' />: </strong><@spring.message '_mine.user.register-request.emailalreadyregistered' />.
+    </noscript>
 </#if>
 
 </section>
