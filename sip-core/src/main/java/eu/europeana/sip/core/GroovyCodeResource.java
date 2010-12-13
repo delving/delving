@@ -21,6 +21,9 @@
 
 package eu.europeana.sip.core;
 
+import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyShell;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,24 +38,25 @@ import java.net.URL;
  */
 
 public class GroovyCodeResource {
-    private static final URL MAPPING_TOOL_CODE_RESOURCE = GroovyCodeResource.class.getResource("/MappingTool.groovy");
-    private String mappingToolCode;
+    private static final URL MAPPING_CATEGORY_RESOURCE = GroovyCodeResource.class.getResource("/MappingCategory.groovy");
+    private GroovyClassLoader classLoader = new GroovyClassLoader(getClass().getClassLoader());
 
     public GroovyCodeResource() {
         try {
-            mappingToolCode = readResourceCode(MAPPING_TOOL_CODE_RESOURCE);
+            String code = readResourceCode(MAPPING_CATEGORY_RESOURCE);
+            classLoader.parseClass(code);
         }
-        catch (IOException e) {
-            mappingToolCode = "println 'Could not read groovy code: " + e.toString() + "'";
+        catch (Exception e) {
+            throw new RuntimeException("Cannot initialize Groovy Code Resource", e);
         }
     }
 
-    public String getMappingToolCode() {
-        return mappingToolCode;
+    public GroovyShell createShell() {
+        return new GroovyShell(classLoader);
     }
 
     private String readResourceCode(URL resource) throws IOException {
-        if (MAPPING_TOOL_CODE_RESOURCE == null) {
+        if (MAPPING_CATEGORY_RESOURCE == null) {
             throw new IOException("Cannot find resource");
         }
         InputStream in = resource.openStream();

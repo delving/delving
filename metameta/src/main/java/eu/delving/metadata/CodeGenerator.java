@@ -161,8 +161,8 @@ public class CodeGenerator {
 
     private void lineSelectFirst(FieldMapping fieldMapping, String variable) {
         FieldDefinition fieldDefinition = fieldMapping.getFieldDefinition();
-        if (fieldDefinition.validation.converter.pattern != null) {
-            variable = String.format(fieldDefinition.validation.converter.pattern, variable);
+        if (fieldDefinition.validation.converter.call != null) {
+            variable = variable+fieldDefinition.validation.converter.call;
         }
         fieldMapping.addCodeLine(
                 String.format(
@@ -183,10 +183,7 @@ public class CodeGenerator {
         fieldMapping.addCodeLine(
                 String.format(
                         "for (part in %s) {",
-                        String.format(
-                                fieldDefinition.validation.converter.pattern,
-                                variable
-                        )
+                        variable+fieldDefinition.validation.converter.call
                 )
         );
     }
