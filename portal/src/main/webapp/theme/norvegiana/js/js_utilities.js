@@ -167,27 +167,9 @@ function styleUIMessages(){
 
 
 $(document).ready(function() {
-
-//   $("form#formSimpleSearch").submit(function(event){
-//    var sQuery = $("form#formSimpleSearch input#query");
-//    if (isEmpty(sQuery.val())){
-//        sQuery.css("background","#fffff0");
-//            event.preventDefault();
-//        showMessage("error","You must enter a search term");
-//                return false;
-//    }
-//    else {
-//        return true;
-//    }
-//
-//   });
-
- // validate signup form on keyup and submit
-
-    $("#formSimpleSearch").validate({
-        errorElement: "label"
+   $("#formSimpleSearch").validate({
+        errorElement: ""
        ,errorLabelContainer: ".message"
-
        ,submitHandler: function(form) {
            // do other stuff for a valid form
            form.submit();
@@ -195,42 +177,20 @@ $(document).ready(function() {
        ,invalidHandler: function(form, validator) {
               var errors = validator.numberOfInvalids();
               if (errors) {
-                showMessage("error", "");
+                showMessage("error", "You must enter a query");
               }
             }
-
     });
 
-
    styleUIButtons();
+
     //onclick for login href to take user back to last visited page before logging in
-    if($("a#login")){
-        $("a#login").click(function(){
-            takeMeBack();
-//            $("div#overlayContainer").dialog({
-//                modal: true,
-//                width: 350
-//            });
-//            $("div#overlayContainer").load("login.html?contentOnly=true");
-//
-//            return false;
-        })
-    }
-    if($("a#logout")){
-        $("a#logout").click(function(){
+    if($("a#login, a#logout")){
+        $("a#login, a#logout").click(function(){
             takeMeBack();
         })
     }
 
 });
 
-// validate signup form on keyup and submit
-$("#signupForm").validate({
-    rules: {
-        query: "required"
-    },
-    messages: {
-        query: "You must enter a search term"
-    }
-});
 
