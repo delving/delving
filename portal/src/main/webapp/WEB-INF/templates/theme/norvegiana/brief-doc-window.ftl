@@ -26,7 +26,7 @@
     <dl class="menu">
         <dt><@spring.message '_action.refine.your.search' /></dt>
         <dd class="container">
-         <@resultBriefFacets "DATAPROVIDER",  "_facet.by.provider", 1/>
+         <@resultBriefFacets "DATAPROVIDER",  "_metadata.abm.contentProvider", 1/>
         <@resultBriefFacets "MUNICIPALITY",  "_metadata.abm.municipality", 1/>
          <@resultBriefFacets "COUNTY",  "_metadata.abm.county", 1/>
         <@resultBriefFacets "TYPE",  "_metadata.dc.type", 2/>
