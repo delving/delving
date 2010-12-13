@@ -97,7 +97,7 @@
                 var portalName = "/${portalName}";
                 var baseThemePath = "/${portalName}/${portalTheme}";
             </script>
-            <@addCss ["reset.css","text.css","960.css","jquery-ui-1.8.7.custom.css","screen.css"], "screen"/>
+            <@addCss ["reset.css","text.css","960-fluid.css","jquery-ui-1.8.7.custom.css","screen.css"], "screen"/>
             <#if pageCssFiles?size &gt; 0>
                 <@addCss pageCssFiles/>
             </#if>
