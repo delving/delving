@@ -21,7 +21,6 @@
 
 package eu.europeana.sip.core;
 
-import groovy.lang.Closure;
 import groovy.lang.DelegatingMetaClass;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClass;
@@ -156,17 +155,6 @@ public class GroovyNode {
             return getValueNodes();
         }
         return getByName(key);
-    }
-
-    public Object multiply(Closure closure) {
-        for (Object child : children()) {
-            closure.call(child);
-        }
-        return null;
-    }
-
-    public String [] mod(String regex) { // operator %
-        return text().split(regex);
     }
 
     public String toString() {

@@ -5,6 +5,34 @@ import eu.europeana.sip.core.GroovyNode
 
 public class MappingCategory {
 
+  static Object multiply(GroovyList list, Closure closure) { // operator *
+    for (Object child: list) {
+      closure.call(child);
+    }
+    return null;
+  }
+
+  static Object multiply(GroovyNode node, Closure closure) { // operator *
+    for (Object child: node.children()) {
+      closure.call(child);
+    }
+    return null;
+  }
+
+  static List mod(GroovyList list, String regex) {
+    def all = []
+    for (Object node: list) {
+      if (node instanceof GroovyNode) {
+        all += mod(node, regex);
+      }
+    }
+    return all;
+  }
+
+  static List mod(GroovyNode node, String regex) { // operator %
+    return Arrays.asList(node.text().split(regex));
+  }
+
   static String extractYear(GroovyList target) {
     return extractYear(target.text());
   }

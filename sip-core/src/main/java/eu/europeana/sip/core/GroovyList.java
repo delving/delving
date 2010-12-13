@@ -21,7 +21,6 @@
 
 package eu.europeana.sip.core;
 
-import groovy.lang.Closure;
 import groovy.lang.DelegatingMetaClass;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClass;
@@ -106,15 +105,6 @@ public class GroovyList extends ArrayList<Object> {
         }
         return "";
     }
-
-    public Object multiply(Closure closure) {
-        for (Object child : this) {
-            closure.call(child);
-        }
-        return null;
-    }
-
-
 
     // privates ===========================================================================================
 
