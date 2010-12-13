@@ -50,7 +50,7 @@
  *
  * http://docs.jquery.com/UI/Theming/API
  *
- * To view and modify this theme, visit http://jqueryui.com/themeroller/?ffDefault=&fwDefault=bold&fsDefault=1em&cornerRadius=3px&bgColorHeader=bbbbb0&bgTextureHeader=01_flat.png&bgImgOpacityHeader=35&borderColorHeader=aaaaa0&fcHeader=ffffff&iconColorHeader=ffffff&bgColorContent=ffffff&bgTextureContent=01_flat.png&bgImgOpacityContent=100&borderColorContent=dddddd&fcContent=333333&iconColorContent=222222&bgColorDefault=eeeee0&bgTextureDefault=01_flat.png&bgImgOpacityDefault=100&borderColorDefault=cccccc&fcDefault=336699&iconColorDefault=0071bc&bgColorHover=eeeee0&bgTextureHover=01_flat.png&bgImgOpacityHover=100&borderColorHover=aaaaa0&fcHover=555555&iconColorHover=0071bc&bgColorActive=ffffff&bgTextureActive=02_glass.png&bgImgOpacityActive=65&borderColorActive=cccccc&fcActive=555555&iconColorActive=0071bc&bgColorHighlight=fffff0&bgTextureHighlight=01_flat.png&bgImgOpacityHighlight=75&borderColorHighlight=aaaaa0&fcHighlight=363636&iconColorHighlight=0071bc&bgColorError=b81900&bgTextureError=01_flat.png&bgImgOpacityError=18&borderColorError=aaaaa0&fcError=ffffff&iconColorError=ffffff&bgColorOverlay=bbbbb0&bgTextureOverlay=01_flat.png&bgImgOpacityOverlay=20&opacityOverlay=50&bgColorShadow=000000&bgTextureShadow=01_flat.png&bgImgOpacityShadow=10&opacityShadow=20&thicknessShadow=5px&offsetTopShadow=-5px&offsetLeftShadow=-5px&cornerRadiusShadow=5px
+ * To view and modify this theme, visit http://jqueryui.com/themeroller/?ffDefault=&fwDefault=bold&fsDefault=1em&cornerRadius=3px&bgColorHeader=ffffff&bgTextureHeader=01_flat.png&bgImgOpacityHeader=35&borderColorHeader=ccc&fcHeader=333&iconColorHeader=6699cc&bgColorContent=ffffff&bgTextureContent=01_flat.png&bgImgOpacityContent=100&borderColorContent=dddddd&fcContent=333&iconColorContent=6699cc&bgColorDefault=ffffff&bgTextureDefault=01_flat.png&bgImgOpacityDefault=100&borderColorDefault=cccccc&fcDefault=336699&iconColorDefault=6699cc&bgColorHover=fffff0&bgTextureHover=01_flat.png&bgImgOpacityHover=100&borderColorHover=aaaaa0&fcHover=333&iconColorHover=6699cc&bgColorActive=6699cc&bgTextureActive=01_flat.png&bgImgOpacityActive=65&borderColorActive=cccccc&fcActive=ffffff&iconColorActive=ffffff&bgColorHighlight=fffff0&bgTextureHighlight=01_flat.png&bgImgOpacityHighlight=75&borderColorHighlight=aaaaa0&fcHighlight=363636&iconColorHighlight=6699cc&bgColorError=b81900&bgTextureError=01_flat.png&bgImgOpacityError=18&borderColorError=aaaaa0&fcError=ffffff&iconColorError=ffffff&bgColorOverlay=bbbbb0&bgTextureOverlay=01_flat.png&bgImgOpacityOverlay=20&opacityOverlay=50&bgColorShadow=000000&bgTextureShadow=01_flat.png&bgImgOpacityShadow=10&opacityShadow=20&thicknessShadow=5px&offsetTopShadow=-5px&offsetLeftShadow=-5px&cornerRadiusShadow=5px
  */
 
 
@@ -59,19 +59,19 @@
 .ui-widget { font-family: ; font-size: 1em; }
 .ui-widget .ui-widget { font-size: 1em; }
 .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button { font-family: ; font-size: 1em; }
-.ui-widget-content { border: 1px solid #dddddd; background: #ffffff url(images/ui-bg_flat_100_ffffff_40x100.png) 50% 50% repeat-x; color: #333333; }
-.ui-widget-content a { color: #333333; }
-.ui-widget-header { border: 1px solid #aaaaa0; background: #bbbbb0 url(images/ui-bg_flat_35_bbbbb0_40x100.png) 50% 50% repeat-x; color: #ffffff; font-weight: bold; }
-.ui-widget-header a { color: #ffffff; }
+.ui-widget-content { border: 1px solid #dddddd; background: #ffffff url(images/ui-bg_flat_100_ffffff_40x100.png) 50% 50% repeat-x; color: #333; }
+.ui-widget-content a { color: #333; }
+.ui-widget-header { border: 1px solid #ccc; background: #ffffff url(images/ui-bg_flat_35_ffffff_40x100.png) 50% 50% repeat-x; color: #333; font-weight: bold; }
+.ui-widget-header a { color: #333; }
 
 /* Interaction states
 ----------------------------------*/
-.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default { border: 1px solid #cccccc; background: #eeeee0 url(images/ui-bg_flat_100_eeeee0_40x100.png) 50% 50% repeat-x; font-weight: bold; color: #336699; }
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default { border: 1px solid #cccccc; background: #ffffff url(images/ui-bg_flat_100_ffffff_40x100.png) 50% 50% repeat-x; font-weight: bold; color: #336699; }
 .ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited { color: #336699; text-decoration: none; }
-.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus { border: 1px solid #aaaaa0; background: #eeeee0 url(images/ui-bg_flat_100_eeeee0_40x100.png) 50% 50% repeat-x; font-weight: bold; color: #555555; }
-.ui-state-hover a, .ui-state-hover a:hover { color: #555555; text-decoration: none; }
-.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active { border: 1px solid #cccccc; background: #ffffff url(images/ui-bg_glass_65_ffffff_1x400.png) 50% 50% repeat-x; font-weight: bold; color: #555555; }
-.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited { color: #555555; text-decoration: none; }
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus { border: 1px solid #aaaaa0; background: #fffff0 url(images/ui-bg_flat_100_fffff0_40x100.png) 50% 50% repeat-x; font-weight: bold; color: #333; }
+.ui-state-hover a, .ui-state-hover a:hover { color: #333; text-decoration: none; }
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active { border: 1px solid #cccccc; background: #6699cc url(images/ui-bg_flat_65_6699cc_40x100.png) 50% 50% repeat-x; font-weight: bold; color: #ffffff; }
+.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited { color: #ffffff; text-decoration: none; }
 .ui-widget :active { outline: none; }
 
 /* Interaction Cues
@@ -89,13 +89,13 @@
 ----------------------------------*/
 
 /* states and images */
-.ui-icon { width: 16px; height: 16px; background-image: url(images/ui-icons_222222_256x240.png); }
-.ui-widget-content .ui-icon {background-image: url(images/ui-icons_222222_256x240.png); }
-.ui-widget-header .ui-icon {background-image: url(images/ui-icons_ffffff_256x240.png); }
-.ui-state-default .ui-icon { background-image: url(images/ui-icons_0071bc_256x240.png); }
-.ui-state-hover .ui-icon, .ui-state-focus .ui-icon {background-image: url(images/ui-icons_0071bc_256x240.png); }
-.ui-state-active .ui-icon {background-image: url(images/ui-icons_0071bc_256x240.png); }
-.ui-state-highlight .ui-icon {background-image: url(images/ui-icons_0071bc_256x240.png); }
+.ui-icon { width: 16px; height: 16px; background-image: url(images/ui-icons_6699cc_256x240.png); }
+.ui-widget-content .ui-icon {background-image: url(images/ui-icons_6699cc_256x240.png); }
+.ui-widget-header .ui-icon {background-image: url(images/ui-icons_6699cc_256x240.png); }
+.ui-state-default .ui-icon { background-image: url(images/ui-icons_6699cc_256x240.png); }
+.ui-state-hover .ui-icon, .ui-state-focus .ui-icon {background-image: url(images/ui-icons_6699cc_256x240.png); }
+.ui-state-active .ui-icon {background-image: url(images/ui-icons_ffffff_256x240.png); }
+.ui-state-highlight .ui-icon {background-image: url(images/ui-icons_6699cc_256x240.png); }
 .ui-state-error .ui-icon, .ui-state-error-text .ui-icon {background-image: url(images/ui-icons_ffffff_256x240.png); }
 
 /* positioning */
@@ -330,6 +330,27 @@ input.ui-button { padding: .4em 1em; }
 
 /* workarounds */
 button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra padding in Firefox */
+/*
+ * jQuery UI Dialog 1.8.7
+ *
+ * Copyright 2010, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Dialog#theming
+ */
+.ui-dialog { position: absolute; padding: .2em; width: 300px; overflow: hidden; }
+.ui-dialog .ui-dialog-titlebar { padding: .5em 1em .3em; position: relative;  }
+.ui-dialog .ui-dialog-title { float: left; margin: .1em 16px .2em 0; } 
+.ui-dialog .ui-dialog-titlebar-close { position: absolute; right: .3em; top: 50%; width: 19px; margin: -10px 0 0 0; padding: 1px; height: 18px; }
+.ui-dialog .ui-dialog-titlebar-close span { display: block; margin: 1px; }
+.ui-dialog .ui-dialog-titlebar-close:hover, .ui-dialog .ui-dialog-titlebar-close:focus { padding: 0; }
+.ui-dialog .ui-dialog-content { position: relative; border: 0; padding: .5em 1em; background: none; overflow: auto; zoom: 1; }
+.ui-dialog .ui-dialog-buttonpane { text-align: left; border-width: 1px 0 0 0; background-image: none; margin: .5em 0 0 0; padding: .3em 1em .5em .4em; }
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset { float: right; }
+.ui-dialog .ui-dialog-buttonpane button { margin: .5em .4em .5em 0; cursor: pointer; }
+.ui-dialog .ui-resizable-se { width: 14px; height: 14px; right: 3px; bottom: 3px; }
+.ui-draggable .ui-dialog-titlebar { cursor: move; }
 /*
  * jQuery UI Tabs 1.8.7
  *
