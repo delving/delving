@@ -32,6 +32,9 @@ import eu.europeana.sip.model.CompileModel;
 import eu.europeana.sip.model.FieldMappingListModel;
 import eu.europeana.sip.model.SipModel;
 
+import javax.jnlp.BasicService;
+import javax.jnlp.ServiceManager;
+import javax.jnlp.UnavailableServiceException;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -45,6 +48,8 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
@@ -57,6 +62,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -156,6 +163,7 @@ public class RefinementPanel extends JPanel {
         p.setBorder(BorderFactory.createTitledBorder("Output Record"));
         JTextArea outputArea = new JTextArea(sipModel.getFieldCompileModel().getOutputDocument());
         outputArea.setEditable(false);
+        new URLLauncher(outputArea);
         p.add(scroll(outputArea), BorderLayout.CENTER);
         p.add(new JLabel("Note: URLs can be launched by double-clicking them.", JLabel.CENTER), BorderLayout.SOUTH);
         return p;
@@ -362,6 +370,78 @@ public class RefinementPanel extends JPanel {
                     }
                 }
             });
+        }
+    }
+
+    private class URLLauncher implements CaretListener {
+
+        private JTextArea outputArea;
+
+        private URLLauncher(JTextArea outputArea) {
+            this.outputArea = outputArea;
+            outputArea.addCaretListener(this);
+        }
+
+        @Override
+        public void caretUpdate(CaretEvent e) {
+            int dot = e.getDot();
+            int mark = e.getMark();
+            if (dot != mark) {
+                String text = outputArea.getText();
+                int min = Math.min(dot, mark);
+                int max = Math.min(text.length() - 1, Math.max(dot, mark));
+                String urlString = text.substring(min, max);
+                if (min > 1 && text.charAt(min - 1) == '>' && max < text.length() && text.charAt(max) == '<') {
+                    if (validUrl(urlString)) {
+                        showURL(urlString);
+                    }
+                    else {
+                        outputArea.select(min, min);
+                    }
+                }
+                else {
+                    while (min > 1 && text.charAt(min - 1) != '>') {
+                        min--;
+                    }
+                    while (max < text.length() - 1 && text.charAt(max + 1) != '<') {
+                        max++;
+                    }
+                    if (validUrl(text.substring(min, max + 1))) {
+                        outputArea.select(min, max + 1);
+                    }
+                    else {
+                        outputArea.select(min, min);
+                    }
+                }
+            }
+        }
+
+        private boolean validUrl(String urlString) {
+            try {
+                if (urlString.contains(">") || urlString.contains("<")) {
+                    return false;
+                }
+                new URL(urlString);
+                return true;
+            }
+            catch (MalformedURLException e1) {
+                return false;
+            }
+        }
+
+        boolean showURL(String urlString) {
+            try {
+                URL url = new URL(urlString);
+                BasicService bs = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
+                return bs.showDocument(url);
+            }
+            catch (UnavailableServiceException ue) {
+                System.out.println("Wanted to launch "+urlString);
+                return false;
+            }
+            catch (MalformedURLException e1) {
+                return false;
+            }
         }
     }
 }
