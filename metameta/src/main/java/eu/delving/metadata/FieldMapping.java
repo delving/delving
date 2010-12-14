@@ -38,7 +38,7 @@ public class FieldMapping implements Comparable<FieldMapping> {
         this.fieldDefinition = fieldDefinition;
     }
 
-    public FieldDefinition getFieldDefinition() {
+    public FieldDefinition getDefinition() {
         if (fieldDefinition == null) {
             throw new IllegalStateException("Expected that FieldMapping has fieldDefinition");
         }
@@ -46,7 +46,7 @@ public class FieldMapping implements Comparable<FieldMapping> {
     }
 
     public String getFieldNameString() {
-        return getFieldDefinition().getFieldNameString();
+        return getDefinition().getFieldNameString();
     }
 
     public void clearCode() {
@@ -132,7 +132,7 @@ public class FieldMapping implements Comparable<FieldMapping> {
 
     @Override
     public int compareTo(FieldMapping fieldMapping) {
-        return getFieldDefinition().compareTo(fieldMapping.getFieldDefinition());
+        return getDefinition().compareTo(fieldMapping.getDefinition());
     }
 }
 

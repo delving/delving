@@ -117,6 +117,15 @@ public class FieldDefinition implements Comparable<FieldDefinition> {
         return this;
     }
 
+    public String addOptionalConverter(String variable) {
+        if (validation != null && validation.converter != null) {
+            return variable + validation.converter.call;
+        }
+        else {
+            return variable;
+        }
+    }
+
     @XStreamAlias("validation")
     public static class Validation {
 

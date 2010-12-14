@@ -196,7 +196,7 @@ public class MappingPanel extends JPanel {
                 if (fieldDefinition != null) {
                     CodeGenerator generator = new CodeGenerator();
                     FieldMapping fieldMapping = new FieldMapping(fieldDefinition);
-                    generator.generateCodeFor(fieldMapping, createSelectedVariableList(), constantField.getText(), false);
+                    generator.generateCodeFor(fieldMapping, createSelectedVariableList(), constantField.getText());
                     sipModel.addFieldMapping(fieldMapping);
                 }
                 variablesList.clearSelection();

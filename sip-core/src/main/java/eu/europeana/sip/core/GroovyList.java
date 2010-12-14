@@ -46,7 +46,8 @@ public class GroovyList extends ArrayList<Object> {
         super(collection);
     }
 
-    public GroovyList(String [] array) {
+    public GroovyList(String... array) {
+        super(array.length);
         addAll(Arrays.asList(array));
     }
 

@@ -47,7 +47,7 @@ public class DictionaryDialog extends JDialog {
         setTitle(String.format("Dictionary for %s", fieldMapping.getFieldNameString()));
         this.fieldMapping = fieldMapping;
         this.finishedRunnable = finishedRunnable;
-        setTitle("Value Map for " + fieldMapping.getFieldDefinition().getTag());
+        setTitle("Value Map for " + fieldMapping.getDefinition().getTag());
         editorBox = new JComboBox(new EditorModel());
         JPanel p = new JPanel(new BorderLayout(6, 6));
         p.add(createSelectionSetter(), BorderLayout.NORTH);
@@ -200,7 +200,7 @@ public class DictionaryDialog extends JDialog {
 
     private class EditorModel extends AbstractListModel implements ComboBoxModel {
         private static final String COPY_VERBATIM = "";
-        private List<String> values = new ArrayList<String>(fieldMapping.getFieldDefinition().validation.factDefinition.options);
+        private List<String> values = new ArrayList<String>(fieldMapping.getDefinition().validation.factDefinition.options);
         private Object selectedItem = COPY_VERBATIM;
 
         @Override
