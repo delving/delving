@@ -5,6 +5,17 @@ import eu.europeana.sip.core.GroovyNode
 
 public class MappingCategory {
 
+  static Object power(GroovyList list, Closure closure) {  // operator **
+    multiply(mod(list, / +/), closure)
+  }
+
+  static Object plus(GroovyList listA, GroovyList listB) { // operator +
+    GroovyList both = new GroovyList()
+    both.addAll(listA)
+    both.addAll(listB)
+    return both;
+  }
+
   static Object multiply(GroovyList list, Closure closure) { // operator *
     for (Object child: list) {
       closure.call(child);
@@ -29,20 +40,32 @@ public class MappingCategory {
     return all;
   }
 
+  static GroovyList multiply(GroovyList list, String delimiter) {
+    Iterator walk = list.iterator();
+    StringBuilder out = new StringBuilder();
+    while (walk.hasNext()) {
+      out.append(walk.next());
+      if (walk.hasNext()) {
+        out.append(delimiter)
+      }
+    }
+    return new GroovyList(out.toString());
+  }
+
   static GroovyList mod(GroovyNode node, String regex) { // operator %
     return new GroovyList(node.text().split(regex));
   }
 
-  static String extractYear(GroovyList target) {
+  static GroovyList extractYear(GroovyList target) {
     return extractYear(target.text());
   }
 
-  static String extractYear(GroovyNode target) {
+  static GroovyList extractYear(GroovyNode target) {
     return extractYear(target.text());
   }
 
-  static extractYear(String text) {
-    def result = [];
+  static GroovyList extractYear(String text) {
+    GroovyList result = new GroovyList();
     switch (text) {
 
       case ~/$normalYear/:
@@ -87,15 +110,15 @@ public class MappingCategory {
     return result;
   }
 
-  static toId(GroovyNode identifier, spec) {
+  static GroovyList toId(GroovyNode identifier, spec) {
     return toId(identifier.toString(), spec);
   }
 
-  static toId(GroovyList identifier, spec) {
+  static GroovyList toId(GroovyList identifier, spec) {
     return toId(identifier.toString(), spec);
   }
 
-  static toId(String identifier, spec) {
+  static GroovyList toId(String identifier, spec) {
     if (!spec) {
       throw new MissingPropertyException("spec", String.class)
     }
@@ -109,7 +132,7 @@ public class MappingCategory {
       hash += '0123456789ABCDEF'[(b & 0xF0) >> 4]
       hash += '0123456789ABCDEF'[b & 0x0F]
     }
-    return ["$spec/$hash"];
+    return new GroovyList("$spec/$hash");
   }
 
   static String sanitize(GroovyNode node) {

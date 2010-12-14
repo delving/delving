@@ -509,12 +509,12 @@ public class SipModel {
 
     public void addFieldMapping(FieldMapping fieldMapping) {
         checkSwingThread();
-        getMappingModel().setMapping(fieldMapping.getFieldDefinition().path.toString(), fieldMapping);
+        getMappingModel().setMapping(fieldMapping.getDefinition().path.toString(), fieldMapping);
     }
 
     public void removeFieldMapping(FieldMapping fieldMapping) {
         checkSwingThread();
-        getMappingModel().setMapping(fieldMapping.getFieldDefinition().path.toString(), null);
+        getMappingModel().setMapping(fieldMapping.getDefinition().path.toString(), null);
     }
 
     public ListModel getFieldMappingListModel() {

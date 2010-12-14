@@ -136,7 +136,7 @@ public class RecordMapping {
             throw new RuntimeException("Field mappings must be empty to apply template");
         }
         for (FieldMapping fieldMapping : template.getFieldMappings()) {
-            fieldMappings.put(fieldMapping.getFieldDefinition().path.toString(), fieldMapping);
+            fieldMappings.put(fieldMapping.getDefinition().path.toString(), fieldMapping);
         }
     }
 
