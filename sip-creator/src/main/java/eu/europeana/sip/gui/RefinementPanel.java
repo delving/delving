@@ -119,6 +119,20 @@ public class RefinementPanel extends JPanel {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Groovy Code"));
         groovyCodeArea = new JTextArea(sipModel.getFieldCompileModel().getCodeDocument());
+        groovyCodeArea.setToolTipText(
+                "<html><h2>Operators</h2>" +
+                        "<ul>" +
+                        "<li><b>each</b>: the star operator runs the code in braces for every input entry, input * { }</li>" +
+                        "<li><b>combined</b>: the star-string-star operator concatenates with a delimiter, input * '; ' * { }</li>" +
+                        "<li><b>wordsplit</b>: the star-star operator splits inputs into words, input ** { ..it.. }</li>" +
+                        "<li><b>chop</b>: the percent-string-star operator splits inputs on a regular expression, input % /;/ * { }</li>" +
+                        "</ul>" +
+                        "<h2>Notes</h2>" +
+                        "<ul>" +
+                        "<li>Inside the braces the '<b>it</b>' variable holds the contents</li>" +
+                        "<li>it can easily be substituted like <b>&quot;</b>http://somewhere.com/images/${<b>it</b>}.jpg<b>&quot;</li>" +
+                        "</ul>"
+        );
         JScrollPane scroll = new JScrollPane(groovyCodeArea);
         p.add(scroll, BorderLayout.CENTER);
         p.add(createGroovySouth(), BorderLayout.SOUTH);
