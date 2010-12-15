@@ -56,11 +56,16 @@ $(document).ready(function() {
 
     $("button#edit-source").click(function(){
         editSource("editor");
+        $(this).addClass("ui-state-active");
+        $("button#edit-wysiwyg").removeClass("ui-state-active");
+        return false;
     });
     $("button#edit-wysiwyg").click(function(){
         eAL.toggle("editor","off");
-        editWysiwyg()
-//        tinyMCE.execCommand('mceAddControl', false, "editor");
+        editWysiwyg();
+        $(this).addClass("ui-state-active");
+        $("button#edit-source").removeClass("ui-state-active");
+        return false;
     });
 
 });
