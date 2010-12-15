@@ -185,17 +185,16 @@ public class MetaRepoImpl implements MetaRepo {
             log.error(errorMessage);
             throw new DataSetNotFoundException(errorMessage);
         }
-        firstStep.put(HarvestStep.LIST_SIZE, dataSet.getRecordCount());
+        firstStep.put(HarvestStep.LIST_SIZE, dataSet.getRecordCount()); // todo: not if some records don't validate
         firstStep.put(HarvestStep.NAMESPACES, dataSet.getNamespaces());
         firstStep.put(HarvestStep.CURSOR, 0);
         firstStep.put(HarvestStep.EXPIRATION, new Date(System.currentTimeMillis() + 1000 * harvestStepSecondsToLive));
-        firstStep.put(HarvestStep.ACCESS_KEY, accessKey);
         steps.insert(firstStep);
-        return createHarvestStep(firstStep, steps);
+        return createHarvestStep(firstStep, steps, accessKey);
     }
 
     @Override
-    public HarvestStep getHarvestStep(String resumptionToken) throws ResumptionTokenNotFoundException, DataSetNotFoundException {
+    public HarvestStep getHarvestStep(String resumptionToken, String accessKey) throws ResumptionTokenNotFoundException, DataSetNotFoundException {
         ObjectId objectId;
         // otherwise a illegal resumptionToken from the mongodb perspective throws a general exception
         try {
@@ -210,7 +209,7 @@ public class MetaRepoImpl implements MetaRepo {
         if (step == null) {
             throw new ResumptionTokenNotFoundException("Unable to find resumptionToken: " + resumptionToken);
         }
-        return createHarvestStep(step, steps);
+        return createHarvestStep(step, steps, accessKey);
     }
 
     @Override
@@ -221,7 +220,7 @@ public class MetaRepoImpl implements MetaRepo {
         steps.remove(query);
     }
 
-    private HarvestStep createHarvestStep(DBObject object, DBCollection steps) throws DataSetNotFoundException {
+    private HarvestStep createHarvestStep(DBObject object, DBCollection steps, String accessKey) throws DataSetNotFoundException {
         HarvestStep harvestStep = factory.createHarvestStep(object);
         String set = harvestStep.getPmhRequest().getSet();
         DataSet dataSet = getDataSet(set);
@@ -236,7 +235,6 @@ public class MetaRepoImpl implements MetaRepo {
             nextStep.put(HarvestStep.LIST_SIZE, object.get(HarvestStep.LIST_SIZE));
             nextStep.put(HarvestStep.CURSOR, harvestStep.getCursor() + responseListSize);
             nextStep.put(HarvestStep.EXPIRATION, new Date(System.currentTimeMillis() + 1000 * harvestStepSecondsToLive));
-            nextStep.put(HarvestStep.ACCESS_KEY, object.get(HarvestStep.ACCESS_KEY));
             steps.insert(nextStep);
             harvestStep.setNextStepId((ObjectId) nextStep.get(MONGO_ID));
         }

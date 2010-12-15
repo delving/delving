@@ -66,7 +66,7 @@ public interface MetaRepo {
 
     HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String accessKey) throws DataSetNotFoundException;
 
-    HarvestStep getHarvestStep(String resumptionToken) throws ResumptionTokenNotFoundException, DataSetNotFoundException;
+    HarvestStep getHarvestStep(String resumptionToken, String accessKey) throws ResumptionTokenNotFoundException, DataSetNotFoundException;
 
     void removeExpiredHarvestSteps();
 
@@ -146,7 +146,7 @@ public interface MetaRepo {
         Date getExpiration();
         int getListSize();
         int getCursor();
-        List<? extends Record> getRecords() throws DataSetNotFoundException, MappingNotFoundException, AccessKeyException;
+        List<? extends Record> getRecords(String accessKey) throws DataSetNotFoundException, MappingNotFoundException, AccessKeyException;
         PmhRequest getPmhRequest();
         DBObject getNamespaces();
         boolean hasNext();
@@ -158,7 +158,6 @@ public interface MetaRepo {
         String CURSOR = "cursor";
         String PMH_REQUEST = "pmhRequest";
         String NAMESPACES = "namespaces";
-        String ACCESS_KEY = "access";
     }
 
     public interface PmhRequest {

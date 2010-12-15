@@ -68,13 +68,12 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
     }
 
     @Override
-    public List<? extends MetaRepo.Record> getRecords() throws DataSetNotFoundException, MappingNotFoundException, AccessKeyException {
+    public List<? extends MetaRepo.Record> getRecords(String accessKey) throws DataSetNotFoundException, MappingNotFoundException, AccessKeyException {
         MetaRepo.PmhRequest request = getPmhRequest();
         MetaRepo.DataSet dataSet = metaRepo.getDataSet(request.getSet());
         if (dataSet == null) {
             throw new DataSetNotFoundException("No data set found by the name " + request.getSet());
         }
-        String accessKey = (String) object.get(ACCESS_KEY);
         return dataSet.getRecords(request.getMetadataPrefix(), getCursor(), getListSize(), request.getFrom(), request.getUntil(), accessKey);
     }
 

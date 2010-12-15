@@ -207,7 +207,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
                metadataPrefix={harvestStep.getPmhRequest.getMetadataPrefix}
                set={setSpec}>{request.getRequestURL}</request>
       <ListIdentifiers>
-        { for (record <- harvestStep.getRecords) yield
+        { for (record <- harvestStep.getRecords(pmhRequestEntry.pmhRequestItem.accessKey)) yield
         <header status={recordStatus(record)}>
           <identifier>{setSpec}:{record.getIdentifier}</identifier>
           <datestamp>{record.getModifiedDate}</datestamp>
@@ -233,7 +233,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
      <request verb="ListRecords" from={printDate(pmhObject.getFrom)} until={printDate(pmhObject.getUntil)}
               metadataPrefix={pmhObject.getMetadataPrefix}>{request.getRequestURL}</request>
      <ListRecords>
-            {for (record <- harvestStep.getRecords) yield
+            {for (record <- harvestStep.getRecords(pmhRequestEntry.pmhRequestItem.accessKey)) yield
               renderRecord(record, pmhObject.getMetadataPrefix, pmhObject.getSet)
             }
        {renderResumptionToken(harvestStep)}
@@ -276,7 +276,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   private def getHarvestStep(pmhRequestEntry: PmhRequestEntry) : HarvestStep = {
     if (!pmhRequestEntry.resumptionToken.isEmpty)
-      metaRepo.getHarvestStep(pmhRequestEntry.resumptionToken)
+      metaRepo.getHarvestStep(pmhRequestEntry.resumptionToken, pmhRequestEntry.pmhRequestItem.accessKey)
     else
       createFirstHarvestStep(pmhRequestEntry.pmhRequestItem)
   }
