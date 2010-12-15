@@ -7,7 +7,7 @@ function toggleEditor(id) {
     }
 }
 
-function editSOURCE(id){
+function editSource(id){
     tinyMCE.execCommand('mceRemoveControl', false, id);
 
     editAreaLoader.init({
@@ -20,12 +20,12 @@ function editSOURCE(id){
     });
 
 }
-$(document).ready(function() {
 
+function editWysiwyg(){
     tinyMCE.init({
         mode : "textareas"
         ,theme : "advanced"
-        ,plugins: "advimage,template"
+        ,plugins: "advimage,template,autoresize"
         ,fullscreen_new_window : true,
         fullscreen_settings : {
             theme_advanced_path_location : "top"
@@ -37,26 +37,30 @@ $(document).ready(function() {
         ,apply_source_formatting : true
         ,indent_mode : "simple"
         ,preformatted : false
+        ,object_resizing : false
         ,theme_advanced_toolbar_location : "top"
         ,theme_advanced_toolbar_align : "left"
         ,theme_advanced_buttons1 : "|,template,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,|,bullist,numlist,|,undo,redo,|,link,unlink,anchor,|,image,|,forecolor,backcolor,|,removeformat,source"
         ,theme_advanced_buttons2 : ""
         ,theme_advanced_statusbar_location : "bottom"
-//        ,content_css : baseThemePath+"/css/reset.css,"+baseThemePath+"/css/text.css,"+baseThemePath+"/css/960.css,"+baseThemePath+"/css/screen.css"
         ,content_css : baseThemePath+"/css/reset.css,"+baseThemePath+"/css/text.css,"+baseThemePath+"/css/960.css,"+baseThemePath+"/css/screen.css"
         ,extended_valid_elements : "dl|dt|dd"
         ,external_image_list_url : portalName+"/_.img?javascript=true"
         ,template_external_list_url : baseThemePath+"/js/tiny-templates.js"
         ,external_link_list_url : portalName+"/_.dml?javascript=true"
     });
+}
+$(document).ready(function() {
+
+    editSource("editor");
 
     $("button#edit-source").click(function(){
-        editSOURCE("editor");
+        editSource("editor");
     });
     $("button#edit-wysiwyg").click(function(){
-        //toggleEditor("editor");
         eAL.toggle("editor","off");
-        tinyMCE.execCommand('mceAddControl', false, "editor");
+        editWysiwyg()
+//        tinyMCE.execCommand('mceAddControl', false, "editor");
     });
 
 });

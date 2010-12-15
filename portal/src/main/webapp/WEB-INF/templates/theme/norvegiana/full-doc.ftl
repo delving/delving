@@ -68,36 +68,17 @@
 
             <#else>
                 <dd>
-                    <a href="/${portalName}/login.html" class="disabled" onclick="highLight('#mustlogin'); writeMessage('div#msg-save-item','<@spring.message '_mine.user.notification.login.required'/>'); return false;"><@spring.message '_action.add.tag' /></a>
+                    <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); showMessage('error','<@spring.message '_mine.user.notification.login.required'/>'); return false;"><@spring.message '_action.add.tag' /></a>
                 </dd>
 
                 <dd>
-                    <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); writeMessage('div#msg-save-item','<@spring.message '_mine.user.notification.login.required'/>'); return false;"><@spring.message '_action.save.to.mine' /></a>
+                    <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); showMessage('error','<@spring.message '_mine.user.notification.login.required'/>'); return false;"><@spring.message '_action.save.to.mine' /></a>
                 </dd>
 
 
             </#if>
             <div id="msg-save-item" class="msg-hide"></div>
         </dl>
-
-
-
-            <#--<p>-->
-            <#--<a href="inc_related_content.ftl#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');return false;"><@spring.message '_action.save.to.mine' /></a>-->
-
-            <#--<div id="msg-save-item" class="msg-hide"></div>-->
-            <#--</p>-->
-
-            <#--<p>-->
-            <#--<h6><@spring.message '_action.add.tag' /></h6>-->
-
-
-            <#--<form action="inc_related_content.ftl#" method="post" onsubmit="addTag('SocialTag', document.getElementById('tag').value,'${result.fullDoc.id}','${result.fullDoc.thumbnails[0]?js_string}','${postTitle}','${result.fullDoc.europeanaType}'); return false;" id="form-addtag" name="form-addtag" accept-charset="UTF-8">-->
-                <#--<input type="text" name="tag" id="tag" maxlength="50" class="text"/>-->
-                <#--<input type="submit" class="button" value="Add"/>-->
-            <#--</form>-->
-            <#--<div id="msg-save-tag" class="hide"></div>-->
-        <#--</p>-->
 </section>
 
 
