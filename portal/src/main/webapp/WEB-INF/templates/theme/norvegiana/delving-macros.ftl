@@ -30,19 +30,11 @@
 <#macro adminBlock>
     <#if user?? && (user.role == ('ROLE_ADMINISTRATOR') || user.role == ('ROLE_GOD'))>
     <section id="adminBlock">
-        <#--<table class="user-options">-->
-            <#--<tbody>-->
-                    <#--&lt;#&ndash;<th scope="rows"><@spring.message '_cms.administration.title' /></th>&ndash;&gt;-->
-                    <#--<td><a class="ui-widget button adm <#if thisPage == 'static-page.dml'>ui-state-active</#if>" href="/${portalName}/_.dml"><span class="ui-icon ui-icon-document"></span><@spring.message '_cms.administration.pages' /></a></td>-->
-                    <#--<td><a class="ui-widget button adm <#if thisPage == 'static-image.dml'>ui-state-active</#if>" href="/${portalName}/_.img"><span class="ui-icon ui-icon-image"></span><@spring.message '_cms.administration.images' /></a></td>-->
-                    <#--<td><a class="ui-widget button adm <#if thisPage == 'administration.html'>ui-state-active</#if>" href="/${portalName}/administration.html"><span class="ui-icon ui-icon-person"></span><@spring.message '_cms.administration.users' /></a></td>-->
-                <#--</tr>-->
-            <#--</tbody>-->
-        <#--</table>--> 
         <ul id="admin-menu">
             <li><a class="<#if thisPage == 'static-page.dml'>active</#if>" href="/${portalName}/_.dml"><@spring.message '_cms.administration.pages' /></a></li>
             <li><a class="<#if thisPage == 'static-image.dml'>active</#if>" href="/${portalName}/_.img"><@spring.message '_cms.administration.images' /></a></li>
             <li><a class="<#if thisPage == 'administration.html'>active</#if>" href="/${portalName}/administration.html"><@spring.message '_cms.administration.users' /></a></li>
+            <li><a class="<#if thisPage == 'statistics.html'>active</#if>" href="/${portalName}/statistics.html"><@spring.message '_portal.ui.statistics' /></a></li>
         </ul>
     </section>
 
