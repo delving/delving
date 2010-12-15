@@ -91,7 +91,7 @@ public interface MetaRepo {
         void parseRecords(InputStream inputStream) throws RecordParseException;
         void setSourceHash(String hash);
 
-        void setMapping(RecordMapping recordMapping);
+        void setMapping(RecordMapping recordMapping, boolean accessKeyRequired);
         void setMappingHash(String metadataPrefix, String hash);
 
         int getRecordsIndexed();
@@ -151,6 +151,7 @@ public interface MetaRepo {
         DBObject getNamespaces();
         boolean hasNext();
         String nextResumptionToken();
+        void setNextStepId(ObjectId objectId);
 
         String EXPIRATION = "exp";
         String LIST_SIZE = "listSize";
