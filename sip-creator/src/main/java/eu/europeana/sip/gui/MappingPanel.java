@@ -74,7 +74,7 @@ public class MappingPanel extends JPanel {
     private JButton createMappingButton = new JButton(String.format(CREATE_FOR, "?"));
     private ObviousMappingDialog obviousMappingDialog;
     private JButton createObviousMappingButton = new JButton("Create obvious mappings");
-    private JButton removeMappingButton = new JButton("Remove the selected mapping");
+    private JButton removeMappingsButton = new JButton("Remove selected mappings");
     private JList variablesList, mappingList, fieldList;
     private JEditorPane statisticsView = new JEditorPane();
 
@@ -134,7 +134,7 @@ public class MappingPanel extends JPanel {
         JPanel p = new JPanel(new BorderLayout(5, 5));
         p.setBorder(BorderFactory.createTitledBorder("Field Mappings"));
         mappingList = new JList(sipModel.getFieldMappingListModel());
-        mappingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        mappingList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         mappingList.setCellRenderer(new FieldMappingListModel.CellRenderer());
         p.add(scroll(mappingList), BorderLayout.CENTER);
         p.add(createButtonPanel(), BorderLayout.SOUTH);
@@ -147,8 +147,8 @@ public class MappingPanel extends JPanel {
         p.add(createMappingButton);
         createObviousMappingButton.setEnabled(false);
         p.add(createObviousMappingButton);
-        removeMappingButton.setEnabled(false);
-        p.add(removeMappingButton);
+        removeMappingsButton.setEnabled(false);
+        p.add(removeMappingsButton);
         return p;
     }
 
@@ -212,13 +212,15 @@ public class MappingPanel extends JPanel {
                 obviousMappingDialog.setVisible(true);
             }
         });
-        removeMappingButton.setEnabled(false);
-        removeMappingButton.addActionListener(new ActionListener() {
+        removeMappingsButton.setEnabled(false);
+        removeMappingsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
-                if (fieldMapping != null) {
-                    sipModel.removeFieldMapping(fieldMapping);
+                for (Object value : mappingList.getSelectedValues()) {
+                    FieldMapping fieldMapping = (FieldMapping)value;
+                    if (fieldMapping != null) {
+                        sipModel.removeFieldMapping(fieldMapping);
+                    }
                 }
             }
         });
@@ -227,10 +229,10 @@ public class MappingPanel extends JPanel {
             public void valueChanged(ListSelectionEvent e) {
                 FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
                 if (fieldMapping != null) {
-                    removeMappingButton.setEnabled(true);
+                    removeMappingsButton.setEnabled(true);
                 }
                 else {
-                    removeMappingButton.setEnabled(false);
+                    removeMappingsButton.setEnabled(false);
                 }
             }
         });

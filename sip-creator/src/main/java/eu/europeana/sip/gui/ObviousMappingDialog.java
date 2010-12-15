@@ -52,6 +52,16 @@ public class ObviousMappingDialog extends JDialog {
 
     public ObviousMappingDialog(Frame owner, List<FieldMapping> mappings, final Creator creator) {
         super(owner, "Obvious Mappings", true);
+        JPanel p = new JPanel(new BorderLayout());
+        p.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        p.add(createBoxPanel(mappings), BorderLayout.CENTER);
+        p.add(createSouthPanel(creator), BorderLayout.SOUTH);
+        getContentPane().add(p);
+        pack();
+        setLocationRelativeTo(null);
+    }
+
+    private JPanel createBoxPanel(List<FieldMapping> mappings) {
         JPanel boxPanel = new JPanel(new GridLayout(0, 2, 5, 5));
         boxPanel.setBorder(BorderFactory.createTitledBorder("Fields"));
         for (FieldMapping mapping : mappings) {
@@ -59,9 +69,44 @@ public class ObviousMappingDialog extends JDialog {
             boxPanel.add(box);
             boxes.add(box);
         }
-        getContentPane().add(boxPanel, BorderLayout.CENTER);
+        return boxPanel;
+    }
+
+    private JPanel createSouthPanel(Creator creator) {
+        JPanel p = new JPanel(new GridLayout(0, 1, 5, 5));
+        p.add(createSelectPanel());
+        p.add(createOkButton(creator));
+        return p;
+    }
+
+    private JPanel createSelectPanel() {
+        JButton all = new JButton("All");
+        all.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                for (MappingCheckBox box : boxes) {
+                    box.setSelected(true);
+                }
+            }
+        });
+        JButton none = new JButton("Clear");
+        none.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                for (MappingCheckBox box : boxes) {
+                    box.setSelected(false);
+                }
+            }
+        });
+        JPanel panel = new JPanel(new GridLayout(1, 0, 5, 5));
+        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        panel.add(all);
+        panel.add(none);
+        return panel;
+    }
+
+    private JButton createOkButton(final Creator creator) {
         JButton okButton = new JButton("Generate selected obvious mappings");
-        getContentPane().add(okButton, BorderLayout.SOUTH);
         okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -73,8 +118,7 @@ public class ObviousMappingDialog extends JDialog {
                 setVisible(false);
             }
         });
-        pack();
-        setLocationRelativeTo(null);
+        return okButton;
     }
 
     private class MappingCheckBox extends JCheckBox {
