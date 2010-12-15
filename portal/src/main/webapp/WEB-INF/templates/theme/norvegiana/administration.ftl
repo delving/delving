@@ -33,6 +33,7 @@
                 <thead>
                 <tr>
                     <th><@spring.message '_mine.email.address' /></th>
+                    <th><@spring.message '_mine.username' /></th>
                     <th><@spring.message '_cms.user.role.current' /></th>
                     <th><@spring.message '_cms.user.role.new' /></th>
                     <th></th>
@@ -46,6 +47,7 @@
                         <input type="hidden" id="userEmail" name="userEmail" value="${userEdit.email}"/>
                         <tr>
                             <td width="150">${userEdit.email}</td>
+                            <td width="150">${userEdit.userName}</td>
                             <td width="150">
                                 <#switch userEdit.role>
                                     <#case "ROLE_GOD">
