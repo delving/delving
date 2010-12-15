@@ -173,7 +173,7 @@ public class RefinementPanel extends JPanel {
                     CodeGenerator codeGenerator = new CodeGenerator();
                     SourceVariable sourceVariable = getSourceVariable(fieldMapping);
                     fieldMapping.createDictionary(sourceVariable.getNode().getStatistics().getHistogramValues());
-                    codeGenerator.generateCodeFor(fieldMapping, sourceVariable, "", true);
+                    codeGenerator.generateCodeFor(fieldMapping, sourceVariable, true);
                     setFieldMapping(fieldMapping);
                 }
             }
@@ -221,7 +221,7 @@ public class RefinementPanel extends JPanel {
                     fieldMapping.dictionary = null;
                     CodeGenerator codeGenerator = new CodeGenerator();
                     SourceVariable sourceVariable = getSourceVariable(fieldMapping);
-                    codeGenerator.generateCodeFor(fieldMapping, sourceVariable, "", false);
+                    codeGenerator.generateCodeFor(fieldMapping, sourceVariable, false);
                     setFieldMapping(fieldMapping);
                 }
             }
@@ -283,10 +283,10 @@ public class RefinementPanel extends JPanel {
 
     private void setFieldMapping(FieldMapping fieldMapping) {
         if (fieldMapping != null) {
-            sipModel.getFieldCompileModel().setSelectedPath(fieldMapping.getFieldDefinition().path.toString());
+            sipModel.getFieldCompileModel().setSelectedPath(fieldMapping.getDefinition().path.toString());
             AnalysisTree.Node node = getNode(fieldMapping);
             if (node != null) {
-                dictionaryCreate.setEnabled(fieldMapping.dictionary == null && CodeGenerator.isDictionaryPossible(fieldMapping.getFieldDefinition(), node));
+                dictionaryCreate.setEnabled(fieldMapping.dictionary == null && CodeGenerator.isDictionaryPossible(fieldMapping.getDefinition(), node));
             }
             else {
                 dictionaryCreate.setEnabled(false);

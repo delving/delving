@@ -81,7 +81,7 @@ public class ObviousMappingDialog extends JDialog {
         private FieldMapping mapping;
 
         private MappingCheckBox(FieldMapping mapping) {
-            super(mapping.getFieldDefinition().getFieldNameString(), true);
+            super(mapping.getDefinition().getFieldNameString(), true);
             this.mapping = mapping;
         }
     }
