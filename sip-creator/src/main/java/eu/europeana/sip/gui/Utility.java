@@ -32,8 +32,31 @@ import java.awt.Container;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class LayoutUtil {
-    
+public class Utility {
+
+    public static final String GROOVY_TOOL_TIP = "<html><table cellpadding=10><tr><td>" +
+            "<h2>Operators</h2>" +
+            "<ul>" +
+            "<li><b>each</b>: the star operator runs the code in braces for every input entry<br>" +
+            "<b><code>input * {}</code></li></b>" +
+            "<li><b>concat</b>: the star-string-star operator concatenates with a delimiter<br>" +
+            "<b><code>input * '; ' * {}</code></b></li>" +
+            "<li><b>word</b>: the star-star operator splits inputs into words<br>" +
+            "<b><code>input ** {}</code></b></li>" +
+            "<li><b>split</b>: the  operator splits inputs on a regular expression<br>" +
+            "<b><code>input % /;/ * {}</code></b></li>" +
+            "<li><b>choose</b>: the square brackets operator selects one entry<br>" +
+            "first <b><code>input[0] * {}</code></b><br>" +
+            "last <b><code>input[-1] * {}</code></b></li>" +
+            "</ul>" +
+            "<h2>Notes</h2>" +
+            "<ul>" +
+            "<li>Inside the braces the '<b>it</b>' variable holds the contents</li>" +
+            "<li>it can easily be substituted like <b>&quot;</b>http://somewhere.com/images/${<b>it</b>}.jpg<b>&quot;</li>" +
+            "</ul>" +
+            "<br><br>" +
+            "</td></tr></table></html>";
+
     private static SpringLayout.Constraints getConstraintsForCell(int row, int col, Container parent, int cols) {
         SpringLayout layout = (SpringLayout) parent.getLayout();
         Component c = parent.getComponent(row * cols + col);
