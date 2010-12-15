@@ -97,7 +97,7 @@ function showMessage(messageClass, messageString){
 //        $("#messages").css("position","fixed");
     $("#messages").addClass(messageClass).slideDown("slow").delay(5000).slideUp("slow");
     $("#messages").click(function(){
-        $(this).slideUp("slow").delay(2000).css("display","none");
+        $(this).stop(true, true).css("display","none");
     });
     
 
