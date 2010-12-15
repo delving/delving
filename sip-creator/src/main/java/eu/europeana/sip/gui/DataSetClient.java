@@ -78,6 +78,10 @@ public class DataSetClient {
         }
     }
 
+    public boolean isConnected() {
+        return periodicListFetchTimer.isRunning();
+    }
+
     public void sendCommand(String spec, DataSetCommand command) {
         executor.execute(new CommandSender(spec, command));
     }

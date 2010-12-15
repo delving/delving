@@ -189,9 +189,12 @@ public class DataSetActions {
         };
     }
 
-    private boolean canUpload(File file, DataSetListModel.Entry entry) {
-        if (entry.getDataSetStore() == null || entry.getDataSetInfo() == null || file == null) {
+    private boolean canUpload(FileType fileType, File file, DataSetListModel.Entry entry) {
+        if (!dataSetClient.isConnected() || file == null) {
             return false;
+        }
+        if (entry.getDataSetInfo() == null) {
+            return fileType == FileType.FACTS;
         }
         String hash = Hasher.getHash(file.getName());
         return !entry.getDataSetInfo().hasHash(hash);
@@ -202,6 +205,10 @@ public class DataSetActions {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 FileStore.DataSetStore store = entry.getDataSetStore();
+                if (!store.getFacts().isValid()) {
+                    sipModel.getUserNotifier().tellUser("Sorry, but there are still facts that must be filled in.");
+                    return;
+                }
                 ProgressMonitor progressMonitor = new ProgressMonitor(frame, "Uploading", String.format("Uploading facts for %s", store.getSpec()), 0, 100);
                 final ProgressListener progressListener = new ProgressListener.Adapter(progressMonitor) {
                     @Override
@@ -209,15 +216,15 @@ public class DataSetActions {
                         setEnabled(!success);
                     }
                 };
+                sipModel.setDataSetStore(store);
                 dataSetClient.uploadFile(FileType.FACTS, store.getFactsFile(), progressListener);
             }
 
             @Override
             boolean isEnabled(DataSetListModel.Entry entry) {
                 FileStore.DataSetStore store = entry.getDataSetStore();
-                return !(store == null || !store.getFacts().isValid()) && canUpload(entry.getDataSetStore().getFactsFile(), entry);
+                return store != null && canUpload(FileType.FACTS, entry.getDataSetStore().getFactsFile(), entry);
             }
-
         };
     }
 
@@ -233,14 +240,15 @@ public class DataSetActions {
                         setEnabled(!success);
                     }
                 };
+                sipModel.setDataSetStore(store);
                 dataSetClient.uploadFile(FileType.SOURCE, store.getSourceFile(), progressListener);
             }
 
             @Override
             boolean isEnabled(DataSetListModel.Entry entry) {
-                return canUpload(entry.getDataSetStore().getSourceFile(), entry);
+                FileStore.DataSetStore store = entry.getDataSetStore();
+                return store != null && canUpload(FileType.SOURCE, entry.getDataSetStore().getSourceFile(), entry);
             }
-
         };
     }
 
@@ -256,12 +264,13 @@ public class DataSetActions {
                         setEnabled(!success);
                     }
                 };
+                sipModel.setDataSetStore(store);
                 dataSetClient.uploadFile(FileType.MAPPING, store.getMappingFile(prefix), progressListener);
             }
 
             @Override
             boolean isEnabled(DataSetListModel.Entry entry) {
-                return canUpload(entry.getDataSetStore().getMappingFile(prefix), entry);
+                return canUpload(FileType.MAPPING, entry.getDataSetStore().getMappingFile(prefix), entry);
             }
 
         };
@@ -425,5 +434,4 @@ public class DataSetActions {
         panel.add(hide);
         return panel;
     }
-
 }
