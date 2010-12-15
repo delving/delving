@@ -20,7 +20,7 @@
             <section role="main" class="main">
 
                 <div class="grid_8">
-                    <h2><@spring.message '_cms.administration.pages' /></h2>
+                    <h1><@spring.message '_cms.administration.pages' /></h1>
                     <table summary="List of existing pages" class="user-pages zebra" width="100%">
                         <thead>
                         <tr>
@@ -136,7 +136,7 @@
                             <form action="${page.path}" method="POST" id="form-edit" accept-charset="utf-8">
                                 <#--<a href="javascript:toggleEditor('editor');" class=""><@spring.message '_cms.html.editor.show.hide' /></a>-->
 
-                                <textarea name="content" id="editor" style="width: 100%;height:400px;">${page.getContent(locale)?html}</textarea>
+                                <textarea name="content" id="editor" style="width: 100%;height:400px;">${page.getContent(locale)}</textarea>
 
                                     <hr/>
                                 <input type="submit" name="submit" class="button btn-strong" value="<@spring.message '_cms.save' />"/>
