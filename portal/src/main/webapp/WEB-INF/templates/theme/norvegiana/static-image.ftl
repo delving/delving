@@ -18,7 +18,7 @@
 
             <section role="main" class="grid_12" >
 
-                <h2><@spring.message '_cms.administration.images' /></h2>
+                <h1><@spring.message '_cms.administration.images' /></h1>
 
                 <div class="grid_8 alpha">
                      <table summary="List of existing images" class="user-options zebra">
@@ -44,7 +44,8 @@
                 <div class="grid_4 omega">
 
                     <fieldset>
-                        <legend><@spring.message '_cms.image.create' /></legend>
+                        <h2><@spring.message '_cms.image.create' /></h2>
+                        <#--<legend><@spring.message '_cms.image.create' /></legend>-->
 
                     <form method="POST" action="/${portalName}/images/_.img" enctype="multipart/form-data">
                         <table>
@@ -52,7 +53,7 @@
                                 <td><input type="file" name="file" size="30"/></td>
                             </tr>
                             <tr>
-                                <td><input type="submit" name="submit" value="<@spring.message '_cms.upload' />"></td>
+                                <td><input type="submit" name="submit" class="button" value="<@spring.message '_cms.upload' />"></td>
                             </tr>
                         </table>
                     </form>
@@ -103,13 +104,13 @@
             <section role="main" class="grid_12">
 
 
-                    <h2><@spring.message '_cms.administration.images' /></h2>
+                <h1><@spring.message '_cms.administration.images' /></h1>
 
 
                 <div class="grid_5 alpha">
                     <#if imageExists>
                         <img src="/${portalName}/${imagePath}" alt="${imagePath}" style="max-width:100%"/><br/>
-                        ${imagePath}
+
                     <#else>
                         <p><@spring.message '_cms.image.not.exist' /></p>
                     </#if>
@@ -121,6 +122,7 @@
                     <#if edit??>
                         <#if edit>
                             <div id="pageForm">
+                                <h6 class="ui-widget ui-state-highlight">${imagePath}</h6>
                                 <form method="POST" enctype="multipart/form-data">
                                     <table>
                                         <tr>
@@ -129,7 +131,7 @@
                                         </tr>
                                         <tr>
                                             <td></td>
-                                            <td><input type="submit" name="submit" value="<@spring.message '_cms.upload' />" class="btn-strong"></td>
+                                            <td><input type="submit" name="submit" class="button" value="<@spring.message '_cms.upload' />" class="btn-strong"></td>
                                         </tr>
                                     </table>
                                 </form>
@@ -138,20 +140,20 @@
                                 <form method="POST">
                                     <table>
                                         <tr>
-                                            <td width="200" align="right">Nieuwe afbeelding URL</td>
+                                            <td width="200" align="right"><@spring.message '_cms.image.new.path'/></td>
                                             <td><input type="newPath" name="newPath" value="${imagePath}" size="30"/></td>
                                         </tr>
                                         <tr>
                                             <td></td>
-                                            <td><input type="submit" name="submit" value="Afbeelding hernoemen"  class="btn-strong"></td>
+                                            <td><input type="submit" name="submit" class="button" value="<@spring.message '_cms.image.rename'/>"  class="btn-strong"></td>
                                         </tr>
                                     </table>
                                 </form>
                             </div>
                         <#else>
-                            <p><a href="/${portalName}/${imagePath}?edit=true" class="button"><@spring.message '_cms.image.change' /></a></p>
+                            <a href="/${portalName}/${imagePath}?edit=true" class="button"><@spring.message '_cms.image.change' /></a>
                         </#if>
-                        <p><a href="/${portalName}/_.img" class="button"><@spring.message '_cms.image.list' /></a></p>
+                            <a href="/${portalName}/_.img" class="button"><@spring.message '_cms.image.list' /></a>
                     </#if>
 
                 </div>

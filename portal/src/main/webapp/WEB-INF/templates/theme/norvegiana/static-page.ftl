@@ -23,10 +23,8 @@
         <@addHeader "${portalDisplayName}", "",[],[]/>
 
         <section role="main" class="main">
-
+            <h1 class="grid_12"><@spring.message '_cms.administration.pages' /></h1>
             <div class="grid_8">
-                <h1><@spring.message '_cms.administration.pages' /></h1>
-
                 <table summary="List of existing pages" class="user-pages zebra" width="100%">
                     <thead>
                     <tr>
@@ -38,7 +36,6 @@
                             <td>
                                 <a href="${pagePath}?edit=true">
                                     <span class="ui-icon ui-icon-document"></span>
-                                    <span class="ui-icon ui-icon-document"></span>
                                 ${pagePath}</a></td>
                             <td width="100"><a href="${pagePath}?edit=true" class="btn-strong">
                                 <span class="ui-icon ui-icon-pencil"></span>
@@ -47,7 +44,7 @@
                             <td width="100">
                                 <a class="delete" id="${pagePath_index}" href="${pagePath}?delete=true">
                                     <span class="ui-icon ui-icon-trash"></span>
-                                <@spring.message '_cms.delete' />
+                                    <@spring.message '_cms.delete' />
                                 </a>
 
                             </td>
@@ -65,7 +62,7 @@
                 </ol>
                 <form method="get" action="" id="form-makePage" onsubmit="createPage(this.pagePath.value);return false;">
                     /${portalName}/&#160;<input type="text" value="" name="pagePath" id="pagePath"/>
-                    <input type="submit" value="<@spring.message '_cms.create' />" id="makePage"/>
+                    <input type="submit" class="button" value="<@spring.message '_cms.create' />" id="makePage"/>
                 </form>
 
             </div>
@@ -156,18 +153,15 @@
             <div class="clear"></div>
             <#else>
                 <div id="content" class="content-preview">${page.getContent(locale)}</div>
-                <div>
+
+                <hr/>
                     <#if page.id??>
-                        <p>
                             <a href="${page.path}?edit=true&version=${page.id}" class="button"><@spring.message '_cms.page.edit' /></a>
-                        </p>
                         <#else>
-                            <p>
-                                <a href="${page.path}?edit=true" class="button"><@spring.message '_cms.page.edit' /></a>
-                            </p>
+                            <a href="${page.path}?edit=true" class="button"><@spring.message '_cms.page.edit' /></a>
                     </#if>
 
-                    <p><a href="/${portalName}/_.dml" class="button"><@spring.message '_cms.page.list' /></a></p>
+                    <a href="/${portalName}/_.dml" class="button"><@spring.message '_cms.page.list' /></a>
 
                     <#if versionList?? && page.id??>
                         <div>
