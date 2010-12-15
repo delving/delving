@@ -173,6 +173,7 @@
         <property name="recordDefinitionResources">
             <list>
                 <value>/abm-record-definition.xml</value>
+                <value>/ese-record-definition.xml</value>
             </list>
         </property>
         <property name="defaultPrefix" value="abm"/>

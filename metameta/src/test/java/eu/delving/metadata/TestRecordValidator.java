@@ -53,7 +53,7 @@ public class TestRecordValidator {
         MetadataModelImpl metadataModel = new MetadataModelImpl();
         metadataModel.setRecordDefinitionResources(Arrays.asList("/abm-record-definition.xml"));
         metadataModel.setDefaultPrefix("abm");
-        recordValidator = new RecordValidator(metadataModel, true);
+        recordValidator = new RecordValidator(metadataModel.getRecordDefinition(), true);
         problems.clear();
     }
 

@@ -36,7 +36,7 @@ import java.util.TreeSet;
 
 public class MetaRepoImpl implements MetaRepo {
     private Logger log = Logger.getLogger(getClass());
-    private ImplFactory factory;
+    private ImplFactory implFactory;
     private DB mongoDatabase;
 
     @Autowired
@@ -57,16 +57,19 @@ public class MetaRepoImpl implements MetaRepo {
     @Value("#{launchProperties['services.mongo.dbName']}")
     private String mongoDatabaseName = null;
 
-    public MetaRepoImpl() {
-        factory = new ImplFactory(this, db(), metadataModel, groovyCodeResource, accessKey);
-    }
-
     public void setResponseListSize(int responseListSize) {
-        factory.setResponseListSize(responseListSize);
+        factory().setResponseListSize(responseListSize);
     }
 
     public void setHarvestStepSecondsToLive(int harvestStepSecondsToLive) {
-        factory.setHarvestStepSecondsToLive(harvestStepSecondsToLive);
+        factory().setHarvestStepSecondsToLive(harvestStepSecondsToLive);
+    }
+    
+    private ImplFactory factory() {
+        if (implFactory == null) {
+            implFactory = new ImplFactory(this, db(), metadataModel, groovyCodeResource, accessKey);
+        }
+        return implFactory;
     }
 
     private synchronized DB db() {
@@ -82,7 +85,7 @@ public class MetaRepoImpl implements MetaRepo {
         object.put(DataSet.SPEC, spec);
         object.put(DataSet.DATA_SET_STATE, DataSetState.EMPTY.toString());
 
-        DataSet dataSet = factory.createDataSet(object);
+        DataSet dataSet = factory().createDataSet(object);
         dataSet.save();
         return dataSet;
     }
@@ -94,7 +97,7 @@ public class MetaRepoImpl implements MetaRepo {
         DBCursor cursor = collection.find();
         while (cursor.hasNext()) {
             DBObject object = cursor.next();
-            DataSet dataSet = factory.createDataSet(object);
+            DataSet dataSet = factory().createDataSet(object);
             if (!dataSet.hasDetails()) continue; // todo: add to query
             sets.add(dataSet);
         }
@@ -108,7 +111,7 @@ public class MetaRepoImpl implements MetaRepo {
         if (object == null) {
             return null;
         }
-        return factory.createDataSet(object);
+        return factory().createDataSet(object);
     }
 
     @Override
@@ -118,7 +121,7 @@ public class MetaRepoImpl implements MetaRepo {
         if (object == null) {
             return null;
         }
-        return factory.createDataSet(object);
+        return factory().createDataSet(object);
     }
 
     @Override
@@ -184,19 +187,19 @@ public class MetaRepoImpl implements MetaRepo {
         DBObject step = new BasicDBObject(HarvestStep.PMH_REQUEST, req);
         step.put(HarvestStep.LIST_SIZE, dataSet.getRecordCount()); // todo: not if some records don't validate
         step.put(HarvestStep.NAMESPACES, dataSet.getNamespaces());
-        step.put(HarvestStep.EXPIRATION, new Date(System.currentTimeMillis() + 1000 * factory.getHarvestStepSecondsToLive()));
-        return factory.createHarvestStep(step, accessKey);
+        step.put(HarvestStep.EXPIRATION, new Date(System.currentTimeMillis() + 1000 * factory().getHarvestStepSecondsToLive()));
+        return factory().createHarvestStep(step, accessKey);
     }
 
     @Override
     public HarvestStep getHarvestStep(String resumptionToken, String accessKey) throws ResumptionTokenNotFoundException, DataSetNotFoundException, MappingNotFoundException, AccessKeyException {
         try {
             ObjectId objectId = new ObjectId(resumptionToken);
-            DBObject step = factory.harvestSteps().findOne(new BasicDBObject(MONGO_ID, objectId));
+            DBObject step = factory().harvestSteps().findOne(new BasicDBObject(MONGO_ID, objectId));
             if (step == null) {
                 throw new ResumptionTokenNotFoundException("Unable to find resumptionToken: " + resumptionToken);
             }
-            return factory.createHarvestStep(step, accessKey);
+            return factory().createHarvestStep(step, accessKey);
         }
         catch (ResumptionTokenNotFoundException e) {
             throw e;

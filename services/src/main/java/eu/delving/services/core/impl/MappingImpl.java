@@ -58,8 +58,8 @@ class MappingImpl implements MetaRepo.Mapping, MappingInternal, Comparable<MetaR
         this.implFactory = implFactory;
         this.dataSet = dataSet;
         this.object = object;
-        this.recordValidator = new RecordValidator(implFactory.getMetadataModel(), false);
         this.metadataFormat = new MetadataFormatImpl((DBObject) object.get(FORMAT));
+        this.recordValidator = new RecordValidator(implFactory.getMetadataModel().getRecordDefinition(metadataFormat.getPrefix()), false);
     }
 
     @Override
@@ -129,7 +129,7 @@ class MappingImpl implements MetaRepo.Mapping, MappingInternal, Comparable<MetaR
     private MappingRunner getMappingRunner() throws MetadataException {
         if (mappingRunner == null) {
             RecordMapping recordMapping = getRecordMapping();
-            String compileCode = recordMapping.toCompileCode(implFactory.getMetadataModel().getRecordDefinition());
+            String compileCode = recordMapping.toCompileCode(implFactory.getMetadataModel());
             mappingRunner = new MappingRunner(implFactory.getGroovyCodeResource(), compileCode);
         }
         return mappingRunner;

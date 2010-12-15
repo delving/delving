@@ -101,7 +101,7 @@ public class Normalizer implements Runnable {
             }
             MappingRunner mappingRunner = new MappingRunner(
                     groovyCodeResource,
-                    recordMapping.toCompileCode(sipModel.getMetadataModel().getRecordDefinition())
+                    recordMapping.toCompileCode(sipModel.getMetadataModel())
             );
             MetadataParser parser = new MetadataParser(
                     sipModel.getDataSetStore().createXmlInputStream(),
@@ -109,7 +109,7 @@ public class Normalizer implements Runnable {
                     sipModel.getRecordCount(),
                     progressAdapter
             );
-            RecordValidator recordValidator = new RecordValidator(sipModel.getMetadataModel(), true);
+            RecordValidator recordValidator = new RecordValidator(sipModel.getRecordDefinition(), true);
             MetadataRecord record;
             while ((record = parser.nextRecord()) != null && running) {
                 try {

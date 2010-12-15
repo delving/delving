@@ -21,7 +21,6 @@
 
 package eu.delving.metadata;
 
-import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -45,14 +44,14 @@ import java.util.TreeSet;
  */
 
 public class RecordValidator {
-    private Logger log = Logger.getLogger(getClass());
+//    private Logger log = Logger.getLogger(getClass());
     private RecordDefinition recordDefinition;
     private Uniqueness idUniqueness;
     private String context;
     private int contextBegin, contextEnd;
 
-    public RecordValidator(MetadataModel metadataModel, boolean checkUniqueness) {
-        this.recordDefinition = metadataModel.getRecordDefinition();
+    public RecordValidator(RecordDefinition recordDefinition, boolean checkUniqueness) {
+        this.recordDefinition = recordDefinition;
         this.idUniqueness = checkUniqueness ? new Uniqueness() : null;
         StringBuilder contextString = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<validate\n");
         for (NamespaceDefinition namespaceDefinition : recordDefinition.namespaces) {

@@ -201,7 +201,7 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
         switch (type) {
             case RECORD:
                 if (recordMapping != null) {
-                    return recordMapping.toDisplayCode(metadataModel.getRecordDefinition());
+                    return recordMapping.toDisplayCode(metadataModel);
                 }
                 else {
                     return "// no mapping";
@@ -211,7 +211,7 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
                     return "// no code";
                 }
                 else {
-                    return recordMapping.toDisplayCode(metadataModel.getRecordDefinition(), selectedPath);
+                    return recordMapping.toDisplayCode(metadataModel, selectedPath);
                 }
             default:
                 throw new RuntimeException();
@@ -221,9 +221,9 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     private String getCompileCode() {
         switch (type) {
             case RECORD:
-                return recordMapping != null ? recordMapping.toCompileCode(metadataModel.getRecordDefinition()) : "";
+                return recordMapping != null ? recordMapping.toCompileCode(metadataModel) : "";
             case FIELD:
-                return selectedPath != null ? recordMapping.toCompileCode(metadataModel.getRecordDefinition(), selectedPath) : "";
+                return selectedPath != null ? recordMapping.toCompileCode(metadataModel, selectedPath) : "";
             default:
                 throw new RuntimeException();
         }
@@ -237,7 +237,7 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
             return "print 'nothing selected'";
         }
         else {
-            return recordMapping.toCompileCode(metadataModel.getRecordDefinition(), selectedPath, editedCode);
+            return recordMapping.toCompileCode(metadataModel, selectedPath, editedCode);
         }
     }
 
