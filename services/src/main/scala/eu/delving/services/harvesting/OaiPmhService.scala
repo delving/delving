@@ -192,6 +192,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   /**
    * This method can give back the following Error and Exception conditions: BadResumptionToken, cannotDisseminateFormat, noRecordsMatch, noSetHierachy
+   * todo: it would be more efficient to query for only those fields (no mapping required?)
    */
   def processListIdentifiers(pmhRequestEntry: PmhRequestEntry) = {
         // parse all the params from map
@@ -207,7 +208,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
                metadataPrefix={harvestStep.getPmhRequest.getMetadataPrefix}
                set={setSpec}>{request.getRequestURL}</request>
       <ListIdentifiers>
-        { for (record <- harvestStep.getRecords(pmhRequestEntry.pmhRequestItem.accessKey)) yield
+        { for (record <- harvestStep.getRecords()) yield
         <header status={recordStatus(record)}>
           <identifier>{setSpec}:{record.getIdentifier}</identifier>
           <datestamp>{record.getModifiedDate}</datestamp>
@@ -233,7 +234,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
      <request verb="ListRecords" from={printDate(pmhObject.getFrom)} until={printDate(pmhObject.getUntil)}
               metadataPrefix={pmhObject.getMetadataPrefix}>{request.getRequestURL}</request>
      <ListRecords>
-            {for (record <- harvestStep.getRecords(pmhRequestEntry.pmhRequestItem.accessKey)) yield
+            {for (record <- harvestStep.getRecords()) yield
               renderRecord(record, pmhObject.getMetadataPrefix, pmhObject.getSet)
             }
        {renderResumptionToken(harvestStep)}

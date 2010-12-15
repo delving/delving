@@ -94,5 +94,9 @@ class RecordImpl implements MetaRepo.Record {
     void addFormat(MetaRepo.MetadataFormat metadataFormat, String recordString) {
         object.put(metadataFormat.getPrefix(), recordString);
     }
+
+    DBObject getObject() {
+        return object;
+    }
 }
 

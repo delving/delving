@@ -37,8 +37,6 @@ import java.util.TreeSet;
 public class MetaRepoImpl implements MetaRepo {
     private Logger log = Logger.getLogger(getClass());
     private ImplFactory factory;
-    private int responseListSize = 5;
-    private int harvestStepSecondsToLive = 5;
     private DB mongoDatabase;
 
     @Autowired
@@ -64,11 +62,11 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     public void setResponseListSize(int responseListSize) {
-        this.responseListSize = responseListSize;
+        factory.setResponseListSize(responseListSize);
     }
 
     public void setHarvestStepSecondsToLive(int harvestStepSecondsToLive) {
-        this.harvestStepSecondsToLive = harvestStepSecondsToLive;
+        factory.setHarvestStepSecondsToLive(harvestStepSecondsToLive);
     }
 
     private synchronized DB db() {
@@ -170,46 +168,42 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String accessKey) throws DataSetNotFoundException {
-        DBCollection steps = db().getCollection(HARVEST_STEPS_COLLECTION);
-        DBObject req = new BasicDBObject();
-        req.put(PmhRequest.VERB, verb.toString());
-        req.put(PmhRequest.SET, set);
-        req.put(PmhRequest.FROM, from);
-        req.put(PmhRequest.UNTIL, until);
-        req.put(PmhRequest.PREFIX, metadataPrefix);
-        DBObject firstStep = new BasicDBObject(HarvestStep.PMH_REQUEST, req);
+    public HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String accessKey) throws DataSetNotFoundException, MappingNotFoundException, AccessKeyException {
         DataSet dataSet = getDataSet(set);
         if (dataSet == null) {
             String errorMessage = String.format("Cannot find set [%s]", set);
             log.error(errorMessage);
             throw new DataSetNotFoundException(errorMessage);
         }
-        firstStep.put(HarvestStep.LIST_SIZE, dataSet.getRecordCount()); // todo: not if some records don't validate
-        firstStep.put(HarvestStep.NAMESPACES, dataSet.getNamespaces());
-        firstStep.put(HarvestStep.CURSOR, 0);
-        firstStep.put(HarvestStep.EXPIRATION, new Date(System.currentTimeMillis() + 1000 * harvestStepSecondsToLive));
-        steps.insert(firstStep);
-        return createHarvestStep(firstStep, steps, accessKey);
+        DBObject req = new BasicDBObject();
+        req.put(PmhRequest.VERB, verb.toString());
+        req.put(PmhRequest.SET, set);
+        req.put(PmhRequest.FROM, from);
+        req.put(PmhRequest.UNTIL, until);
+        req.put(PmhRequest.PREFIX, metadataPrefix);
+        DBObject step = new BasicDBObject(HarvestStep.PMH_REQUEST, req);
+        step.put(HarvestStep.LIST_SIZE, dataSet.getRecordCount()); // todo: not if some records don't validate
+        step.put(HarvestStep.NAMESPACES, dataSet.getNamespaces());
+        step.put(HarvestStep.EXPIRATION, new Date(System.currentTimeMillis() + 1000 * factory.getHarvestStepSecondsToLive()));
+        return factory.createHarvestStep(step, accessKey);
     }
 
     @Override
-    public HarvestStep getHarvestStep(String resumptionToken, String accessKey) throws ResumptionTokenNotFoundException, DataSetNotFoundException {
-        ObjectId objectId;
-        // otherwise a illegal resumptionToken from the mongodb perspective throws a general exception
+    public HarvestStep getHarvestStep(String resumptionToken, String accessKey) throws ResumptionTokenNotFoundException, DataSetNotFoundException, MappingNotFoundException, AccessKeyException {
         try {
-            objectId = new ObjectId(resumptionToken);
+            ObjectId objectId = new ObjectId(resumptionToken);
+            DBObject step = factory.harvestSteps().findOne(new BasicDBObject(MONGO_ID, objectId));
+            if (step == null) {
+                throw new ResumptionTokenNotFoundException("Unable to find resumptionToken: " + resumptionToken);
+            }
+            return factory.createHarvestStep(step, accessKey);
+        }
+        catch (ResumptionTokenNotFoundException e) {
+            throw e;
         }
         catch (Exception e) {
             throw new ResumptionTokenNotFoundException("Unable to find resumptionToken: " + resumptionToken);
         }
-        DBCollection steps = db().getCollection(HARVEST_STEPS_COLLECTION);
-        DBObject query = new BasicDBObject(MONGO_ID, objectId);
-        DBObject step = steps.findOne(query);
-        if (step == null) {
-            throw new ResumptionTokenNotFoundException("Unable to find resumptionToken: " + resumptionToken);
-        }
-        return createHarvestStep(step, steps, accessKey);
     }
 
     @Override
@@ -218,27 +212,6 @@ public class MetaRepoImpl implements MetaRepo {
         Date now = new Date();
         DBObject query = new BasicDBObject(HarvestStep.EXPIRATION, new BasicDBObject("$lt", now));
         steps.remove(query);
-    }
-
-    private HarvestStep createHarvestStep(DBObject object, DBCollection steps, String accessKey) throws DataSetNotFoundException {
-        HarvestStep harvestStep = factory.createHarvestStep(object);
-        String set = harvestStep.getPmhRequest().getSet();
-        DataSet dataSet = getDataSet(set);
-        if (dataSet == null) {
-            String errorMessage = String.format("Cannot find set [%s]", set);
-            log.error(errorMessage);
-            throw new DataSetNotFoundException(errorMessage);
-        }
-        if (harvestStep.getListSize() > harvestStep.getCursor() + responseListSize) {
-            DBObject nextStep = new BasicDBObject(HarvestStep.PMH_REQUEST, object.get(HarvestStep.PMH_REQUEST));
-            nextStep.put(HarvestStep.NAMESPACES, object.get(HarvestStep.NAMESPACES));
-            nextStep.put(HarvestStep.LIST_SIZE, object.get(HarvestStep.LIST_SIZE));
-            nextStep.put(HarvestStep.CURSOR, harvestStep.getCursor() + responseListSize);
-            nextStep.put(HarvestStep.EXPIRATION, new Date(System.currentTimeMillis() + 1000 * harvestStepSecondsToLive));
-            steps.insert(nextStep);
-            harvestStep.setNextStepId((ObjectId) nextStep.get(MONGO_ID));
-        }
-        return harvestStep;
     }
 
     @Override

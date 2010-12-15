@@ -244,21 +244,24 @@ class DataSetImpl implements MetaRepo.DataSet {
     }
 
     @Override
-    public List<? extends MetaRepo.Record> getRecords(String prefix, int start, int count, Date from, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException {
+    public List<? extends MetaRepo.Record> getRecords(String prefix, int count, Date from, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException {
         MetaRepo.Mapping mapping = getMapping(prefix, accessKey);
         List<RecordImpl> list = new ArrayList<RecordImpl>();
-        DBCursor cursor = createCursor(from, until).skip(start).limit(count);
+        DBCursor cursor = createCursor(from, until).limit(count);
         while (cursor.hasNext()) {
             DBObject object = cursor.next();
             list.add(new RecordImpl(object, getDetails().getMetadataFormat().getPrefix(), getNamespaces()));
         }
-        if (mapping != null) {
+        if (list.isEmpty()) {
+            return null;
+        }
+        else if (mapping != null) {
             Map<String, String> namespaces = new TreeMap<String, String>();
             DBObject namespacesObject = (DBObject) object.get(NAMESPACES);
             for (String nsPrefix : namespacesObject.keySet()) {
                 namespaces.put(nsPrefix, (String) namespacesObject.get(nsPrefix));
             }
-            ((MappingInternal) mapping).executeMapping(list, namespaces);
+            ((MappingInternal) mapping).executeMapping(list, namespaces); // can remove members when records don't validate
         }
         return list;
     }
@@ -309,7 +312,7 @@ class DataSetImpl implements MetaRepo.DataSet {
     private DBCursor createCursor(Date from, Date until) {
         DBObject query = new BasicDBObject();
         if (from != null) {
-            query.put(MetaRepo.Record.MODIFIED, new BasicDBObject("$gte", from));
+            query.put(MetaRepo.Record.MODIFIED, new BasicDBObject("$gt", from));
         }
         if (until != null) {
             query.put(MetaRepo.Record.MODIFIED, new BasicDBObject("$lte", until));

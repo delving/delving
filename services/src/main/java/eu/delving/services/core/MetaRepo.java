@@ -64,9 +64,9 @@ public interface MetaRepo {
 
     Set<? extends MetadataFormat> getMetadataFormats(String id, String accessKey) throws MappingNotFoundException, AccessKeyException;
 
-    HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String accessKey) throws DataSetNotFoundException;
+    HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String accessKey) throws DataSetNotFoundException, MappingNotFoundException, AccessKeyException;
 
-    HarvestStep getHarvestStep(String resumptionToken, String accessKey) throws ResumptionTokenNotFoundException, DataSetNotFoundException;
+    HarvestStep getHarvestStep(String resumptionToken, String accessKey) throws ResumptionTokenNotFoundException, DataSetNotFoundException, MappingNotFoundException, AccessKeyException;
 
     void removeExpiredHarvestSteps();
 
@@ -100,7 +100,7 @@ public interface MetaRepo {
         Map<String,Mapping> mappings();
         int getRecordCount();
         Record getRecord(ObjectId id, String metadataPrefix, String accessKey) throws MappingNotFoundException, AccessKeyException;
-        List<? extends Record> getRecords(String prefix, int start, int count, Date from, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException;
+        List<? extends Record> getRecords(String prefix, int count, Date from, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException;
 
         List<String> getHashes();
         void save();
@@ -115,7 +115,6 @@ public interface MetaRepo {
         String DATA_SET_STATE = "state";
         String RECORDS_INDEXED = "rec_indexed";
         String DETAILS = "details";
-
     }
 
     public interface Details {
@@ -142,22 +141,30 @@ public interface MetaRepo {
 
     public interface HarvestStep {
 
-        ObjectId getResumptionToken();
+        ObjectId getId();
         Date getExpiration();
         int getListSize();
+        Runnable createRecordFetcher(DataSet dataSet, String key);
         int getCursor();
-        List<? extends Record> getRecords(String accessKey) throws DataSetNotFoundException, MappingNotFoundException, AccessKeyException;
+        int getRecordCount();
+        List<? extends Record> getRecords();
         PmhRequest getPmhRequest();
         DBObject getNamespaces();
         boolean hasNext();
         String nextResumptionToken();
-        void setNextStepId(ObjectId objectId);
+        Date getAfter();
+        ObjectId getNextId();
+        String getErrorMessage();
 
         String EXPIRATION = "exp";
         String LIST_SIZE = "listSize";
         String CURSOR = "cursor";
+        String RECORDS = "records";
         String PMH_REQUEST = "pmhRequest";
         String NAMESPACES = "namespaces";
+        String ERROR_MESSAGE = "error";
+        String AFTER = "after";
+        String NEXT_ID = "nextId";
     }
 
     public interface PmhRequest {

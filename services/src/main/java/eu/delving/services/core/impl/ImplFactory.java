@@ -21,13 +21,21 @@
 
 package eu.delving.services.core.impl;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.services.core.MetaRepo;
+import eu.delving.services.exceptions.AccessKeyException;
+import eu.delving.services.exceptions.DataSetNotFoundException;
+import eu.delving.services.exceptions.MappingNotFoundException;
 import eu.delving.sip.AccessKey;
 import eu.europeana.sip.core.GroovyCodeResource;
+import org.bson.types.ObjectId;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * Allow for foreign instantiations
@@ -41,6 +49,8 @@ public class ImplFactory {
     private MetadataModel metadataModel;
     private GroovyCodeResource groovyCodeResource;
     private AccessKey accessKey;
+    private int responseListSize = 100;
+    private int harvestStepSecondsToLive = 3000;
 
     public ImplFactory(MetaRepo metaRepo, DB db, MetadataModel metadataModel, GroovyCodeResource groovyCodeResource, AccessKey accessKey) {
         this.metaRepo = metaRepo;
@@ -50,12 +60,32 @@ public class ImplFactory {
         this.accessKey = accessKey;
     }
 
+    public void setResponseListSize(int responseListSize) {
+        this.responseListSize = responseListSize;
+    }
+
+    public void setHarvestStepSecondsToLive(int harvestStepSecondsToLive) {
+        this.harvestStepSecondsToLive = harvestStepSecondsToLive;
+    }
+
+    public int getResponseListSize() {
+        return responseListSize;
+    }
+
+    public int getHarvestStepSecondsToLive() {
+        return harvestStepSecondsToLive;
+    }
+
     public DBCollection records(String spec) {
         return db.getCollection(MetaRepo.RECORD_COLLECTION_PREFIX + spec);
     }
 
     public DBCollection dataSets() {
         return db.getCollection(MetaRepo.DATASETS_COLLECTION);
+    }
+
+    public DBCollection harvestSteps() {
+        return db.getCollection(MetaRepo.HARVEST_STEPS_COLLECTION);
     }
 
     public MetadataModel getMetadataModel() {
@@ -74,12 +104,57 @@ public class ImplFactory {
         return new DataSetImpl(this, object);
     }
 
-    public MetaRepo.HarvestStep createHarvestStep(DBObject object) {
-        return new HarvestStepImpl(metaRepo, object);
-    }
-
     public MetaRepo.Mapping createMapping(MetaRepo.DataSet dataSet, DBObject object) {
         return new MappingImpl(this, dataSet, object);
     }
+
+    public MetaRepo.HarvestStep createHarvestStep(DBObject stepObject, String key) throws DataSetNotFoundException, MappingNotFoundException, AccessKeyException {
+        HarvestStepImpl step = new HarvestStepImpl(this, stepObject);
+        if (step.getId() != null) { // it came from storage
+            if (step.getRecordCount() == 0) {
+                step.createRecordFetcher(getDataSet(step), key).run();
+                if (step.getErrorMessage() != null) {
+                    throw new RuntimeException(step.getErrorMessage());
+                }
+                nextStepIfFull(step);
+            }
+        }
+        else { // the step has not yet been stored
+            step.createRecordFetcher(getDataSet(step), key).run();
+            nextStepIfFull(step);
+            harvestSteps().insert(stepObject);
+        }
+        return step;
+    }
+
+    private void nextStepIfFull(HarvestStepImpl step) {
+        if (step.getRecordCount() == responseListSize) { // full => create next step
+            List<? extends MetaRepo.Record> records = step.getRecords();
+            MetaRepo.Record last = records.get(responseListSize-1);
+            DBObject nextStep = insertNextStep(step.getObject(), last.getModifiedDate());
+            step.setNextId((ObjectId) nextStep.get(MetaRepo.MONGO_ID));
+            harvestSteps().save(step.getObject());
+        }
+    }
+
+    private DBObject insertNextStep(DBObject stepObject, Date after) {
+        DBObject nextStep = new BasicDBObject(MetaRepo.HarvestStep.PMH_REQUEST, stepObject.get(MetaRepo.HarvestStep.PMH_REQUEST));
+        nextStep.put(MetaRepo.HarvestStep.NAMESPACES, stepObject.get(MetaRepo.HarvestStep.NAMESPACES));
+        nextStep.put(MetaRepo.HarvestStep.LIST_SIZE, stepObject.get(MetaRepo.HarvestStep.LIST_SIZE));
+        nextStep.put(MetaRepo.HarvestStep.EXPIRATION, new Date(System.currentTimeMillis() + 1000 * harvestStepSecondsToLive));
+        nextStep.put(MetaRepo.HarvestStep.AFTER, after);
+        harvestSteps().insert(nextStep);
+        return nextStep;
+    }
+
+    private MetaRepo.DataSet getDataSet(MetaRepo.HarvestStep step) throws DataSetNotFoundException {
+        MetaRepo.DataSet dataSet = metaRepo.getDataSet(step.getPmhRequest().getSet());
+        if (dataSet == null) {
+            throw new DataSetNotFoundException("Cannot find data set " + step.getPmhRequest().getSet());
+        }
+        return dataSet;
+    }
+
+
 }
 
