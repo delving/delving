@@ -1,19 +1,19 @@
 <#compress>
 
-<#assign view = "table"/>
-<#if RequestParameters.view??>
-    <#assign view = "${RequestParameters.view}"/>
-</#if>
-<#if RequestParameters.start??>
-    <#assign start = "${RequestParameters.start}"/>
-<#else>
-    <#assign start = "1"/>
-</#if>
-<#if RequestParameters.query??>
-    <#assign justTheQuery = "${RequestParameters.query}"/>
-</#if>
+    <#assign view = "table"/>
+    <#if RequestParameters.view??>
+        <#assign view = "${RequestParameters.view}"/>
+    </#if>
+    <#if RequestParameters.start??>
+        <#assign start = "${RequestParameters.start}"/>
+        <#else>
+            <#assign start = "1"/>
+    </#if>
+    <#if RequestParameters.query??>
+        <#assign justTheQuery = "${RequestParameters.query}"/>
+    </#if>
 
-<#include "includeMarcos.ftl">
+    <#include "includeMarcos.ftl">
 
 <@addHeader "${portalDisplayName}", "",["results.js"],[]/>
 
@@ -23,39 +23,40 @@
 </script>
 
 <section class="grid_3" role="complementary">
+
     <dl class="menu">
         <dt><@spring.message '_action.refine.your.search' /></dt>
         <dd class="container">
-         <@resultBriefFacets "DATAPROVIDER",  "_metadata.abm.contentProvider", 1/>
+        <@resultBriefFacets "DATAPROVIDER",  "_metadata.abm.contentProvider", 1/>
         <@resultBriefFacets "MUNICIPALITY",  "_metadata.abm.municipality", 1/>
          <@resultBriefFacets "COUNTY",  "_metadata.abm.county", 1/>
         <@resultBriefFacets "TYPE",  "_metadata.dc.type", 2/>
         </dd>
     </dl>
-        <@resultsBriefUserActions/>
+<@resultsBriefUserActions/>
 </section>
 
 <section class="grid_9" id="results" role="main">
-  
+
     <div id="nav_query_breadcrumbs">
-            <@resultBriefQueryBreadcrumbs/>
+    <@resultBriefQueryBreadcrumbs/>
     </div>
 
     <div class="clear"></div>
 
     <div id="result_overview">
 
-        <div id="result_count">
+        <div id="result_count" class="grid_5 alpha">
             <div class="inner">
             <@spring.message '_portal.ui.navigation.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}
             </div>
         </div>
-    
-            <div id="result_view_select">
-                <div class="inner">
-                <@viewSelect/>
-                </div>
+
+        <div id="result_view_select">
+            <div class="inner">
+            <@viewSelect/>
             </div>
+        </div>
 
         <div id="result_sort">
             <div class="inner">
@@ -65,30 +66,29 @@
 
     </div>
 
-
     <div class="clear"></div>
 
     <nav class="pagination">
         <div class="inner">
-            <@resultBriefPaginationStyled/>
+        <@resultBriefPaginationStyled/>
         </div>
     </nav>
 
     <div class="inner">
-    <#if briefDocs?size &gt; 0>
-        <#if view = "table">
+        <#if briefDocs?size &gt; 0>
+            <#if view = "table">
             <@resultBriefGrid/>
-        <#else>
-            <@resultBriefList/>
+                <#else>
+                <@resultBriefList/>
+            </#if>
+            <#else>
+                <div id="no-result"><@spring.message '_portal.ui.notification.noitemsfound' /></div>
         </#if>
-    <#else>
-        <div id="no-result"><@spring.message '_portal.ui.notification.noitemsfound' /></div>
-    </#if>
     </div>
 
     <nav class="pagination">
         <div class="inner">
-            <@resultBriefPaginationStyled/>
+        <@resultBriefPaginationStyled/>
         </div>
     </nav>
 
