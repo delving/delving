@@ -247,7 +247,7 @@ class DataSetImpl implements MetaRepo.DataSet {
     public List<? extends MetaRepo.Record> getRecords(String prefix, int count, Date from, ObjectId afterId, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException {
         MetaRepo.Mapping mapping = getMapping(prefix, accessKey);
         List<RecordImpl> list = new ArrayList<RecordImpl>();
-        DBCursor cursor = createCursor(from, afterId, until).limit(count);
+        DBCursor cursor = createCursor(from, afterId, until).limit(count).sort(new BasicDBObject(MetaRepo.MONGO_ID, 1));
         while (cursor.hasNext()) {
             DBObject object = cursor.next();
             list.add(new RecordImpl(object, getDetails().getMetadataFormat().getPrefix(), getNamespaces()));

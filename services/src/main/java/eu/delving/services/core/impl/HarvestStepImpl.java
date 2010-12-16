@@ -79,6 +79,7 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
             public void run() {
                 try {
                     addRecord(null); // marking that we've tried
+                    loop:
                     while (true) {
                         int recordsToFetch = implFactory.getResponseListSize() - getRecordCount() + 1; // 1 extra
                         List<? extends MetaRepo.Record> records = dataSet.getRecords(
@@ -100,7 +101,7 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
                                 );
                                 setNextId((ObjectId) nextStep.get(MetaRepo.MONGO_ID));
                                 implFactory.harvestSteps().save(object);
-                                break;
+                                break loop;
                             }
                         }
                     }

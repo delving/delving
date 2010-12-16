@@ -115,7 +115,7 @@ public class ImplFactory {
             }
         }
         else { // the step has not yet been stored
-            harvestSteps().insert(stepObject);
+            harvestSteps().save(stepObject);
             step.createRecordFetcher(getDataSet(step), key).run();
             stepObject.put(MetaRepo.HarvestStep.FIRST_ID, stepObject.get(MetaRepo.MONGO_ID));
             harvestSteps().save(stepObject); // with its new records and first id

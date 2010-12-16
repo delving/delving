@@ -184,10 +184,19 @@ public class MetaRepoImpl implements MetaRepo {
         req.put(PmhRequest.FROM, from);
         req.put(PmhRequest.UNTIL, until);
         req.put(PmhRequest.PREFIX, metadataPrefix);
+        // sort by expiration date and get first One
         DBObject step = new BasicDBObject(HarvestStep.PMH_REQUEST, req);
         step.put(HarvestStep.LIST_SIZE, dataSet.getRecordCount()); // todo: not if some records don't validate
         step.put(HarvestStep.NAMESPACES, dataSet.getNamespaces());
-        return factory().createHarvestStep(step, accessKey);
+        step.put(HarvestStep.EXPIRATION, null);
+        step.put(HarvestStep.CURSOR, 0);
+        final DBCursor dbCursor = factory().harvestSteps().find(step).sort(new BasicDBObject(MetaRepo.MONGO_ID, 1)).limit(1);
+        if (dbCursor.count() == 1) {
+            return factory().createHarvestStep(dbCursor.next(), accessKey);
+        }
+        else {
+            return factory().createHarvestStep(step, accessKey);
+        }
     }
 
     @Override
