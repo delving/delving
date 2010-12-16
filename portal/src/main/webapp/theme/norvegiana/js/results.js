@@ -130,7 +130,7 @@ function checkSize(obj,type,w){
         }
     }
     else {
-        if (w > 255) {
+        if (w > 300) {
             $("#"+obj).css("width","300px");
         }
     }
