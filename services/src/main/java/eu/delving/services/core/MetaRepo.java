@@ -146,6 +146,7 @@ public interface MetaRepo {
         Date getExpiration();
         int getListSize();
         Runnable createRecordFetcher(DataSet dataSet, String key);
+        Runnable createRecordSaver();
         int getCursor();
         int getRecordCount();
         List<? extends Record> getRecords();

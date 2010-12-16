@@ -100,7 +100,6 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
                                         record.getId()
                                 );
                                 setNextId((ObjectId) nextStep.get(MetaRepo.MONGO_ID));
-                                implFactory.harvestSteps().save(object);
                                 break loop;
                             }
                         }
@@ -123,6 +122,16 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
                 nextStep.put(MetaRepo.HarvestStep.AFTER_ID, afterId);
                 implFactory.harvestSteps().insert(nextStep);
                 return nextStep;
+            }
+        };
+    }
+
+    @Override
+    public Runnable createRecordSaver() {
+        return new Runnable() {
+            @Override
+            public void run() {
+                implFactory.harvestSteps().save(object);
             }
         };
     }

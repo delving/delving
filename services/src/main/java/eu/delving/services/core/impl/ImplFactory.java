@@ -32,6 +32,9 @@ import eu.delving.services.exceptions.MappingNotFoundException;
 import eu.delving.sip.AccessKey;
 import eu.europeana.sip.core.GroovyCodeResource;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 /**
  * Allow for foreign instantiations
  *
@@ -39,6 +42,7 @@ import eu.europeana.sip.core.GroovyCodeResource;
  */
 
 public class ImplFactory {
+    private Executor executor = Executors.newSingleThreadExecutor();
     private MetaRepo metaRepo;
     private DB db;
     private MetadataModel metadataModel;
@@ -111,14 +115,14 @@ public class ImplFactory {
                 if (step.getErrorMessage() != null) {
                     throw new RuntimeException(step.getErrorMessage());
                 }
-                harvestSteps().save(stepObject); // with its new records
+                executor.execute(step.createRecordSaver());
             }
         }
         else { // the step has not yet been stored
-            harvestSteps().save(stepObject);
+            harvestSteps().save(step.getObject());
             step.createRecordFetcher(getDataSet(step), key).run();
-            stepObject.put(MetaRepo.HarvestStep.FIRST_ID, stepObject.get(MetaRepo.MONGO_ID));
-            harvestSteps().save(stepObject); // with its new records and first id
+            step.getObject().put(MetaRepo.HarvestStep.FIRST_ID, step.getObject().get(MetaRepo.MONGO_ID));
+            executor.execute(step.createRecordSaver());
         }
         return step;
     }
