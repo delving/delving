@@ -49,7 +49,7 @@ class RecordImpl implements MetaRepo.Record {
     }
 
     @Override
-    public ObjectId getIdentifier() {
+    public ObjectId getId() {
         return (ObjectId) object.get(MetaRepo.MONGO_ID);
     }
 

@@ -244,10 +244,10 @@ class DataSetImpl implements MetaRepo.DataSet {
     }
 
     @Override
-    public List<? extends MetaRepo.Record> getRecords(String prefix, int count, Date from, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException {
+    public List<? extends MetaRepo.Record> getRecords(String prefix, int count, Date from, ObjectId afterId, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException {
         MetaRepo.Mapping mapping = getMapping(prefix, accessKey);
         List<RecordImpl> list = new ArrayList<RecordImpl>();
-        DBCursor cursor = createCursor(from, until).limit(count);
+        DBCursor cursor = createCursor(from, afterId, until).limit(count);
         while (cursor.hasNext()) {
             DBObject object = cursor.next();
             list.add(new RecordImpl(object, getDetails().getMetadataFormat().getPrefix(), getNamespaces()));
@@ -309,10 +309,13 @@ class DataSetImpl implements MetaRepo.DataSet {
         return mapping;
     }
 
-    private DBCursor createCursor(Date from, Date until) {
+    private DBCursor createCursor(Date from, ObjectId afterId, Date until) {
         DBObject query = new BasicDBObject();
         if (from != null) {
-            query.put(MetaRepo.Record.MODIFIED, new BasicDBObject("$gt", from));
+            query.put(MetaRepo.Record.MODIFIED, new BasicDBObject("$gte", from));
+        }
+        if (afterId != null) {
+            query.put(MetaRepo.MONGO_ID, new BasicDBObject("$gt", afterId));
         }
         if (until != null) {
             query.put(MetaRepo.Record.MODIFIED, new BasicDBObject("$lte", until));

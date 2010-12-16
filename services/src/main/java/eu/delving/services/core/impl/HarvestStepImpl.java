@@ -54,8 +54,17 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
     }
 
     @Override
+    public ObjectId getFirstId() {
+        return (ObjectId) object.get(FIRST_ID);
+    }
+
+    @Override
     public Date getExpiration() {
-        return (Date) object.get(EXPIRATION);
+        Date expiration = (Date) object.get(EXPIRATION);
+        if (expiration == null) {
+            expiration = new Date(System.currentTimeMillis() + 1000 * implFactory.getHarvestStepSecondsToLive());
+        }
+        return expiration;
     }
 
     @Override
@@ -75,7 +84,8 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
                         List<? extends MetaRepo.Record> records = dataSet.getRecords(
                                 getPmhRequest().getMetadataPrefix(),
                                 recordsToFetch,
-                                getAfter(),
+                                getPmhRequest().getFrom(),
+                                getAfterId(),
                                 getPmhRequest().getUntil(),
                                 key
                         );
@@ -86,7 +96,7 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
                             if (addRecord(record) == implFactory.getResponseListSize()) { // full => prepare next step
                                 DBObject nextStep = insertNextStep(
                                         getCursor() + implFactory.getResponseListSize(),
-                                        record.getModifiedDate() // being set by MongoObjectParser
+                                        record.getId()
                                 );
                                 setNextId((ObjectId) nextStep.get(MetaRepo.MONGO_ID));
                                 implFactory.harvestSteps().save(object);
@@ -103,13 +113,13 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
                 }
             }
 
-            private DBObject insertNextStep(int cursor, Date after) {
+            private DBObject insertNextStep(int cursor, ObjectId afterId) {
                 DBObject nextStep = new BasicDBObject(MetaRepo.HarvestStep.PMH_REQUEST, object.get(MetaRepo.HarvestStep.PMH_REQUEST));
                 nextStep.put(MetaRepo.HarvestStep.NAMESPACES, object.get(MetaRepo.HarvestStep.NAMESPACES));
                 nextStep.put(MetaRepo.HarvestStep.LIST_SIZE, object.get(MetaRepo.HarvestStep.LIST_SIZE));
-                nextStep.put(MetaRepo.HarvestStep.EXPIRATION, new Date(System.currentTimeMillis() + 1000 * implFactory.getHarvestStepSecondsToLive()));
+                nextStep.put(MetaRepo.HarvestStep.FIRST_ID, object.get(MetaRepo.HarvestStep.FIRST_ID));
                 nextStep.put(MetaRepo.HarvestStep.CURSOR, cursor);
-                nextStep.put(MetaRepo.HarvestStep.AFTER, after);
+                nextStep.put(MetaRepo.HarvestStep.AFTER_ID, afterId);
                 implFactory.harvestSteps().insert(nextStep);
                 return nextStep;
             }
@@ -165,8 +175,8 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
     }
 
     @Override
-    public Date getAfter() {
-        return (Date) object.get(AFTER);
+    public ObjectId getAfterId() {
+        return (ObjectId) object.get(AFTER_ID);
     }
 
     @Override
@@ -177,6 +187,11 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
     @Override
     public String getErrorMessage() {
         return (String) object.get(ERROR_MESSAGE);
+    }
+
+    @Override
+    public void delete() {
+        implFactory.harvestSteps().remove(object);
     }
 
     private int addRecord(MetaRepo.Record record) {

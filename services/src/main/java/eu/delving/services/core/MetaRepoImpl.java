@@ -187,7 +187,6 @@ public class MetaRepoImpl implements MetaRepo {
         DBObject step = new BasicDBObject(HarvestStep.PMH_REQUEST, req);
         step.put(HarvestStep.LIST_SIZE, dataSet.getRecordCount()); // todo: not if some records don't validate
         step.put(HarvestStep.NAMESPACES, dataSet.getNamespaces());
-        step.put(HarvestStep.EXPIRATION, new Date(System.currentTimeMillis() + 1000 * factory().getHarvestStepSecondsToLive()));
         return factory().createHarvestStep(step, accessKey);
     }
 

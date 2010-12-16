@@ -210,7 +210,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
       <ListIdentifiers>
         { for (record <- harvestStep.getRecords()) yield
         <header status={recordStatus(record)}>
-          <identifier>{setSpec}:{record.getIdentifier}</identifier>
+          <identifier>{setSpec}:{record.getId}</identifier>
           <datestamp>{record.getModifiedDate}</datestamp>
           <setSpec>{setSpec}</setSpec>
         </header>
@@ -311,7 +311,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
       val elem = XML.loadString(recordAsString)
       <record>
         <header>
-          <identifier>{set}:{record.getIdentifier}</identifier>
+          <identifier>{set}:{record.getId}</identifier>
           <datestamp>{printDate(record.getModifiedDate)}</datestamp>
           <setSpec>{set}</setSpec>
         </header>
