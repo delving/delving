@@ -62,7 +62,8 @@
     <#if fileList??>
         <#if fileList?size &gt; 0>
              <#list fileList as file>
-                 <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/${file}" media="${media}"/>
+                 <#--<link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/${file}" media="${media}"/>-->
+                 <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/${file}"/>
              </#list>
         </#if>
     </#if>
@@ -89,7 +90,7 @@
                 var portalName = "/${portalName}";
                 var baseThemePath = "/${portalName}/${portalTheme}";
             </script>
-            <@addCss ["reset.css","text.css","960.css","jquery-ui-1.8.7.custom.css","screen.css"], "screen"/>
+            <@addCss ["reset.css","text.css","960.css","jquery-ui-1.8.7.custom.css","screen.css"], ""/>
             <#if pageCssFiles?size &gt; 0>
                 <@addCss pageCssFiles/>
             </#if>
@@ -346,7 +347,7 @@
 <table cellspacing="1" cellpadding="0" width="100%" border="0" summary="search results" class="results list">
     <#list seq as cell>
     <tr>
-        <td valign="top" width="50">
+        <td valign="top" width="80">
             <div class="brief-thumb-container-listview">
                 <#--<a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">-->
                 <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">
@@ -385,9 +386,9 @@
                 <#if !cell.provider?matches(" ")>${cell.provider}</#if>
                 --->
                 <#-- with labels -->
-                <#if !cell.creator[0]?matches(" ")><span><@spring.message '_search.field.creator' />: </span>${cell.creator}<br/></#if>
-                <#if !cell.year?matches(" ")><#if cell.year != "0000"><span><@spring.message '_search.field.date' />: </span>${cell.year}<br/></#if></#if>
-                <#if !cell.provider?matches(" ")><@spring.message '_search.field.provider' />: <span class="provider">${cell.provider}</span></#if>
+                <#if !cell.creator[0]?matches("")><span><@spring.message '_search.field.creator' />: </span>${cell.creator}<br/></#if>
+                <#if !cell.year?matches("")><#if cell.year != "0000"><span><@spring.message '_search.field.date' />: </span>${cell.year}<br/></#if></#if>
+                <#if !cell.provider?matches("")><@spring.message '_search.field.provider' />: <span class="provider">${cell.provider}</span></#if>
                 </p>
         </td>
     </tr>

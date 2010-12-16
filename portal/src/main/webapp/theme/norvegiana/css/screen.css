@@ -41,6 +41,7 @@ a.disabled,a:link.disabeled,a:visited.disabled
 	background:#fff;
 	overflow:hidden;
 	position:relative;
+    height: 100%;
 }
 
 /* MESSAGES *********************************/
@@ -134,7 +135,7 @@ div#header.home #search
 div#header.home #search p
 {
 	color:#e2e2e2;
-	font-size:1.1em;
+	font-size:1.075em;
 	margin:.5em;
 }
 
@@ -293,11 +294,13 @@ section#info p
 .main
 {
 	margin-top:1em;
+
 }
 
 section[role="main"],section[role="complementary"]
 {
 	margin-top:1.5em;
+    min-height: 350px;
 }
 
 /* QUERY BREADCRUMBS **************************/
@@ -339,15 +342,14 @@ nav.pagination
 
 .results .brief-thumb-container,.results .brief-thumb-container-listview,.results #img-full
 {
-	background:none repeat scroll 0 0 #f1f1f1;
 	overflow:hidden;
-	padding:.5em;
+    margin-right: .5em;
 	text-align:center;
 }
 
 .results .brief-thumb-container img,.results .brief-thumb-container-listview img,.results .related-thumb-container img,#itemImage img
 {
-	-moz-box-shadow:3px 3px 4px #BBB;
+	-moz-box-shadow:1px 1px 2px #BBB;
 	border:4px solid #FFF;
 }
 
@@ -485,6 +487,7 @@ h4.active:hover
 {
 	float:left;
 	width:55%;
+    background: #fff;
 }
 
 #itemMetaData table td,#itemMetaData table th
@@ -558,7 +561,7 @@ button.fg-button,input.fg-button
 
 .fg-button-icon-left .ui-icon
 {
-	left:.2em;
+	left:.25em;
 	margin-left:0;
 	right:auto;
 }
@@ -567,7 +570,7 @@ a.fg-button-icon-right .ui-icon
 {
 	left:auto;
 	margin-left:0;
-	right:.2em;
+	right:.25em;
 }
 
 button.fg-button-icon-right .ui-icon
@@ -591,6 +594,7 @@ button.fg-button-icon-right .ui-icon
 
 .fg-buttonset {
     float: left;
+    width: 100%;
 }
 
 button.fg-button-icon-left .ui-icon {
@@ -912,7 +916,7 @@ body#tinymce,body#mceTemplatePreview,.results,td
 
 .inner,#search form
 {
-	padding:.5em;
+	padding: .5em;
 }
 
 #userBar ul,.results h6
@@ -926,7 +930,7 @@ body#tinymce,body#mceTemplatePreview,.results,td
 }
 
 /*td .ui-icon,#result_count,a.fg-button,.fg-buttonset .fg-button*/
-td .ui-icon, .fg-button
+td .ui-icon
 {
 	float:left;
 }
