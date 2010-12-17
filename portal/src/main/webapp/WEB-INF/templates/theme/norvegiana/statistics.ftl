@@ -5,7 +5,7 @@
 <@addHeader "${portalDisplayName}", "",[],[]/>
 
 <style>
-    h6 {font-weight: bold;margin:0 .25em;}
+    h6 {font-weight: bold;margin:0 .25em;text-transform:uppercase;}
     div.facets_container {
         background: #fff;
         max-height: 165px;
@@ -43,25 +43,33 @@
 </#compress>
 
 <#macro showStatisticsTable facetName>
-<#attempt>
-    <h6>${facetName}</h6>
-    <div class="facets_container">
-    <table class="zebra" width="100%">
-        <caption></caption>
-        <thead>
-            <tr><th>Name</th><th>#items</th></tr>
-        </thead>
-        <#list facetMap.getFacet(facetName) as facet>
-        <tr>
-            <td>${facet.getName()}</td>
-            <td>${facet.getCount()}</td>
-        </tr>
-        </#list>
-    </table>
-    </div>
-<#recover>
-asdfasdf 
-</#attempt>
+    <h6>
+    <#switch facetName>
+        <#case "PROVIDER"><@spring.message '_metadata.europeana.provider'/><#break/>
+        <#case "DATAPROVIDER"><@spring.message '_metadata.europeana.dataProvider'/><#break/>
+        <#case "COUNTY"><@spring.message '_metadata.abm.county'/><#break/>
+        <#case "MUNICIPALITY"><@spring.message '_metadata.abm.municipality'/><#break/>
+        <#default>${facetName}<#break/>
+    </#switch>
+    </h6>
+    <#attempt>
+        <div class="facets_container">
+        <table class="zebra" width="100%">
+            <caption></caption>
+            <thead>
+                <tr><th>Name</th><th>#items</th></tr>
+            </thead>
+            <#list facetMap.getFacet(facetName) as facet>
+            <tr>
+                <td>${facet.getName()}</td>
+                <td>${facet.getCount()}</td>
+            </tr>
+            </#list>
+        </table>
+        </div>
+    <#recover>
+        <p><@spring.message '_statistics.graph.not.rendered'/></p>
+    </#attempt>
 </#macro>
 
 <#macro showStatisticsGraph facetName graphType>
@@ -101,6 +109,6 @@ asdfasdf
         <img src="http://3.chart.apis.google.com/chart?chbh=a&amp;chs=400x200&amp;cht=bhs&amp;chd=t:${data}&amp;chm=${labels}"/>
     </#if>
 <#recover>
-    <@spring.message '_statistics.graph.not.rendered'/>
+    <p><@spring.message '_statistics.graph.not.rendered'/></p>
 </#attempt>
 </#macro>
