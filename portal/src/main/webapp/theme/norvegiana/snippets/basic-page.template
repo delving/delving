@@ -1,0 +1,42 @@
+<!-- Page Header -->
+<h1>H1 Header</h1>
+
+<!-- 3 collums -->
+<div class="grid_4 alpha">
+     <p>
+        <strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent varius egestas metus quis iaculis.
+        Donec eget lacus augue. Nulla facilisi. Morbi adipiscing facilisis nibh, et suscipit justo posuere sit amet.
+        Fusce nec nunc non sapien pharetra pretium. </strong>
+     </p>
+     <p>
+        Duis eget orci vel dolor ultricies scelerisque quis ut neque. Duis non consequat ante. Aenean sed condimentum neque.
+        Cras laoreet purus nibh, nec imperdiet massa. Phasellus tincidunt eros sed est placerat vestibulum id sit amet tortor.
+        Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Vestibulum venenatis, orci
+        non facilisis aliquam, ante lorem rutrum sem, sed tristique velit justo eu lectus. 
+     </p>
+</div>
+<div class="grid_4">
+    <h3>An unordered list</h3>
+    <ul>
+        <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+        <li>Etiam a quam metus, quis bibendum orci.</li>
+        <li>Nunc volutpat ultrices nisl, a posuere velit elementum vitae.</li>
+        <li>Ut tempor mi id urna eleifend ultricies.</li>
+        <li>Donec adipiscing erat at sem ultricies tempor scelerisque justo placerat.</li>
+        <li>Donec id metus enim, ut laoreet felis.</li>
+    </ul>
+</div>
+<div class="grid_4 omega">
+    <dl class="menu">
+        <dt>Menu list</dt>
+        <dd>Information goes here</dd>
+        <dd>More Here</dd>
+    </dl>
+    <dl class="info-box">
+        <dt>Information box</dt>
+        <dd>
+            Information goes here
+        </dd>
+    </dl>
+</div>
+<div class="clear></div>

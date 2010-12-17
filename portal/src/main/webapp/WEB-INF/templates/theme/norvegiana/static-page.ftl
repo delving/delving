@@ -117,18 +117,18 @@
     <#assign locale = locale/>
     ${page.getContent(locale)}
 <#else>
-<#--
- # EDITING A PAGE
- # Here user can add/edit page content
--->
+
     <#assign locale = locale/>
     <#assign thisPage = "static-page.dml"/>
     <#assign pageId = page.path/>
     <#include "includeMarcos.ftl">
     <@addHeader "${portalDisplayName}", "",["edit_area/edit_area_full.js"],[]/>
 
-<section role="main" class="grid_12">
-
+    <section role="main" class="grid_12">
+   <#--
+     # EDITING A PAGE
+     # Here user can add/edit page content
+    -->
     <#if edit??>
         <#if edit>
             <h1><@spring.message '_cms.administration.pages' /></h1>
@@ -188,7 +188,10 @@
                     </#if>
                 </div>
         </#if>
+    <#else>
+        ${page.getContent(locale)}
     </#if>
+
 </section>
 
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/tiny_mce/tiny_mce_src.js"></script>

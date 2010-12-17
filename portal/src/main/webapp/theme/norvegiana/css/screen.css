@@ -654,15 +654,13 @@ dl.info-box
 	background:#eeeee0;
 	border:1px solid #ddddd0;
 	border-radius:5px;
-	height:100%;
-	min-height:220px;
+	/*height:100%;*/
+	min-height:150px;
 }
 
-dl.info-box dt,h3.header
+dl.info-box dt, h3.header
 {
-	-moz-border-radius:5px 5px 0 0;
-	-webkit-border-radius:5px 5px 0 0;
-	background:0 to(#6699cc));
+    background:#6699cc;
 	border:1px solid #fff;
 	border-radius:5px 5px 0 0;
 	color:#fff;
@@ -672,7 +670,6 @@ dl.info-box dt,h3.header
 	line-height:35px;
 	margin:0;
 	text-align:center;
-	text-shadow:1px 1px 0 #000;
 }
 
 h3.header
