@@ -22,19 +22,23 @@
     var msgSearchSaveFail = "<@spring.message '_mine.user.notification.failure.search.saved'/>";
 </script>
 
-<section class="grid_3" role="complementary">
+<#if briefDocs?size &gt; 0>
 
-    <dl class="menu">
-        <dt><@spring.message '_action.refine.your.search' /></dt>
-        <dd class="container">
-        <@resultBriefFacets "DATAPROVIDER",  "_metadata.abm.contentProvider", 1/>
-        <@resultBriefFacets "MUNICIPALITY",  "_metadata.abm.municipality", 1/>
-         <@resultBriefFacets "COUNTY",  "_metadata.abm.county", 1/>
-        <@resultBriefFacets "TYPE",  "_metadata.dc.type", 2/>
-        </dd>
-    </dl>
-<@resultsBriefUserActions/>
-</section>
+    <section class="grid_3" role="complementary">
+
+        <dl class="menu">
+            <dt><@spring.message '_action.refine.your.search' /></dt>
+            <dd class="container">
+                <@resultBriefFacets "PROVIDER",  "_metadata.dc.provider", 1/>
+                <@resultBriefFacets "DATAPROVIDER",  "_metadata.abm.contentProvider", 1/>
+                <@resultBriefFacets "MUNICIPALITY",  "_metadata.abm.municipality", 1/>
+                 <@resultBriefFacets "COUNTY",  "_metadata.abm.county", 1/>
+                <@resultBriefFacets "TYPE",  "_metadata.dc.type", 2/>
+            </dd>
+        </dl>
+    <@resultsBriefUserActions/>
+    </section>
+
 
 <section class="grid_9" id="results" role="main">
 
@@ -75,15 +79,13 @@
     </nav>
 
     <div class="inner">
-        <#if briefDocs?size &gt; 0>
             <#if view = "table">
-            <@resultBriefGrid/>
-                <#else>
+                <@resultBriefGrid/>
+            <#else>
                 <@resultBriefList/>
             </#if>
-            <#else>
-                <div id="no-result"><@spring.message '_portal.ui.notification.noitemsfound' /></div>
-        </#if>
+
+
     </div>
 
     <nav class="pagination">
@@ -92,8 +94,18 @@
         </div>
     </nav>
 
-</section>
+ </section>
+<#else>
+    <section role="main" class="main no-result">
 
+        <h2 class="grid_12" style="color:#fff;margin-top: 4em;text-align:center" >
+            <@spring.message '_portal.ui.notification.noitemsfound' /><br/>
+            <@spring.message '_portal.ui.notification.tryAnotherSearch'/>
+        </h2>
+
+
+    </section>
+</#if>
 
 <@addFooter/>
 </#compress>
