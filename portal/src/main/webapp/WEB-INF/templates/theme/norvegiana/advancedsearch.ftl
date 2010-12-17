@@ -2,7 +2,7 @@
 <#include "includeMarcos.ftl">
 <#assign title><@spring.message '_action.advanced.search'/></#assign>
 <@addHeader "${portalDisplayName} - ${title}", "",[],[]/>
-<section id="search_advanced" class="grid_9 prefix_3"  role="search">
+<section id="search_advanced" class="grid_9 prefix_3 main"  role="search">
        <h1><@spring.message '_action.advanced.search'/></h1>
        <form method="POST" action="advancedsearch.html" accept-charset="UTF-8">
         <input type="hidden" name="start" value="1" />
@@ -41,7 +41,7 @@
             <tr>
                 <td align="left"><input type="reset" value="<@spring.message '_portal.ui.reset.searchbox' />" /></td>
                 <td>&#160;</td>
-                <td align="right"><input id="searchsubmit2" class="button" type="submit" value="<@spring.message '_action.search' />" /></td>
+                <td align="right"><input id="searchsubmit2" class="button btn-strong" type="submit" value="<@spring.message '_action.search' />" /></td>
             </tr>
 
          </table>
