@@ -19,7 +19,8 @@
 
 </script>
 
-<section id="main" class="grid_12">
+<section id="main" class="main grid_12">
+
 
     <div id="savedItems">
         <ul>
