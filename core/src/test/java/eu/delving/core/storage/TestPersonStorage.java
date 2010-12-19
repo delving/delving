@@ -1,3 +1,24 @@
+/*
+ * Copyright 2010 DELVING BV
+ *
+ *  Licensed under the EUPL, Version 1.0 or? as soon they
+ *  will be approved by the European Commission - subsequent
+ *  versions of the EUPL (the "Licence");
+ *  you may not use this work except in compliance with the
+ *  Licence.
+ *  You may obtain a copy of the Licence at:
+ *
+ *  http://ec.europa.eu/idabc/eupl
+ *
+ *  Unless required by applicable law or agreed to in
+ *  writing, software distributed under the Licence is
+ *  distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *  express or implied.
+ *  See the Licence for the specific language governing
+ *  permissions and limitations under the Licence.
+ */
+
 package eu.delving.core.storage;
 
 import com.mongodb.Mongo;
@@ -84,5 +105,23 @@ public class TestPersonStorage {
         dude.save();
         dude = personStorage.byEmail(EMAIL);
         Assert.assertEquals("Should be empty", 0, dude.getItems().size());
+    }
+
+    @Test
+    public void addRemoveSearch() {
+        PersonStorage.Person dude = personStorage.byEmail(EMAIL);
+        dude.addSearch("Query", "QueryString", Language.FI);
+        dude.save();
+        dude = personStorage.byEmail(EMAIL);
+        List<PersonStorage.Search> searches = dude.getSearches();
+        Assert.assertEquals("Should be one item", 1, searches.size());
+        PersonStorage.Search search = searches.get(0);
+        Assert.assertEquals("field wrong", "Query", search.getQuery());
+        Assert.assertEquals("field wrong", "QueryString", search.getQueryString());
+        Assert.assertEquals("field wrong", Language.FI, search.getLanguage());
+        search.remove();
+        dude.save();
+        dude = personStorage.byEmail(EMAIL);
+        Assert.assertEquals("Should be empty", 0, dude.getSearches().size());
     }
 }

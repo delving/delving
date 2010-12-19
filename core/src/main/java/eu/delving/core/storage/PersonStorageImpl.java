@@ -122,6 +122,16 @@ public class PersonStorageImpl implements PersonStorage {
         }
 
         @Override
+        public void setRole(Role role) {
+            object.put(ROLE, role.toString());
+        }
+
+        @Override
+        public Role getRole() {
+            return Role.valueOf((String) object.get(ROLE));
+        }
+
+        @Override
         public void setEnabled(boolean enabled) {
             object.put(ENABLED, enabled);
         }
@@ -163,11 +173,11 @@ public class PersonStorageImpl implements PersonStorage {
 
         @Override
         public Item addItem(String author, String title, Language language) {
-            ItemImpl item = new ItemImpl(this, items().size());
+            ItemImpl item = new ItemImpl(this, list(ITEMS).size());
             item.setAuthor(author);
             item.setTitle(title);
             item.setLanguage(language);
-            items().add(item.getObject());
+            list(ITEMS).add(item.getObject());
             return item;
         }
 
@@ -175,7 +185,7 @@ public class PersonStorageImpl implements PersonStorage {
         public List<Item> getItems() {
             List<Item> items = new ArrayList<Item>();
             int index = 0;
-            for (Object element : items()) {
+            for (Object element : list(ITEMS)) {
                 items.add(new ItemImpl(this, (DBObject) element, index++));
             }
             return items;
@@ -183,18 +193,20 @@ public class PersonStorageImpl implements PersonStorage {
 
         @Override
         public Search addSearch(String query, String queryString, Language language) {
-            SearchImpl search = new SearchImpl(this);
+            SearchImpl search = new SearchImpl(this, list(SEARCHES).size());
             search.setQuery(query);
             search.setQueryString(queryString);
             search.setLanguage(language);
+            list(SEARCHES).add(search.getObject());
             return search;
         }
 
         @Override
         public List<Search> getSearches() {
             List<Search> searches = new ArrayList<Search>();
+            int index = 0;
             for (Object element : (BasicDBList) object.get(Person.SEARCHES)) {
-                searches.add(new SearchImpl(this, (DBObject) element));
+                searches.add(new SearchImpl(this, (DBObject) element, index++));
             }
             return searches;
         }
@@ -209,10 +221,10 @@ public class PersonStorageImpl implements PersonStorage {
             persons().remove(object);
         }
 
-        public BasicDBList items() {
-            BasicDBList list = (BasicDBList) object.get(ITEMS);
+        public BasicDBList list(String name) {
+            BasicDBList list = (BasicDBList) object.get(name);
             if (list == null) {
-                object.put(ITEMS, list = new BasicDBList());
+                object.put(name, list = new BasicDBList());
             }
             return list;
         }
@@ -274,7 +286,7 @@ public class PersonStorageImpl implements PersonStorage {
 
         @Override
         public void remove() {
-            person.items().remove(index);
+            person.list(Person.ITEMS).remove(index);
         }
 
         public Object getObject() {
@@ -285,18 +297,25 @@ public class PersonStorageImpl implements PersonStorage {
     public class SearchImpl implements Search {
         private PersonImpl person;
         private DBObject object;
+        private int index;
 
-        public SearchImpl(PersonImpl person, DBObject object) {
+        public SearchImpl(PersonImpl person, DBObject object, int index) {
             this.person = person;
             this.object = object;
+            this.index = index;
         }
 
-        public SearchImpl(PersonImpl person) {
-            this(person, new BasicDBObject(DATE_SAVED, new Date()));
+        public SearchImpl(PersonImpl person, int index) {
+            this(person, new BasicDBObject(DATE_SAVED, new Date()), index);
         }
 
         public void setQuery(String query) {
             object.put(QUERY, query);
+        }
+
+        @Override
+        public int getIndex() {
+            return index;
         }
 
         @Override
@@ -327,15 +346,13 @@ public class PersonStorageImpl implements PersonStorage {
             return (Date) object.get(DATE_SAVED);
         }
 
-        public void add() {
-            BasicDBList list = (BasicDBList) person.object.get(Person.SEARCHES);
-            list.add(object);
-        }
-
         @Override
         public void remove() {
-            BasicDBList list = (BasicDBList) person.object.get(Person.SEARCHES);
-            // todo: remove
+            person.list(Person.SEARCHES).remove(index);
+        }
+
+        public Object getObject() {
+            return object;
         }
     }
 

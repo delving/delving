@@ -38,11 +38,20 @@ public interface PersonStorage {
     List<Person> getPeople();
     Person byEmail(String email);
 
+    public enum Role {
+        ROLE_USER,
+        ROLE_RESEARCH_USER,
+        ROLE_ADMINISTRATOR,
+        ROLE_GOD
+    }
+
     public interface Person {
         void setEmail(String email);
         String getEmail();
         void setPassword(String password);
         String getHashedPassword();
+        void setRole(Role role);
+        Role getRole();
         void setEnabled(boolean enabled);
         boolean isEnabled();
         void setFirstName(String firstName);
@@ -60,6 +69,7 @@ public interface PersonStorage {
 
         String EMAIL = "email";
         String PASSWORD = "password";
+        String ROLE = "role";
         String ENABLED = "enabled";
         String FIRST_NAME = "first_name";
         String LAST_NAME = "last_name";
@@ -84,6 +94,7 @@ public interface PersonStorage {
     }
 
     public interface Search {
+        int getIndex();
         String getQuery();
         String getQueryString();
         Language getLanguage();
