@@ -32,16 +32,17 @@ import java.util.List;
 
 public interface PersonStorage {
 
+    Person createPerson(String email);
     Person authenticate(String email, String password);
     List<Person> getPeople(String pattern);
     List<Person> getPeople();
     Person byEmail(String email);
 
-    String PERSON_DATABASE = "persons";
-
     public interface Person {
         void setEmail(String email);
         String getEmail();
+        void setPassword(String password);
+        String getHashedPassword();
         void setEnabled(boolean enabled);
         boolean isEnabled();
         void setFirstName(String firstName);

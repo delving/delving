@@ -29,6 +29,9 @@ import com.mongodb.Mongo;
 import eu.delving.domain.Language;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,18 +42,30 @@ import java.util.List;
 
 public class PersonStorageImpl implements PersonStorage {
 
+    private String databaseName = "persons";
+
     @Autowired
     private Mongo mongo;
 
+    public void setDatabaseName(String databaseName) {
+        this.databaseName = databaseName;
+    }
+
     private DBCollection persons() {
-        return mongo.getDB(PERSON_DATABASE).getCollection(PERSON_DATABASE);
+        return mongo.getDB(databaseName).getCollection(databaseName);
+    }
+
+    @Override
+    public Person createPerson(String email) {
+        DBObject object = new BasicDBObject(Person.EMAIL, email);
+        return new PersonImpl(object);
     }
 
     public Person authenticate(String email, String password) {
         persons().ensureIndex(new BasicDBObject(Person.EMAIL, 1));
         DBObject query = new BasicDBObject();
         query.put(Person.EMAIL, email);
-        query.put(Person.PASSWORD, password);
+        query.put(Person.PASSWORD, hashPassword(password));
         DBObject personObject = persons().findOne(query);
         return personObject != null ? new PersonImpl(personObject) : null;
     }
@@ -88,6 +103,16 @@ public class PersonStorageImpl implements PersonStorage {
 
         public String getEmail() {
             return (String) object.get(EMAIL);
+        }
+
+        @Override
+        public void setPassword(String password) {
+            object.put(PASSWORD, hashPassword(password));
+        }
+
+        @Override
+        public String getHashedPassword() {
+            return (String) object.get(PASSWORD);
         }
 
         public void setEnabled(boolean enabled) {
@@ -133,11 +158,11 @@ public class PersonStorageImpl implements PersonStorage {
         public List<Item> getItems() {
             List<Item> items = new ArrayList<Item>();
             for (Object element : (BasicDBList) object.get(Person.ITEMS)) {
-                items.add(new ItemImpl(this, (DBObject)element));
+                items.add(new ItemImpl(this, (DBObject) element));
             }
-            return items;             
+            return items;
         }
-        
+
         public Search addSearch(String query, String queryString, Language language) {
             SearchImpl search = new SearchImpl(this);
             search.setQuery(query);
@@ -145,19 +170,19 @@ public class PersonStorageImpl implements PersonStorage {
             search.setLanguage(language);
             return search;
         }
-        
+
         public List<Search> getSearches() {
             List<Search> searches = new ArrayList<Search>();
             for (Object element : (BasicDBList) object.get(Person.SEARCHES)) {
-                searches.add(new SearchImpl(this, (DBObject)element));
+                searches.add(new SearchImpl(this, (DBObject) element));
             }
-            return searches;             
+            return searches;
         }
-        
+
         public void save() {
             persons().save(object);
         }
-        
+
         public void delete() {
             persons().remove(object);
         }
@@ -197,7 +222,7 @@ public class PersonStorageImpl implements PersonStorage {
         }
 
         public Language getLanguage() {
-            return Language.valueOf((String)object.get(LANGUAGE));
+            return Language.valueOf((String) object.get(LANGUAGE));
         }
 
         // todo: identify the actual object (was europeanaId)
@@ -237,7 +262,7 @@ public class PersonStorageImpl implements PersonStorage {
         public String getQuery() {
             return (String) object.get(QUERY);
         }
-        
+
         public void setQueryString(String queryString) {
             object.put(QUERY_STRING, queryString);
         }
@@ -245,7 +270,7 @@ public class PersonStorageImpl implements PersonStorage {
         public String getQueryString() {
             return (String) object.get(QUERY_STRING);
         }
-        
+
         public void setLanguage(Language language) {
             object.put(LANGUAGE, language.toString());
         }
@@ -253,7 +278,7 @@ public class PersonStorageImpl implements PersonStorage {
         public Language getLanguage() {
             return Language.valueOf((String) object.get(LANGUAGE));
         }
-        
+
         public Date getDateSaved() {
             return (Date) object.get(DATE_SAVED);
         }
@@ -268,4 +293,44 @@ public class PersonStorageImpl implements PersonStorage {
             // todo: remove
         }
     }
+
+    private static String hashPassword(String password) {
+        MessageDigest messageDigest = getMessageDigest();
+        byte[] digest;
+        try {
+            digest = messageDigest.digest(password.getBytes("UTF-8"));
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("UTF-8 not supported!");
+        }
+        return new String(encode(messageDigest.digest(digest)));
+    }
+
+    private static MessageDigest getMessageDigest() throws IllegalArgumentException {
+        try {
+            return MessageDigest.getInstance("SHA-1");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new IllegalArgumentException("No such algorithm [SHA-1]");
+        }
+    }
+
+    private static final char[] HEX = {
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
+    };
+
+    private static char[] encode(byte[] bytes) {
+        final int nBytes = bytes.length;
+        char[] result = new char[2*nBytes];
+        int j = 0;
+        for (int i=0; i < nBytes; i++) {
+            // Char for top 4 bits
+            result[j++] = HEX[(0xF0 & bytes[i]) >>> 4 ];
+            // Bottom 4
+            result[j++] = HEX[(0x0F & bytes[i])];
+        }
+        return result;
+    }
+
+
 }

@@ -286,5 +286,9 @@
         </property>
     </bean>
 
+    <bean id="mongo" class="com.mongodb.Mongo"/>
+
+    <bean id="personStorage" class="eu.delving.core.storage.PersonStorageImpl"/>
+
 </beans>
 
