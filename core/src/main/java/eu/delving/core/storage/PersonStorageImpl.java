@@ -61,6 +61,7 @@ public class PersonStorageImpl implements PersonStorage {
         return new PersonImpl(object);
     }
 
+    @Override
     public Person authenticate(String email, String password) {
         persons().ensureIndex(new BasicDBObject(Person.EMAIL, 1));
         DBObject query = new BasicDBObject();
@@ -70,10 +71,12 @@ public class PersonStorageImpl implements PersonStorage {
         return personObject != null ? new PersonImpl(personObject) : null;
     }
 
+    @Override
     public List<Person> getPeople(String pattern) {
         return null;
     }
 
+    @Override
     public List<Person> getPeople() {
         List<Person> persons = new ArrayList<Person>();
         for (DBObject personObject : persons().find()) {
@@ -82,6 +85,7 @@ public class PersonStorageImpl implements PersonStorage {
         return persons;
     }
 
+    @Override
     public Person byEmail(String email) {
         persons().ensureIndex(new BasicDBObject(Person.EMAIL, 1));
         DBObject query = new BasicDBObject();
@@ -97,10 +101,12 @@ public class PersonStorageImpl implements PersonStorage {
             this.object = object;
         }
 
+        @Override
         public void setEmail(String email) {
             object.put(EMAIL, email);
         }
 
+        @Override
         public String getEmail() {
             return (String) object.get(EMAIL);
         }
@@ -115,54 +121,67 @@ public class PersonStorageImpl implements PersonStorage {
             return (String) object.get(PASSWORD);
         }
 
+        @Override
         public void setEnabled(boolean enabled) {
             object.put(ENABLED, enabled);
         }
 
+        @Override
         public boolean isEnabled() {
             return (Boolean) object.get(ENABLED);
         }
 
+        @Override
         public void setFirstName(String firstName) {
             object.put(FIRST_NAME, firstName);
         }
 
+        @Override
         public String getFirstName() {
             return (String) object.get(FIRST_NAME);
         }
 
+        @Override
         public void setLastName(String lastName) {
             object.put(LAST_LOGIN, lastName);
         }
 
+        @Override
         public String getLastName() {
             return (String) object.get(LAST_NAME);
         }
 
+        @Override
         public void setLastLogin(Date lastLogin) {
             object.put(LAST_LOGIN, lastLogin);
         }
 
+        @Override
         public Date getLastLogin() {
             return (Date) object.get(LAST_LOGIN);
         }
 
+        @Override
         public Item addItem(String author, String title, Language language) {
-            ItemImpl item = new ItemImpl(this);
+            ItemImpl item = new ItemImpl(this, items().size());
             item.setAuthor(author);
             item.setTitle(title);
             item.setLanguage(language);
+            items().add(item.getObject());
             return item;
         }
 
+        @Override
         public List<Item> getItems() {
             List<Item> items = new ArrayList<Item>();
-            for (Object element : (BasicDBList) object.get(Person.ITEMS)) {
-                items.add(new ItemImpl(this, (DBObject) element));
+            int index = 0;
+            for (Object element : items()) {
+                items.add(new ItemImpl(this, (DBObject) element, index++));
             }
             return items;
         }
 
+        @Override
         public Search addSearch(String query, String queryString, Language language) {
             SearchImpl search = new SearchImpl(this);
             search.setQuery(query);
@@ -171,6 +190,7 @@ public class PersonStorageImpl implements PersonStorage {
             return search;
         }
 
+        @Override
         public List<Search> getSearches() {
             List<Search> searches = new ArrayList<Search>();
             for (Object element : (BasicDBList) object.get(Person.SEARCHES)) {
@@ -179,32 +199,50 @@ public class PersonStorageImpl implements PersonStorage {
             return searches;
         }
 
+        @Override
         public void save() {
             persons().save(object);
         }
 
+        @Override
         public void delete() {
             persons().remove(object);
+        }
+
+        public BasicDBList items() {
+            BasicDBList list = (BasicDBList) object.get(ITEMS);
+            if (list == null) {
+                object.put(ITEMS, list = new BasicDBList());
+            }
+            return list;
         }
     }
 
     public class ItemImpl implements Item {
         private PersonImpl person;
         private DBObject object;
+        private int index;
 
-        public ItemImpl(PersonImpl person, DBObject object) {
+        public ItemImpl(PersonImpl person, DBObject object, int index) {
             this.person = person;
             this.object = object;
+            this.index = index;
         }
 
-        public ItemImpl(PersonImpl person) {
-            this(person, new BasicDBObject(DATE_SAVED, new Date()));
+        public ItemImpl(PersonImpl person, int index) {
+            this(person, new BasicDBObject(DATE_SAVED, new Date()), index);
         }
 
         public void setAuthor(String author) {
             object.put(AUTHOR, author);
         }
 
+        @Override
+        public int getIndex() {
+            return index;
+        }
+
+        @Override
         public String getAuthor() {
             return (String) object.get(AUTHOR);
         }
@@ -213,6 +251,7 @@ public class PersonStorageImpl implements PersonStorage {
             object.put(TITLE, title);
         }
 
+        @Override
         public String getTitle() {
             return (String) object.get(TITLE);
         }
@@ -221,24 +260,25 @@ public class PersonStorageImpl implements PersonStorage {
             object.put(LANGUAGE, language.toString());
         }
 
+        @Override
         public Language getLanguage() {
             return Language.valueOf((String) object.get(LANGUAGE));
         }
 
         // todo: identify the actual object (was europeanaId)
 
+        @Override
         public Date getDateSaved() {
             return (Date) object.get(DATE_SAVED);
         }
 
-        public void add() {
-            BasicDBList list = (BasicDBList) person.object.get(Person.ITEMS);
-            list.add(object);
+        @Override
+        public void remove() {
+            person.items().remove(index);
         }
 
-        public void remove() {
-            BasicDBList list = (BasicDBList) person.object.get(Person.ITEMS);
-            list.remove(object); // todo: will this work?
+        public Object getObject() {
+            return object;
         }
     }
 
@@ -259,6 +299,7 @@ public class PersonStorageImpl implements PersonStorage {
             object.put(QUERY, query);
         }
 
+        @Override
         public String getQuery() {
             return (String) object.get(QUERY);
         }
@@ -267,6 +308,7 @@ public class PersonStorageImpl implements PersonStorage {
             object.put(QUERY_STRING, queryString);
         }
 
+        @Override
         public String getQueryString() {
             return (String) object.get(QUERY_STRING);
         }
@@ -275,10 +317,12 @@ public class PersonStorageImpl implements PersonStorage {
             object.put(LANGUAGE, language.toString());
         }
 
+        @Override
         public Language getLanguage() {
             return Language.valueOf((String) object.get(LANGUAGE));
         }
 
+        @Override
         public Date getDateSaved() {
             return (Date) object.get(DATE_SAVED);
         }
@@ -288,6 +332,7 @@ public class PersonStorageImpl implements PersonStorage {
             list.add(object);
         }
 
+        @Override
         public void remove() {
             BasicDBList list = (BasicDBList) person.object.get(Person.SEARCHES);
             // todo: remove

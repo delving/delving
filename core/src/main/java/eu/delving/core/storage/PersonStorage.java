@@ -69,6 +69,7 @@ public interface PersonStorage {
     }
 
     public interface Item {
+        int getIndex();
         String getAuthor();
         String getTitle();
         Language getLanguage();
