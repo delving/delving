@@ -14,7 +14,7 @@
 
 <@addHeader "${portalDisplayName}", "",[],["login-register.css"]/>
 
-<div role="main" class="grid_12 login-register">
+<div role="main" class="grid_12 login-register main">
 
 
                 <h2><@spring.message '_mine.user.register.register' /></h2>
