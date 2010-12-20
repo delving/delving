@@ -35,9 +35,8 @@
     <div class="grid_4 alpha statistic"><@showStatisticsTable "MUNICIPALITY"/></div>
     <div class="grid_8 omega graph"><@showStatisticsGraph "MUNICIPALITY","pieScript","00x180"/></div>
     <div class="clear"></div>
-
-
 </section>
+
 <@addFooter/>
 
 </#compress>
@@ -102,9 +101,13 @@
 
     <#assign totalItems = getTotalCount (facetName)/>
     <#assign labels = ""/>
+    <#assign labelsWrite = ""/>
     <#assign data = ""/>
     <#assign percentage = 0/>
 
+
+    <#-- force locale for uniform number formatting -->
+    <#setting locale="en_US">
     <#list facetMap.getFacet(facetName) as facet>
         <#-- SET PERCENTAGE PER PROVIDER FROM THE TOTAL OF ALL DATA-PROVIDERS -->
         <#assign x = facet.getCount() * 100/>
@@ -131,10 +134,10 @@
         <#elseif graphType="pieScript">
             <#if facet_has_next>
                  <#assign labels = labels + "['" + facet.getName() + "'," + percentage +"],"/>
-                 <#assign data = data + percentage + ","/>
+                 <#--<#assign data = data + percentage + ","/>-->
             <#else>
                 <#assign labels = labels + "['" + facet.getName() + "'," + percentage +"]"/>
-                <#assign data = data + percentage/>
+                <#--<#assign data = data + percentage/>-->
             </#if>        
         </#if>
     </#list>
@@ -149,8 +152,7 @@
             <#--<iframe src="http://3.chart.apis.google.com/chart?chbh=a&amp;chs=400x200&amp;cht=bhs&amp;chd=t:${data}&amp;chm=${labels}&amp;chof=validate"></iframe>-->
         <#break>
         <#case "pieScript">
-        <style type="text/css" lang="css">
-            div#chart-div iframe html div#chartArea{margin-top:-200px}</style>
+
         <div id="chart-div"></div>
         <script type="text/javascript">
          scriptPieChart();  
@@ -177,7 +179,7 @@
 
             // Instantiate and draw our chart, passing in some options.
             var chart = new google.visualization.PieChart(document.getElementById('chart-div'));
-            chart.draw(data, {width: 400, height: 220, is3D: false});
+            chart.draw(data, {width: 500, height: 400, is3D: false});
           }
         }
         </script>
