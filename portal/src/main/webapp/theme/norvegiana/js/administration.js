@@ -49,7 +49,7 @@ $(document).ready(function(){
                   showMessage("success","User: "+toRemove+ " has been successfully removed");   
               },
               error: function(xhr, ajaxOptions, thrownError){
-                showMessage("success","An error has occured: "+xhr.status);
+                showMessage("error","An error has occured: "+xhr.status);
               }
             });
         }
