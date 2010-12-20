@@ -44,17 +44,13 @@ import java.util.List;
  */
 
 public class FieldListModel extends AbstractListModel {
+    private MetadataModel metadataModel;
     private List<FieldDefinition> fieldDefinitions;
     private Unmapped unmapped;
 
     public FieldListModel(MetadataModel metadataModel) {
-        this.fieldDefinitions = new ArrayList<FieldDefinition>(metadataModel.getRecordDefinition().getMappableFields());
-        Collections.sort(fieldDefinitions, new Comparator<FieldDefinition>() {
-            @Override
-            public int compare(FieldDefinition field0, FieldDefinition field1) {
-                return field0.getFieldNameString().compareTo(field1.getFieldNameString());
-            }
-        });
+        this.metadataModel = metadataModel;
+        this.fieldDefinitions = new ArrayList<FieldDefinition>();
     }
 
     public ListModel getUnmapped(MappingModel mappingModel) {
@@ -104,8 +100,16 @@ public class FieldListModel extends AbstractListModel {
         public void mappingChanged(RecordMapping recordMapping) {
             int sizeBefore = getSize();
             unmappedFields.clear();
+            fieldDefinitions.clear();
             fireIntervalRemoved(this, 0, sizeBefore);
             if (recordMapping != null) {
+                fieldDefinitions.addAll(metadataModel.getRecordDefinition(recordMapping.getPrefix()).getMappableFields());
+                Collections.sort(fieldDefinitions, new Comparator<FieldDefinition>() {
+                    @Override
+                    public int compare(FieldDefinition field0, FieldDefinition field1) {
+                        return field0.getFieldNameString().compareTo(field1.getFieldNameString());
+                    }
+                });
                 nextVariable:
                 for (FieldDefinition fieldDefinition : fieldDefinitions) {
                     for (FieldMapping fieldMapping : recordMapping.getFieldMappings()) {

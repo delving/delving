@@ -77,6 +77,7 @@ public class NormalizationPanel extends JPanel {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Groovy Code"));
         JTextArea area = new JTextArea(sipModel.getRecordCompileModel().getCodeDocument());
+        area.setToolTipText(Utility.GROOVY_TOOL_TIP);
         area.setEditable(false);
         p.add(scroll(area));
         return p;

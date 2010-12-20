@@ -192,6 +192,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   /**
    * This method can give back the following Error and Exception conditions: BadResumptionToken, cannotDisseminateFormat, noRecordsMatch, noSetHierachy
+   * todo: it would be more efficient to query for only those fields (no mapping required?)
    */
   def processListIdentifiers(pmhRequestEntry: PmhRequestEntry) = {
         // parse all the params from map
@@ -207,9 +208,9 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
                metadataPrefix={harvestStep.getPmhRequest.getMetadataPrefix}
                set={setSpec}>{request.getRequestURL}</request>
       <ListIdentifiers>
-        { for (record <- harvestStep.getRecords) yield
+        { for (record <- harvestStep.getRecords()) yield
         <header status={recordStatus(record)}>
-          <identifier>{setSpec}:{record.getIdentifier}</identifier>
+          <identifier>{setSpec}:{record.getId}</identifier>
           <datestamp>{record.getModifiedDate}</datestamp>
           <setSpec>{setSpec}</setSpec>
         </header>
@@ -233,7 +234,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
      <request verb="ListRecords" from={printDate(pmhObject.getFrom)} until={printDate(pmhObject.getUntil)}
               metadataPrefix={pmhObject.getMetadataPrefix}>{request.getRequestURL}</request>
      <ListRecords>
-            {for (record <- harvestStep.getRecords) yield
+            {for (record <- harvestStep.getRecords()) yield
               renderRecord(record, pmhObject.getMetadataPrefix, pmhObject.getSet)
             }
        {renderResumptionToken(harvestStep)}
@@ -276,7 +277,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   private def getHarvestStep(pmhRequestEntry: PmhRequestEntry) : HarvestStep = {
     if (!pmhRequestEntry.resumptionToken.isEmpty)
-      metaRepo.getHarvestStep(pmhRequestEntry.resumptionToken)
+      metaRepo.getHarvestStep(pmhRequestEntry.resumptionToken, pmhRequestEntry.pmhRequestItem.accessKey)
     else
       createFirstHarvestStep(pmhRequestEntry.pmhRequestItem)
   }
@@ -310,7 +311,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
       val elem = XML.loadString(recordAsString)
       <record>
         <header>
-          <identifier>{set}:{record.getIdentifier}</identifier>
+          <identifier>{set}:{record.getId}</identifier>
           <datestamp>{printDate(record.getModifiedDate)}</datestamp>
           <setSpec>{set}</setSpec>
         </header>

@@ -41,6 +41,7 @@ public class CodeGenerator {
     }
 
     public List<FieldMapping> createObviousMappings(List<FieldDefinition> unmappedFieldDefinitions, List<SourceVariable> variables) {
+        System.out.println("Field definitions: "+unmappedFieldDefinitions.size()); // todo: remove
         List<FieldMapping> fieldMappings = new ArrayList<FieldMapping>();
         FieldMapping uniqueMapping = createUniqueMapping(unmappedFieldDefinitions, variables);
         if (uniqueMapping != null) {

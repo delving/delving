@@ -144,24 +144,24 @@ public class RecordMapping {
         return fieldMappings.get(path);
     }
 
-    public String toDisplayCode(RecordDefinition recordDefinition) {
-        return toCode(recordDefinition, null, false, null);
+    public String toDisplayCode(MetadataModel metadataModel) {
+        return toCode(metadataModel, null, false, null);
     }
 
-    public String toCompileCode(RecordDefinition recordDefinition) {
-        return toCode(recordDefinition, null, true, null);
+    public String toCompileCode(MetadataModel metadataModel) {
+        return toCode(metadataModel, null, true, null);
     }
 
-    public String toDisplayCode(RecordDefinition recordDefinition, String selectedPath) {
-        return toCode(recordDefinition, selectedPath, false, null);
+    public String toDisplayCode(MetadataModel metadataModel, String selectedPath) {
+        return toCode(metadataModel, selectedPath, false, null);
     }
 
-    public String toCompileCode(RecordDefinition recordDefinition, String selectedPath) {
-        return toCode(recordDefinition, selectedPath, true, null);
+    public String toCompileCode(MetadataModel metadataModel, String selectedPath) {
+        return toCode(metadataModel, selectedPath, true, null);
     }
 
-    public String toCompileCode(RecordDefinition recordDefinition, String selectedPath, String editedCode) {
-        return toCode(recordDefinition, selectedPath, true, editedCode);
+    public String toCompileCode(MetadataModel metadataModel, String selectedPath, String editedCode) {
+        return toCode(metadataModel, selectedPath, true, editedCode);
     }
 
     public String toString() {
@@ -170,7 +170,7 @@ public class RecordMapping {
 
     // === private
 
-    private String toCode(RecordDefinition recordDefinition, String selectedPath, boolean forCompile, String editedCode) {
+    private String toCode(MetadataModel metadataModel, String selectedPath, boolean forCompile, String editedCode) {
         final StringBuilder stringBuilder = new StringBuilder();
         Out out = new Out() {
             int indentLevel;
@@ -225,6 +225,7 @@ public class RecordMapping {
             }
             out.line("// Builder to create the record\n");
         }
+        RecordDefinition recordDefinition = metadataModel.getRecordDefinition(getPrefix());
         if (editedCode == null) {
             if (forCompile) {
                 out.line("use (MappingCategory) {");

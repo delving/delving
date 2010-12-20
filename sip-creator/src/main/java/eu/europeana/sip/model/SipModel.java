@@ -29,6 +29,7 @@ import eu.delving.metadata.FieldStatistics;
 import eu.delving.metadata.MappingModel;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.Path;
+import eu.delving.metadata.RecordDefinition;
 import eu.delving.metadata.RecordMapping;
 import eu.delving.metadata.RecordValidator;
 import eu.delving.metadata.SourceVariable;
@@ -123,9 +124,7 @@ public class SipModel {
         analysisTree = AnalysisTree.create("Select a Data Set from the File menu");
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
         fieldListModel = new FieldListModel(metadataModel);
-//        String mappingToolCode = fileStore.getCode(FileStore.MAPPING_TOOL_FILE_NAME); todo: make it runtime changeable in groovy code resource
         recordCompileModel = new CompileModel(CompileModel.Type.RECORD, metadataModel, groovyCodeResource);
-        recordCompileModel.setRecordValidator(new RecordValidator(metadataModel, false));
         fieldCompileModel = new CompileModel(CompileModel.Type.FIELD, metadataModel, groovyCodeResource);
         parseListeners.add(recordCompileModel);
         parseListeners.add(fieldCompileModel);
@@ -280,6 +279,7 @@ public class SipModel {
                         @Override
                         public void run() {
                             mappingModel.setRecordMapping(recordMapping);
+                            recordCompileModel.setRecordValidator(new RecordValidator(getRecordDefinition(), false));
                             createMetadataParser(1);
                             if (recordMapping != null) {
                                 if (getRecordRoot() != null) {
@@ -300,6 +300,14 @@ public class SipModel {
                 }
             }
         });
+    }
+
+    public RecordDefinition getRecordDefinition() {
+        RecordMapping recordMapping = mappingModel.getRecordMapping();
+        if (recordMapping == null) {
+            return null;
+        }
+        return metadataModel.getRecordDefinition(recordMapping.getPrefix());
     }
 
     public void saveAsTemplate(final String name) {

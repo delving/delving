@@ -58,8 +58,8 @@ public class RecordValidator {
     private SAXReader reader = new SAXReader();
 
 
-    public RecordValidator(MetadataModel metadataModel, boolean checkUniqueness) {
-        this.recordDefinition = metadataModel.getRecordDefinition();
+    public RecordValidator(RecordDefinition recordDefinition, boolean checkUniqueness) {
+        this.recordDefinition = recordDefinition;
         this.idUniqueness = checkUniqueness ? new Uniqueness() : null;
         StringBuilder contextString = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<validate\n");
         for (NamespaceDefinition namespaceDefinition : recordDefinition.namespaces) {

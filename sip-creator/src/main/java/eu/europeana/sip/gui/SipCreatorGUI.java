@@ -259,8 +259,11 @@ public class SipCreatorGUI extends JFrame {
     private MetadataModel loadMetadataModel() {
         try {
             MetadataModelImpl metadataModel = new MetadataModelImpl();
-            metadataModel.setRecordDefinitionResources(Arrays.asList("/abm-record-definition.xml"));
-            metadataModel.setDefaultPrefix("abm");
+            metadataModel.setRecordDefinitionResources(Arrays.asList(
+                    "/ese-record-definition.xml",
+                    "/abm-record-definition.xml"
+            ));
+            metadataModel.setDefaultPrefix("ese");
             return metadataModel;
         }
         catch (Exception e) {

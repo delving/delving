@@ -64,7 +64,7 @@ public class FactPanel extends JPanel {
         for (FactDefinition cid : Facts.definitions()) {
             fieldComponent[index++] = new FieldComponent(cid);
         }
-        LayoutUtil.makeCompactGrid(this, getComponentCount() / 2, 2, 5, 5, 5, 5);
+        Utility.makeCompactGrid(this, getComponentCount() / 2, 2, 5, 5, 5, 5);
 //        setPreferredSize(new Dimension(400, 400));
     }
 

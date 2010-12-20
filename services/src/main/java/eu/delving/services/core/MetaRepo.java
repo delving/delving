@@ -64,9 +64,9 @@ public interface MetaRepo {
 
     Set<? extends MetadataFormat> getMetadataFormats(String id, String accessKey) throws MappingNotFoundException, AccessKeyException;
 
-    HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String accessKey) throws DataSetNotFoundException;
+    HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String accessKey) throws DataSetNotFoundException, MappingNotFoundException, AccessKeyException;
 
-    HarvestStep getHarvestStep(String resumptionToken) throws ResumptionTokenNotFoundException, DataSetNotFoundException;
+    HarvestStep getHarvestStep(String resumptionToken, String accessKey) throws ResumptionTokenNotFoundException, DataSetNotFoundException, MappingNotFoundException, AccessKeyException;
 
     void removeExpiredHarvestSteps();
 
@@ -91,7 +91,7 @@ public interface MetaRepo {
         void parseRecords(InputStream inputStream) throws RecordParseException;
         void setSourceHash(String hash);
 
-        void setMapping(RecordMapping recordMapping);
+        void setMapping(RecordMapping recordMapping, boolean accessKeyRequired);
         void setMappingHash(String metadataPrefix, String hash);
 
         int getRecordsIndexed();
@@ -100,7 +100,7 @@ public interface MetaRepo {
         Map<String,Mapping> mappings();
         int getRecordCount();
         Record getRecord(ObjectId id, String metadataPrefix, String accessKey) throws MappingNotFoundException, AccessKeyException;
-        List<? extends Record> getRecords(String prefix, int start, int count, Date from, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException;
+        List<? extends Record> getRecords(String prefix, int count, Date from, ObjectId afterId, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException;
 
         List<String> getHashes();
         void save();
@@ -115,7 +115,6 @@ public interface MetaRepo {
         String DATA_SET_STATE = "state";
         String RECORDS_INDEXED = "rec_indexed";
         String DETAILS = "details";
-
     }
 
     public interface Details {
@@ -142,22 +141,34 @@ public interface MetaRepo {
 
     public interface HarvestStep {
 
-        ObjectId getResumptionToken();
+        ObjectId getId();
+        ObjectId getFirstId();
         Date getExpiration();
         int getListSize();
+        Runnable createRecordFetcher(DataSet dataSet, String key);
+        Runnable createRecordSaver();
         int getCursor();
-        List<? extends Record> getRecords() throws DataSetNotFoundException, MappingNotFoundException, AccessKeyException;
+        int getRecordCount();
+        List<? extends Record> getRecords();
         PmhRequest getPmhRequest();
         DBObject getNamespaces();
         boolean hasNext();
         String nextResumptionToken();
+        ObjectId getAfterId();
+        ObjectId getNextId();
+        String getErrorMessage();
+        void delete();
 
+        String FIRST_ID = "firstId";
         String EXPIRATION = "exp";
         String LIST_SIZE = "listSize";
         String CURSOR = "cursor";
+        String RECORDS = "records";
         String PMH_REQUEST = "pmhRequest";
         String NAMESPACES = "namespaces";
-        String ACCESS_KEY = "access";
+        String ERROR_MESSAGE = "error";
+        String AFTER_ID = "afterId";
+        String NEXT_ID = "nextId";
     }
 
     public interface PmhRequest {
@@ -177,7 +188,7 @@ public interface MetaRepo {
     }
 
     public interface Record {
-        ObjectId getIdentifier();
+        ObjectId getId();
         PmhSet getPmhSet();
         Date getModifiedDate();
         boolean isDeleted();

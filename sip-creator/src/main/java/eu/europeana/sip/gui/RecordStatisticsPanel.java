@@ -98,6 +98,7 @@ public class RecordStatisticsPanel extends JPanel {
         JPanel p = new JPanel(new BorderLayout(5, 5));
         p.setBorder(BorderFactory.createTitledBorder("Analysis Code"));
         codeArea.setText(getCode());
+        codeArea.setToolTipText(Utility.GROOVY_TOOL_TIP);
         p.add(scroll(codeArea), BorderLayout.CENTER);
         return p;
     }
