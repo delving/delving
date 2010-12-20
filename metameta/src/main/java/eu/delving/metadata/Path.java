@@ -40,7 +40,7 @@ public class Path implements Comparable<Path>, Serializable {
 
     public Path(String pathString) {
         if (!pathString.startsWith("/")) {
-            throw new IllegalArgumentException("Path string must start at the root with slash: ["+pathString+"]");
+            throw new IllegalArgumentException("Path string must start at the root with slash: [" + pathString + "]");
         }
         for (String part : pathString.substring(1).split("/")) {
             stack.push(Tag.create(part));
@@ -71,8 +71,18 @@ public class Path implements Comparable<Path>, Serializable {
         stack.pop();
     }
 
-    public boolean equals(Path path) {
-        return compareTo(path) == 0;
+    @Override
+    public boolean equals(Object path) {
+        return path instanceof Path && compareTo((Path) path) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        int code = 0;
+        for (Tag tag : stack) {
+            code = code * 23 + tag.hashCode();
+        }
+        return code;
     }
 
     @Override
