@@ -54,6 +54,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Harvindexer {
     private ConsoleDao consoleDao;
     private SolrServer solrServer;
+    private XMLInputFactory inFactory = new WstxInputFactory();
 
     private Logger log = Logger.getLogger(getClass());
     private int chunkSize = 1000;
@@ -252,10 +253,12 @@ public class Harvindexer {
                     break;
                 }
             }
+            if (!recordList.isEmpty()) {
+                indexRecordList();
+            }
         }
 
         private String importXmlInternal(InputStream inputStream) throws TransformerException, XMLStreamException, IOException, SolrServerException, HarvindexingException {
-            XMLInputFactory inFactory = new WstxInputFactory();
             Source source = new StreamSource(inputStream, "UTF-8");
             XMLStreamReader xml = inFactory.createXMLStreamReader(source);
             EuropeanaId europeanaId = null;
@@ -372,9 +375,7 @@ public class Harvindexer {
                 }
                 xml.next();
             }
-            if (!recordList.isEmpty()) {
-                indexRecordList();
-            }
+            xml.close();
             inputStream.close();
             return resumptionToken;
         }
