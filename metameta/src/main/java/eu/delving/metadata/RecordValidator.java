@@ -34,11 +34,11 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
@@ -89,7 +89,7 @@ public class RecordValidator {
             source.setEncoding("UTF-8");
             Document document = reader.read(source);
             totalParseTime += System.currentTimeMillis() - before;
-            Map<Path, Counter> counters = new HashMap<Path, Counter>();
+            Map<Path, Counter> counters = new TreeMap<Path, Counter>();
             before = System.currentTimeMillis();
             validateDocument(document, problems, new TreeSet<String>(), counters);
             validateCardinalities(counters, problems);
@@ -115,7 +115,7 @@ public class RecordValidator {
     }
 
     private void validateCardinalities(Map<Path, Counter> counters, List<String> problems) {
-        Map<String, Boolean> requiredGroupMap = new HashMap<String, Boolean>();
+        Map<String, Boolean> requiredGroupMap = new TreeMap<String, Boolean>();
         for (FieldDefinition fieldDefinition : validatableFields) {
             if (fieldDefinition.validation.requiredGroup != null) {
                 requiredGroupMap.put(fieldDefinition.validation.requiredGroup, false);
