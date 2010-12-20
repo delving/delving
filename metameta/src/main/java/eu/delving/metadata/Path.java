@@ -22,7 +22,6 @@
 package eu.delving.metadata;
 
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.Stack;
 
 /**
@@ -34,6 +33,7 @@ import java.util.Stack;
 
 public class Path implements Comparable<Path>, Serializable {
     private Stack<Tag> stack = new Stack<Tag>();
+    private String string;
 
     public Path() {
     }
@@ -65,47 +65,27 @@ public class Path implements Comparable<Path>, Serializable {
 
     public void push(Tag tag) {
         stack.push(tag);
+        string = null;
     }
 
     public void pop() {
         stack.pop();
+        string = null;
     }
 
     @Override
     public boolean equals(Object path) {
-        return path instanceof Path && compareTo((Path) path) == 0;
+        return toString().equals(path.toString());
     }
 
     @Override
     public int hashCode() {
-        int code = 0;
-        for (Tag tag : stack) {
-            code = code * 23 + tag.hashCode();
-        }
-        return code;
+        return toString().hashCode();
     }
 
     @Override
     public int compareTo(Path path) {
-        Iterator<Tag> walkUs = stack.iterator();
-        Iterator<Tag> walkThem = path.stack.iterator();
-        while (true) {
-            if (!walkUs.hasNext()) {
-                if (!walkThem.hasNext()) {
-                    return 0;
-                }
-                else {
-                    return -1;
-                }
-            }
-            else if (!walkThem.hasNext()) {
-                return 1;
-            }
-            int cmp = walkUs.next().compareTo(walkThem.next());
-            if (cmp != 0) {
-                return cmp;
-            }
-        }
+        return toString().compareTo(path.toString());
     }
 
     public Tag getTag(int level) {
@@ -129,11 +109,14 @@ public class Path implements Comparable<Path>, Serializable {
     }
 
     public String toString() {
-        StringBuilder builder = new StringBuilder(300);
-        for (Tag tag : stack) {
-            builder.append('/');
-            builder.append(tag);
+        if (string == null) {
+            StringBuilder builder = new StringBuilder(300);
+            for (Tag tag : stack) {
+                builder.append('/');
+                builder.append(tag);
+            }
+            string = builder.toString();
         }
-        return builder.toString();
+        return string;
     }
 }
