@@ -33,6 +33,7 @@ import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordValidationException;
 import eu.europeana.sip.model.SipModel;
+import org.apache.log4j.Logger;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
@@ -49,6 +50,7 @@ import java.util.List;
  */
 
 public class Normalizer implements Runnable {
+    private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel;
     private boolean discardInvalid;
     private File normalizeDirectory;
@@ -56,6 +58,7 @@ public class Normalizer implements Runnable {
     private ProgressAdapter progressAdapter;
     private Listener listener;
     private volatile boolean running = true;
+    private long totalMappingTime, totalValidationTime;
 
     public interface Listener {
         void invalidInput(MappingException exception);
@@ -84,6 +87,7 @@ public class Normalizer implements Runnable {
     public void run() {
         FileStore.MappingOutput fileSetOutput = null;
         boolean store = normalizeDirectory != null;
+        RecordValidator recordValidator = new RecordValidator(sipModel.getRecordDefinition(), true);
         try {
             RecordMapping recordMapping = sipModel.getMappingModel().getRecordMapping();
             if (recordMapping == null) {
@@ -101,7 +105,7 @@ public class Normalizer implements Runnable {
             }
             MappingRunner mappingRunner = new MappingRunner(
                     groovyCodeResource,
-                    recordMapping.toCompileCode(sipModel.getMetadataModel().getRecordDefinition())
+                    recordMapping.toCompileCode(sipModel.getMetadataModel())
             );
             MetadataParser parser = new MetadataParser(
                     sipModel.getDataSetStore().createXmlInputStream(),
@@ -109,13 +113,16 @@ public class Normalizer implements Runnable {
                     sipModel.getRecordCount(),
                     progressAdapter
             );
-            RecordValidator recordValidator = new RecordValidator(sipModel.getMetadataModel(), true);
             MetadataRecord record;
             while ((record = parser.nextRecord()) != null && running) {
                 try {
+                    long before = System.currentTimeMillis();
                     String output = mappingRunner.runMapping(record);
+                    totalMappingTime += System.currentTimeMillis() - before;
                     List<String> problems = new ArrayList<String>();
+                    before = System.currentTimeMillis();
                     String validated = recordValidator.validateRecord(output, problems);
+                    totalValidationTime += System.currentTimeMillis() - before;
                     if (problems.isEmpty()) {
                         if (store) {
                             fileSetOutput.getOutputWriter().write(validated);
@@ -196,6 +203,9 @@ public class Normalizer implements Runnable {
             }
         }
         finally {
+            log.info(String.format("Mapping Time %d", totalMappingTime));
+            log.info(String.format("Validating Time %d", totalValidationTime));
+            recordValidator.report();
             listener.finished(running);
             if (!running) { // aborted, so metadataparser will not call finished()
                 progressAdapter.finished(false);

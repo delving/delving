@@ -23,19 +23,22 @@ package eu.delving.metadata;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
+import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+import org.xml.sax.InputSource;
 
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
@@ -47,9 +50,13 @@ import java.util.TreeSet;
 public class RecordValidator {
     private Logger log = Logger.getLogger(getClass());
     private RecordDefinition recordDefinition;
+    private List<FieldDefinition> validatableFields = new ArrayList<FieldDefinition>();
     private Uniqueness idUniqueness;
     private String context;
     private int contextBegin, contextEnd;
+    private long totalParseTime, totalValidateTime, totalWriteTime;
+    private SAXReader reader = new SAXReader();
+
 
     public RecordValidator(MetadataModel metadataModel, boolean checkUniqueness) {
         this.recordDefinition = metadataModel.getRecordDefinition();
@@ -63,6 +70,11 @@ public class RecordValidator {
         this.contextBegin = this.context.indexOf("%s");
         int afterPercentS = contextBegin + 2;
         this.contextEnd = this.context.length() - afterPercentS;
+        for (FieldDefinition fieldDefinition : recordDefinition.getMappableFields()) {
+            if (fieldDefinition.validation != null) {
+                validatableFields.add(fieldDefinition);
+            }
+        }
     }
 
     public String validateRecord(String recordString, List<String> problems) {
@@ -72,12 +84,20 @@ public class RecordValidator {
         String contextualizedRecord = String.format(context, recordString);
         StringWriter out = new StringWriter();
         try {
-            Document document = DocumentHelper.parseText(contextualizedRecord);
-            Map<Path, Counter> counters = new TreeMap<Path, Counter>();
+            long before = System.currentTimeMillis();
+            InputSource source = new InputSource(new StringReader(contextualizedRecord));
+            source.setEncoding("UTF-8");
+            Document document = reader.read(source);
+            totalParseTime += System.currentTimeMillis() - before;
+            Map<Path, Counter> counters = new HashMap<Path, Counter>();
+            before = System.currentTimeMillis();
             validateDocument(document, problems, new TreeSet<String>(), counters);
             validateCardinalities(counters, problems);
+            totalValidateTime += System.currentTimeMillis() - before;
+            before = System.currentTimeMillis();
             XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());
             writer.write(document);
+            totalWriteTime += System.currentTimeMillis() - before;
         }
         catch (Exception e) {
             problems.add("Problem parsing: " + e.toString());
@@ -88,17 +108,21 @@ public class RecordValidator {
         return out.toString();
     }
 
+    public void report() {
+        log.info(String.format("Parse %d", totalParseTime));
+        log.info(String.format("Validate %d", totalValidateTime));
+        log.info(String.format("Write %d", totalWriteTime));
+    }
+
     private void validateCardinalities(Map<Path, Counter> counters, List<String> problems) {
-        Map<String, Boolean> requiredGroupMap = new TreeMap<String, Boolean>();
-        for (FieldDefinition fieldDefinition : recordDefinition.getMappableFields()) {
-            if (fieldDefinition.validation != null) {
-                if (fieldDefinition.validation.requiredGroup != null) {
-                    requiredGroupMap.put(fieldDefinition.validation.requiredGroup, false);
-                }
-                Counter counter = counters.get(fieldDefinition.path);
-                if (!fieldDefinition.validation.multivalued && counter != null && counter.count > 1) {
-                    problems.add(String.format("Single-valued field [%s] has more than one value", fieldDefinition.path));
-                }
+        Map<String, Boolean> requiredGroupMap = new HashMap<String, Boolean>();
+        for (FieldDefinition fieldDefinition : validatableFields) {
+            if (fieldDefinition.validation.requiredGroup != null) {
+                requiredGroupMap.put(fieldDefinition.validation.requiredGroup, false);
+            }
+            Counter counter = counters.get(fieldDefinition.path);
+            if (!fieldDefinition.validation.multivalued && counter != null && counter.count > 1) {
+                problems.add(String.format("Single-valued field [%s] has more than one value", fieldDefinition.path));
             }
         }
         for (Map.Entry<Path, Counter> entry : counters.entrySet()) {
