@@ -1,11 +1,6 @@
 package eu.delving.services.core;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import com.mongodb.*;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.services.core.impl.ImplFactory;
 import eu.delving.services.exceptions.AccessKeyException;
@@ -19,6 +14,7 @@ import eu.europeana.sip.core.GroovyCodeResource;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
@@ -45,6 +41,7 @@ public class MetaRepoImpl implements MetaRepo {
     @Autowired
     private AccessKey accessKey;
 
+    @Qualifier("mongo")
     @Autowired
     private Mongo mongo;
 
@@ -171,7 +168,7 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String accessKey) throws DataSetNotFoundException, MappingNotFoundException, AccessKeyException {
+    public HarvestStep getFirstHarvestStep(PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String accessKey) throws DataSetNotFoundException, MappingNotFoundException, AccessKeyException {
         DataSet dataSet = getDataSet(set);
         if (dataSet == null) {
             String errorMessage = String.format("Cannot find set [%s]", set);
