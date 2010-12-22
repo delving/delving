@@ -232,6 +232,7 @@ public class Harvindexer {
             InputStream inputStream = method.getResponseBodyAsStream();
             String resumptionToken = importXmlInternal(inputStream, indexer);
             while (!resumptionToken.isEmpty()) {
+                log.info(String.format("So far %d records, resumption token %s", indexer.getRecordCount(), resumptionToken));
                 method = new GetMethod(String.format(
                         "%s/oai-pmh?verb=ListRecords&resumptionToken=%s&accessKey=%s",
                         servicesUrl,
@@ -245,16 +246,17 @@ public class Harvindexer {
                 if (dataSet == null) {
                     throw new RuntimeException("Data set not found!");
                 }
-                log.info(String.format("Indexed %d of %d records", dataSet.getRecordsIndexed(), dataSet.getRecordCount()));
                 if (dataSet.getState() != DataSetState.INDEXING) {
                     break;
                 }
                 if (indexer.isFull()) {
+                    log.info(String.format("Indexer full with %d records", indexer.getRecordCount()));
                     executor.execute(indexer);
                     indexer = new Indexer(collection);
                 }
             }
             if (indexer.hasRecords()) {
+                log.info(String.format("Harvest finished with %d records to index", indexer.getRecordCount()));
                 executor.execute(indexer);
             }
         }
@@ -324,7 +326,7 @@ public class Harvindexer {
                         break;
 
                     case XMLStreamConstants.END_ELEMENT:
-                         if (isRecordElement(xml) && isInMetadataBlock && europeanaId != null) {
+                        if (isRecordElement(xml) && isInMetadataBlock && europeanaId != null) {
                             isInMetadataBlock = false;
                             if (recordCount > 0 && recordCount % 500 == 0) {
                                 log.info(String.format("imported %d records in %s", recordCount, DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - startTime)));
@@ -360,12 +362,12 @@ public class Harvindexer {
                         }
                         if (europeanaId != null) {
                             path.pop();
-                            log.info("eid not null end: "+path);
+                            log.info("eid not null end: " + path);
                         }
                         break;
 
                     case XMLStreamConstants.END_DOCUMENT:
-                        log.info(String.format("Document ended, imported %d records", recordCount));
+                        log.info(String.format("Document ended, fetched %d records", recordCount));
                         break;
                 }
                 if (!xml.hasNext()) {
@@ -444,8 +446,8 @@ public class Harvindexer {
 
         @Override
         public void run() {
-            log.info("sending " + recordList.size() + " records to solr");
             try {
+                log.info("sending " + recordList.size() + " records to solr");
                 solrServer.add(recordList);
                 metaRepo.incrementRecordCount(collection.getName(), recordList.size());
             }
@@ -457,8 +459,10 @@ public class Harvindexer {
             catch (IOException e) {
                 e.printStackTrace();
             }
-//            solrServer.commit();       // It is better to use the  autocommit from solr
-            recordList.clear();
+        }
+
+        public int getRecordCount() {
+            return recordList.size();
         }
     }
 }
