@@ -64,7 +64,7 @@ public class MetaRepoImpl implements MetaRepo {
     public void setHarvestStepSecondsToLive(int harvestStepSecondsToLive) {
         factory().setHarvestStepSecondsToLive(harvestStepSecondsToLive);
     }
-    
+
     private ImplFactory factory() {
         if (implFactory == null) {
             implFactory = new ImplFactory(this, db(), metadataModel, groovyCodeResource, accessKey);
@@ -201,20 +201,12 @@ public class MetaRepoImpl implements MetaRepo {
 
     @Override
     public HarvestStep getHarvestStep(String resumptionToken, String accessKey) throws ResumptionTokenNotFoundException, DataSetNotFoundException, MappingNotFoundException, AccessKeyException {
-        try {
-            ObjectId objectId = new ObjectId(resumptionToken);
-            DBObject step = factory().harvestSteps().findOne(new BasicDBObject(MONGO_ID, objectId));
-            if (step == null) {
-                throw new ResumptionTokenNotFoundException("Unable to find resumptionToken: " + resumptionToken);
-            }
-            return factory().createHarvestStep(step, accessKey);
-        }
-        catch (ResumptionTokenNotFoundException e) {
-            throw e;
-        }
-        catch (Exception e) {
+        ObjectId objectId = new ObjectId(resumptionToken);
+        DBObject step = factory().harvestSteps().findOne(new BasicDBObject(MONGO_ID, objectId));
+        if (step == null) {
             throw new ResumptionTokenNotFoundException("Unable to find resumptionToken: " + resumptionToken);
         }
+        return factory().createHarvestStep(step, accessKey);
     }
 
     @Override

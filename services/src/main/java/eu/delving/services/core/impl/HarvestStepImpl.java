@@ -120,7 +120,7 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
                 nextStep.put(MetaRepo.HarvestStep.FIRST_ID, object.get(MetaRepo.HarvestStep.FIRST_ID));
                 nextStep.put(MetaRepo.HarvestStep.CURSOR, cursor);
                 nextStep.put(MetaRepo.HarvestStep.AFTER_ID, afterId);
-                implFactory.harvestSteps().insert(nextStep);
+                implFactory.harvestSteps().save(nextStep);
                 return nextStep;
             }
         };
