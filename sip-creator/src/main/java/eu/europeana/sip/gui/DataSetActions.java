@@ -25,6 +25,7 @@ import eu.delving.sip.DataSetCommand;
 import eu.delving.sip.DataSetInfo;
 import eu.delving.sip.DataSetState;
 import eu.delving.sip.FileStore;
+import eu.delving.sip.FileStoreException;
 import eu.delving.sip.FileType;
 import eu.delving.sip.Hasher;
 import eu.delving.sip.ProgressListener;
@@ -36,6 +37,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.ProgressMonitor;
@@ -64,15 +66,17 @@ public class DataSetActions {
     private MappingDialog mappingDialog;
     private SipModel sipModel;
     private DataSetClient dataSetClient;
+    private Runnable refreshList;
     private DataSetListModel.Entry entry;
     private List<DataSetAction> localActions = new ArrayList<DataSetAction>();
     private List<DataSetAction> remoteActions = new ArrayList<DataSetAction>();
     private List<DataSetAction> actions = new ArrayList<DataSetAction>();
 
-    public DataSetActions(JFrame frame, SipModel sipModel, DataSetClient dataSetClient) {
+    public DataSetActions(JFrame frame, SipModel sipModel, DataSetClient dataSetClient, Runnable refreshList) {
         this.frame = frame;
         this.sipModel = sipModel;
         this.dataSetClient = dataSetClient;
+        this.refreshList = refreshList;
         this.recordStatisticsDialog = new RecordStatisticsDialog(sipModel);
         this.analysisFactsDialog = new AnalysisFactsDialog(sipModel);
         this.mappingDialog = new MappingDialog(sipModel);
@@ -89,7 +93,7 @@ public class DataSetActions {
             remoteActions.add(createUploadMappingAction(prefix));
         }
         for (DataSetCommand command : DataSetCommand.values()) {
-            remoteActions.add(createCommandAction(command));
+            remoteActions.add(createCommandAction(command, command == DataSetCommand.DELETE));
         }
     }
 
@@ -99,6 +103,7 @@ public class DataSetActions {
             localActions.add(createEditMappingAction(metadataPrefix));
         }
         localActions.add(createRecordStatisticsAction());
+        localActions.add(createDeleteLocalAction());
     }
 
     public List<Action> getLocalActions() {
@@ -180,6 +185,37 @@ public class DataSetActions {
                 sipModel.setDataSetStore(entry.getDataSetStore());
                 sipModel.setMetadataPrefix(metadataPrefix);
                 mappingDialog.reveal(metadataPrefix);
+            }
+
+            @Override
+            boolean isEnabled(DataSetListModel.Entry entry) {
+                return entry.getDataSetStore() != null;
+            }
+        };
+    }
+
+    private DataSetAction createDeleteLocalAction() {
+        return new DataSetAction("Delete Local Data Set") {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                int doImport = JOptionPane.showConfirmDialog(
+                        frame,
+                        String.format(
+                                "<html>Are you sure you wish to delete the local storage for the <strong>%s</strong> data set?",
+                                entry.getDataSetStore().getSpec()
+                        ),
+                        "Verify your choice",
+                        JOptionPane.YES_NO_OPTION
+                );
+                if (doImport == JOptionPane.YES_OPTION) {
+                    try {
+                        entry.getDataSetStore().delete();
+                        refreshList.run();
+                    }
+                    catch (FileStoreException e) {
+                        sipModel.getUserNotifier().tellUser("Unable to delete data set", e);
+                    }
+                }
             }
 
             @Override
@@ -276,12 +312,30 @@ public class DataSetActions {
         };
     }
 
-    private DataSetAction createCommandAction(final DataSetCommand command) {
+    private DataSetAction createCommandAction(final DataSetCommand command, final boolean verify) {
         return new DataSetAction(getCommandName(command)) {
 
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                dataSetClient.sendCommand(entry.getDataSetInfo().spec, command);
+                boolean justDoIt = true;
+                if (verify) {
+                    int doImport = JOptionPane.showConfirmDialog(
+                            frame,
+                            String.format(
+                                    "<html>Are you sure you wish to %s data set %s in the repository?",
+                                    getCommandName(command),
+                                    entry.getDataSetStore().getSpec()
+                            ),
+                            "Verify your choice",
+                            JOptionPane.YES_NO_OPTION
+                    );
+                    if (doImport != JOptionPane.YES_OPTION) {
+                        justDoIt = false;
+                    }
+                }
+                if (justDoIt) {
+                    dataSetClient.sendCommand(entry.getDataSetInfo().spec, command);
+                }
             }
 
             @Override
@@ -292,10 +346,16 @@ public class DataSetActions {
                 }
                 else switch (DataSetState.valueOf(info.state)) {
                     case EMPTY:
-                        return false;
+                        switch (command) {
+                            case DELETE:
+                                return true;
+                            default:
+                                return false;
+                        }
                     case UPLOADED:
                         switch (command) {
                             case INDEX:
+                            case DELETE:
                                 return true;
                             default:
                                 return false;
@@ -319,6 +379,7 @@ public class DataSetActions {
                     case DISABLED:
                         switch (command) {
                             case INDEX:
+                            case DELETE:
                                 return true;
                             default:
                                 return false;
@@ -326,6 +387,7 @@ public class DataSetActions {
                     case ERROR:
                         switch (command) {
                             case DISABLE:
+                            case DELETE:
                                 return true;
                             default:
                                 return false;
@@ -348,6 +410,9 @@ public class DataSetActions {
                 break;
             case REINDEX:
                 name = "Re-index";
+                break;
+            case DELETE:
+                name = "Delete";
                 break;
             default:
                 throw new RuntimeException();

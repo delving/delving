@@ -282,6 +282,12 @@ class DataSetImpl implements MetaRepo.DataSet {
         implFactory.dataSets().save(object);
     }
 
+    @Override
+    public void delete() {
+        records().drop();
+        implFactory.dataSets().remove(object);
+    }
+
     private void addHash(String hashAttribute, List<String> hashes) {
         String hash = (String) object.get(hashAttribute);
         if (hash != null) {

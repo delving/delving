@@ -93,8 +93,8 @@ public class SipCreatorGUI extends JFrame {
             @Override
             public void setList(List<DataSetInfo> list) {
                 if (list != null) {
+                    dataSetListModel.setDataSetInfo(list);
                     for (DataSetInfo dataSetInfo : list) {
-                        dataSetListModel.setDataSetInfo(dataSetInfo);
                         dataSetActions.setDataSetInfo(dataSetInfo);
                     }
                 }
@@ -105,7 +105,15 @@ public class SipCreatorGUI extends JFrame {
                 connectedBox.setSelected(false);
             }
         });
-        dataSetActions = new DataSetActions(this, sipModel, dataSetClient);
+        dataSetActions = new DataSetActions(this, sipModel, dataSetClient, new Runnable() {
+            @Override
+            public void run() {
+                dataSetListModel.clear();
+                for (FileStore.DataSetStore dataSetStore : sipModel.getFileStore().getDataSetStores().values()) {
+                    dataSetListModel.setDataSetStore(dataSetStore);
+                }
+            }
+        });
         setJMenuBar(createMenuBar());
         JPanel main = new JPanel(new BorderLayout(MARGIN, MARGIN));
         main.setBorder(BorderFactory.createEmptyBorder(MARGIN, MARGIN, MARGIN, MARGIN));

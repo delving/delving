@@ -104,6 +104,7 @@ public interface MetaRepo {
 
         List<String> getHashes();
         void save();
+        void delete();
 
         String SPEC = "spec";
         String NAMESPACES = "namespaces";

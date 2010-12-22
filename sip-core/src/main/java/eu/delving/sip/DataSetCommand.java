@@ -9,5 +9,6 @@ package eu.delving.sip;
 public enum DataSetCommand {
     INDEX,
     REINDEX,
-    DISABLE
+    DISABLE,
+    DELETE
 }

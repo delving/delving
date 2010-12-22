@@ -178,7 +178,7 @@ public class DataSetController {
         if (dataSet == null) {
             return DataSetResponseCode.DATA_SET_NOT_FOUND;
         }
-        if (hasHash(hash,dataSet)) {
+        if (hasHash(hash, dataSet)) {
             return DataSetResponseCode.GOT_IT_ALREADY;
         }
         dataSet.setMapping(recordMapping, true);
@@ -260,7 +260,7 @@ public class DataSetController {
                             dataSet.save();
                             deleteFromSolr(dataSet);
                             return view(dataSet);
-                        default :
+                        default:
                             return view(DataSetResponseCode.STATE_CHANGE_FAILURE);
                     }
                 case INDEX:
@@ -271,7 +271,7 @@ public class DataSetController {
                             dataSet.setState(DataSetState.QUEUED);
                             dataSet.save();
                             return view(dataSet);
-                        default :
+                        default:
                             return view(DataSetResponseCode.STATE_CHANGE_FAILURE);
                     }
                 case REINDEX:
@@ -281,7 +281,18 @@ public class DataSetController {
                             dataSet.setState(DataSetState.QUEUED);
                             dataSet.save();
                             return view(dataSet);
-                        default :
+                        default:
+                            return view(DataSetResponseCode.STATE_CHANGE_FAILURE);
+                    }
+                case DELETE:
+                    switch (dataSet.getState()) {
+                        case EMPTY:
+                        case DISABLED:
+                        case ERROR:
+                        case UPLOADED:
+                            dataSet.delete();
+                            return view(dataSet);
+                        default:
                             return view(DataSetResponseCode.STATE_CHANGE_FAILURE);
                     }
                 default:
