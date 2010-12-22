@@ -27,6 +27,7 @@ import com.mongodb.DBObject;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.AccessKeyException;
 import eu.delving.services.exceptions.MappingNotFoundException;
+import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ import java.util.List;
  */
 
 class HarvestStepImpl implements MetaRepo.HarvestStep {
+    private Logger log = Logger.getLogger(getClass());
     private ImplFactory implFactory;
     private DBObject object;
 
@@ -79,6 +81,7 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
             public void run() {
                 try {
                     addRecord(null); // marking that we've tried
+                    ObjectId afterId = getAfterId();
                     loop:
                     while (true) {
                         int recordsToFetch = implFactory.getResponseListSize() - getRecordCount() + 1; // 1 extra
@@ -86,15 +89,21 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
                                 getPmhRequest().getMetadataPrefix(),
                                 recordsToFetch,
                                 getPmhRequest().getFrom(),
-                                getAfterId(),
+                                afterId,
                                 getPmhRequest().getUntil(),
                                 key
                         );
                         if (records == null) {
                             break;
                         }
+                        if (!records.isEmpty()) {
+                            afterId = records.get(records.size()-1).getId();
+                            // todo: this will fail if there are no records returned (mapping failed on all) because we'll keep fetching the same ones
+                        }
+                        log.info(String.format("Fetched %d records", records.size()));
                         for (MetaRepo.Record record : records) {
                             if (addRecord(record) == implFactory.getResponseListSize()) { // full => prepare next step
+                                log.info("Full at "+getRecordCount());
                                 DBObject nextStep = insertNextStep(
                                         getCursor() + implFactory.getResponseListSize(),
                                         record.getId()
@@ -114,6 +123,7 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
             }
 
             private DBObject insertNextStep(int cursor, ObjectId afterId) {
+                log.info(String.format("Next step cursor=%d, after id %s", cursor, afterId));
                 DBObject nextStep = new BasicDBObject(MetaRepo.HarvestStep.PMH_REQUEST, object.get(MetaRepo.HarvestStep.PMH_REQUEST));
                 nextStep.put(MetaRepo.HarvestStep.NAMESPACES, object.get(MetaRepo.HarvestStep.NAMESPACES));
                 nextStep.put(MetaRepo.HarvestStep.LIST_SIZE, object.get(MetaRepo.HarvestStep.LIST_SIZE));
