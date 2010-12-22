@@ -9,12 +9,7 @@
     </namespaces>
     <root localName="record">
         <!-- fulldoc default true -->
-        <field prefix="abm" localName="municipality" fulldoc="true" briefdoc="false" fieldType="text" facetPrefix="muni">
-            <description></description>
-            <validation unique="false" multivalue="true" required="false">
-                <converter pattern=".extractYear()"/>
-            </validation>
-         </field>
+        <field prefix="abm" localName="municipality" fulldoc="true" briefdoc="false" fieldType="text" facetPrefix="muni"/>
         <field prefix="abm" localName="aboutPerson" fulldoc="true" facetPrefix="ap"/>
         <field prefix="abm" localName="county" fulldoc="true" facetPrefix="cnty"/>
         <field prefix="abm" localName="namedPlace" facetPrefix="napl"/>
