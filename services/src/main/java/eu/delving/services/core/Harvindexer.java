@@ -218,13 +218,13 @@ public class Harvindexer {
         }
 
         private void importPmh(EuropeanaCollection collection) throws HarvindexingException, IOException, TransformerException, XMLStreamException, SolrServerException {
-            String accessKey = Harvindexer.this.accessKey.createKey("HARVINDEXER");
+            String accessKeyString = accessKey.createKey("HARVINDEXER");
             String url = String.format(
                     "%s/oai-pmh?verb=ListRecords&metadataPrefix=%s&set=%s&accessKey=%s",
                     servicesUrl,
                     metadataPrefix,
                     collection.getName(),
-                    accessKey
+                    accessKeyString
             );
             HttpMethod method = new GetMethod(url);
             httpClient.executeMethod(method);
@@ -232,7 +232,12 @@ public class Harvindexer {
             InputStream inputStream = method.getResponseBodyAsStream();
             String resumptionToken = importXmlInternal(inputStream, indexer);
             while (!resumptionToken.isEmpty()) {
-                method = new GetMethod(String.format("%s/oai-pmh?verb=ListRecords&resumptionToken=%s", servicesUrl, resumptionToken));
+                method = new GetMethod(String.format(
+                        "%s/oai-pmh?verb=ListRecords&resumptionToken=%s&accessKey=%s",
+                        servicesUrl,
+                        resumptionToken,
+                        accessKeyString
+                ));
                 httpClient.executeMethod(method);
                 inputStream = method.getResponseBodyAsStream();
                 resumptionToken = importXmlInternal(inputStream, indexer);

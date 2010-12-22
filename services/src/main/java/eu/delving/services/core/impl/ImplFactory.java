@@ -121,8 +121,9 @@ public class ImplFactory {
         else { // the step has not yet been stored
             harvestSteps().save(step.getObject());
             step.createRecordFetcher(getDataSet(step), key).run();
+            step.createRecordSaver().run();
             step.getObject().put(MetaRepo.HarvestStep.FIRST_ID, step.getObject().get(MetaRepo.MONGO_ID));
-            executor.execute(step.createRecordSaver());
+            step.createRecordSaver().run();
         }
         return step;
     }
