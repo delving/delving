@@ -38,6 +38,8 @@ import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Generate a description in HTML of a Data Set
@@ -58,6 +60,17 @@ public class DataSetListModel extends AbstractListModel {
         Entry entry = getEntry(dataSetInfo.spec);
         entry.setDataSetInfo(dataSetInfo);
         return entry;
+    }
+
+    public void setDataSetInfo(List<DataSetInfo> list) {
+        Map<String, DataSetInfo> map = new TreeMap<String, DataSetInfo>();
+        for (DataSetInfo info : list) {
+            map.put(info.spec, info);
+        }
+        for (Entry entry : entries) {
+            DataSetInfo freshInfo = map.get(entry.getSpec());
+            entry.setDataSetInfo(freshInfo);
+        }
     }
 
     public Entry getEntry(int i) {
@@ -108,6 +121,7 @@ public class DataSetListModel extends AbstractListModel {
         }
 
         public void setDataSetInfo(DataSetInfo dataSetInfo) {
+            if (this.dataSetInfo == null && dataSetInfo == null) return;
             this.dataSetInfo = dataSetInfo;
             fireContentsChanged(DataSetListModel.this, index, index);
         }
