@@ -23,7 +23,6 @@ package eu.europeana.sip.gui;
 
 import eu.delving.metadata.RecordMapping;
 import eu.europeana.sip.model.SipModel;
-import org.apache.log4j.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
@@ -40,7 +39,6 @@ import java.util.Map;
  */
 
 public class MappingTemplateMenu extends JMenu {
-    private Logger log = Logger.getLogger(getClass());
     private Component parent;
     private SipModel sipModel;
 
@@ -53,22 +51,25 @@ public class MappingTemplateMenu extends JMenu {
 
     private void refresh() {
         this.removeAll();
-        this.add(new SaveAsTemplateAction());
+        this.add(new SaveNewTemplateAction());
         this.addSeparator();
+        JMenu updateMenu = new JMenu("Update an existing template");
+        this.add(updateMenu);
         JMenu deleteMenu = new JMenu("Delete a template");
         this.add(deleteMenu);
         this.addSeparator();
         Map<String, RecordMapping> templates = sipModel.getFileStore().getTemplates();
-        for (Map.Entry<String,RecordMapping> entry : templates.entrySet()) {
+        for (Map.Entry<String, RecordMapping> entry : templates.entrySet()) {
             this.add(new ApplyTemplateAction(entry.getKey(), entry.getValue()));
+            updateMenu.add(new UpdateTemplateAction(entry.getKey()));
             deleteMenu.add(new DeleteTemplateAction(entry.getKey()));
         }
     }
 
-    private class SaveAsTemplateAction extends AbstractAction {
+    private class SaveNewTemplateAction extends AbstractAction {
 
-        private SaveAsTemplateAction() {
-            super("Save current mapping as template");
+        private SaveNewTemplateAction() {
+            super("Save current mapping as new template");
         }
 
         @Override
@@ -78,6 +79,21 @@ public class MappingTemplateMenu extends JMenu {
                 sipModel.saveAsTemplate(name);
                 refresh();
             }
+        }
+    }
+
+    private class UpdateTemplateAction extends AbstractAction {
+        private String prefix;
+
+        private UpdateTemplateAction(String prefix) {
+            super(String.format("Update %s mapping template with the current one", prefix));
+            this.prefix = prefix;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            sipModel.saveAsTemplate(prefix);
+            refresh();
         }
     }
 
