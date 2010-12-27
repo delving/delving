@@ -96,8 +96,8 @@ public class DataSetClient {
             try {
                 String url = String.format(
                         "%s?accessKey=%s",
-                        sipModel.getServerUrl(),
-                        sipModel.getAccessKey()
+                        sipModel.getAppConfigModel().getServerUrl(),
+                        sipModel.getAppConfigModel().getAccessKey()
                 );
                 final DataSetResponse response = execute(new HttpGet(url));
                 if (response.isEverythingOk()) {
@@ -140,10 +140,10 @@ public class DataSetClient {
             try {
                 String url = String.format(
                         "%s/%s/%s?accessKey=%s",
-                        sipModel.getServerUrl(),
+                        sipModel.getAppConfigModel().getServerUrl(),
                         spec,
                         command,
-                        sipModel.getAccessKey()
+                        sipModel.getAppConfigModel().getAccessKey()
                 );
                 final DataSetResponse response = execute(new HttpGet(url));
                 if (response.isEverythingOk()) {
@@ -222,11 +222,11 @@ public class DataSetClient {
         private String createRequestUrl() {
             return String.format(
                     "%s/submit/%s/%s/%s?accessKey=%s",
-                    sipModel.getServerUrl(),
+                    sipModel.getAppConfigModel().getServerUrl(),
                     sipModel.getDataSetStore().getSpec(),
                     fileType,
                     file.getName(),
-                    sipModel.getAccessKey()
+                    sipModel.getAppConfigModel().getAccessKey()
             );
         }
 

@@ -23,6 +23,9 @@ package eu.delving.sip;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This class
  *
@@ -36,6 +39,7 @@ public class AppConfig {
     private String accessKey;
     private String recentDirectory;
     private String normalizeDirectory;
+    private List<String> activeMetadataPrefixes;
 
     public String getServerHostPort() {
         if (serverHostPort == null) {
@@ -79,5 +83,22 @@ public class AppConfig {
 
     public void setNormalizeDirectory(String directory) {
         this.normalizeDirectory = directory;
+    }
+
+    public void addActiveMetadataPrefix(String prefix) {
+        if (!getActiveMetadataPrefixes().contains(prefix)) {
+            getActiveMetadataPrefixes().add(prefix);
+        }
+    }
+
+    public void removeActiveMetadataPrefix(String prefix) {
+        getActiveMetadataPrefixes().remove(prefix);
+    }
+
+    public List<String> getActiveMetadataPrefixes() {
+        if (activeMetadataPrefixes == null) {
+            activeMetadataPrefixes = new ArrayList<String>();
+        }
+        return activeMetadataPrefixes;
     }
 }
