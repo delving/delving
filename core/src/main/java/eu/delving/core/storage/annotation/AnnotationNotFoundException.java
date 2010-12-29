@@ -18,17 +18,19 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-
-package eu.europeana.core.database.domain;
+package eu.delving.core.storage.annotation;
 
 /**
- * The various kinds of annotations that can be stored
+ * Somebody modified an annotation that a new one depends on
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Christian Sadilek <christian.sadilek@gmail.com>
  */
 
-public enum AnnotationType {
-    SOCIAL_TAG,
-    IMAGE_ANNOTATION
+public class AnnotationNotFoundException extends Exception {
+	private static final long serialVersionUID = 7181567946702253362L;
+
+	public AnnotationNotFoundException(Long id) {
+        super("Annotation not found. ID="+id);
+    }
 }

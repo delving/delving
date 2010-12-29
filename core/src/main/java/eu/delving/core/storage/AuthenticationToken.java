@@ -1,29 +1,21 @@
-package eu.europeana.core.database.domain;
+package eu.delving.core.storage;
 
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 
-import javax.persistence.*;
 import java.util.Date;
 
 /**
  * @author Nicola Aloia <nicola.aloia@isti.cnr.it>
  * @author Cesare Corcordia <cesare.concordia@isti.cnr.it>
  */
-@Entity
 public class AuthenticationToken {
 
-    @Id
-    @Column(length = 64)
     private String series;
 
-    @Column(length = 64, nullable = false)
     private String username;
 
-    @Column(length = 64, nullable = false)
     private String token;
 
-    @Column(nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     private Date lastUsed;
 
     public AuthenticationToken() {

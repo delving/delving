@@ -23,7 +23,6 @@ package eu.europeana.web.controller;
 
 import eu.delving.core.binding.FacetStatisticsMap;
 import eu.delving.core.binding.SolrBindingService;
-import eu.europeana.core.database.domain.StaticPageType;
 import eu.europeana.core.querymodel.query.BriefBeanView;
 import eu.europeana.core.querymodel.query.EuropeanaQueryException;
 import eu.europeana.core.querymodel.query.FullBeanView;
@@ -93,7 +92,6 @@ public class ResultController {
             page.addObject("format", format);
         }
         page.addObject("uri", uri);
-        page.addObject("socialTags", fullResultView.getUserTags());
         page.addObject("imageAnnotationToolBaseUrl", imageAnnotationToolBaseUrl);
         clickStreamLogger.logFullResultView(request, fullResultView, page, fullResultView.getFullDoc().getId());
         return page;
@@ -127,7 +125,6 @@ public class ResultController {
             page.addObject("format", format);
         }
         page.addObject("uri", uri);
-        page.addObject("socialTags", fullResultView.getUserTags());
         page.addObject("imageAnnotationToolBaseUrl", imageAnnotationToolBaseUrl);
         clickStreamLogger.logFullResultView(request, fullResultView, page, fullResultView.getFullDoc().getId());
         return page;
@@ -306,8 +303,8 @@ public class ResultController {
 
     @RequestMapping("/error.html")
     public ModelAndView errorPageHandler(HttpServletRequest request) {
-        StaticPageType pageType = StaticPageType.ERROR;
-        clickStreamLogger.logStaticPageView(request, pageType);
-        return ControllerUtil.createModelAndViewPage(pageType.getViewName());
+//        StaticPageType pageType = StaticPageType.ERROR;
+//        clickStreamLogger.logStaticPageView(request, pageType);
+        return ControllerUtil.createModelAndViewPage("error");
     }
 }

@@ -51,14 +51,14 @@ public class TestPersonStorage {
     private Mongo mongo;
 
     @Autowired
-    private PersonStorageImpl personStorage;
+    private UserRepoImpl personStorage;
     public static final String EMAIL = "dude@delving.eu";
 
     @Before
     public void before() {
         personStorage.setDatabaseName(TEST_DB_NAME);
         mongo.dropDatabase(TEST_DB_NAME);
-        PersonStorage.Person person = personStorage.createPerson(EMAIL);
+        UserRepo.Person person = personStorage.createPerson(EMAIL);
         person.setEnabled(true);
         person.setFirstName("Joe");
         person.setPassword("gumby");
@@ -74,7 +74,7 @@ public class TestPersonStorage {
 
     @Test
     public void authenticate() {
-        PersonStorage.Person dude = personStorage.authenticate(EMAIL, "gumbi");
+        UserRepo.Person dude = personStorage.authenticate(EMAIL, "gumbi");
         Assert.assertNull(dude);
         dude = personStorage.authenticate(EMAIL, "gumby");
         Assert.assertNotNull(dude);
@@ -82,7 +82,7 @@ public class TestPersonStorage {
 
     @Test
     public void changeField() {
-        PersonStorage.Person dude = personStorage.byEmail(EMAIL);
+        UserRepo.Person dude = personStorage.byEmail(EMAIL);
         dude.setFirstName("Mary");
         dude.save();
         dude = personStorage.byEmail(EMAIL);
@@ -91,13 +91,13 @@ public class TestPersonStorage {
 
     @Test
     public void addRemoveItem() {
-        PersonStorage.Person dude = personStorage.byEmail(EMAIL);
+        UserRepo.Person dude = personStorage.byEmail(EMAIL);
         dude.addItem("Author", "Title", Language.NO);
         dude.save();
         dude = personStorage.byEmail(EMAIL);
-        List<PersonStorage.Item> items = dude.getItems();
+        List<UserRepo.Item> items = dude.getItems();
         Assert.assertEquals("Should be one item", 1, items.size());
-        PersonStorage.Item item = items.get(0);
+        UserRepo.Item item = items.get(0);
         Assert.assertEquals("field wrong", "Author", item.getAuthor());
         Assert.assertEquals("field wrong", "Title", item.getTitle());
         Assert.assertEquals("field wrong", Language.NO, item.getLanguage());
@@ -109,13 +109,13 @@ public class TestPersonStorage {
 
     @Test
     public void addRemoveSearch() {
-        PersonStorage.Person dude = personStorage.byEmail(EMAIL);
+        UserRepo.Person dude = personStorage.byEmail(EMAIL);
         dude.addSearch("Query", "QueryString", Language.FI);
         dude.save();
         dude = personStorage.byEmail(EMAIL);
-        List<PersonStorage.Search> searches = dude.getSearches();
+        List<UserRepo.Search> searches = dude.getSearches();
         Assert.assertEquals("Should be one item", 1, searches.size());
-        PersonStorage.Search search = searches.get(0);
+        UserRepo.Search search = searches.get(0);
         Assert.assertEquals("field wrong", "Query", search.getQuery());
         Assert.assertEquals("field wrong", "QueryString", search.getQueryString());
         Assert.assertEquals("field wrong", Language.FI, search.getLanguage());

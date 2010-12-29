@@ -18,7 +18,9 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-package eu.europeana.core.database.exception;
+package eu.delving.core.storage.annotation;
+
+import eu.delving.core.storage.UserRepo;
 
 /**
  * Somebody modified an annotation that a new one depends on
@@ -27,10 +29,10 @@ package eu.europeana.core.database.exception;
  * @author Christian Sadilek <christian.sadilek@gmail.com>
  */
 
-public class AnnotationNotFoundException extends Exception {
-	private static final long serialVersionUID = 7181567946702253362L;
+public class AnnotationNotOwnedException extends Exception {
+	private static final long serialVersionUID = 5592064922743864884L;
 
-	public AnnotationNotFoundException(Long id) {
-        super("Annotation not found. ID="+id);
+	public AnnotationNotOwnedException(Long id, UserRepo.Person user) {
+        super("Annotation not owned by user "+user.getEmail()+". ID="+id);
     }
 }

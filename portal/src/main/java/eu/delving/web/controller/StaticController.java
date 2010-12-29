@@ -21,8 +21,7 @@
 
 package eu.delving.web.controller;
 
-import eu.europeana.core.database.domain.Role;
-import eu.europeana.core.database.domain.User;
+import eu.delving.core.storage.UserRepo;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -273,8 +272,8 @@ public class StaticController {
     }
 
     private boolean isEditor() {
-        User user = ControllerUtil.getUser();
-        return user != null && (user.getRole() == Role.ROLE_ADMINISTRATOR || user.getRole() == Role.ROLE_GOD);
+        UserRepo.Person user = ControllerUtil.getPerson();
+        return user != null && (user.getRole() == UserRepo.Role.ROLE_ADMINISTRATOR || user.getRole() == UserRepo.Role.ROLE_GOD);
     }
 
     private String getRedirect(String path) {

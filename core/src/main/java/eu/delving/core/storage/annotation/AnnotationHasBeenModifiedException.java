@@ -18,21 +18,25 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-package eu.europeana.core.database.exception;
 
-import eu.europeana.core.database.domain.User;
+package eu.delving.core.storage.annotation;
 
 /**
  * Somebody modified an annotation that a new one depends on
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Christian Sadilek <christian.sadilek@gmail.com>
+ * 
  */
 
-public class AnnotationNotOwnedException extends Exception {
-	private static final long serialVersionUID = 5592064922743864884L;
+public class AnnotationHasBeenModifiedException extends Exception {
+	private static final long serialVersionUID = 3948481183923798118L;
 
-	public AnnotationNotOwnedException(Long id, User user) {
-        super("Annotation not owned by user "+user.getEmail()+". ID="+id);
+	public AnnotationHasBeenModifiedException(Long id, Exception cause) {
+        super("Annotation has been modified. ID="+id, cause);
+    }
+
+    public AnnotationHasBeenModifiedException(Long id) {
+        super("Annotation has been modified. ID="+id);
     }
 }

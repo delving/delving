@@ -19,17 +19,10 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.core.database;
+package eu.delving.core.storage.annotation;
 
+import eu.delving.core.storage.UserRepo;
 import eu.delving.domain.Language;
-import eu.europeana.core.database.domain.Annotation;
-import eu.europeana.core.database.domain.AnnotationType;
-import eu.europeana.core.database.domain.User;
-import eu.europeana.core.database.exception.AnnotationHasBeenModifiedException;
-import eu.europeana.core.database.exception.AnnotationNotFoundException;
-import eu.europeana.core.database.exception.AnnotationNotOwnedException;
-import eu.europeana.core.database.exception.EuropeanaUriNotFoundException;
-import eu.europeana.core.database.exception.UserNotFoundException;
 
 import java.util.List;
 
@@ -51,12 +44,12 @@ public interface AnnotationDao {
      * @param predecessorId another annotation that we depend on
      * @param content the content of the new annotation
      * @return the newly created annotation
-     * @throws eu.europeana.core.database.exception.AnnotationNotFoundException the predecessor wasn't found
-     * @throws eu.europeana.core.database.exception.UserNotFoundException the user in the session wasn't found
-     * @throws eu.europeana.core.database.exception.AnnotationHasBeenModifiedException someone has changed the predecessor
+     * @throws AnnotationNotFoundException the predecessor wasn't found
+     * @throws UserNotFoundException the user in the session wasn't found
+     * @throws AnnotationHasBeenModifiedException someone has changed the predecessor
      */
 
-    Annotation create(User user, Long predecessorId, String content) throws AnnotationNotFoundException, UserNotFoundException, AnnotationHasBeenModifiedException;
+    Annotation create(UserRepo.Person user, Long predecessorId, String content) throws AnnotationNotFoundException, UserNotFoundException, AnnotationHasBeenModifiedException;
 
     /**
      * Create an annotation from scratch.
@@ -67,10 +60,10 @@ public interface AnnotationDao {
      * @param language of this annotation
      * @param content the content of the annotation
      * @return the annotation that has just been stored
-     * @throws eu.europeana.core.database.exception.UserNotFoundException the user in the session wasn't found
+     * @throws UserNotFoundException the user in the session wasn't found
      */
 
-    Annotation create(User user, AnnotationType annotationType, String europeanaUri, Language language, String content) throws UserNotFoundException;
+    Annotation create(UserRepo.Person user, AnnotationType annotationType, String europeanaUri, Language language, String content) throws UserNotFoundException;
 
     /**
      * Update the content of an existing annotation
@@ -79,12 +72,12 @@ public interface AnnotationDao {
      * @param annotationId the internal identifier of the annotation
      * @param content the new content
      * @return the updated annotation
-     * @throws eu.europeana.core.database.exception.AnnotationNotFoundException don't know which one
-     * @throws eu.europeana.core.database.exception.AnnotationNotOwnedException cannot modify it because we don't own it
-     * @throws eu.europeana.core.database.exception.AnnotationHasBeenModifiedException somebody has changed this already
+     * @throws AnnotationNotFoundException don't know which one
+     * @throws AnnotationNotOwnedException cannot modify it because we don't own it
+     * @throws AnnotationHasBeenModifiedException somebody has changed this already
      */
 
-    Annotation update(User user, Long annotationId, String content) throws AnnotationNotFoundException, AnnotationNotOwnedException, AnnotationHasBeenModifiedException;
+    Annotation update(UserRepo.Person user, Long annotationId, String content) throws AnnotationNotFoundException, AnnotationNotOwnedException, AnnotationHasBeenModifiedException;
 
     /**
      * Remove an existing annotation
@@ -92,19 +85,19 @@ public interface AnnotationDao {
      * @param user who is doing this?
      * @param annotationId which one? internal id.
      * @return the one that was removed
-     * @throws eu.europeana.core.database.exception.AnnotationNotOwnedException cannot modify it because we don't own it
-     * @throws eu.europeana.core.database.exception.AnnotationNotFoundException couldn't find it
-     * @throws eu.europeana.core.database.exception.AnnotationHasBeenModifiedException somebody has changed this already
+     * @throws AnnotationNotOwnedException cannot modify it because we don't own it
+     * @throws AnnotationNotFoundException couldn't find it
+     * @throws AnnotationHasBeenModifiedException somebody has changed this already
      */
 
-    Annotation delete(User user, Long annotationId) throws AnnotationNotOwnedException, AnnotationNotFoundException, AnnotationHasBeenModifiedException;
+    Annotation delete(UserRepo.Person user, Long annotationId) throws AnnotationNotOwnedException, AnnotationNotFoundException, AnnotationHasBeenModifiedException;
 
     /**
      * Fetch a single annotation
      *
      * @param annotationId which one?  internal id.
      * @return the annotation
-     * @throws eu.europeana.core.database.exception.AnnotationNotFoundException couldn't find it
+     * @throws AnnotationNotFoundException couldn't find it
      */
     
     Annotation get(Long annotationId) throws AnnotationNotFoundException;

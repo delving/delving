@@ -21,8 +21,9 @@
 
 package eu.europeana.core.util.web;
 
+import eu.delving.core.storage.PersonDetailsService;
+import eu.delving.core.storage.UserRepo;
 import eu.delving.domain.Language;
-import eu.europeana.core.database.domain.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.LocaleResolver;
@@ -49,26 +50,18 @@ public class ControllerUtil {
         return emailAddress.matches(EMAIL_REGEXP);
     }
 
-    public static User getUser() {
+    public static UserRepo.Person getPerson() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             return null;
         }
         Object principal = authentication.getPrincipal();
-        if (principal instanceof UserDaoDetailsService.UserHolder) {
-            UserDaoDetailsService.UserHolder userHolder = (UserDaoDetailsService.UserHolder) authentication.getPrincipal();
-            return userHolder.getUser();
+        if (principal instanceof PersonDetailsService.PersonHolder) {
+            PersonDetailsService.PersonHolder personHolder = (PersonDetailsService.PersonHolder) authentication.getPrincipal();
+            return personHolder.getPerson();
         }
         else {
             return null;
-        }
-    }
-
-    public static void setUser(User user) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            UserDaoDetailsService.UserHolder userHolder = (UserDaoDetailsService.UserHolder) authentication.getPrincipal();
-            userHolder.setUser(user);
         }
     }
 
@@ -110,7 +103,7 @@ public class ControllerUtil {
 
     public static ModelAndView createModelAndViewPage(String view) {
         ModelAndView page = new ModelAndView(view);
-        User user = ControllerUtil.getUser();
+        UserRepo.Person user = ControllerUtil.getPerson();
         page.addObject("user", user);
         return page;
     }
@@ -135,7 +128,7 @@ public class ControllerUtil {
 
     public static ModelAndView createModelAndViewPage(String view, String... includes) {
         ModelAndView page = new ModelAndView(view);
-        User user = ControllerUtil.getUser();
+        UserRepo.Person user = ControllerUtil.getPerson();
         page.addObject("user", user);
         for (int i = 0; i < includes.length; i++) {
             String include = includes[i];

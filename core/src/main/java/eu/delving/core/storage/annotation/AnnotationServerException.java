@@ -18,23 +18,23 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-package eu.europeana.core.database.exception;
+package eu.delving.core.storage.annotation;
 
 /**
- * Somebody modified an annotation that a new one depends on
+ * Some system problem in annotations
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Christian Sadilek <christian.sadilek@gmail.com>
  */
 
-public class UserNotFoundException extends Exception {
-	private static final long serialVersionUID = 7993738854683850975L;
+public class AnnotationServerException extends Exception {
+	private static final long serialVersionUID = -2653598382337817968L;
 
-	public UserNotFoundException() {
-        super("User not found in session");
+	public AnnotationServerException(String message) {
+        super(message);
     }
 
-    public UserNotFoundException(Long id) {
-        super("User not found. ID="+id);
+    public AnnotationServerException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

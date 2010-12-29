@@ -21,8 +21,7 @@
 
 package eu.delving.core.storage;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -34,76 +33,73 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Link spring security with our PersonStorage implementation
+ * Link spring security with our UserRepo implementation
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
 public class PersonDetailsService implements UserDetailsService {
 
-    private PersonStorage personStorage;
-
-    public void setPersonStorage(PersonStorage personStorage) {
-        this.personStorage = personStorage;
-    }
+    @Autowired
+    private UserRepo userRepo;
 
     public interface PersonHolder {
-        PersonStorage.Person getPerson();
+        UserRepo.Person getPerson();
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException, DataAccessException {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         try {
-            PersonStorage.Person person = personStorage.byEmail(email);
+            UserRepo.Person person = userRepo.byEmail(email);
             if (person == null) {
                 throw new UsernameNotFoundException("Never heard of " + email);
             }
             person.setLastLogin(new Date());
             person.save();
-            return new DaoUserDetails(person);
+            return new PersonDetails(person);
         }
         catch (Exception e) {
-            throw new DataRetrievalFailureException("UserDao problem", e);
+            throw new UsernameNotFoundException("Persistence problem", e);
         }
     }
 
-    private static class DaoUserDetails implements UserDetails, PersonHolder {
+    private static class PersonDetails implements UserDetails, PersonHolder {
         private static final long serialVersionUID = 1581860745489819018L;
-        private PersonStorage.Person person;
+        private UserRepo.Person person;
         private List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 
-        private DaoUserDetails(PersonStorage.Person person) {
+        private PersonDetails(UserRepo.Person person) {
             this.person = person;
             switch (person.getRole()) {
                 case ROLE_GOD:
-                    addRole(PersonStorage.Role.ROLE_USER);
-                    addRole(PersonStorage.Role.ROLE_ADMINISTRATOR);
-                    addRole(PersonStorage.Role.ROLE_RESEARCH_USER);
-                    addRole(PersonStorage.Role.ROLE_GOD);
+                    addRole(UserRepo.Role.ROLE_USER);
+                    addRole(UserRepo.Role.ROLE_ADMINISTRATOR);
+                    addRole(UserRepo.Role.ROLE_RESEARCH_USER);
+                    addRole(UserRepo.Role.ROLE_GOD);
                     break;
                 case ROLE_ADMINISTRATOR:
-                    addRole(PersonStorage.Role.ROLE_USER);
-                    addRole(PersonStorage.Role.ROLE_RESEARCH_USER);
-                    addRole(PersonStorage.Role.ROLE_ADMINISTRATOR);
+                    addRole(UserRepo.Role.ROLE_USER);
+                    addRole(UserRepo.Role.ROLE_RESEARCH_USER);
+                    addRole(UserRepo.Role.ROLE_ADMINISTRATOR);
                     break;
                 case ROLE_RESEARCH_USER:
-                    addRole(PersonStorage.Role.ROLE_USER);
-                    addRole(PersonStorage.Role.ROLE_RESEARCH_USER);
+                    addRole(UserRepo.Role.ROLE_USER);
+                    addRole(UserRepo.Role.ROLE_RESEARCH_USER);
                     break;
                 case ROLE_USER:
-                    addRole(PersonStorage.Role.ROLE_USER);
+                    addRole(UserRepo.Role.ROLE_USER);
                     break;
                 default:
                     throw new IllegalStateException("switch statment must be expanded to include: " + person.getRole());
             }
         }
 
-        private void addRole(PersonStorage.Role role) {
-            authorities.add(new DaoGrantedAuthority(role));
+        private void addRole(UserRepo.Role role) {
+            authorities.add(new PersonAuthority(role));
         }
 
         @Override
-        public PersonStorage.Person getPerson() {
+        public UserRepo.Person getPerson() {
             return person;
         }
 
@@ -147,11 +143,11 @@ public class PersonDetailsService implements UserDetailsService {
         }
     }
 
-    private static class DaoGrantedAuthority implements GrantedAuthority, Comparable<DaoGrantedAuthority> {
+    private static class PersonAuthority implements GrantedAuthority, Comparable<PersonAuthority> {
         private static final long serialVersionUID = -534970263836323349L;
-        private PersonStorage.Role role;
+        private UserRepo.Role role;
 
-        private DaoGrantedAuthority(PersonStorage.Role role) {
+        private PersonAuthority(UserRepo.Role role) {
             this.role = role;
         }
 
@@ -161,8 +157,8 @@ public class PersonDetailsService implements UserDetailsService {
         }
 
         @Override
-        public int compareTo(DaoGrantedAuthority daoGrantedAuthority) {
-            return role.compareTo(daoGrantedAuthority.role);
+        public int compareTo(PersonAuthority personAuthority) {
+            return role.compareTo(personAuthority.role);
         }
     }
 }

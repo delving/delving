@@ -1,6 +1,7 @@
 package eu.europeana.core.util.web;
 
-import eu.europeana.core.database.domain.Token;
+import eu.delving.core.storage.Token;
+import eu.delving.core.storage.TokenService;
 import freemarker.template.TemplateException;
 import org.springframework.beans.factory.annotation.Autowired;
 

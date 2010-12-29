@@ -21,36 +21,8 @@
 
 package eu.delving.services.controller;
 
-import eu.delving.domain.Language;
-import eu.europeana.core.database.AnnotationDao;
-import eu.europeana.core.database.domain.Annotation;
-import eu.europeana.core.database.domain.AnnotationType;
-import eu.europeana.core.database.domain.User;
-import eu.europeana.core.database.exception.AnnotationHasBeenModifiedException;
-import eu.europeana.core.database.exception.AnnotationNotFoundException;
-import eu.europeana.core.database.exception.AnnotationNotOwnedException;
-import eu.europeana.core.database.exception.EuropeanaUriNotFoundException;
-import eu.europeana.core.database.exception.UserNotFoundException;
-import eu.europeana.core.util.web.ControllerUtil;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.servlet.ModelAndView;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * Handle the rest interface for storing and retrieving annotations
@@ -62,7 +34,7 @@ import java.util.Locale;
 @Controller
 @RequestMapping("/user/annotation")
 public class AnnotationController {
-
+/*
     private Logger log = Logger.getLogger(getClass());
 
     @Autowired
@@ -164,11 +136,12 @@ public class AnnotationController {
         log.warn("problem", e);
     }
 
-    private User getUser() throws UserNotFoundException {
-        User user = ControllerUtil.getUser();
+    private UserRepo.Person getUser() throws UserNotFoundException {
+        UserRepo.Person user = ControllerUtil.getPerson();
         if (user == null) {
             throw new UserNotFoundException();
         }
         return user;
     }
+    */
 }

@@ -40,7 +40,7 @@ import java.util.List;
  * @author Gerald de Jong <gerald@delving.eu>
  */
 
-public class PersonStorageImpl implements PersonStorage {
+public class UserRepoImpl implements UserRepo {
 
     private String databaseName = "persons";
 

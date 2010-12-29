@@ -18,23 +18,17 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-package eu.europeana.core.database.exception;
+
+package eu.delving.core.storage.annotation;
 
 /**
- * Some system problem in annotations
+ * The various kinds of annotations that can be stored
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Christian Sadilek <christian.sadilek@gmail.com>
  */
 
-public class AnnotationServerException extends Exception {
-	private static final long serialVersionUID = -2653598382337817968L;
-
-	public AnnotationServerException(String message) {
-        super(message);
-    }
-
-    public AnnotationServerException(String message, Throwable cause) {
-        super(message, cause);
-    }
+public enum AnnotationType {
+    SOCIAL_TAG,
+    IMAGE_ANNOTATION
 }

@@ -134,15 +134,11 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
-    <bean name="userDao" class="eu.europeana.core.database.dao.UserDaoImpl"/>
+    <bean name="annotationDao" class="eu.delving.core.storage.annotation.AnnotationDaoImpl"/>
 
-    <bean name="annotationDao" class="eu.europeana.core.database.dao.AnnotationDaoImpl"/>
+    <bean name="tokenRepositoryService" class="eu.delving.core.storage.TokenRepositoryService"/>
 
-    <bean name="tokenRepositoryService" class="eu.europeana.core.util.web.TokenRepositoryService"/>
-
-    <bean name="tokenService" class="eu.europeana.core.util.web.TokenService"/>
-
-    <bean id="sorlIndexUtil" class="eu.europeana.core.util.indexing.SorlIndexUtil"/>
+    <bean name="tokenService" class="eu.delving.core.storage.TokenService"/>
 
     <bean id="solrSelectServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
         <!--<constructor-arg value="#{launchProperties['services.url']}/api/solr"/>-->
@@ -214,10 +210,6 @@
         <property name="password" value="#{launchProperties['smtp.password']}"/>
     </bean>
 
-    <bean id="daoUserDetailsService" class="eu.europeana.core.util.web.UserDaoDetailsService">
-        <property name="userDao" ref="userDao"/>
-    </bean>
-
     <bean id="emailSenderForExceptions" class="eu.europeana.core.util.web.EmailSender">
         <property name="template" value="/email/exception"/>
         <property name="fromEmail" value="#{launchProperties['system.from']}"/>
@@ -284,7 +276,9 @@
 
     <bean id="mongo" class="com.mongodb.Mongo"/>
 
-    <bean id="personStorage" class="eu.delving.core.storage.PersonStorageImpl"/>
+    <bean id="userRepo" class="eu.delving.core.storage.UserRepoImpl"/>
+
+    <bean id="userDetailsService" class="eu.delving.core.storage.PersonDetailsService"/>
 
 </beans>
 

@@ -19,38 +19,10 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.core.database.dao;
+package eu.delving.core.storage;
 
-import eu.delving.domain.Language;
-import eu.europeana.core.database.AnnotationDao;
-import eu.europeana.core.database.domain.Annotation;
-import eu.europeana.core.database.domain.AnnotationType;
-import eu.europeana.core.database.domain.EuropeanaId;
-import eu.europeana.core.database.domain.User;
-import eu.europeana.core.database.exception.AnnotationHasBeenModifiedException;
-import eu.europeana.core.database.exception.AnnotationNotFoundException;
-import eu.europeana.core.database.exception.AnnotationNotOwnedException;
-import eu.europeana.core.database.exception.EuropeanaUriNotFoundException;
-import eu.europeana.core.database.exception.UserNotFoundException;
-import eu.europeana.fixture.DatabaseFixture;
-import org.apache.log4j.Logger;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
-import java.util.List;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNotSame;
-import static junit.framework.Assert.fail;
 
 /**
  * Test the AnnotationDao methods
@@ -58,15 +30,16 @@ import static junit.framework.Assert.fail;
  * @author "Gerald de Jong" <geralddejong@gmail.com>
  */
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-        "/core-application-context.xml",
-        "/test-application-context.xml"
-})
-
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@ContextConfiguration(locations = {
+//        "/core-application-context.xml",
+//        "/test-application-context.xml"
+//})
+//
 @Ignore("needs a reference to launch.properties test file")
 @Transactional
 public class TestAnnotationDao {
+    /*
     private Logger log = Logger.getLogger(TestAnnotationDao.class);
 
     @Autowired
@@ -182,4 +155,5 @@ public class TestAnnotationDao {
 		assertEquals(europeanaId.getAnnotations().size(), 1);
 		assertEquals(europeanaId.getAnnotations().get(0).getId(), predecessor.getId());
 	}
+	*/
 }

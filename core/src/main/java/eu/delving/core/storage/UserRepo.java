@@ -30,7 +30,7 @@ import java.util.List;
  * @author Gerald de Jong <gerald@delving.eu>
  */
 
-public interface PersonStorage {
+public interface UserRepo {
 
     Person createPerson(String email);
     Person authenticate(String email, String password);

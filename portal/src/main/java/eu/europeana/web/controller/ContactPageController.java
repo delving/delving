@@ -21,7 +21,7 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.core.database.domain.User;
+import eu.delving.core.storage.UserRepo;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import eu.europeana.core.util.web.EmailSender;
@@ -39,7 +39,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -73,7 +72,7 @@ public class ContactPageController {
     @ModelAttribute("command")
     public ContactForm createContactForm() {
         ContactForm form = new ContactForm();
-        User user = ControllerUtil.getUser();
+        UserRepo.Person user = ControllerUtil.getPerson();
         if (user != null) {
             form.setEmail(user.getEmail());
         }
@@ -86,18 +85,18 @@ public class ContactPageController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    protected String handlePost(@ModelAttribute("command") @Valid ContactForm form, BindingResult result, HttpServletRequest request) throws Exception {
+    protected String handlePost(@ModelAttribute ContactForm command, BindingResult result, HttpServletRequest request) throws Exception {
         if (result.hasErrors()) {
             clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.FEEDBACK_SEND_FAILURE);
         }
         else {
             Map<String, Object> model = new TreeMap<String, Object>();
-            model.put("email", form.getEmail());
-            model.put("feedback", form.getFeedbackText());
+            model.put("email", command.getEmail());
+            model.put("feedback", command.getFeedbackText());
             userFeedbackSender.sendEmail(model);
-            model.put(EmailSender.TO_EMAIL, form.getEmail());
+            model.put(EmailSender.TO_EMAIL, command.getEmail());
             userFeedbackConfirmSender.sendEmail(model);
-            form.setSubmitMessage("Your feedback was successfully sent. Thank you!");
+            command.setSubmitMessage("Your feedback was successfully sent. Thank you!");
             clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.FEEDBACK_SEND);
         }
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.CONTACT_PAGE);

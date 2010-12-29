@@ -18,25 +18,19 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-
-package eu.europeana.core.database.exception;
+package eu.delving.core.storage.annotation;
 
 /**
  * Somebody modified an annotation that a new one depends on
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Christian Sadilek <christian.sadilek@gmail.com>
- * 
  */
 
-public class AnnotationHasBeenModifiedException extends Exception {
-	private static final long serialVersionUID = 3948481183923798118L;
+public class EuropeanaUriNotFoundException extends Exception {
+	private static final long serialVersionUID = 5311820042555584127L;
 
-	public AnnotationHasBeenModifiedException(Long id, Exception cause) {
-        super("Annotation has been modified. ID="+id, cause);
-    }
-
-    public AnnotationHasBeenModifiedException(Long id) {
-        super("Annotation has been modified. ID="+id);
+	public EuropeanaUriNotFoundException(String europeanaUri) {
+        super("EuropeanaId not found. europeanaUri = "+europeanaUri);
     }
 }

@@ -19,29 +19,12 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.core.database.dao;
+package eu.delving.core.storage.annotation;
 
+import eu.delving.core.storage.UserRepo;
 import eu.delving.domain.Language;
-import eu.europeana.core.database.AnnotationDao;
-import eu.europeana.core.database.domain.Annotation;
-import eu.europeana.core.database.domain.AnnotationType;
-import eu.europeana.core.database.domain.EuropeanaId;
-import eu.europeana.core.database.domain.User;
-import eu.europeana.core.database.exception.AnnotationHasBeenModifiedException;
-import eu.europeana.core.database.exception.AnnotationNotFoundException;
-import eu.europeana.core.database.exception.AnnotationNotOwnedException;
-import eu.europeana.core.database.exception.EuropeanaUriNotFoundException;
-import eu.europeana.core.database.exception.UserNotFoundException;
 import org.apache.log4j.Logger;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
-import javax.persistence.NoResultException;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -54,14 +37,11 @@ import java.util.List;
 public class AnnotationDaoImpl implements AnnotationDao {
     private Logger log = Logger.getLogger(getClass());
 
-    @PersistenceContext
-    protected EntityManager entityManager;
-
     @Override
-    @Transactional
-    public Annotation create(User user, Long predecessorId, String content) throws AnnotationNotFoundException, UserNotFoundException, AnnotationHasBeenModifiedException {
+    public Annotation create(UserRepo.Person user, Long predecessorId, String content) throws AnnotationNotFoundException, UserNotFoundException, AnnotationHasBeenModifiedException {
+        /*
         Long userId = user.getId();
-        user = entityManager.find(User.class, userId);
+        user = entityManager.find(UserRepo.Person.class, userId);
         if (user == null) {
             throw new UserNotFoundException(userId);
         }
@@ -80,21 +60,23 @@ public class AnnotationDaoImpl implements AnnotationDao {
         Annotation annotation = new Annotation();
         annotation.setType(predecessor.getType());
         annotation.setLanguage(predecessor.getLanguage());
-        annotation.setEuropeanaId(predecessor.getEuropeanaId());
-        annotation.setUser(user);
+//        annotation.setEuropeanaId(predecessor.getEuropeanaId());
+//        annotation.setUser(user);
         annotation.setContent(content);
         annotation.setDateSaved(new Date());
         annotation.setPredecessorId(predecessorId);
         entityManager.persist(annotation);
         log.info("Created annotation " + annotation.getId() + " dependent on " + predecessor.getId());
         return annotation;
+        */
+        return null;
     }
 
     @Override
-    @Transactional
-    public Annotation create(User user, AnnotationType annotationType, String europeanaUri, Language language, String content) throws UserNotFoundException {
+    public Annotation create(UserRepo.Person user, AnnotationType annotationType, String europeanaUri, Language language, String content) throws UserNotFoundException {
+        /*
         Long userId = user.getId();
-        user = entityManager.find(User.class, userId);
+        user = entityManager.find(UserRepo.Person.class, userId);
         if (user == null) {
             throw new UserNotFoundException(userId);
         }
@@ -110,11 +92,13 @@ public class AnnotationDaoImpl implements AnnotationDao {
         annotation.setDateSaved(new Date());
         entityManager.persist(annotation);
         return annotation;
+        */
+        return null;
     }
 
     @Override
-    @Transactional
-    public Annotation update(User user, Long annotationId, String content) throws AnnotationNotFoundException, AnnotationNotOwnedException, AnnotationHasBeenModifiedException {
+    public Annotation update(UserRepo.Person user, Long annotationId, String content) throws AnnotationNotFoundException, AnnotationNotOwnedException, AnnotationHasBeenModifiedException {
+        /*
         Annotation existing = entityManager.find(Annotation.class, annotationId);
         if (existing == null) {
             throw new AnnotationNotFoundException(annotationId);
@@ -140,11 +124,13 @@ public class AnnotationDaoImpl implements AnnotationDao {
         entityManager.remove(existing);
         entityManager.persist(fresh);
         return fresh;
+        */
+        return null;
     }
 
     @Override
-    @Transactional
-    public Annotation delete(User user, Long annotationId) throws AnnotationNotOwnedException, AnnotationNotFoundException, AnnotationHasBeenModifiedException {
+    public Annotation delete(UserRepo.Person user, Long annotationId) throws AnnotationNotOwnedException, AnnotationNotFoundException, AnnotationHasBeenModifiedException {
+        /*
         Annotation existing = entityManager.find(Annotation.class, annotationId);
         if (existing == null) {
             throw new AnnotationNotFoundException(annotationId);
@@ -159,22 +145,19 @@ public class AnnotationDaoImpl implements AnnotationDao {
         }
         entityManager.remove(existing);
         return existing;
+        */
+        return null;
     }
 
     @Override
-    @Transactional
     public Annotation get(Long annotationId) throws AnnotationNotFoundException {
-        Annotation annotation = entityManager.find(Annotation.class, annotationId);
-        if (annotation == null) {
-            throw new AnnotationNotFoundException(annotationId);
-        }
-        return annotation;
+        return null;
     }
  
     @Override
-    @Transactional
     @SuppressWarnings("unchecked")
     public List<Long> list(AnnotationType annotationType, String europeanaUri) throws EuropeanaUriNotFoundException {
+        /*
         Query idQuery = entityManager.createQuery("select id from EuropeanaId id where id.europeanaUri = :europeanaUri");
         idQuery.setParameter("europeanaUri", europeanaUri);
         try {
@@ -186,5 +169,7 @@ public class AnnotationDaoImpl implements AnnotationDao {
         catch (NoResultException e) {
             throw new EuropeanaUriNotFoundException(europeanaUri);
         }
+        */
+        return null;
     }
 }

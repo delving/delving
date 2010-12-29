@@ -19,23 +19,10 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.core.database.domain;
+package eu.delving.core.storage.annotation;
 
 import eu.delving.domain.Language;
-import org.hibernate.annotations.Index;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,45 +33,28 @@ import java.util.List;
  * @author Christian Sadilek <christian.sadilek@gmail.com>
  */
 
-@Entity
 public class Annotation implements Serializable {
 
 	private static final long serialVersionUID = 1704555721067084065L;
 
-	@Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column
     private Long id;
 
-    @Column
     private Long predecessorId;
 
-    @Column(length = FieldSize.IDENTIFIER)
-    @Enumerated(EnumType.STRING)
     private AnnotationType type;
 
-    @ManyToOne
-    @JoinColumn(name = "europeanaid", nullable = false)
-    @Index(name = "annotation_europeanaid_index")
-    private EuropeanaId europeanaId;
+//    private EuropeanaId europeanaId;
 
-    @Column(length = FieldSize.LANGUAGE)
-    @Enumerated(EnumType.STRING)
     private Language language;
 
-    @Column(columnDefinition = "text")
     private String content;
 
-    @ManyToOne
-    @JoinColumn(name = "userid")
-    private User user;
+//    @ManyToOne
+//    @JoinColumn(name = "userid")
+//    private User user;
 
-    @OneToMany
-    @JoinColumn(name="predecessorId")
 	private List<Annotation> children;
 
-    @Column
-    @Temporal(TemporalType.TIMESTAMP)
     private Date dateSaved;
 
     public Annotation() {
@@ -111,13 +81,13 @@ public class Annotation implements Serializable {
         this.type = type;
     }
 
-    public EuropeanaId getEuropeanaId() {
-        return europeanaId;
-    }
-
-    public void setEuropeanaId(EuropeanaId europeanaId) {
-        this.europeanaId = europeanaId;
-    }
+//    public EuropeanaId getEuropeanaId() {
+//        return europeanaId;
+//    }
+//
+//    public void setEuropeanaId(EuropeanaId europeanaId) {
+//        this.europeanaId = europeanaId;
+//    }
 
     public Language getLanguage() {
         return language;
@@ -135,13 +105,13 @@ public class Annotation implements Serializable {
         this.content = content;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
+//    public User getUser() {
+//        return user;
+//    }
+//
+//    public void setUser(User user) {
+//        this.user = user;
+//    }
 
     public Date getDateSaved() {
         return dateSaved;

@@ -33,8 +33,6 @@
         <property name="servicesPassword" value="#{launchProperties['services.password']}"/>
     </bean>
 
-    <bean id="mongo" class="com.mongodb.Mongo"/>
-
     <bean id="metaRepoConfig" class="eu.delving.services.core.MetaConfigImpl"/>
 
     <bean id="groovyCodeResource" class="eu.europeana.sip.core.GroovyCodeResource"/>
@@ -84,7 +82,7 @@
     </bean>
 
     <security:authentication-manager alias="authenticationManager">
-        <security:authentication-provider user-service-ref="daoUserDetailsService">
+        <security:authentication-provider user-service-ref="userDetailsService">
             <security:password-encoder hash="sha"/>
         </security:authentication-provider>
     </security:authentication-manager>

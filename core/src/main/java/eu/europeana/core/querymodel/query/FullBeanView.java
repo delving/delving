@@ -23,7 +23,6 @@ package eu.europeana.core.querymodel.query;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.TreeSet;
 
 /**
  * todo: javadoc
@@ -36,5 +35,4 @@ public interface FullBeanView {
     DocIdWindowPager getDocIdWindowPager() throws Exception, UnsupportedEncodingException;
     List<? extends BriefDoc> getRelatedItems();
     FullDoc getFullDoc() throws EuropeanaQueryException;
-    TreeSet<String> getUserTags();
 }
