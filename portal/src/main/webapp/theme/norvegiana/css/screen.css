@@ -290,10 +290,15 @@ section#info p
 	background:#333;
 }
 
+input.in-small {
+    width: 50px;
+}
+
 /* MAIN SECTION  ******************************/
-section#main, .main
+section#main,
+.main
 {
-	margin-top:1em;
+	margin-top:2em;
 }
 
 section[role="main"],section[role="complementary"]
