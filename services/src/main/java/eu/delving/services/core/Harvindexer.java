@@ -8,10 +8,6 @@ import eu.delving.metadata.Tag;
 import eu.delving.services.exceptions.HarvindexingException;
 import eu.delving.sip.AccessKey;
 import eu.delving.sip.DataSetState;
-import eu.europeana.core.database.ConsoleDao;
-import eu.europeana.core.database.UserDao;
-import eu.europeana.core.database.domain.EuropeanaId;
-import eu.europeana.core.database.domain.SocialTag;
 import eu.europeana.core.querymodel.query.DocType;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -40,7 +36,6 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
@@ -52,7 +47,6 @@ import java.util.concurrent.Executors;
  */
 
 public class Harvindexer {
-    private ConsoleDao consoleDao;
     private SolrServer solrServer;
     private XMLInputFactory inputFactory = new WstxInputFactory();
     private Executor executor = Executors.newSingleThreadExecutor();
@@ -72,18 +66,7 @@ public class Harvindexer {
     private AccessKey accessKey;
 
     @Autowired
-    private UserDao userDao;
-
-    @Autowired
-    private MetaRepo metaRepo;
-
-    @Autowired
     private MetadataModel metadataModel;
-
-    @Autowired
-    public void setConsoleDao(ConsoleDao consoleDao) {
-        this.consoleDao = consoleDao;
-    }
 
     @Autowired
     public void setHttpClient(HttpClient httpClient) {
@@ -244,7 +227,6 @@ public class Harvindexer {
         private String importXmlInternal(InputStream inputStream, Indexer indexer) throws TransformerException, XMLStreamException, IOException, SolrServerException, HarvindexingException {
             Source source = new StreamSource(inputStream, "UTF-8");
             XMLStreamReader xml = inputFactory.createXMLStreamReader(source);
-            EuropeanaId europeanaId = null;
             String pmhId = null;
             String resumptionToken = "";
             int recordCount = 0;
@@ -273,20 +255,16 @@ public class Harvindexer {
                         }
                         else if (isRecordElement(xml) && isInMetadataBlock) {
                             path.push(Tag.create(xml.getName().getPrefix(), xml.getName().getLocalPart()));
-                            europeanaId = new EuropeanaId(null); // todo: constructor wanted collection
                             solrInputDocument = new SolrInputDocument();
                             solrInputDocument.addField("delving_pmhId", pmhId);
                         }
-                        else if (europeanaId != null) {
+                        else if (solrInputDocument != null) {
                             path.push(Tag.create(xml.getName().getPrefix(), xml.getName().getLocalPart()));
                             FieldDefinition fieldDefinition = getFieldDefinition(path, recordCount);
                             String text = xml.getElementText();
                             FieldDefinition.Validation validation = fieldDefinition.validation;
                             if (validation != null) {
-                                if (validation.id) {
-                                    europeanaId.setEuropeanaUri(text);
-                                }
-                                else if (validation.type) {
+                                if (validation.type) {
                                     DocType.get(text); // checking if it matches one of them
                                     SolrInputField objectField = solrInputDocument.getField("europeana_type");
                                     if (objectField != null) {
@@ -307,36 +285,24 @@ public class Harvindexer {
                         break;
 
                     case XMLStreamConstants.END_ELEMENT:
-                        if (isRecordElement(xml) && isInMetadataBlock && europeanaId != null) {
+                        if (isRecordElement(xml) && isInMetadataBlock && solrInputDocument != null) {
                             isInMetadataBlock = false;
                             if (recordCount > 0 && recordCount % 500 == 0) {
                                 log.info(String.format("imported %d records in %s", recordCount, DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - startTime)));
                             }
                             recordCount++;
-                            if (europeanaId.getEuropeanaUri() == null) {
-                                throw new HarvindexingException("Normalized Record must have a field designated as europeana uri", recordCount);
-                            }
-                            Collection<Object> objectUrls = solrInputDocument.getFieldValues("europeana_object");
-                            if (objectUrls == null && "true".equals(solrInputDocument.getFieldValue("europeana_hasObject"))) {
-                                log.warn("No object urls for " + europeanaId.getEuropeanaUri());
-                            }
                             if (!solrInputDocument.containsKey("europeana_collectionName")) {
                                 solrInputDocument.addField("europeana_collectionName", dataSet.getSpec()); // todo: can't just use a string field name here
                             }
-                            final List<SocialTag> socialTags = userDao.fetchAllSocialTags(europeanaId.getEuropeanaUri());
-                            for (SocialTag socialTag : socialTags) {
-                                solrInputDocument.addField("europeana_userTag", socialTag.getTag());
-                            }
                             indexer.add(solrInputDocument);
-                            consoleDao.saveEuropeanaId(europeanaId);
-                            europeanaId = null;
+//                            record.save(); todo: or something like it, to replace consoleDao.saveEuropeanaId(europeanaId);
                             solrInputDocument = null;
                             path.pop();
                         }
                         else if (isMetadataElement(xml)) {
                             isInMetadataBlock = false;
                         }
-                        if (europeanaId != null) {
+                        if (solrInputDocument != null) {
                             path.pop();
                             log.info("eid not null end: " + path);
                         }

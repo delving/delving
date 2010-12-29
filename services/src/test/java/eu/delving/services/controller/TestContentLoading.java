@@ -4,7 +4,6 @@ import eu.delving.services.core.Harvindexer;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.util.MockContentLoader;
 import eu.delving.sip.DataSetState;
-import eu.europeana.core.database.ConsoleDao;
 import eu.europeana.core.util.StarterUtil;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
@@ -38,9 +37,6 @@ public class TestContentLoading {
 
     @Autowired
     private Harvindexer harvindexer;
-
-    @Autowired
-    private ConsoleDao consoleDao;
 
     @BeforeClass
     public static void startUp() {

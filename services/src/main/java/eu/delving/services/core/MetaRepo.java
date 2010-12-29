@@ -189,7 +189,7 @@ public interface MetaRepo {
 
     public interface Record {
         ObjectId getId();
-        PmhSet getPmhSet();
+        String getUnique();
         Date getModifiedDate();
         boolean isDeleted();
         DBObject getNamespaces();

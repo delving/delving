@@ -129,27 +129,6 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     @Transactional
-    public User authenticateUser(String email, String password) {
-        if (email == null || password == null) {
-            throw new IllegalArgumentException("Parameter(s) has null value: email:" + email + ", password:" + password);
-        }
-        Query query = entityManager.createQuery("select u from User as u where u.email like :email");
-        query.setParameter("email", email);
-        try {
-            User user = (User) query.getSingleResult();
-            if (user.getHashedPassword().equals(User.hashPassword(password))) {
-                return user;
-            }
-            logger.info("Password wrong for: " + email);
-        }
-        catch (NoResultException e) {
-            logger.info("Email not found: " + email);
-        }
-        return null;
-    }
-
-    @Override
-    @Transactional
     public List<SavedItem> fetchSavedItems(Long userId) {
         User user = entityManager.find(User.class, userId);
         user.getSavedItems().size();

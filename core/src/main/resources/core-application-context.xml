@@ -138,11 +138,7 @@
 
     <bean name="annotationDao" class="eu.europeana.core.database.dao.AnnotationDaoImpl"/>
 
-    <bean name="consoleDao" class="eu.europeana.core.database.dao.ConsoleDaoImpl"/>
-
     <bean name="tokenRepositoryService" class="eu.europeana.core.util.web.TokenRepositoryService"/>
-
-    <bean name="tokenDao" class="eu.europeana.core.database.dao.TokenDaoImpl"/>
 
     <bean name="tokenService" class="eu.europeana.core.util.web.TokenService"/>
 

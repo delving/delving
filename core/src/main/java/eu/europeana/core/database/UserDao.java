@@ -41,17 +41,6 @@ import java.util.List;
 public interface UserDao {
 
     /**
-     * A user logs in to the system using this method, and returns null if there is no match
-     * between email and password.
-     *
-     * @param email    address
-     * @param password unhashed
-     * @return the user if authenticated, otherwise null
-     */
-
-    User authenticateUser(String email, String password);
-
-    /**
      * Fetch a number of user objects that contain the given pattern in either their user name
      * first name, or email address, all case-insensitive.  Used for suggestion list.
      *
