@@ -97,6 +97,7 @@
             </validation>
         </field>
         <field prefix="europeana" localName="userTag" searchField="usertags"/>
+        <field prefix="europeana" localName="hasDigitalObject" systemField="true"/>
         <field prefix="europeana" localName="year" fulldoc="false" fieldType="string" facetPrefix="year">
             <validation>
                 <converter multipleOutput="true" call=".extractYear()"/>
