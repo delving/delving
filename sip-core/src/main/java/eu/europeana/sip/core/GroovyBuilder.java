@@ -22,6 +22,7 @@
 package eu.europeana.sip.core;
 
 import groovy.util.BuilderSupport;
+import groovy.xml.QName;
 
 import java.util.Map;
 
@@ -39,19 +40,19 @@ public class GroovyBuilder extends BuilderSupport {
     }
 
     protected Object createNode(Object name) {
-        return new GroovyNode(getCurrentNode(), name, new GroovyList());
+        return new GroovyNode(getCurrentNode(), (QName)name, new GroovyList());
     }
 
     protected Object createNode(Object name, Object value) {
-        return new GroovyNode(getCurrentNode(), name, value.toString());
+        return new GroovyNode(getCurrentNode(), (QName)name, value.toString());
     }
 
     protected Object createNode(Object name, Map attributes) {
-        return new GroovyNode(getCurrentNode(), name, attributes, new GroovyList());
+        return new GroovyNode(getCurrentNode(), (QName)name, attributes, new GroovyList());
     }
 
     protected Object createNode(Object name, Map attributes, Object value) {
-        return new GroovyNode(getCurrentNode(), name, attributes, value.toString());
+        return new GroovyNode(getCurrentNode(), (QName)name, attributes, value.toString());
     }
 
     protected GroovyNode getCurrentNode() {

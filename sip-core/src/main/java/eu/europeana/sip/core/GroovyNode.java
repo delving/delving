@@ -21,6 +21,7 @@
 
 package eu.europeana.sip.core;
 
+import eu.delving.metadata.Sanitizer;
 import groovy.lang.DelegatingMetaClass;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClass;
@@ -42,23 +43,37 @@ public class GroovyNode {
 
     private GroovyNode parent;
 
-    private Object name;
+    private QName qName;
+
+    private String stringName;
 
     private Map<String, String> attributes;
 
     private Object value;
 
-    public GroovyNode(GroovyNode parent, Object name) {
-        this(parent, name, new GroovyList());
+    public GroovyNode(String name) {
+        this(null, new QName(name));
     }
 
-    public GroovyNode(GroovyNode parent, Object name, Object value) {
-        this(parent, name, new TreeMap<String, String>(), value);
+    public GroovyNode(GroovyNode parent, String namespaceUri, String localName, String prefix) {
+        this(parent, new QName(namespaceUri, localName, prefix));
     }
 
-    public GroovyNode(GroovyNode parent, Object name, Map<String, String> attributes, Object value) {
+    public GroovyNode(GroovyNode parent, QName qName) {
+        this(parent, qName, new GroovyList());
+    }
+
+    public GroovyNode(GroovyNode parent, String name, String value) {
+        this(parent, new QName(name), new TreeMap<String, String>(), value);
+    }
+
+    public GroovyNode(GroovyNode parent, QName qName, Object value) {
+        this(parent, qName, new TreeMap<String, String>(), value);
+    }
+
+    public GroovyNode(GroovyNode parent, QName qName, Map<String, String> attributes, Object value) {
         this.parent = parent;
-        this.name = name;
+        this.qName = qName;
         this.attributes = attributes;
         this.value = value;
         if (parent != null) {
@@ -118,8 +133,20 @@ public class GroovyNode {
         return attributes;
     }
 
-    public Object name() {
-        return name;
+    public QName qName() {
+        return qName;
+    }
+
+    public String name() {
+        if (stringName == null) {
+            if (qName.getPrefix().isEmpty()) {
+                stringName = Sanitizer.tagToVariable(qName.getLocalPart());
+            }
+            else {
+                stringName = qName.getPrefix() + "_" + Sanitizer.tagToVariable(qName.getLocalPart());
+            }
+        }
+        return stringName;
     }
 
     public Object value() {
