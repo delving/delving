@@ -72,6 +72,17 @@
 
     <div class="clear"></div>
 
+
+    <div id="typeTabs" class="ui-tabs">
+        <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix" style="border-bottom: 1px solid #ddd;">
+            <li class="ui-state-default ui-corner-top ui-state-active"><a href="#"><@spring.message '_metadata.type.all'/></a></li>
+            <li class="ui-state-default ui-corner-top"><a href="#"><@spring.message '_metadata.type.images'/></a></li>
+            <li class="ui-state-default ui-corner-top"><a href="#"><@spring.message '_metadata.type.texts'/></a></li>
+            <li class="ui-state-default ui-corner-top"><a href="#"><@spring.message '_metadata.type.videos'/></a></li>
+            <li class="ui-state-default ui-corner-top"><a href="#"><@spring.message '_metadata.type.sounds'/></a></li>
+        </ul>
+    </div>
+
     <nav class="pagination">
         <div class="inner">
         <@resultBriefPaginationStyled/>
