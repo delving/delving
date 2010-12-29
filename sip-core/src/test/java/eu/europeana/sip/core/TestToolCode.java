@@ -20,7 +20,7 @@ public class TestToolCode {
 
     @Test
     public void testToId() {
-        GroovyNode root = new GroovyNode(null, "nobody cares");
+        GroovyNode root = new GroovyNode("nobody cares");
         new GroovyNode(root, "unique_a", "SomeUniqueString");
         new GroovyNode(root, "unique_b", "SomeUniqueStringy");
         Script script = shell().parse(
@@ -56,7 +56,7 @@ public class TestToolCode {
                 {"100", "[100 AD]"},
                 {"65", "[65 AD]"},
         };
-        GroovyNode root = new GroovyNode(null, "nobody cares");
+        GroovyNode root = new GroovyNode("nobody cares");
         StringBuilder out = new StringBuilder("use (MappingCategory) { [\n");
         for (int walk = 0; walk < cases.length; walk++) {
             new GroovyNode(root, "case" + walk, cases[walk][0]);
@@ -73,7 +73,7 @@ public class TestToolCode {
 
     @Test
     public void testSanitizer() {
-        GroovyNode root = new GroovyNode(null, "nobody cares");
+        GroovyNode root = new GroovyNode("nobody cares");
         new GroovyNode(root, "with_apos", "entry with '        apostrophe");
         new GroovyNode(root, "with_enter", "entry with \n         enter");
         Script script = shell().parse(

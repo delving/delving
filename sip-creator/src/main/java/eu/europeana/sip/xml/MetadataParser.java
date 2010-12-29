@@ -22,7 +22,6 @@
 package eu.europeana.sip.xml;
 
 import eu.delving.metadata.Path;
-import eu.delving.metadata.Sanitizer;
 import eu.delving.metadata.Tag;
 import eu.delving.sip.ProgressListener;
 import eu.europeana.sip.core.GroovyNode;
@@ -37,7 +36,6 @@ import javax.xml.stream.events.XMLEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
-import java.util.Stack;
 import java.util.TreeMap;
 
 /**
@@ -73,10 +71,8 @@ public class MetadataParser {
     @SuppressWarnings("unchecked")
     public synchronized MetadataRecord nextRecord() throws XMLStreamException, IOException, AbortException {
         MetadataRecord metadataRecord = null;
-        GroovyNode rootNode = null;
-        Stack<GroovyNode> nodeStack = new Stack<GroovyNode>();
+        GroovyNode node = null;
         StringBuilder value = new StringBuilder();
-        boolean withinRecord = false;
         while (metadataRecord == null) {
             switch (input.getEventType()) {
                 case XMLEvent.START_DOCUMENT:
@@ -86,62 +82,48 @@ public class MetadataParser {
                     break;
                 case XMLEvent.START_ELEMENT:
                     path.push(Tag.create(input.getName().getPrefix(), input.getName().getLocalPart()));
-                    if (path.equals(recordRoot)) {
-                        withinRecord = true;
+                    if (node == null && path.equals(recordRoot)) {
+                        node = new GroovyNode("input");
                     }
-                    if (withinRecord) {
-                        GroovyNode parent;
-                        if (nodeStack.isEmpty()) {
-                            parent = null;
-                        }
-                        else {
-                            parent = nodeStack.peek();
-                        }
-                        String nodeName;
-                        if (input.getPrefix() == null || input.getPrefix().isEmpty()) {
-                            nodeName = path.equals(recordRoot) ? "input" : Sanitizer.tagToVariable(input.getLocalName());
-                        }
-                        else {
-                            nodeName = path.equals(recordRoot) ? "input" : Sanitizer.tagToVariable(input.getPrefix() + ":" + input.getLocalName());
+                    else if (node != null) {
+                        node = new GroovyNode(node, input.getNamespaceURI(), input.getLocalName(), input.getPrefix());
+                        if (!input.getPrefix().isEmpty()) {
                             namespaces.put(input.getPrefix(), input.getNamespaceURI());
                         }
-                        GroovyNode node = new GroovyNode(parent, nodeName);
-                        if (input.getAttributeCount() > 0) { // todo: sometimes java.lang.IllegalStateException: Current state not START_ELEMENT        
+                        if (input.getAttributeCount() > 0) {
                             for (int walk = 0; walk < input.getAttributeCount(); walk++) {
                                 QName attributeName = input.getAttributeName(walk);
                                 node.attributes().put(attributeName.getLocalPart(), input.getAttributeValue(walk));
                             }
-                        }
-                        nodeStack.push(node);
-                        if (parent == null) {
-                            rootNode = node;
                         }
                         value.setLength(0);
                     }
                     break;
                 case XMLEvent.CHARACTERS:
                 case XMLEvent.CDATA:
-                    if (withinRecord) {
+                    if (node != null) {
                         value.append(input.getText());
                     }
                     break;
                 case XMLEvent.END_ELEMENT:
-                    if (path.equals(recordRoot)) {
-                        withinRecord = false;
-                        recordIndex++;
-                        metadataRecord = factory.fromGroovyNode(rootNode, recordIndex);
-                        if (progressListener != null) {
-                            if (!progressListener.setProgress(recordIndex)) {
-                                throw new AbortException();
-                            }
-                        }
-                    }
-                    if (withinRecord) {
-                        GroovyNode node = nodeStack.pop();
+                    if (node != null) {
+                        node = node.parent();
                         String valueString = value.toString().replaceAll("\n", " ").replaceAll(" +", " ").trim();
                         value.setLength(0);
                         if (valueString.length() > 0) {
                             node.setValue(valueString);
+                        }
+                        if (path.equals(recordRoot)) {
+                            if (node.parent() != null) {
+                                throw new RuntimeException("Expected to be at root node");
+                            }
+                            metadataRecord = factory.fromGroovyNode(node, ++recordIndex);
+                            if (progressListener != null) {
+                                if (!progressListener.setProgress(recordIndex)) {
+                                    throw new AbortException();
+                                }
+                            }
+                            node = null;
                         }
                     }
                     path.pop();
