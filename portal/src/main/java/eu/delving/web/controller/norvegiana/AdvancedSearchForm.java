@@ -1,4 +1,27 @@
-package eu.delving.web.controller;
+/*
+ * Copyright 2010 DELVING BV
+ *
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
+ */
+
+package eu.delving.web.controller.norvegiana;
+
+import java.util.Arrays;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -16,13 +39,8 @@ public class AdvancedSearchForm {
     private String value2 = "";
     private String creationFrom = "";
     private String creationTo = "";
-    private String birthFrom = "";
-    private String birthTo = "";
-    private String acquisitionFrom = "";
-    private String acquisitionTo = "";
-    private String purchasePrice = "";
-    private boolean allProvinces = true;
-    private String[] provinceList = null;
+    private boolean allCounties = true;
+    private String[] countyList = null;
     private boolean allCollections = true;
     private String collection = "";
     private String[] collectionList = null;
@@ -109,60 +127,20 @@ public class AdvancedSearchForm {
         this.creationTo = creationTo;
     }
 
-    public String getBirthFrom() {
-        return birthFrom;
+    public boolean isAllCounties() {
+        return allCounties;
     }
 
-    public void setBirthFrom(String birthFrom) {
-        this.birthFrom = birthFrom;
+    public void setAllCounties(boolean allCounties) {
+        this.allCounties = allCounties;
     }
 
-    public String getBirthTo() {
-        return birthTo;
+    public String[] getCountyList() {
+        return countyList;
     }
 
-    public void setBirthTo(String birthTo) {
-        this.birthTo = birthTo;
-    }
-
-    public String getAcquisitionFrom() {
-        return acquisitionFrom;
-    }
-
-    public void setAcquisitionFrom(String acquisitionFrom) {
-        this.acquisitionFrom = acquisitionFrom;
-    }
-
-    public String getAcquisitionTo() {
-        return acquisitionTo;
-    }
-
-    public void setAcquisitionTo(String acquisitionTo) {
-        this.acquisitionTo = acquisitionTo;
-    }
-
-    public String getPurchasePrice() {
-        return purchasePrice;
-    }
-
-    public void setPurchasePrice(String purchasePrice) {
-        this.purchasePrice = purchasePrice;
-    }
-
-    public boolean isAllProvinces() {
-        return allProvinces;
-    }
-
-    public void setAllProvinces(boolean allProvinces) {
-        this.allProvinces = allProvinces;
-    }
-
-    public String[] getProvinceList() {
-        return provinceList;
-    }
-
-    public void setProvinceList(String[] provinceList) {
-        this.provinceList = provinceList;
+    public void setCountyList(String[] countyList) {
+        this.countyList = countyList;
     }
 
     public boolean getAllCollections() {
@@ -217,33 +195,9 @@ public class AdvancedSearchForm {
         if (isValidRangeQuery(creationFrom, creationTo)) {
             builder.append(" ").append(makeRangeQueryString("dc_date", creationFrom, creationTo));
         }
-        if (isValidRangeQuery(acquisitionFrom, acquisitionTo)) {
-            builder.append(" ").append(makeRangeQueryString("icn_acquisitionYear", acquisitionFrom, acquisitionTo));
-        }
-        if (isValidRangeQuery(birthFrom, birthTo)) {
-            builder.append(" ").append(makeRangeQueryString("icn_creatorYearOfBirth", birthFrom, birthTo));
-        }
-        if (isValid(purchasePrice)) {
-            builder.append(" ").append("icn_purchasePrice:");
-            if (purchasePrice.equalsIgnoreCase("100")) {
-                builder.append("[* TO 100]");
-            }
-            else if (purchasePrice.equalsIgnoreCase("1000")) {
-                builder.append("[100 TO 1000]");
-            }
-            else if (purchasePrice.equalsIgnoreCase("10000")) {
-                builder.append("[1000 TO 10000]");
-            }
-            else if (purchasePrice.equalsIgnoreCase("100000")) {
-                builder.append("[10000 TO 100000]");
-            }
-            else if (purchasePrice.equalsIgnoreCase("1000000")) {
-                builder.append("[100000 TO 1000000]");
-            }
-        }
-        if (provinceList != null && !allProvinces) {
-            for (String prov : provinceList) {
-                builder.append("&qf=icn_province:").append(prov);
+        if (countyList != null && !allCounties) {
+            for (String prov : countyList) {
+                builder.append("&qf=abm_county:").append(prov);
             }
         }
         if (collectionList != null && !allCollections) {
@@ -281,10 +235,7 @@ public class AdvancedSearchForm {
     }
 
     private boolean isValidRangeQuery(String from, String to) {
-        if (isValid(from) || isValid(to)) {
-            return true;
-        }
-        return false;
+        return isValid(from) || isValid(to);
     }
 
     private String makeQueryString(String value, String facet, String operator, String nextValue) {
@@ -330,13 +281,8 @@ public class AdvancedSearchForm {
                 ", value2='" + value2 + '\'' +
                 ", creationFrom=" + creationFrom +
                 ", creationTo=" + creationTo +
-                ", birthFrom=" + birthFrom +
-                ", birthTo=" + birthTo +
-                ", acquisitionFrom=" + acquisitionFrom +
-                ", acquisitionTo=" + acquisitionTo +
-                ", purchasePrice=" + purchasePrice +
-                ", allProvinces=" + allProvinces +
-                ", provinceList='" + provinceList + '\'' +
+                ", allCounties=" + allCounties +
+                ", countyList='" + Arrays.toString(countyList) + '\'' +
                 ", allCollections='" + allCollections + '\'' +
                 ", collection='" + collection + '\'' +
                 ", sortBy='" + sortBy + '\'' +

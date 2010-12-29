@@ -1,5 +1,6 @@
 package eu.delving.web.controller;
 
+import eu.delving.web.controller.norvegiana.AdvancedSearchForm;
 import eu.europeana.core.database.domain.StaticPageType;
 import eu.europeana.core.querymodel.query.EuropeanaQueryException;
 import eu.europeana.core.querymodel.query.QueryModelFactory;
