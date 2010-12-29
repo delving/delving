@@ -124,12 +124,12 @@
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>core</artifactId>
-            <version>0.1.6</version>
+            <version>0.1.7</version>
         </dependency>
         <dependency>
             <groupId>eu.delving</groupId>
             <artifactId>sip-core</artifactId>
-            <version>0.1.6</version>
+            <version>0.1.7</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
