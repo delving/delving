@@ -40,6 +40,7 @@ public class AdvancedSearchForm {
     private String creationFrom = "";
     private String creationTo = "";
     private boolean allCounties = true;
+    private boolean onlyDigitalObjects = false;
     private String[] countyList = null;
     private boolean allCollections = true;
     private String collection = "";
@@ -127,6 +128,14 @@ public class AdvancedSearchForm {
         this.creationTo = creationTo;
     }
 
+    public boolean isOnlyDigitalObjects() {
+        return onlyDigitalObjects;
+    }
+
+    public void setOnlyDigitalObjects(boolean onlyDigitalObjects) {
+        this.onlyDigitalObjects = onlyDigitalObjects;
+    }
+
     public boolean isAllCounties() {
         return allCounties;
     }
@@ -204,6 +213,9 @@ public class AdvancedSearchForm {
             for (String coll : collectionList) {
                 builder.append("&qf=COLLECTION:").append(coll);
             }
+        }
+        if (onlyDigitalObjects) {
+//            builder.append("qf=hasDigitalObject:true");// todo: enable later
         }
         if (isValid(collection) && !collection.equalsIgnoreCase("all_collections")) {
             builder.append("&qf=COLLECTION:").append(collection).append("");

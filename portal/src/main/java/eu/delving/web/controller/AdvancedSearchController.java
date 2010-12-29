@@ -46,9 +46,9 @@ public class AdvancedSearchController {
         query.setFacet(true);
         query.setQueryType(QueryType.ADVANCED_QUERY.toString());
         String collectionsName = "europeana_collectionTitle";
-        final String abmCounty = "abm_county";
-        final String abmMunicipality = "abm_municipality";
-        final String europeanaType = "europeana_type";
+        final String abmCounty = "COUNTY";
+        final String abmMunicipality = "MUNICIPALITY";
+        final String europeanaType = "TYPE";
         query.addFacetField(collectionsName, abmCounty, europeanaType, abmMunicipality);
         QueryResponse response = beanQueryModelFactory.getSolrResponse(query);
         List<FacetField> facetFields = response.getFacetFields();
