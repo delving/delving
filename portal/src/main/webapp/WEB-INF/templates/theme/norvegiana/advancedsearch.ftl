@@ -44,12 +44,22 @@
             <tr>
                 <td align="right"><@spring.message '_metadata.abm.data.provider'/>:</td>
                 <td>
-                    <select name="DATAPROVIDER">
-                       <option><@spring.message '_metadata.type.all'/></option>
-                       <#list collections as collection>
-                           <option value="${collection.name}">${collection.name} (${collection.count})</option>
-                       </#list>
+                    <select name="allCollections" id="sel-dataproviders">
+                       <option value="true"><@spring.message '_metadata.type.all'/></option>
+                       <option value="false"><@spring.message '_search.select'/></option>
                    </select>
+                   <div id="provider-list" style="display:none">
+                       <table class="squash">
+                        <#list collections?chunk(4) as row>
+                           <tr>
+                               <#list row as dataprovider>
+                                    <td><input type="checkbox" name="collectionList" value="${dataprovider.name?url('utf-8')}"/>${dataprovider.name} (${dataprovider.count})</td>
+                               </#list>
+
+                            </tr>
+                        </#list>
+                       </table>
+                   </div>
                 </td>
             </tr>
             </#if>
@@ -63,14 +73,14 @@
                 <td>
                     <select name="allCounties" id="sel-counties">
                        <option value="true"><@spring.message '_metadata.type.all'/></option>
-                       <option value="false">Select</option>
+                       <option value="false"><@spring.message '_search.select'/></option>
                      </select>
                         <div id="county-list" style="display: none">
                         <table class="squash"
                         <#list county?chunk(4) as row>
                             <tr>
                                 <#list row as county>
-                                    <td><input type="checkbox" name="countyList" value="${county.name?url('utf-8')}">${county.name} (${county.count})</td>
+                                    <td><input type="checkbox" name="countyList" value="${county.name?url('utf-8')}"/>${county.name} (${county.count})</td>
                                 </#list>
                             </tr>
 
@@ -83,7 +93,7 @@
             </#if>
             <tr>
                 <td align="right">Digital content only:</td>
-                <td><input type="checkbox" value="TRUE" name="onlyDigitalObjects"/> </td>
+                <td><input type="checkbox" value="true" name="onlyDigitalObjects"/> </td>
             </tr>
             <tr>
                 <td align="right"><@spring.message '_metadata.europeana.type'/>:</td>
@@ -118,6 +128,14 @@
             }
             if ($("#sel-counties :selected").val() == "true") {
                 $("#county-list").hide("slow");
+            }
+        });
+        $("#sel-dataproviders").change(function() {
+            if ($("#sel-dataproviders :selected").val() == "false") {
+                $("#provider-list").show("slow");
+            }
+            if ($("#sel-dataproviders :selected").val() == "true") {
+                $("#provider-list").hide("slow");
             }
         });
 
