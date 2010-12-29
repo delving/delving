@@ -185,6 +185,24 @@ class DataSetImpl implements MetaRepo.DataSet {
     }
 
     @Override
+    public void incrementRecordsIndexed(int increment) {
+        implFactory.dataSets().update(
+                new BasicDBObject(
+                        MetaRepo.DataSet.SPEC,
+                        getSpec()
+                ),
+                new BasicDBObject(
+                        "$inc",
+                        new BasicDBObject(
+                                RECORDS_INDEXED,
+                                increment
+                        )
+                )
+        );
+        setRecordsIndexed(getRecordsIndexed() + increment);
+    }
+
+    @Override
     public boolean hasDetails() {
         return object.get(DETAILS) != null;
     }
@@ -286,6 +304,24 @@ class DataSetImpl implements MetaRepo.DataSet {
     public void delete() {
         records().drop();
         implFactory.dataSets().remove(object);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("DataSet(%s)", getSpec());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DataSetImpl dataSet = (DataSetImpl) o;
+        return getSpec().equals(dataSet.getSpec());
+    }
+
+    @Override
+    public int hashCode() {
+        return getSpec().hashCode();
     }
 
     private void addHash(String hashAttribute, List<String> hashes) {

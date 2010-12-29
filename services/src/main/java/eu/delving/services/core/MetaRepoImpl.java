@@ -125,24 +125,6 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public void incrementRecordCount(String spec, int increment) {
-        DBCollection collection = db().getCollection(DATASETS_COLLECTION);
-        collection.update(
-                new BasicDBObject(
-                        DataSet.SPEC,
-                        spec
-                ),
-                new BasicDBObject(
-                        "$inc",
-                        new BasicDBObject(
-                                DataSet.RECORDS_INDEXED,
-                                increment
-                        )
-                )
-        );
-    }
-
-    @Override
     public Set<MetadataFormat> getMetadataFormats() {
         Set<MetadataFormat> set = new TreeSet<MetadataFormat>();
         for (DataSet dataSet : getDataSets()) {

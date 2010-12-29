@@ -5,7 +5,6 @@ import eu.delving.services.core.MetaRepo;
 import eu.delving.services.util.MockContentLoader;
 import eu.delving.sip.DataSetState;
 import eu.europeana.core.database.ConsoleDao;
-import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.util.StarterUtil;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
@@ -78,8 +77,7 @@ public class TestContentLoading {
         MetaRepo.DataSet dataSet = metaRepo.getDataSet("92001_Ag_EU_TELtreasures");
         dataSet.setState(DataSetState.INDEXING);
         dataSet.save();
-        EuropeanaCollection collection = consoleDao.fetchCollection("92001_Ag_EU_TELtreasures", "92001_Ag_EU_TELtreasures.xml", true);
-        harvindexer.commenceImport(collection.getId());
+        harvindexer.commenceImport(dataSet);
         while (!harvindexer.getActiveImports().isEmpty()) {
             Thread.sleep(500);
         }
