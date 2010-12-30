@@ -561,7 +561,7 @@
                 <#if link.linked>
                     <#assign lstart = link.start/>
                         <a
-                                href="?${queryStringForPresentation?html}&amp;start=${link.start?c}&amp;view=${view}"
+                                href="?${queryStringForPresentation?html}&amp;start=${link.start?c}&amp;view=${view}&tab=${tab}"
                                 class="fg-button ui-state-default ${uiClassBorder}"
                         >
                             ${link.display?c}
@@ -582,7 +582,7 @@
                 <#assign uiClassStateNext = "ui-state-disabled">
             </#if>
             <a
-                    href="?${queryStringForPresentation?html}&amp;start=${pagination.previousPage?c}&amp;view=${view}"
+                    href="?${queryStringForPresentation?html}&amp;start=${pagination.previousPage?c}&amp;view=${view}&tab=${tab}"
                     class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}"
                     alt="<@spring.message '_action.alt.previous.page' />"
                     style="margin: 0 8px;"
@@ -590,7 +590,7 @@
                <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message '_action.previous' />
             </a>
             <a
-                    href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}&amp;view=${view}"
+                    href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}&amp;view=${view}&tab=${tab}"
                     class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}"
                     alt="<@spring.message '_action.alt.next.page' />"
                     >
@@ -612,7 +612,7 @@
             <#if link.linked>
                 <#assign lstart = link.start/>
                 <#--<a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${link.start?c}&amp;view=${view}">-->
-                <a href="?${queryStringForPresentation?html}&amp;start=${link.start?c}&amp;view=${view}">
+                <a href="?${queryStringForPresentation?html}&amp;start=${link.start?c}&amp;view=${view}&tab=${tab}">
                 ${link.display?c}
                 </a>
                 <#else>
@@ -624,7 +624,7 @@
     <li>
         <a
             <#--href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}"-->
-            href="?${queryStringForPresentation?html}&amp;start=${pagination.previousPage?c}&amp;view=${view}"
+            href="?${queryStringForPresentation?html}&amp;start=${pagination.previousPage?c}&amp;view=${view}&tab=${tab}"
             alt="<@spring.message '_action.alt.previous.page' />"
         >
         <@spring.message '_action.previous' />
@@ -635,7 +635,7 @@
     <li>
         <a
             <#--href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}&amp;view=${view}"-->
-            href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}&amp;view=${view}"
+            href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}&amp;view=${view}&tab=${tab}"
             alt="<@spring.message '_action.alt.next.page' />"
         >
         <@spring.message '_portal.ui.navigation.next' />
