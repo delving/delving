@@ -232,7 +232,6 @@ public class Harvindexer {
             InputStream inputStream = method.getResponseBodyAsStream();
             String resumptionToken = importXmlInternal(inputStream, indexer);
             while (!resumptionToken.isEmpty()) {
-                log.info(String.format("So far %d records, resumption token %s", indexer.getRecordCount(), resumptionToken));
                 method = new GetMethod(String.format(
                         "%s/oai-pmh?verb=ListRecords&resumptionToken=%s&accessKey=%s",
                         servicesUrl,
