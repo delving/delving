@@ -12,7 +12,11 @@
     <#if RequestParameters.query??>
         <#assign justTheQuery = "${RequestParameters.query}"/>
     </#if>
-
+    <#assign baseQuery = result.getPagination().getPresentationQuery().getTypeQuery()/>
+    <#assign tab='all'/>
+    <#if RequestParameters.tab?exists>
+        <#assign tab = RequestParameters.tab/>
+    </#if>
     <#include "includeMarcos.ftl">
 
 <@addHeader "${portalDisplayName}", "",["results.js"],[]/>
@@ -72,14 +76,13 @@
 
     <div class="clear"></div>
 
-
     <div id="typeTabs" class="ui-tabs">
-        <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix" style="border-bottom: 1px solid #ddd;">
-            <li class="ui-state-default ui-corner-top ui-state-active"><a href="#"><@spring.message '_metadata.type.all'/></a></li>
-            <li class="ui-state-default ui-corner-top"><a href="#"><@spring.message '_metadata.type.images'/></a></li>
-            <li class="ui-state-default ui-corner-top"><a href="#"><@spring.message '_metadata.type.texts'/></a></li>
-            <li class="ui-state-default ui-corner-top"><a href="#"><@spring.message '_metadata.type.videos'/></a></li>
-            <li class="ui-state-default ui-corner-top"><a href="#"><@spring.message '_metadata.type.sounds'/></a></li>
+        <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget" style="border-bottom: 1px solid #ddd;">
+            <li class="ui-state-default ui-corner-top <#if tab = 'all'>ui-state-active</#if>"><a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&tab=all" rel="nofollow"><@spring.message '_metadata.type.all'/></a></li>
+            <li class="ui-state-default ui-corner-top <#if tab = 'images'>ui-state-active</#if>"><a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:IMAGE&tab=images" rel="nofollow"><@spring.message '_metadata.type.images'/></a></li>
+            <li class="ui-state-default ui-corner-top <#if tab = 'texts'>ui-state-active</#if>"><a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:TEXT&tab=texts" rel="nofollow"><@spring.message '_metadata.type.texts'/></a></li>
+            <li class="ui-state-default ui-corner-top <#if tab = 'videos'>ui-state-active</#if>"><a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:TEXT&tab=videos" rel="nofollow"><@spring.message '_metadata.type.videos'/></a></li>
+            <li class="ui-state-default ui-corner-top <#if tab = 'sounds'>ui-state-active</#if>"><a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:TEXT&tab=sounds" rel="nofollow"><@spring.message '_metadata.type.sounds'/></a></li>
         </ul>
     </div>
 
@@ -108,7 +111,15 @@
  </section>
 <#else>
     <section role="main" class="main no-result">
-
+    <div id="typeTabs" class="ui-tabs">
+        <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget" style="border-bottom: 1px solid #ddd;">
+            <li class="ui-state-default ui-corner-top <#if tab = 'all'>ui-state-active</#if>"><a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&tab=all" rel="nofollow"><@spring.message '_metadata.type.all'/></a></li>
+            <li class="ui-state-default ui-corner-top <#if tab = 'images'>ui-state-active</#if>"><a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:IMAGE&tab=images" rel="nofollow"><@spring.message '_metadata.type.images'/></a></li>
+            <li class="ui-state-default ui-corner-top <#if tab = 'texts'>ui-state-active</#if>"><a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:TEXT&tab=texts" rel="nofollow"><@spring.message '_metadata.type.texts'/></a></li>
+            <li class="ui-state-default ui-corner-top <#if tab = 'videos'>ui-state-active</#if>"><a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:TEXT&tab=videos" rel="nofollow"><@spring.message '_metadata.type.videos'/></a></li>
+            <li class="ui-state-default ui-corner-top <#if tab = 'sounds'>ui-state-active</#if>"><a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:TEXT&tab=sounds" rel="nofollow"><@spring.message '_metadata.type.sounds'/></a></li>
+        </ul>
+    </div>
         <h2 class="grid_12" style="color:#fff;margin-top: 4em;text-align:center" >
             <@spring.message '_portal.ui.notification.noitemsfound' /><br/>
             <@spring.message '_portal.ui.notification.tryAnotherSearch'/>
