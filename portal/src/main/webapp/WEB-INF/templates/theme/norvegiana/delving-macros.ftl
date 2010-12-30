@@ -947,11 +947,13 @@
             <@resultFullDataRow "dc_language"/>
             <@resultFullDataRow "dc_source"/>
             <@resultFullDataRow "dc_rights"/>
+            <@resultFullDataRow "europeana_dataProvider"/>
             <@resultFullDataRow "europeana_provider"/>
+            <@resultFullDataRow "europeana_country"/>
             <@resultFullDataRow "dc_identifier"/>
             <@resultFullDataRow "dc_publisher"/>
             <@resultFullDataRow "dc_coverage"/>
-            <@resultFullDataRow "dc_type"/>
+            <@resultFullDataRow "europeana_type"/>
             <@resultFullDataRow "dc_relation"/>
 
 
