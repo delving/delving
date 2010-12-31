@@ -579,6 +579,7 @@
              <field name="TYPE" type="string" indexed="true" stored="true" multiValued="true" />
              <field name="DCTYPE" type="string" indexed="true" stored="true" multiValued="true" />
              <field name="YEAR" type="string" indexed="true" stored="true" multiValued="true" />
+             <field name="HASDIGITALOBJECT" type="boolean" indexed="true" stored="true" multiValued="false" />
              <field name="PROVIDER" type="string" indexed="true" stored="true" multiValued="true" />
              <field name="DATAPROVIDER" type="string" indexed="true" stored="true" multiValued="true" />
              <field name="COLLECTION" type="string" indexed="true" stored="true" multiValued="true" />
@@ -787,6 +788,7 @@
    <copyField source="europeana_country" dest="COUNTRY" />
    <copyField source="europeana_year" dest="YEAR" />
    <copyField source="europeana_provider" dest="PROVIDER" />
+   <copyField source="europeana_hasDigitalObject" dest="HASDIGITALOBJECT" />
    <copyField source="europeana_dataProvider" dest="DATAPROVIDER" />
    <copyField source="europeana_collectionTitle" dest="COLLECTION" />
    <!-- ABM Facets -->

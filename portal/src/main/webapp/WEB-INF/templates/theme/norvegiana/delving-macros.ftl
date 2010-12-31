@@ -410,7 +410,8 @@
                 <#-- with labels -->
                 <#if !cell.creator[0]?matches("")><span><@spring.message '_search.field.creator' />: </span>${cell.creator}<br/></#if>
                 <#if !cell.year?matches("")><#if cell.year != "0000"><span><@spring.message '_search.field.date' />: </span>${cell.year}<br/></#if></#if>
-                <#if !cell.provider?matches("")><@spring.message '_search.field.provider' />: <span class="provider">${cell.provider}</span></#if>
+                <#if !cell.dataProvider?matches("")><@spring.message '_search.field.provider' />: <span class="provider">${cell.dataProvider}</span><br></#if>
+                <#if !cell.type?matches("")><@spring.message '_metadata.dc.type' />: <span class="type">${cell.type}</span></#if>
                 </p>
         </td>
     </tr>
@@ -439,12 +440,12 @@
                             <td align="left" style="padding: 2px;" <#if (columnSize==2)>width="50%"</#if>>
                             <#-- DO NOT ENCODE link.url. This is already done in the java code. Encoding it will break functionality !!!  -->
                                 <#if !link.remove = true>
-                                    <a class="add" href="?query=${query?html}${link.url?html}" title="${link.value}">
+                                    <a class="add" href="?query=${query?html}${link.url?html}${defaultParams}" title="${link.value}">
                                     <#--<input type="checkbox" value="" onclick="document.location.href='?query=${query?html}${link.url}';"/>-->
                                         <@stringLimiter "${link.value}" "25"/><span>(${link.count})</span>
                                     </a>
                                 <#else>
-                                    <a class="remove" href="?query=${query?html}${link.url?html}" title="${link.value}">
+                                    <a class="remove" href="?query=${query?html}${link.url?html}${defaultParams}" title="${link.value}">
                                         <@stringLimiter "${link.value}" "25"/>(<span>${link.count})</span>
                                     </a>
                                 </#if>
@@ -457,81 +458,6 @@
         </div>
     </#if>
 </#macro>
-<#--
- * resultFacets
- *
- * Macro to generate lists of result facets and their links
- -->
-<#macro resultBriefFacets_ld>
-    <#assign facetMap = result.facetMap />
-    <#--${facetMap.getFacet("LANGUAGE")?starts_with("unknown")}-->
-    <#assign columsize = 1 />
-    <#assign facetsList = nextQueryFacets>
-    <#list facetsList as facet>
-        
-        <#switch facet.type>
-            <#case "LANGUAGE">
-                <#if facet.links?size &gt; 0>
-                   <#assign columsize = 2 />
-                   <h4><@spring.message '_facet.by.language' /></h4>
-                </#if>
-                   <#break/>
-            <#case "YEAR">
-                <#if facet.links?size &gt; 0>
-                    <#assign columsize = 2 />
-                    <h4><@spring.message '_facet.by.date' /></h4>
-               </#if>
-               <#break/>
-            <#case "TYPE">
-                <#if facet.links?size &gt; 0>
-                    <#assign columsize = 1 />
-                    <h4><@spring.message '_facet.by.type' /></h4>
-                </#if>
-               <#break/>
-            <#case "PROVIDER">
-                <#if facet.links?size &gt; 0>
-                    <#assign columsize = 1 />
-                    <h4><@spring.message '_facet.by.provider' /></h4>
-               </#if>
-               <#break/>
-            <#case "COUNTRY">
-                <#if facet.links?size &gt; 0>
-                    <#assign columsize = 1 />
-                    <h4><@spring.message '_facet.by.country' /></h4>
-                </#if>
-               <#break/>
-        </#switch>
-
-        <#assign facet_max = 20/>
-
-        <#if facet.links?size &gt; 0>
-        <div id="facetsContainer">
-            <table summary="A list of facets to help refine your search">
-                <#list facet.links?chunk(columsize) as row>
-                    <tr>
-                        <#list row as link>
-                            <td align="left" style="padding: 2px;">
-                            <#-- DO NOT ENCODE link.url. This is already done in the java code. Encoding it will break functionality !!!  -->
-                                <#if !link.remove = true>
-                                    <a class="add" href="?query=${query?html}${link.url?html}" title="${link.value}">
-                                    <#--<input type="checkbox" value="" onclick="document.location.href='?query=${query?html}${link.url}';"/>-->
-                                        <@stringLimiter "${link.value}" "25"/>(${link.count})
-                                    </a>
-                                <#else>
-                                    <a class="remove" href="?query=${query?html}${link.url?html}" title="${link.value}">
-                                        <@stringLimiter "${link.value}" "25"/>(${link.count})
-                                    </a>
-                                </#if>
-                            </td>
-                        </#list>
-                    </tr>
-                </#list>
-            </table>
-        </div>
-        </#if>
-    </#list>
-</#macro>
-
 <#--
  * resultPagination
  *
