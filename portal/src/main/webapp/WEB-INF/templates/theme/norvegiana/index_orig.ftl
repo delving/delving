@@ -32,6 +32,10 @@
 
 <#--</section>-->
 
+<#list randomItems as item>
+    ${item.thumbnail}
+</#list>
+
 <section id="info">
     
 </section>

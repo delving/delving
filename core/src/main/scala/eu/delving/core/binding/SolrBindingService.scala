@@ -60,6 +60,7 @@ object SolrBindingService {
     val ArrayListObject = classOf[ArrayList[Any]]
     val StringObject = classOf[String]
     val DateObject = classOf[Date]
+    val BooleanObject = classOf[JBoolean]
     // check for required fields else check exception
     solrDocumentList.foreach{
         doc =>
@@ -71,7 +72,8 @@ object SolrBindingService {
                 case ArrayListObject => solrDoc.add(field.getKey, addFieldNodes(field.getKey, field.getValue.asInstanceOf[ArrayList[Any]].toList))
                 case StringObject => solrDoc.add(field.getKey, List(FieldValueNode(field.getKey, field.getValue.toString)))
                 case DateObject => solrDoc.add(field.getKey, List(FieldValueNode(field.getKey, field.getValue.toString)))
-                case _ => println("unknown class " + field.getKey)
+                case BooleanObject => solrDoc.add(field.getKey, List(FieldValueNode(field.getKey, field.getValue.toString)))
+                case _ => println("unknown class in SolrBindingService " + field.getKey )
               }
           }
       docs add solrDoc

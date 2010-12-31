@@ -215,7 +215,7 @@ public class AdvancedSearchForm {
             }
         }
         if (onlyDigitalObjects) {
-//            builder.append("qf=europeana_hasDigitalObject:true");// todo: enable later
+            builder.append("&qf=europeana_hasDigitalObject:true");
         }
         if (isValid(collection) && !collection.equalsIgnoreCase("all_collections")) {
             builder.append("&qf=COLLECTION:").append(collection).append("");
