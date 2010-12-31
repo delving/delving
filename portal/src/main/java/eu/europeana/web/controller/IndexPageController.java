@@ -24,6 +24,7 @@ package eu.europeana.web.controller;
 import eu.delving.core.binding.BriefDocItem;
 import eu.delving.core.binding.SolrBindingService;
 import eu.europeana.core.querymodel.query.QueryModelFactory;
+import eu.europeana.core.querymodel.query.SolrQueryUtil;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -35,7 +36,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Where people arrive.
@@ -47,8 +47,6 @@ import java.util.Random;
 @Controller
 public class IndexPageController {
 
-    private final int RANDOM_RANGE = 1000;
-
     @Autowired
     private ClickStreamLogger clickStreamLogger;
 
@@ -59,7 +57,7 @@ public class IndexPageController {
     public ModelAndView indexHandler(HttpServletRequest request) throws Exception {
         final ModelAndView page = ControllerUtil.createModelAndViewPage("index_orig");
         final SolrQuery solrQuery = new SolrQuery("*:*");
-        solrQuery.addSortField("random_" + createRandomNumber(), SolrQuery.ORDER.asc);
+        solrQuery.addSortField("random_" + SolrQueryUtil.createRandomNumber(), SolrQuery.ORDER.asc);
         solrQuery.addFilterQuery("europeana_hasDigitalObject:true");
         solrQuery.setFields("europeana_uri", "europeana_object", "DATAPROVIDER", "TYPE", "title", "creator");
         solrQuery.setRows(10);
@@ -68,10 +66,5 @@ public class IndexPageController {
         page.addObject("randomItems", briefDocs);
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.INDEXPAGE, page);
         return page;
-    }
-
-    private int createRandomNumber() {
-        Random randomGenerator = new Random();
-        return randomGenerator.nextInt(RANDOM_RANGE);
     }
 }
