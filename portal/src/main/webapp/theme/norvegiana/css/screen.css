@@ -144,6 +144,29 @@ section#info p
 	padding:0 1em;
 }
 
+.slideshow {
+    height: 232px;
+    width: 232px;
+    padding: 0;
+    margin: 0;
+    overflow: hidden
+}
+
+.slideshow img {
+    height: 200px;
+    width: 200px;
+    padding: 15px;
+    border: 1px solid #ccccc0;
+    background-color: #eee;
+    top: 0;
+    left: 0
+}
+
+.slideshow img {
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+
 /* USERBAR **********************************/
 #userBar
 {
@@ -946,3 +969,4 @@ td .ui-icon
 {
 	text-decoration:none;
 }
+

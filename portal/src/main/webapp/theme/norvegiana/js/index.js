@@ -1,3 +1,22 @@
+function mycarousel_initCallback(carousel)
+{
+    // Disable autoscrolling if the user clicks the prev or next button.
+    carousel.buttonNext.bind('click', function() {
+        carousel.startAuto(0);
+    });
+
+    carousel.buttonPrev.bind('click', function() {
+        carousel.startAuto(0);
+    });
+
+    // Pause autoscrolling if the user moves with the cursor over the clip.
+    carousel.clip.hover(function() {
+        carousel.stopAuto();
+    }, function() {
+        carousel.startAuto();
+    });
+}
+
 $(document).ready(function() {
     // check if coming from login or logout, if so redirect to last visited page before login or logout
     if(!$.cookie('takeMeBack')){
@@ -9,12 +28,10 @@ $(document).ready(function() {
         // random background images for the header
         var images = ['bg-houses.jpg', 'bg-cows.jpg','bg-statues-close.jpg','bg-lion.jpg'];
         $('div#header.home').css({'background-image': 'url('+baseThemePath+'/images/' + images[Math.floor(Math.random() * images.length)] + ')'});
-        // carousel
-        $('ul#mycarousel').jcarousel({
-            vertical: true,
-            scroll: 2
+        // slidshow
+        $('.slideshow').cycle({
+            fx: 'fade' // choose your transition type, ex: fade, scrollUp, shuffle, etc...
         });
-
     }else{
         // REDIRECT
         var gotoPage = $.cookie('takeMeBack');
