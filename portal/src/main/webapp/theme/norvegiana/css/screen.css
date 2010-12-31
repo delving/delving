@@ -358,13 +358,15 @@ nav.pagination
 {
 	margin:0;
 	width:100%;
+    border-spacing: 0;
 }
 
 #results table.results td
 {
-	background:transparent;
-	padding:0;
+	padding:.5em 0 0 0;
 	vertical-align:top;
+    border-top: 1px solid #ddd;
+    margin-bottom: 1em;
 }
 
 .results .brief-thumb-container,.results .brief-thumb-container-listview,.results #img-full
@@ -384,6 +386,7 @@ nav.pagination
 {
 	min-height:75px;
 	padding:1em .5em;
+
 }
 
 .results ul
@@ -403,7 +406,7 @@ nav.pagination
 
 .results.list td
 {
-	border-bottom:1px dashed #ccc;
+	border-top:1px solid #ccc;
 	padding-top:1em;
 }
 

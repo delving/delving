@@ -289,7 +289,7 @@
  -->
 <#macro resultBriefGrid>
 <#assign seq = briefDocs/>
-<table summary="gallery view all search results" border="0" class="results">
+<table summary="gallery view all search results" border="0" class="results zebra">
     <caption>Results</caption>
     <#list seq?chunk(4) as row>
     <tr>
@@ -366,7 +366,7 @@
  -->
 <#macro resultBriefList>
 <#assign seq = briefDocs/>
-<table cellspacing="1" cellpadding="0" width="100%" border="0" summary="search results" class="results list">
+<table cellspacing="1" cellpadding="0" width="100%" border="0" summary="search results" class="results list zebra">
     <#list seq as cell>
     <tr>
         <td valign="top" width="80">
