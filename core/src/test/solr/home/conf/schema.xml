@@ -656,7 +656,7 @@
              <!--<field name="icn_acquisitionYear" type="text" indexed="true" stored="true" multiValued="true" />-->
              <!--<field name="icn_acquiredWithHelpFrom" type="text" indexed="true" stored="true" multiValued="true" />-->
              <!--<field name="icn_physicalState" type="text" indexed="true" stored="true" multiValued="true" />-->
-             <field name="icn_collectionType" type="string" indexed="true" stored="true" multiValued="true" />
+             <!--<field name="icn_collectionType" type="string" indexed="true" stored="true" multiValued="true" />-->
 
    <!-- Dynamic field definitions.  If a field name is not found, dynamicFields
         will be used if the name matches any of the patterns.
@@ -740,47 +740,47 @@
     <!-- TODO: remove most copyfields. To be replace with better indexer based on record definition -->
 
    <!-- Text copy-to-field -->
-   <!--<copyField source="dcterms_alternative" dest="text" />-->
-   <!--<copyField source="dcterms_conformsTo" dest="text" />-->
-   <!--<copyField source="dc_contributor" dest="text" />-->
-   <!--<copyField source="dc_coverage" dest="text" />-->
-   <!--<copyField source="dcterms_created" dest="text" />-->
-   <!--<copyField source="dc_creator" dest="text" />-->
-   <!--<copyField source="dc_date" dest="text" />-->
-   <!--<copyField source="dc_description" dest="text" />-->
-   <!--<copyField source="dcterms_extent" dest="text" />-->
-   <!--<copyField source="dcterms_hasFormat" dest="text" />-->
-   <!--<copyField source="dc_format" dest="text" />-->
-   <!--<copyField source="dcterms_hasPart" dest="text" />-->
-   <!--<copyField source="dc_identifier" dest="text" />-->
-   <!--<copyField source="dcterms_hasVersion" dest="text" />-->
-   <!--<copyField source="dcterms_isPartOf" dest="text" />-->
-   <!--<copyField source="dcterms_isReferencedBy" dest="text" />-->
-   <!--<copyField source="dcterms_isReplacedBy" dest="text" />-->
-   <!--<copyField source="dcterms_isRequiredBy" dest="text" />-->
-   <!--<copyField source="europeana_isShownBy" dest="text" />-->
-   <!--<copyField source="europeana_isShownAt" dest="text" />-->
-   <!--<copyField source="dcterms_issued" dest="text" />-->
-   <!--<copyField source="dcterms_isVersionOf" dest="text" />-->
-   <!--<copyField source="dc_language" dest="text" />-->
-   <!--<copyField source="dcterms_medium" dest="text" />-->
-   <!--<copyField source="dcterms_provenance" dest="text" />-->
-   <!--<copyField source="dc_publisher" dest="text" />-->
-   <!--<copyField source="dc_relation" dest="text" />-->
-   <!--<copyField source="dcterms_replaces" dest="text" />-->
-   <!--<copyField source="dcterms_requires" dest="text" />-->
-   <!--<copyField source="dc_rights" dest="text" />-->
-   <!--<copyField source="dc_source" dest="text" />-->
-   <!--<copyField source="dcterms_spatial" dest="text" />-->
-   <!--<copyField source="dc_subject" dest="text" />-->
-   <!--<copyField source="dcterms_tableOfContents" dest="text" />-->
-   <!--<copyField source="dcterms_temporal" dest="text" />-->
-   <!--<copyField source="dc_title" dest="text" />-->
-   <!--<copyField source="dc_type" dest="text" />-->
-   <!--<copyField source="europeana_type" dest="text" />-->
-   <!--<copyField source="europeana_userTag" dest="text" />-->
-   <!--<copyField source="dcterms_references" dest="text" />-->
-   <!--copyField source="europeana_editorsPick" dest="text" /-->
+   <copyField source="dcterms_alternative" dest="text" />
+   <copyField source="dcterms_conformsTo" dest="text" />
+   <copyField source="dc_contributor" dest="text" />
+   <copyField source="dc_coverage" dest="text" />
+   <copyField source="dcterms_created" dest="text" />
+   <copyField source="dc_creator" dest="text" />
+   <copyField source="dc_date" dest="text" />
+   <copyField source="dc_description" dest="text" />
+   <copyField source="dcterms_extent" dest="text" />
+   <copyField source="dcterms_hasFormat" dest="text" />
+   <copyField source="dc_format" dest="text" />
+   <copyField source="dcterms_hasPart" dest="text" />
+   <copyField source="dc_identifier" dest="text" />
+   <copyField source="dcterms_hasVersion" dest="text" />
+   <copyField source="dcterms_isPartOf" dest="text" />
+   <copyField source="dcterms_isReferencedBy" dest="text" />
+   <copyField source="dcterms_isReplacedBy" dest="text" />
+   <copyField source="dcterms_isRequiredBy" dest="text" />
+   <copyField source="europeana_isShownBy" dest="text" />
+   <copyField source="europeana_isShownAt" dest="text" />
+   <copyField source="dcterms_issued" dest="text" />
+   <copyField source="dcterms_isVersionOf" dest="text" />
+   <copyField source="dc_language" dest="text" />
+   <copyField source="dc_language" dest="text" />
+   <copyField source="dcterms_medium" dest="text" />
+   <copyField source="dcterms_provenance" dest="text" />
+   <copyField source="dc_publisher" dest="text" />
+   <copyField source="dc_relation" dest="text" />
+   <copyField source="dcterms_replaces" dest="text" />
+   <copyField source="dcterms_requires" dest="text" />
+   <copyField source="dc_rights" dest="text" />
+   <copyField source="dc_source" dest="text" />
+   <copyField source="dcterms_spatial" dest="text" />
+   <copyField source="dc_subject" dest="text" />
+   <copyField source="dcterms_tableOfContents" dest="text" />
+   <copyField source="dcterms_temporal" dest="text" />
+   <copyField source="dc_title" dest="text" />
+   <copyField source="dc_type" dest="text" />
+   <copyField source="europeana_type" dest="text" />
+   <copyField source="europeana_userTag" dest="text" />
+   <copyField source="dcterms_references" dest="text" />
 
    <!-- todo : remove this-->
    <!--<copyField source="dc_coverage" dest="what" />-->

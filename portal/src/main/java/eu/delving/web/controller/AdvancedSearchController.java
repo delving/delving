@@ -5,6 +5,7 @@ import eu.europeana.core.database.domain.StaticPageType;
 import eu.europeana.core.querymodel.query.EuropeanaQueryException;
 import eu.europeana.core.querymodel.query.QueryModelFactory;
 import eu.europeana.core.querymodel.query.QueryType;
+import eu.europeana.core.querymodel.query.SolrQueryUtil;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.log4j.Logger;
@@ -66,6 +67,7 @@ public class AdvancedSearchController {
                 mav.addObject("municipality", facetField.getValues());
             }
         }
+        mav.addObject("ramdomSortKey", SolrQueryUtil.createRandomSortKey());
         clickStreamLogger.logStaticPageView(request, StaticPageType.ADVANCED_SEARCH);
         return mav;
     }

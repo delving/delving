@@ -9,6 +9,12 @@ $(document).ready(function() {
         // random background images for the header
         var images = ['bg-houses.jpg', 'bg-cows.jpg','bg-statues-close.jpg','bg-lion.jpg'];
         $('div#header.home').css({'background-image': 'url('+baseThemePath+'/images/' + images[Math.floor(Math.random() * images.length)] + ')'});
+        // carousel
+        $('ul#mycarousel').jcarousel({
+            vertical: true,
+            scroll: 2
+        });
+
     }else{
         // REDIRECT
         var gotoPage = $.cookie('takeMeBack');

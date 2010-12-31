@@ -57,7 +57,7 @@ public class IndexPageController {
     public ModelAndView indexHandler(HttpServletRequest request) throws Exception {
         final ModelAndView page = ControllerUtil.createModelAndViewPage("index_orig");
         final SolrQuery solrQuery = new SolrQuery("*:*");
-        solrQuery.addSortField("random_" + SolrQueryUtil.createRandomNumber(), SolrQuery.ORDER.asc);
+        solrQuery.addSortField(SolrQueryUtil.createRandomSortKey(), SolrQuery.ORDER.asc);
         solrQuery.addFilterQuery("europeana_hasDigitalObject:true");
         solrQuery.setFields("europeana_uri", "europeana_object", "DATAPROVIDER", "TYPE", "title", "creator");
         solrQuery.setRows(10);

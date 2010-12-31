@@ -153,9 +153,6 @@ public class SolrQueryUtil {
             else if (sortField.equalsIgnoreCase("creator")) {
                 sortField = "creator_sort";
             }
-            else if (sortField.equalsIgnoreCase("random")) {
-                sortField = "random_" + createRandomNumber();
-            }
             if (params.containsKey("sortOrder") && !params.get("sortOrder")[0].isEmpty()) {
                 String sortOrder = params.get("sortOrder")[0];
                 if (sortOrder.equalsIgnoreCase("desc")) {
@@ -188,5 +185,9 @@ public class SolrQueryUtil {
     public static int createRandomNumber() {
         Random randomGenerator = new Random();
         return randomGenerator.nextInt(RANDOM_RANGE);
+    }
+
+    public static String createRandomSortKey() {
+        return "random_" + createRandomNumber();
     }
 }

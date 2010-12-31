@@ -258,7 +258,6 @@
 </#if>
 </div>
 </#macro>
-
 <#--
  * getFacetCount
  *
@@ -297,8 +296,8 @@
         <#list row as cell>
         <td valign="bottom" class="${cell.type}">
             <div class="brief-thumb-container">
-                <#--<a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">-->
-                <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">
+                <#--<a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}${defaultParams}&amp;pageId=brd">-->
+                <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}${defaultParams}&amp;pageId=brd">
                     <#if useCache="true">
                          <img
                                  class="thumb"
@@ -325,8 +324,8 @@
             </div>
             <div class="brief-content-container">
             <h6>
-                <#--<a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">-->
-                <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
+                <#--<a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}${defaultParams}&amp;pageId=brd">-->
+                <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}${defaultParams}&amp;pageId=brd">
                     <@stringLimiter "${cell.title}" "40"/>
                 </a>
             </h6>
@@ -372,8 +371,8 @@
     <tr>
         <td valign="top" width="80">
             <div class="brief-thumb-container-listview">
-                <#--<a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">-->
-                <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">
+                <#--<a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}${defaultParams}&amp;pageId=brd">-->
+                <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}${defaultParams}&amp;pageId=brd">
                     <#if useCache="true">
                         <img class="thumb"
                              id="thumb_${cell.index()}"
@@ -397,8 +396,8 @@
         </td>
         <td class="${cell.type} ">
                 <h6>
-                    <#--<a class="fg-gray" href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">-->
-                    <a class="fg-gray" href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">
+                    <#--<a class="fg-gray" href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}${defaultParams}&amp;pageId=brd">-->
+                    <a class="fg-gray" href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}${defaultParams}&amp;pageId=brd">
                         <@stringLimiter "${cell.title}" "100"/></a>
                 </h6>
                 <p>
@@ -543,8 +542,8 @@
     <#list pagination.pageLinks as link>
         <#if link.linked>
             <#assign lstart = link.start/>
-                <#--<a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${link.start?c}&amp;view=${view}">-->
-                <a href="?${queryStringForPresentation?html}&amp;start=${link.start?c}&amp;view=${view}">
+                <#--<a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${link.start?c}${defaultParams}">-->
+                <a href="?${queryStringForPresentation?html}&amp;start=${link.start?c}${defaultParams}}">
                     ${link.display?c}
                 </a>
          <#else>
@@ -554,14 +553,14 @@
         </#if>
     </#list>
     <#if pagination.previous>
-        <#--<a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}" alt="<@spring.message '_action.alt.previous.page' />">-->
-        <a href="?${queryStringForPresentation?html}}&amp;start=${pagination.previousPage?c}&amp;view=${view}" alt="<@spring.message '_action.alt.previous.page' />">
+        <#--<a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}${defaultParams}" alt="<@spring.message '_action.alt.previous.page' />">-->
+        <a href="?${queryStringForPresentation?html}}&amp;start=${pagination.previousPage?c}${defaultParams}" alt="<@spring.message '_action.alt.previous.page' />">
        <@spring.message '_action.previous' />
     </a>
     </#if>
     <#if pagination.next>
-        <#--<a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}&amp;view=${view}" alt="<@spring.message '_action.alt.next.page' />">-->
-        <a href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}&amp;view=${view}" alt="<@spring.message '_action.alt.next.page' />">
+        <#--<a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}${defaultParams}" alt="<@spring.message '_action.alt.next.page' />">-->
+        <a href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}${defaultParams}" alt="<@spring.message '_action.alt.next.page' />">
             <@spring.message '_portal.ui.navigation.next' />
         </a>
     </#if>
@@ -584,7 +583,7 @@
                 <#if link.linked>
                     <#assign lstart = link.start/>
                         <a
-                                href="?${queryStringForPresentation?html}&amp;start=${link.start?c}&amp;view=${view}&tab=${tab}"
+                                href="?${queryStringForPresentation?html}&amp;start=${link.start?c}${defaultParams}"
                                 class="fg-button ui-state-default ${uiClassBorder}"
                         >
                             ${link.display?c}
@@ -605,7 +604,7 @@
                 <#assign uiClassStateNext = "ui-state-disabled">
             </#if>
             <a
-                    href="?${queryStringForPresentation?html}&amp;start=${pagination.previousPage?c}&amp;view=${view}&tab=${tab}"
+                    href="?${queryStringForPresentation?html}&amp;start=${pagination.previousPage?c}${defaultParams}"
                     class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}"
                     alt="<@spring.message '_action.alt.previous.page' />"
                     style="margin: 0 8px;"
@@ -613,7 +612,7 @@
                <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message '_action.previous' />
             </a>
             <a
-                    href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}&amp;view=${view}&tab=${tab}"
+                    href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}${defaultParams}"
                     class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}"
                     alt="<@spring.message '_action.alt.next.page' />"
                     >
@@ -634,8 +633,8 @@
         <li>
             <#if link.linked>
                 <#assign lstart = link.start/>
-                <#--<a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${link.start?c}&amp;view=${view}">-->
-                <a href="?${queryStringForPresentation?html}&amp;start=${link.start?c}&amp;view=${view}&tab=${tab}">
+                <#--<a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${link.start?c}${defaultParams}">-->
+                <a href="?${queryStringForPresentation?html}&amp;start=${link.start?c}${defaultParams}">
                 ${link.display?c}
                 </a>
                 <#else>
@@ -646,8 +645,8 @@
     <#if pagination.previous>
     <li>
         <a
-            <#--href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}"-->
-            href="?${queryStringForPresentation?html}&amp;start=${pagination.previousPage?c}&amp;view=${view}&tab=${tab}"
+            <#--href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}${defaultParams}"-->
+            href="?${queryStringForPresentation?html}&amp;start=${pagination.previousPage?c}${defaultParams}"
             alt="<@spring.message '_action.alt.previous.page' />"
         >
         <@spring.message '_action.previous' />
@@ -657,8 +656,8 @@
     <#if pagination.next>
     <li>
         <a
-            <#--href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}&amp;view=${view}"-->
-            href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}&amp;view=${view}&tab=${tab}"
+            <#--href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}${defaultParams}"-->
+            href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}${defaultParams}"
             alt="<@spring.message '_action.alt.next.page' />"
         >
         <@spring.message '_portal.ui.navigation.next' />
@@ -1108,7 +1107,8 @@
     <option value="title" ><@spring.message '_metadata.dc.title' /></option>
     <option value="creator"><@spring.message '_metadata.dc.creator' /></option>
     <option value="YEAR"><@spring.message '_metadata.dc.date' /></option>
-    <#--<option value="COLLECTION"><@spring.message '_search.field.collection' /></option>-->
+    <option value="${ramdomSortKey}">Random</option>
+<#--<option value="COLLECTION"><@spring.message '_search.field.collection' /></option>-->
 </select>
 <form action="" method="GET" id="form-sort" style="display:none;">
     <input type="hidden" name="query" value="${justTheQuery}"/>

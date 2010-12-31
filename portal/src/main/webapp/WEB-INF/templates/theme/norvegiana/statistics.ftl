@@ -19,10 +19,11 @@
 </style>
 
 <section role="main" class="grid_12 main">
+
     <h1><@spring.message '_portal.ui.statistics' /></h1>
-    <div class="grid_4 alpha statistic"><@showStatisticsTable "PROVIDER"/></div>
-    <div class="grid_8 omega graph"><@showStatisticsGraph "PROVIDER","pie"/></div>
-    <div class="clear"></div>
+    <#--<div class="grid_4 alpha statistic"><@showStatisticsTable "PROVIDER"/></div>-->
+    <#--<div class="grid_8 omega graph"><@showStatisticsGraph "PROVIDER","pie"/></div>-->
+    <#--<div class="clear"></div>-->
 
     <div class="grid_4 alpha statistic"><@showStatisticsTable "DATAPROVIDER"/></div>
     <div class="grid_8 omega graph"><@showStatisticsGraph "DATAPROVIDER","pie"/></div>
@@ -179,9 +180,17 @@
 
             // Instantiate and draw our chart, passing in some options.
             var chart = new google.visualization.PieChart(document.getElementById('chart-div'));
-            chart.draw(data, {width: 500, height: 400, is3D: false});
+            var assignedOptions = {};
+                assignedOptions.is3D=false;
+                assignedOptions.width = 500;
+                assignedOptions.height = 400;
+                assignedOptions.top = 0;
+                assignedOptions.title="<@spring.message '_metadata.abm.municipality'/>";
+
+            chart.draw(data, assignedOptions);
           }
         }
+
         </script>
 
 

@@ -97,12 +97,14 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
         out.append(getKey("tab", params));
         out.append(getKey("sortBy", params));
         out.append(getKey("sortOrder", params));
+        out.append(getKey("siwa", params));
+        out.append(getKey("debug", params));
         return out.toString();
     }
 
     private String getKey(String key, Map<String, String[]> params) {
         if (params.containsKey(key) && !params.get(key)[0].isEmpty()) {
-            return MessageFormat.format("&%s=%s", key, params.get(key)[0]);
+            return MessageFormat.format("&{0}={1}", key, params.get(key)[0]);
         }
         return "";
     }
