@@ -39,13 +39,16 @@ public class AdvancedSearchForm {
     private String value2 = "";
     private String creationFrom = "";
     private String creationTo = "";
-    private boolean allCounties = true;
     private boolean onlyDigitalObjects = false;
+    private boolean allCounties = true;
     private String[] countyList = null;
     private boolean allCollections = true;
     private String collection = "";
     private String[] collectionList = null;
-
+    private boolean allProviders = true;
+    private String[] providersList = null;
+    private boolean allTypes = false;
+    private String[] typeList = null;
     private String sortBy = "";
 
     public String getFacet0() {
@@ -152,6 +155,10 @@ public class AdvancedSearchForm {
         this.countyList = countyList;
     }
 
+    public void setAllCollections(boolean allCollections) {
+        this.allCollections = allCollections;
+    }
+
     public boolean getAllCollections() {
         return allCollections;
     }
@@ -171,6 +178,38 @@ public class AdvancedSearchForm {
 
     public void setCollectionList(String[] collectionList) {
         this.collectionList = collectionList;
+    }
+
+    public boolean isAllProviders() {
+        return allProviders;
+    }
+
+    public void setAllProviders(boolean allProviders) {
+        this.allProviders = allProviders;
+    }
+
+    public String[] getProvidersList() {
+        return providersList;
+    }
+
+    public void setProvidersList(String[] providersList) {
+        this.providersList = providersList;
+    }
+
+    public boolean isAllTypes() {
+        return allTypes;
+    }
+
+    public void setAllTypes(boolean allTypes) {
+        this.allTypes = allTypes;
+    }
+
+    public String[] getTypeList() {
+        return typeList;
+    }
+
+    public void setTypeList(String[] typeList) {
+        this.typeList = typeList;
     }
 
     public String getSortBy() {
@@ -212,6 +251,16 @@ public class AdvancedSearchForm {
         if (collectionList != null && !allCollections) {
             for (String coll : collectionList) {
                 builder.append("&qf=COLLECTION:").append(coll);
+            }
+        }
+         if (providersList != null && !allProviders) {
+            for (String dp : providersList) {
+                builder.append("&qf=DATAPROVIDER:").append(dp);
+            }
+        }
+        if (typeList != null) {
+            for (String type : typeList) {
+                builder.append("&qf=TYPE:").append(type);
             }
         }
         if (onlyDigitalObjects) {

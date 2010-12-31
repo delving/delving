@@ -48,6 +48,7 @@ public class AdvancedSearchController {
         query.setQueryType(QueryType.ADVANCED_QUERY.toString());
         String collectionsName = "europeana_collectionTitle";
         final String abmCounty = "COUNTY";
+        final String dataProvider = "DATAPROVIDER";
         final String abmMunicipality = "MUNICIPALITY";
         final String europeanaType = "TYPE";
         query.addFacetField(collectionsName, abmCounty, europeanaType, abmMunicipality);
@@ -59,6 +60,9 @@ public class AdvancedSearchController {
             }
             else if (facetField.getName().equalsIgnoreCase(abmCounty)) {
                 mav.addObject("county", facetField.getValues());
+            }
+            else if (facetField.getName().equalsIgnoreCase(dataProvider)) {
+                mav.addObject("dataProvider", facetField.getValues());
             }
             else if (facetField.getName().equalsIgnoreCase(europeanaType)) {
                 mav.addObject("type", facetField.getValues());
