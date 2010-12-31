@@ -933,6 +933,12 @@ table.zebra tbody tr:nth-child(even) td
 	background-color:transparent;
 }
 
+/* SQUASH TABLE */
+
+table.squash {margin: 0;}
+table.squash tbody td {padding:.5em 0 0 0; font-size: .85em}
+
+
 #editor-controls
 {
 	border-bottom:1px solid #ccc;
