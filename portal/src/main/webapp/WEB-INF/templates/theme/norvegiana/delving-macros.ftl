@@ -260,6 +260,29 @@
 </#macro>
 
 <#--
+ * getFacetCount
+ *
+ * generates a table with 4x4 rows of brief result data
+ * @param facetName : the name of the facet
+ * @param typeName : specific type attribute (e.g. for facetName TYPE, typeName(s) could be IMAGE, TEXT, VIDEO, AUDIO
+ -->
+<#macro getFacetCount facetName typeName>
+    <#assign facetMap = result.getFacetMap()>
+    <#assign facet = facetMap.getFacet(facetName)>
+    <#--<#if !facet.type?starts_with("unknown")>-->
+    <#if facet.links?size &gt; 0>
+        <#list facet.links as link>
+            <#if link.value == typeName>
+                ${link.count}
+            </#if>
+        </#list>
+    <#else>
+        ${0}
+    </#if>
+    <#--</#if>-->
+</#macro>
+
+<#--
  * resultGrid
  *
  * generates a table with 4x4 rows of brief result data
