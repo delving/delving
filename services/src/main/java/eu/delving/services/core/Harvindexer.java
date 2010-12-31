@@ -336,12 +336,11 @@ public class Harvindexer {
                                 throw new HarvindexingException("Normalized Record must have a field designated as europeana uri", recordCount);
                             }
                             Collection<Object> objectUrls = solrInputDocument.getFieldValues("europeana_object");
-                            if (objectUrls != null) {
-                                for (Object object : objectUrls) {
-                                    String url = (String) object;
-                                }
+                            if (objectUrls != null && !objectUrls.isEmpty()) {
+                                solrInputDocument.addField("europeana_hasDigitalObject", true);
                             }
-                            else if ("true".equals(solrInputDocument.getFieldValue("europeana_hasObject"))) {
+                            else {
+                                solrInputDocument.addField("europeana_hasDigitalObject", false);
                                 log.warn("No object urls for " + europeanaId.getEuropeanaUri());
                             }
                             if (!solrInputDocument.containsKey("europeana_collectionName")) {

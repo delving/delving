@@ -564,7 +564,7 @@
              <!--<field name="europeana_source" type="text" indexed="true" stored="true" multiValued="true" />-->
              <!--<field name="europeana_provider" type="text" indexed="true" stored="true" multiValued="true" />-->
              <!--<field name="europeana_dataProvider" type="text" indexed="true" stored="true" multiValued="false" />-->
-             <!--<field name="europeana_hasObject" type="boolean" indexed="true" stored="true" multiValued="false" />-->
+             <field name="europeana_hasDigitalObject" type="boolean" indexed="true" stored="true" multiValued="false" />
              <field name="europeana_isShownAt" type="string" indexed="true" stored="true" multiValued="true"/>
              <field name="europeana_isShownBy" type="string" indexed="true" stored="true" multiValued="true"/>
              <field name="europeana_language" type="string" indexed="true" stored="true" multiValued="true"/>
