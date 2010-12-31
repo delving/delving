@@ -1,6 +1,7 @@
-package eu.delving.web.controller;
+package eu.delving.core.storage;
 
 import com.mongodb.Mongo;
+import eu.delving.core.storage.impl.StaticRepoImpl;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Assert;
@@ -32,7 +33,7 @@ public class TestStaticRepo {
     private Mongo mongo;
 
     @Autowired
-    private StaticRepo repo;
+    private StaticRepoImpl repo;
 
     @Before
     public void before() {

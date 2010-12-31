@@ -21,7 +21,7 @@
 
 package eu.europeana.core.util.web;
 
-import eu.delving.core.storage.UserRepo;
+import eu.delving.core.storage.User;
 import eu.delving.domain.Language;
 import eu.europeana.core.querymodel.query.BriefBeanView;
 import eu.europeana.core.querymodel.query.DocIdWindowPager;
@@ -161,7 +161,7 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
     private String printLogAffix(HttpServletRequest request) {
         String ip = request.getRemoteAddr();
         String reqUrl = getRequestUrl(request);
-        final UserRepo.Person user = ControllerUtil.getPerson();
+        final User user = ControllerUtil.getUser();
         String userId;
         if (user != null) {
             userId = user.getEmail(); // todo: is this desirable?  was id.toString()

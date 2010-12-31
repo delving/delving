@@ -1,7 +1,7 @@
 /*
- * Copyright 2007 EDL FOUNDATION
+ * Copyright 2010 DELVING BV
  *
- *  Licensed under the EUPL, Version 1.0 or as soon they
+ *  Licensed under the EUPL, Version 1.0 or? as soon they
  *  will be approved by the European Commission - subsequent
  *  versions of the EUPL (the "Licence");
  *  you may not use this work except in compliance with the
@@ -21,6 +21,7 @@
 
 package eu.europeana.web.controller;
 
+import eu.delving.core.storage.User;
 import eu.delving.core.storage.UserRepo;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
@@ -65,10 +66,10 @@ public class UserAjaxController {
 
     @RequestMapping("/list-users.ajax")
     public ModelAndView listUsers() throws Exception {
-        UserRepo.Person person = ControllerUtil.getPerson();
-        if (person != null && (person.getRole() == UserRepo.Role.ROLE_ADMINISTRATOR || person.getRole() == UserRepo.Role.ROLE_GOD)) {
+        User user = ControllerUtil.getUser();
+        if (user != null && (user.getRole() == User.Role.ROLE_ADMINISTRATOR || user.getRole() == User.Role.ROLE_GOD)) {
             ModelAndView page = complete(true);
-            page.addObject("users", userRepo.getPeople());
+            page.addObject("users", userRepo.getUsers());
             return page;
         }
         else {
@@ -81,11 +82,11 @@ public class UserAjaxController {
             HttpServletRequest request,
             @RequestParam String email
     ) throws Exception {
-        UserRepo.Person person = userRepo.byEmail(email);
-        if (person != null) {
-            person.delete();
+        User user = userRepo.byEmail(email);
+        if (user != null) {
+            user.delete();
         }
-        return complete(person != null);
+        return complete(user != null);
     }
 
     @RequestMapping("/remove-saved-item.ajax")
@@ -93,7 +94,7 @@ public class UserAjaxController {
             HttpServletRequest request,
             @RequestParam Long id
     ) throws Exception {
-        ControllerUtil.getPerson().getItems();
+        ControllerUtil.getUser().getItems();
         // todo: find the item and remove it
         clickStreamLogger.logUserAction(request, UserAction.REMOVE_SAVED_ITEM);
         return complete(true);
@@ -105,7 +106,7 @@ public class UserAjaxController {
             HttpServletRequest request,
             @RequestParam Long id
     ) throws Exception {
-        ControllerUtil.getPerson().getSearches();
+        ControllerUtil.getUser().getSearches();
         // todo: find the search and remove it.
         clickStreamLogger.logUserAction(request, UserAction.REMOVE_SAVED_SEARCH);
         return complete(true);
@@ -122,9 +123,9 @@ public class UserAjaxController {
     ) throws Exception {
 //        savedItem.setDocType(DocType.valueOf(docType));
 //        savedItem.setEuropeanaObject(europeanaObject);
-        UserRepo.Person person = ControllerUtil.getPerson();
-        person.addItem(author, title, ControllerUtil.getLocale(request));
-        person.save();
+        User user = ControllerUtil.getUser();
+        user.addItem(author, title, ControllerUtil.getLocale(request));
+        user.save();
         clickStreamLogger.logUserAction(request, UserAction.SAVE_ITEM);
         return complete(true);
     }
@@ -135,9 +136,9 @@ public class UserAjaxController {
             @RequestParam String query,
             @RequestParam String queryString
     ) throws Exception {
-        UserRepo.Person person = ControllerUtil.getPerson();
-        person.addSearch(query, URLDecoder.decode(queryString, "utf-8"), ControllerUtil.getLocale(request));
-        person.save();
+        User user = ControllerUtil.getUser();
+        user.addSearch(query, URLDecoder.decode(queryString, "utf-8"), ControllerUtil.getLocale(request));
+        user.save();
         clickStreamLogger.logUserAction(request, UserAction.SAVE_SEARCH);
         return complete(true);
     }

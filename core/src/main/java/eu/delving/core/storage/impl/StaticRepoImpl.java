@@ -1,4 +1,25 @@
-package eu.delving.web.controller;
+/*
+ * Copyright 2010 DELVING BV
+ *
+ *  Licensed under the EUPL, Version 1.0 or? as soon they
+ *  will be approved by the European Commission - subsequent
+ *  versions of the EUPL (the "Licence");
+ *  you may not use this work except in compliance with the
+ *  Licence.
+ *  You may obtain a copy of the Licence at:
+ *
+ *  http://ec.europa.eu/idabc/eupl
+ *
+ *  Unless required by applicable law or agreed to in
+ *  writing, software distributed under the Licence is
+ *  distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *  express or implied.
+ *  See the Licence for the specific language governing
+ *  permissions and limitations under the Licence.
+ */
+
+package eu.delving.core.storage.impl;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -6,6 +27,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
+import eu.delving.core.storage.StaticRepo;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,14 +45,7 @@ import java.util.TreeSet;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class StaticRepo {
-    static final String PAGES_COLLECTION = "pages";
-    static final String IMAGES_COLLECTION = "images";
-    static final String PATH = "path";
-    static final String CONTENT = "content";
-    static final String HIDDEN = "hidden";
-    static final String DEFAULT_LANGUAGE = "en";
-    static final String MONGO_ID = "_id";
+public class StaticRepoImpl implements StaticRepo {
 
     @Autowired
     private Mongo mongo;
@@ -61,7 +76,7 @@ public class StaticRepo {
         else {
             BasicDBObject object = new BasicDBObject(PATH, path);
             object.put(CONTENT, String.format("<a href=\"/%s/%s\">%s</a>", portalName, path, path));
-            return new Page(object);
+            return new PageImpl(object);
         }
     }
 
@@ -73,7 +88,7 @@ public class StaticRepo {
         else {
             BasicDBObject object = new BasicDBObject(PATH, path);
             object.put(CONTENT, String.format("<a href=\"%s\">%s</a>", path, path));
-            return new Page(object);
+            return new PageImpl(object);
         }
     }
 
@@ -128,7 +143,7 @@ public class StaticRepo {
         }
         else {
             BasicDBObject object = new BasicDBObject(PATH, path);
-            page = new Page(object);
+            page = new PageImpl(object);
             page.setContent(content, locale);
         }
         return page.getId();
@@ -171,10 +186,10 @@ public class StaticRepo {
         }
     }
 
-    public class Page {
+    public class PageImpl implements Page {
         private DBObject object;
 
-        public Page(DBObject object) {
+        public PageImpl(DBObject object) {
             this.object = object;
         }
 
@@ -258,7 +273,7 @@ public class StaticRepo {
     private Page getPageVersion(ObjectId id) {
         DBObject object = pages().findOne(new BasicDBObject("_id", id));
         if (object != null) {
-            return new Page(object);
+            return new PageImpl(object);
         }
         else {
             return null;
@@ -268,7 +283,7 @@ public class StaticRepo {
     private Page getLatestPage(String path) {
         DBCursor cursor = pages().find(new BasicDBObject(PATH, path)).sort(new BasicDBObject("_id", -1)).limit(1);
         if (cursor.hasNext()) {
-            return new Page(cursor.next());
+            return new PageImpl(cursor.next());
         }
         else {
             return null;
@@ -279,7 +294,7 @@ public class StaticRepo {
         DBCursor cursor = pages().find(new BasicDBObject(PATH, path)).sort(new BasicDBObject("_id", -1));
         List<Page> list = new ArrayList<Page>();
         while (cursor.hasNext()) {
-            list.add(new Page(cursor.next()));
+            list.add(new PageImpl(cursor.next()));
         }
         return list;
     }

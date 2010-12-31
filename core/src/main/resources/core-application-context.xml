@@ -100,45 +100,9 @@
         <property name="properties" ref="launchProperties"/>
     </bean>
 
-    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-        <property name="driverClass" value="#{launchProperties['db.driverClass']}"/>
-        <property name="jdbcUrl" value="#{launchProperties['db.jdbcUrl']}"/>
-        <property name="user" value="#{launchProperties['db.user']}"/>
-        <property name="password" value="#{launchProperties['db.password']}"/>
-    </bean>
-
-    <!--todo: these declarations are related to using annotation-based validation-->
-    <!--<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>-->
-    <!--<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">-->
-    <!--<property name="webBindingInitializer">-->
-    <!--<bean class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">-->
-    <!--<property name="validator" ref="validator"/>-->
-    <!--</bean>-->
-    <!--</property>-->
-    <!--</bean>-->
-
-    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="persistenceXmlLocation" value="classpath:/db/persistence.xml"/>
-        <property name="dataSource" ref="dataSource"/>
-        <property name="jpaVendorAdapter">
-            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-                <property name="showSql" value="false"/>
-                <property name="generateDdl" value="true"/>
-                <!--<property name="database" value="HSQL"/>-->
-            </bean>
-        </property>
-    </bean>
-
-    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-        <property name="entityManagerFactory" ref="entityManagerFactory"/>
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-
     <bean name="annotationDao" class="eu.delving.core.storage.annotation.AnnotationDaoImpl"/>
 
     <bean name="tokenRepositoryService" class="eu.delving.core.storage.TokenRepositoryService"/>
-
-    <bean name="tokenService" class="eu.delving.core.storage.TokenService"/>
 
     <bean id="solrSelectServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
         <!--<constructor-arg value="#{launchProperties['services.url']}/api/solr"/>-->
@@ -276,9 +240,11 @@
 
     <bean id="mongo" class="com.mongodb.Mongo"/>
 
-    <bean id="userRepo" class="eu.delving.core.storage.UserRepoImpl"/>
+    <bean id="userRepo" class="eu.delving.core.storage.impl.UserRepoImpl"/>
 
-    <bean id="userDetailsService" class="eu.delving.core.storage.PersonDetailsService"/>
+    <bean id="tokenRepo" class="eu.delving.core.storage.impl.TokenRepoImpl"/>
+
+    <bean id="userDetailsService" class="eu.delving.core.storage.SpringUserService"/>
 
 </beans>
 

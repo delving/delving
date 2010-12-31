@@ -19,13 +19,15 @@
  *  permissions and limitations under the Licence.
  */
 
-package eu.delving.core.storage;
+package eu.delving.core.storage.impl;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
+import eu.delving.core.storage.User;
+import eu.delving.core.storage.UserRepo;
 import eu.delving.domain.Language;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -56,48 +58,48 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public Person createPerson(String email) {
-        DBObject object = new BasicDBObject(Person.EMAIL, email);
-        return new PersonImpl(object);
+    public User createUser(String email) {
+        DBObject object = new BasicDBObject(User.EMAIL, email);
+        return new UserImpl(object);
     }
 
     @Override
-    public Person authenticate(String email, String password) {
-        persons().ensureIndex(new BasicDBObject(Person.EMAIL, 1));
+    public User authenticate(String email, String password) {
+        persons().ensureIndex(new BasicDBObject(User.EMAIL, 1));
         DBObject query = new BasicDBObject();
-        query.put(Person.EMAIL, email);
-        query.put(Person.PASSWORD, hashPassword(password));
+        query.put(User.EMAIL, email);
+        query.put(User.PASSWORD, hashPassword(password));
         DBObject personObject = persons().findOne(query);
-        return personObject != null ? new PersonImpl(personObject) : null;
+        return personObject != null ? new UserImpl(personObject) : null;
     }
 
     @Override
-    public List<Person> getPeople(String pattern) {
+    public List<User> getUsers(String pattern) {
         return null;
     }
 
     @Override
-    public List<Person> getPeople() {
-        List<Person> persons = new ArrayList<Person>();
+    public List<User> getUsers() {
+        List<User> users = new ArrayList<User>();
         for (DBObject personObject : persons().find()) {
-            persons.add(new PersonImpl(personObject));
+            users.add(new UserImpl(personObject));
         }
-        return persons;
+        return users;
     }
 
     @Override
-    public Person byEmail(String email) {
-        persons().ensureIndex(new BasicDBObject(Person.EMAIL, 1));
+    public User byEmail(String email) {
+        persons().ensureIndex(new BasicDBObject(User.EMAIL, 1));
         DBObject query = new BasicDBObject();
-        query.put(Person.EMAIL, email);
+        query.put(User.EMAIL, email);
         DBObject personObject = persons().findOne(query);
-        return personObject != null ? new PersonImpl(personObject) : null;
+        return personObject != null ? new UserImpl(personObject) : null;
     }
 
-    public class PersonImpl implements Person {
+    public class UserImpl implements User {
         private DBObject object;
 
-        public PersonImpl(DBObject object) {
+        public UserImpl(DBObject object) {
             this.object = object;
         }
 
@@ -205,7 +207,7 @@ public class UserRepoImpl implements UserRepo {
         public List<Search> getSearches() {
             List<Search> searches = new ArrayList<Search>();
             int index = 0;
-            for (Object element : (BasicDBList) object.get(Person.SEARCHES)) {
+            for (Object element : (BasicDBList) object.get(User.SEARCHES)) {
                 searches.add(new SearchImpl(this, (DBObject) element, index++));
             }
             return searches;
@@ -230,18 +232,18 @@ public class UserRepoImpl implements UserRepo {
         }
     }
 
-    public class ItemImpl implements Item {
-        private PersonImpl person;
+    public class ItemImpl implements User.Item {
+        private UserImpl person;
         private DBObject object;
         private int index;
 
-        public ItemImpl(PersonImpl person, DBObject object, int index) {
+        public ItemImpl(UserImpl person, DBObject object, int index) {
             this.person = person;
             this.object = object;
             this.index = index;
         }
 
-        public ItemImpl(PersonImpl person, int index) {
+        public ItemImpl(UserImpl person, int index) {
             this(person, new BasicDBObject(DATE_SAVED, new Date()), index);
         }
 
@@ -286,7 +288,7 @@ public class UserRepoImpl implements UserRepo {
 
         @Override
         public void remove() {
-            person.list(Person.ITEMS).remove(index);
+            person.list(User.ITEMS).remove(index);
         }
 
         public Object getObject() {
@@ -294,18 +296,18 @@ public class UserRepoImpl implements UserRepo {
         }
     }
 
-    public class SearchImpl implements Search {
-        private PersonImpl person;
+    public class SearchImpl implements User.Search {
+        private UserImpl person;
         private DBObject object;
         private int index;
 
-        public SearchImpl(PersonImpl person, DBObject object, int index) {
+        public SearchImpl(UserImpl person, DBObject object, int index) {
             this.person = person;
             this.object = object;
             this.index = index;
         }
 
-        public SearchImpl(PersonImpl person, int index) {
+        public SearchImpl(UserImpl person, int index) {
             this(person, new BasicDBObject(DATE_SAVED, new Date()), index);
         }
 
@@ -348,7 +350,7 @@ public class UserRepoImpl implements UserRepo {
 
         @Override
         public void remove() {
-            person.list(Person.SEARCHES).remove(index);
+            person.list(User.SEARCHES).remove(index);
         }
 
         public Object getObject() {

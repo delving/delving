@@ -21,7 +21,7 @@
 
 package eu.delving.core.storage.annotation;
 
-import eu.delving.core.storage.UserRepo;
+import eu.delving.core.storage.User;
 import eu.delving.domain.Language;
 import org.apache.log4j.Logger;
 
@@ -38,10 +38,10 @@ public class AnnotationDaoImpl implements AnnotationDao {
     private Logger log = Logger.getLogger(getClass());
 
     @Override
-    public Annotation create(UserRepo.Person user, Long predecessorId, String content) throws AnnotationNotFoundException, UserNotFoundException, AnnotationHasBeenModifiedException {
+    public Annotation create(User user, Long predecessorId, String content) throws AnnotationNotFoundException, UserNotFoundException, AnnotationHasBeenModifiedException {
         /*
         Long userId = user.getId();
-        user = entityManager.find(UserRepo.Person.class, userId);
+        user = entityManager.find(User.class, userId);
         if (user == null) {
             throw new UserNotFoundException(userId);
         }
@@ -73,10 +73,10 @@ public class AnnotationDaoImpl implements AnnotationDao {
     }
 
     @Override
-    public Annotation create(UserRepo.Person user, AnnotationType annotationType, String europeanaUri, Language language, String content) throws UserNotFoundException {
+    public Annotation create(User user, AnnotationType annotationType, String europeanaUri, Language language, String content) throws UserNotFoundException {
         /*
         Long userId = user.getId();
-        user = entityManager.find(UserRepo.Person.class, userId);
+        user = entityManager.find(User.class, userId);
         if (user == null) {
             throw new UserNotFoundException(userId);
         }
@@ -97,7 +97,7 @@ public class AnnotationDaoImpl implements AnnotationDao {
     }
 
     @Override
-    public Annotation update(UserRepo.Person user, Long annotationId, String content) throws AnnotationNotFoundException, AnnotationNotOwnedException, AnnotationHasBeenModifiedException {
+    public Annotation update(User user, Long annotationId, String content) throws AnnotationNotFoundException, AnnotationNotOwnedException, AnnotationHasBeenModifiedException {
         /*
         Annotation existing = entityManager.find(Annotation.class, annotationId);
         if (existing == null) {
@@ -129,7 +129,7 @@ public class AnnotationDaoImpl implements AnnotationDao {
     }
 
     @Override
-    public Annotation delete(UserRepo.Person user, Long annotationId) throws AnnotationNotOwnedException, AnnotationNotFoundException, AnnotationHasBeenModifiedException {
+    public Annotation delete(User user, Long annotationId) throws AnnotationNotOwnedException, AnnotationNotFoundException, AnnotationHasBeenModifiedException {
         /*
         Annotation existing = entityManager.find(Annotation.class, annotationId);
         if (existing == null) {

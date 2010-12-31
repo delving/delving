@@ -20,7 +20,7 @@
  */
 package eu.delving.core.storage.annotation;
 
-import eu.delving.core.storage.UserRepo;
+import eu.delving.core.storage.User;
 
 /**
  * Somebody modified an annotation that a new one depends on
@@ -32,7 +32,7 @@ import eu.delving.core.storage.UserRepo;
 public class AnnotationNotOwnedException extends Exception {
 	private static final long serialVersionUID = 5592064922743864884L;
 
-	public AnnotationNotOwnedException(Long id, UserRepo.Person user) {
+	public AnnotationNotOwnedException(Long id, User user) {
         super("Annotation not owned by user "+user.getEmail()+". ID="+id);
     }
 }

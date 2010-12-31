@@ -21,8 +21,8 @@
 
 package eu.europeana.core.util.web;
 
-import eu.delving.core.storage.PersonDetailsService;
-import eu.delving.core.storage.UserRepo;
+import eu.delving.core.storage.SpringUserService;
+import eu.delving.core.storage.User;
 import eu.delving.domain.Language;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -50,15 +50,15 @@ public class ControllerUtil {
         return emailAddress.matches(EMAIL_REGEXP);
     }
 
-    public static UserRepo.Person getPerson() {
+    public static User getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             return null;
         }
         Object principal = authentication.getPrincipal();
-        if (principal instanceof PersonDetailsService.PersonHolder) {
-            PersonDetailsService.PersonHolder personHolder = (PersonDetailsService.PersonHolder) authentication.getPrincipal();
-            return personHolder.getPerson();
+        if (principal instanceof SpringUserService.UserHolder) {
+            SpringUserService.UserHolder userHolder = (SpringUserService.UserHolder) authentication.getPrincipal();
+            return userHolder.getUser();
         }
         else {
             return null;
@@ -103,7 +103,7 @@ public class ControllerUtil {
 
     public static ModelAndView createModelAndViewPage(String view) {
         ModelAndView page = new ModelAndView(view);
-        UserRepo.Person user = ControllerUtil.getPerson();
+        User user = ControllerUtil.getUser();
         page.addObject("user", user);
         return page;
     }
@@ -128,7 +128,7 @@ public class ControllerUtil {
 
     public static ModelAndView createModelAndViewPage(String view, String... includes) {
         ModelAndView page = new ModelAndView(view);
-        UserRepo.Person user = ControllerUtil.getPerson();
+        User user = ControllerUtil.getUser();
         page.addObject("user", user);
         for (int i = 0; i < includes.length; i++) {
             String include = includes[i];

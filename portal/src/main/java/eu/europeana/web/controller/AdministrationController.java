@@ -21,6 +21,7 @@
 
 package eu.europeana.web.controller;
 
+import eu.delving.core.storage.User;
 import eu.delving.core.storage.UserRepo;
 import eu.europeana.core.util.web.ControllerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,30 +60,30 @@ public class AdministrationController {
     ) throws Exception {
         ModelAndView page = ControllerUtil.createModelAndViewPage("administration");
         if (adminForm.getUserEmail().isEmpty()) {
-            List<UserRepo.Person> userList = userRepo.getPeople(adminForm.getSearchPattern().trim());
+            List<User> userList = userRepo.getUsers(adminForm.getSearchPattern().trim());
             page.addObject("userList", userList);
         }
         else {
-            UserRepo.Person person = userRepo.byEmail(adminForm.getUserEmail());
-            if (person == null) {
+            User user = userRepo.byEmail(adminForm.getUserEmail());
+            if (user == null) {
                 throw new IllegalArgumentException(String.format("User %s not found", adminForm.getUserEmail()));
             }
             if (!adminForm.getNewRole().isEmpty()) {
-                UserRepo.Role role = UserRepo.Role.valueOf(adminForm.getNewRole());
+                User.Role role = User.Role.valueOf(adminForm.getNewRole());
                 switch (role) {
                     case ROLE_USER:
                     case ROLE_RESEARCH_USER:
-                        person.setRole(role);
-                        person.save();
-                        page.addObject("targetUser", person);
+                        user.setRole(role);
+                        user.save();
+                        page.addObject("targetUser", user);
                         break;
                     case ROLE_ADMINISTRATOR:
-                        if (ControllerUtil.getPerson().getRole() != UserRepo.Role.ROLE_GOD) {
+                        if (ControllerUtil.getUser().getRole() != User.Role.ROLE_GOD) {
                             throw new IllegalArgumentException("Only superuser can make someone an administrator");
                         }
-                        person.setRole(role);
-                        person.save();
-                        page.addObject("targetUser", person);
+                        user.setRole(role);
+                        user.save();
+                        page.addObject("targetUser", user);
                         break;
                     default:
                         break;

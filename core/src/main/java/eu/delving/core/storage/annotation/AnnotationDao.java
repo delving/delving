@@ -21,7 +21,7 @@
 
 package eu.delving.core.storage.annotation;
 
-import eu.delving.core.storage.UserRepo;
+import eu.delving.core.storage.User;
 import eu.delving.domain.Language;
 
 import java.util.List;
@@ -49,7 +49,7 @@ public interface AnnotationDao {
      * @throws AnnotationHasBeenModifiedException someone has changed the predecessor
      */
 
-    Annotation create(UserRepo.Person user, Long predecessorId, String content) throws AnnotationNotFoundException, UserNotFoundException, AnnotationHasBeenModifiedException;
+    Annotation create(User user, Long predecessorId, String content) throws AnnotationNotFoundException, UserNotFoundException, AnnotationHasBeenModifiedException;
 
     /**
      * Create an annotation from scratch.
@@ -63,7 +63,7 @@ public interface AnnotationDao {
      * @throws UserNotFoundException the user in the session wasn't found
      */
 
-    Annotation create(UserRepo.Person user, AnnotationType annotationType, String europeanaUri, Language language, String content) throws UserNotFoundException;
+    Annotation create(User user, AnnotationType annotationType, String europeanaUri, Language language, String content) throws UserNotFoundException;
 
     /**
      * Update the content of an existing annotation
@@ -77,7 +77,7 @@ public interface AnnotationDao {
      * @throws AnnotationHasBeenModifiedException somebody has changed this already
      */
 
-    Annotation update(UserRepo.Person user, Long annotationId, String content) throws AnnotationNotFoundException, AnnotationNotOwnedException, AnnotationHasBeenModifiedException;
+    Annotation update(User user, Long annotationId, String content) throws AnnotationNotFoundException, AnnotationNotOwnedException, AnnotationHasBeenModifiedException;
 
     /**
      * Remove an existing annotation
@@ -90,7 +90,7 @@ public interface AnnotationDao {
      * @throws AnnotationHasBeenModifiedException somebody has changed this already
      */
 
-    Annotation delete(UserRepo.Person user, Long annotationId) throws AnnotationNotOwnedException, AnnotationNotFoundException, AnnotationHasBeenModifiedException;
+    Annotation delete(User user, Long annotationId) throws AnnotationNotOwnedException, AnnotationNotFoundException, AnnotationHasBeenModifiedException;
 
     /**
      * Fetch a single annotation

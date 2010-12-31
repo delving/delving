@@ -21,8 +21,8 @@
 
 package eu.europeana.web.controller;
 
-import eu.delving.core.storage.Token;
-import eu.delving.core.storage.TokenService;
+import eu.delving.core.storage.TokenRepo;
+import eu.delving.core.storage.User;
 import eu.delving.core.storage.UserRepo;
 import eu.europeana.core.querymodel.query.EuropeanaQueryException;
 import eu.europeana.core.util.web.ClickStreamLogger;
@@ -62,7 +62,7 @@ public class RegisterPageController {
     private UserRepo userRepo;
 
     @Autowired
-    private TokenService tokenService;
+    private TokenRepo tokenRepo;
 
     @Autowired
     @Qualifier("emailSenderForRegisterNotify")
@@ -80,8 +80,8 @@ public class RegisterPageController {
     protected String getRequest(@RequestParam("token") String tokenKey, @ModelAttribute("command") RegistrationForm regForm, HttpServletRequest request) throws EuropeanaQueryException {
         log.info("Received get request, putting token into registration form model attribute");
         // todo: when token is null, no useful message appears
-        Token token = tokenService.getToken(tokenKey);
-        regForm.setToken(token.getToken());
+        TokenRepo.RegistrationToken token = tokenRepo.getRegistrationToken(tokenKey);
+        regForm.setToken(token.getId());
         regForm.setEmail(token.getEmail());
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.REGISTER);
         return "register";
@@ -94,23 +94,23 @@ public class RegisterPageController {
             clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.REGISTER_FAILURE);
             return "register";
         }
-        Token token = tokenService.getToken(form.getToken()); //the token was validated in handleRequestInternal
+        TokenRepo.RegistrationToken token = tokenRepo.getRegistrationToken(form.getToken()); //the token was validated in handleRequestInternal
 //        user.setUserName(form.getUserName());
-        tokenService.removeToken(token);    //remove token. it can not be used any more.
-        UserRepo.Person person = userRepo.createPerson(token.getEmail());//use email from token. not from form.
-        person.setPassword(form.getPassword());
-        person.setEnabled(true);
-        person.setRole(UserRepo.Role.ROLE_USER);
-        person.save();
-        sendNotificationEmail(person);
+        token.delete();
+        User user = userRepo.createUser(token.getEmail());//use email from token. not from form.
+        user.setPassword(form.getPassword());
+        user.setEnabled(true);
+        user.setRole(User.Role.ROLE_USER);
+        user.save();
+        sendNotificationEmail(user);
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.REGISTER_SUCCESS);
         return "register-success";
     }
 
-    private void sendNotificationEmail(UserRepo.Person person) {
+    private void sendNotificationEmail(User user) {
         try {
             Map<String, Object> model = new TreeMap<String, Object>();
-            model.put("user", person);
+            model.put("user", user);
             notifyEmailSender.sendEmail(model);
         }
         catch (Exception e) {

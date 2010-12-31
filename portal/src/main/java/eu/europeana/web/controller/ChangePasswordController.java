@@ -21,8 +21,8 @@
 
 package eu.europeana.web.controller;
 
-import eu.delving.core.storage.Token;
-import eu.delving.core.storage.TokenService;
+import eu.delving.core.storage.TokenRepo;
+import eu.delving.core.storage.User;
 import eu.delving.core.storage.UserRepo;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.EmailSender;
@@ -60,7 +60,7 @@ public class ChangePasswordController {
     private UserRepo userRepo;
 
     @Autowired
-    private TokenService tokenService;
+    private TokenRepo tokenRepo;
 
     @Autowired
     @Qualifier("emailSenderForPasswordChangeNotify")
@@ -78,12 +78,12 @@ public class ChangePasswordController {
     protected String getMethod(@RequestParam("token") String tokenKey,
                                @ModelAttribute("command") ChangePasswordForm form,
                                HttpServletRequest request) throws Exception {
-        Token token = tokenService.getToken(tokenKey);
+        TokenRepo.RegistrationToken token = tokenRepo.getRegistrationToken(tokenKey);
         if (token == null) {
             clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.ERROR_TOKEN_EXPIRED);
             return "token-expired";
         }
-        form.setToken(token.getToken());
+        form.setToken(token.getId());
         form.setEmail(token.getEmail());
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.CHANGE_PASSWORD_SUCCES);
         return "change-password";
@@ -98,21 +98,21 @@ public class ChangePasswordController {
             clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.CHANGE_PASSWORD_FAILURE);
             return "change-password";
         }
-        Token token = tokenService.getToken(command.getToken()); //token is validated in handleRequestInternal
-        UserRepo.Person user = userRepo.byEmail(token.getEmail()); //don't use email from the form. use token.
+        TokenRepo.RegistrationToken token = tokenRepo.getRegistrationToken(command.getToken()); //token is validated in handleRequestInternal
+        User user = userRepo.byEmail(token.getEmail()); //don't use email from the form. use token.
         if (user == null) {
             clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.REGISTER_FAILURE);
             throw new RuntimeException("Expected to find user for " + token.getEmail());
         }
         user.setPassword(command.getPassword());
         user.save();
-        tokenService.removeToken(token); //remove token. it can not be used any more.
+        token.delete();
         sendNotificationEmail(user);
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.REGISTER_SUCCESS);
         return "register-success"; // todo: strange to go here, isn't it?
     }
 
-    private void sendNotificationEmail(UserRepo.Person user) {
+    private void sendNotificationEmail(User user) {
         try {
             Map<String, Object> model = new TreeMap<String, Object>();
             model.put("user", user);

@@ -136,8 +136,8 @@ public class AnnotationController {
         log.warn("problem", e);
     }
 
-    private UserRepo.Person getUser() throws UserNotFoundException {
-        UserRepo.Person user = ControllerUtil.getPerson();
+    private UserRepo.User getUser() throws UserNotFoundException {
+        UserRepo.User user = ControllerUtil.getUser();
         if (user == null) {
             throw new UserNotFoundException();
         }

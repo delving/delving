@@ -1,7 +1,7 @@
 /*
- * Copyright 2007 EDL FOUNDATION
+ * Copyright 2010 DELVING BV
  *
- *  Licensed under the EUPL, Version 1.0 or as soon they
+ *  Licensed under the EUPL, Version 1.0 or? as soon they
  *  will be approved by the European Commission - subsequent
  *  versions of the EUPL (the "Licence");
  *  you may not use this work except in compliance with the
@@ -21,7 +21,7 @@
 
 package eu.europeana.web.controller;
 
-import eu.delving.core.storage.UserRepo;
+import eu.delving.core.storage.User;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import eu.europeana.core.util.web.EmailSender;
@@ -72,7 +72,7 @@ public class ContactPageController {
     @ModelAttribute("command")
     public ContactForm createContactForm() {
         ContactForm form = new ContactForm();
-        UserRepo.Person user = ControllerUtil.getPerson();
+        User user = ControllerUtil.getUser();
         if (user != null) {
             form.setEmail(user.getEmail());
         }

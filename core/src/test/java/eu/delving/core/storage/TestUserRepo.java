@@ -22,6 +22,7 @@
 package eu.delving.core.storage;
 
 import com.mongodb.Mongo;
+import eu.delving.core.storage.impl.UserRepoImpl;
 import eu.delving.domain.Language;
 import junit.framework.Assert;
 import org.junit.After;
@@ -44,7 +45,7 @@ import java.util.List;
         "/core-application-context.xml"
 })
 
-public class TestPersonStorage {
+public class TestUserRepo {
     private static final String TEST_DB_NAME = "test-person";
 
     @Autowired
@@ -58,13 +59,13 @@ public class TestPersonStorage {
     public void before() {
         personStorage.setDatabaseName(TEST_DB_NAME);
         mongo.dropDatabase(TEST_DB_NAME);
-        UserRepo.Person person = personStorage.createPerson(EMAIL);
-        person.setEnabled(true);
-        person.setFirstName("Joe");
-        person.setPassword("gumby");
-        person.setLastName("Dude");
-        person.setLastLogin(new Date());
-        person.save();
+        User user = personStorage.createUser(EMAIL);
+        user.setEnabled(true);
+        user.setFirstName("Joe");
+        user.setPassword("gumby");
+        user.setLastName("Dude");
+        user.setLastLogin(new Date());
+        user.save();
     }
 
     @After
@@ -74,7 +75,7 @@ public class TestPersonStorage {
 
     @Test
     public void authenticate() {
-        UserRepo.Person dude = personStorage.authenticate(EMAIL, "gumbi");
+        User dude = personStorage.authenticate(EMAIL, "gumbi");
         Assert.assertNull(dude);
         dude = personStorage.authenticate(EMAIL, "gumby");
         Assert.assertNotNull(dude);
@@ -82,7 +83,7 @@ public class TestPersonStorage {
 
     @Test
     public void changeField() {
-        UserRepo.Person dude = personStorage.byEmail(EMAIL);
+        User dude = personStorage.byEmail(EMAIL);
         dude.setFirstName("Mary");
         dude.save();
         dude = personStorage.byEmail(EMAIL);
@@ -91,13 +92,13 @@ public class TestPersonStorage {
 
     @Test
     public void addRemoveItem() {
-        UserRepo.Person dude = personStorage.byEmail(EMAIL);
+        User dude = personStorage.byEmail(EMAIL);
         dude.addItem("Author", "Title", Language.NO);
         dude.save();
         dude = personStorage.byEmail(EMAIL);
-        List<UserRepo.Item> items = dude.getItems();
+        List<User.Item> items = dude.getItems();
         Assert.assertEquals("Should be one item", 1, items.size());
-        UserRepo.Item item = items.get(0);
+        User.Item item = items.get(0);
         Assert.assertEquals("field wrong", "Author", item.getAuthor());
         Assert.assertEquals("field wrong", "Title", item.getTitle());
         Assert.assertEquals("field wrong", Language.NO, item.getLanguage());
@@ -109,13 +110,13 @@ public class TestPersonStorage {
 
     @Test
     public void addRemoveSearch() {
-        UserRepo.Person dude = personStorage.byEmail(EMAIL);
+        User dude = personStorage.byEmail(EMAIL);
         dude.addSearch("Query", "QueryString", Language.FI);
         dude.save();
         dude = personStorage.byEmail(EMAIL);
-        List<UserRepo.Search> searches = dude.getSearches();
+        List<User.Search> searches = dude.getSearches();
         Assert.assertEquals("Should be one item", 1, searches.size());
-        UserRepo.Search search = searches.get(0);
+        User.Search search = searches.get(0);
         Assert.assertEquals("field wrong", "Query", search.getQuery());
         Assert.assertEquals("field wrong", "QueryString", search.getQueryString());
         Assert.assertEquals("field wrong", Language.FI, search.getLanguage());

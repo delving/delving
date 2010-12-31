@@ -23,7 +23,6 @@ package eu.delving.core.storage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
@@ -38,69 +37,69 @@ import java.util.List;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class PersonDetailsService implements UserDetailsService {
+public class SpringUserService implements UserDetailsService {
 
     @Autowired
     private UserRepo userRepo;
 
-    public interface PersonHolder {
-        UserRepo.Person getPerson();
+    public interface UserHolder {
+        User getUser();
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         try {
-            UserRepo.Person person = userRepo.byEmail(email);
-            if (person == null) {
+            User user = userRepo.byEmail(email);
+            if (user == null) {
                 throw new UsernameNotFoundException("Never heard of " + email);
             }
-            person.setLastLogin(new Date());
-            person.save();
-            return new PersonDetails(person);
+            user.setLastLogin(new Date());
+            user.save();
+            return new UserDetails(user);
         }
         catch (Exception e) {
             throw new UsernameNotFoundException("Persistence problem", e);
         }
     }
 
-    private static class PersonDetails implements UserDetails, PersonHolder {
+    private static class UserDetails implements org.springframework.security.core.userdetails.UserDetails, UserHolder {
         private static final long serialVersionUID = 1581860745489819018L;
-        private UserRepo.Person person;
+        private User user;
         private List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 
-        private PersonDetails(UserRepo.Person person) {
-            this.person = person;
-            switch (person.getRole()) {
+        private UserDetails(User user) {
+            this.user = user;
+            switch (user.getRole()) {
                 case ROLE_GOD:
-                    addRole(UserRepo.Role.ROLE_USER);
-                    addRole(UserRepo.Role.ROLE_ADMINISTRATOR);
-                    addRole(UserRepo.Role.ROLE_RESEARCH_USER);
-                    addRole(UserRepo.Role.ROLE_GOD);
+                    addRole(User.Role.ROLE_USER);
+                    addRole(User.Role.ROLE_ADMINISTRATOR);
+                    addRole(User.Role.ROLE_RESEARCH_USER);
+                    addRole(User.Role.ROLE_GOD);
                     break;
                 case ROLE_ADMINISTRATOR:
-                    addRole(UserRepo.Role.ROLE_USER);
-                    addRole(UserRepo.Role.ROLE_RESEARCH_USER);
-                    addRole(UserRepo.Role.ROLE_ADMINISTRATOR);
+                    addRole(User.Role.ROLE_USER);
+                    addRole(User.Role.ROLE_RESEARCH_USER);
+                    addRole(User.Role.ROLE_ADMINISTRATOR);
                     break;
                 case ROLE_RESEARCH_USER:
-                    addRole(UserRepo.Role.ROLE_USER);
-                    addRole(UserRepo.Role.ROLE_RESEARCH_USER);
+                    addRole(User.Role.ROLE_USER);
+                    addRole(User.Role.ROLE_RESEARCH_USER);
                     break;
                 case ROLE_USER:
-                    addRole(UserRepo.Role.ROLE_USER);
+                    addRole(User.Role.ROLE_USER);
                     break;
                 default:
-                    throw new IllegalStateException("switch statment must be expanded to include: " + person.getRole());
+                    throw new IllegalStateException("switch statment must be expanded to include: " + user.getRole());
             }
         }
 
-        private void addRole(UserRepo.Role role) {
+        private void addRole(User.Role role) {
             authorities.add(new PersonAuthority(role));
         }
 
         @Override
-        public UserRepo.Person getPerson() {
-            return person;
+        public User getUser() {
+            return user;
         }
 
         @Override
@@ -110,12 +109,12 @@ public class PersonDetailsService implements UserDetailsService {
 
         @Override
         public String getPassword() {
-            return person.getHashedPassword();
+            return user.getHashedPassword();
         }
 
         @Override
         public String getUsername() {
-            return person.getEmail();
+            return user.getEmail();
         }
 
         @Override
@@ -135,19 +134,19 @@ public class PersonDetailsService implements UserDetailsService {
 
         @Override
         public boolean isEnabled() {
-            return person.isEnabled();
+            return user.isEnabled();
         }
 
         public String toString() {
-            return "Person: " + person.getFirstName() + " " + person.getLastName();
+            return "User: " + user.getFirstName() + " " + user.getLastName();
         }
     }
 
     private static class PersonAuthority implements GrantedAuthority, Comparable<PersonAuthority> {
         private static final long serialVersionUID = -534970263836323349L;
-        private UserRepo.Role role;
+        private User.Role role;
 
-        private PersonAuthority(UserRepo.Role role) {
+        private PersonAuthority(User.Role role) {
             this.role = role;
         }
 
