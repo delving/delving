@@ -24,11 +24,7 @@ package eu.europeana.web.controller;
 import eu.delving.core.binding.FacetStatisticsMap;
 import eu.delving.core.binding.SolrBindingService;
 import eu.europeana.core.database.domain.StaticPageType;
-import eu.europeana.core.querymodel.query.BriefBeanView;
-import eu.europeana.core.querymodel.query.EuropeanaQueryException;
-import eu.europeana.core.querymodel.query.FullBeanView;
-import eu.europeana.core.querymodel.query.QueryModelFactory;
-import eu.europeana.core.querymodel.query.QueryType;
+import eu.europeana.core.querymodel.query.*;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -192,6 +188,7 @@ public class ResultController {
         // Create ModelAndView
         ModelAndView page = ControllerUtil.createModelAndViewPage(getViewName(format));
         page.addObject("display", format);
+        page.addObject("ramdomSortKey", SolrQueryUtil.createRandomSortKey());
         page.addObject("result", briefBeanView);
         page.addObject("query", briefBeanView.getPagination().getPresentationQuery().getUserSubmittedQuery());
         page.addObject("briefDocs", briefBeanView.getBriefDocs());

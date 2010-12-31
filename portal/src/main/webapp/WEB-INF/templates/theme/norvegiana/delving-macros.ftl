@@ -1085,7 +1085,8 @@
     <option value="title" ><@spring.message '_metadata.dc.title' /></option>
     <option value="creator"><@spring.message '_metadata.dc.creator' /></option>
     <option value="YEAR"><@spring.message '_metadata.dc.date' /></option>
-    <#--<option value="COLLECTION"><@spring.message '_search.field.collection' /></option>-->
+    <option value="${ramdomSortKey}">Random</option>
+<#--<option value="COLLECTION"><@spring.message '_search.field.collection' /></option>-->
 </select>
 <form action="" method="GET" id="form-sort" style="display:none;">
     <input type="hidden" name="query" value="${justTheQuery}"/>
