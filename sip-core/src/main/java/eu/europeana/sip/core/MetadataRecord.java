@@ -118,35 +118,26 @@ public class MetadataRecord {
     }
 
     public static class Factory {
+        private XMLInputFactory2 inputFactory = (XMLInputFactory2) XMLInputFactory2.newInstance();
         private Map<String, String> namespaces;
 
         public Factory(Map<String, String> namespaces) {
             this.namespaces = namespaces;
+            inputFactory.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, Boolean.FALSE);
+            inputFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
+            inputFactory.setProperty(XMLInputFactory.IS_COALESCING, Boolean.FALSE);
+            inputFactory.configureForSpeed();
         }
 
         public MetadataRecord fromGroovyNode(GroovyNode rootNode, int recordNumber) {
             return new MetadataRecord(rootNode, recordNumber);
         }
 
-        public MetadataRecord fromXml(String xmlRecord) throws XMLStreamException {
-            String recordString = null;
+        public MetadataRecord fromXml(String recordContents) throws XMLStreamException {
+            String recordString = createCompleteRecordString(recordContents);
             try {
-                XMLInputFactory2 xmlif = (XMLInputFactory2) XMLInputFactory2.newInstance();
-                xmlif.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, Boolean.FALSE);
-                xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
-                xmlif.setProperty(XMLInputFactory.IS_COALESCING, Boolean.FALSE);
-                xmlif.configureForSpeed();
-                StringBuilder out = new StringBuilder("<?xml version=\"1.0\"?>\n");
-                out.append("<record");
-                for (Map.Entry<String, String> namespace : namespaces.entrySet()) {
-                    out.append(String.format(" xmlns:%s=\"%s\"", namespace.getKey(), namespace.getValue()));
-                }
-                out.append(">");
-                out.append(xmlRecord);
-                out.append("</record>");
-                recordString = out.toString();
                 Reader reader = new StringReader(recordString);
-                XMLStreamReader2 input = (XMLStreamReader2) xmlif.createXMLStreamReader(reader);
+                XMLStreamReader2 input = (XMLStreamReader2) inputFactory.createXMLStreamReader(reader);
                 Stack<GroovyNode> nodeStack = new Stack<GroovyNode>();
                 StringBuilder value = new StringBuilder();
                 while (true) {
@@ -206,6 +197,18 @@ public class MetadataRecord {
                 throw new XMLStreamException("Problem parsing record:\n"+recordString, e);
             }
             throw new XMLStreamException("Unexpected end while parsing");
+        }
+
+        private String createCompleteRecordString(String xmlRecord) {
+            StringBuilder out = new StringBuilder("<?xml version=\"1.0\"?>\n");
+            out.append("<record");
+            for (Map.Entry<String, String> namespace : namespaces.entrySet()) {
+                out.append(String.format(" xmlns:%s=\"%s\"", namespace.getKey(), namespace.getValue()));
+            }
+            out.append(">");
+            out.append(xmlRecord);
+            out.append("</record>");
+            return out.toString();
         }
     }
 
