@@ -40,17 +40,17 @@
                     <#--<option value="COLLECTION">Collectie</option>-->
                 </select></td>
             </tr>
-            <#if collections??>
+            <#if dataProviders??>
             <tr>
                 <td align="right"><@spring.message '_metadata.abm.data.provider'/>:</td>
                 <td>
-                    <select name="allCollections" id="sel-dataproviders">
+                    <select name="allDataProviders" id="sel-dataproviders">
                        <option value="true"><@spring.message '_metadata.type.all'/></option>
                        <option value="false"><@spring.message '_search.select'/></option>
                    </select>
                    <div id="provider-list" style="display:none">
                        <table class="squash">
-                        <#list collections?chunk(4) as row>
+                        <#list dataProviders?chunk(4) as row>
                            <tr>
                                <#list row as dataprovider>
                                     <td><input type="checkbox" name="collectionList" value="${dataprovider.name?url('utf-8')}"/>${dataprovider.name} (${dataprovider.count})</td>
@@ -63,11 +63,32 @@
                 </td>
             </tr>
             </#if>
+            <#if (user??) && (user.role=="ROLE_ADMINISTRATOR" || user.role=="ROLE_GOD")>
+                <#if collections??>
+                <tr>
+                    <td align="right"><@spring.message '_metadata.abm.data.collections'/>:</td>
+                    <td>
+                        <select name="allCollections" id="sel-collections">
+                           <option value="true"><@spring.message '_metadata.type.all'/></option>
+                           <option value="false"><@spring.message '_search.select'/></option>
+                       </select>
+                       <div id="collections-list" style="display:none">
+                           <table class="squash">
+                            <#list collections?chunk(4) as row>
+                               <tr>
+                                   <#list row as collection>
+                                        <td><input type="checkbox" name="collectionList" value="${collection.name?url('utf-8')}"/>${collection.name} (${collection.count})</td>
+                                   </#list>
+
+                                </tr>
+                            </#list>
+                           </table>
+                       </div>
+                    </td>
+                </tr>
+                </#if>
+            </#if>
             <#if county??>
-            <style>
-                table.squash {margin: 0;}
-                table.squash tbody td {padding:.5em 0 0 0; font-size: .85em}
-            </style>
             <tr>
                 <td align="right"><@spring.message '_metadata.abm.county'/>:</td>
                 <td>
@@ -138,6 +159,16 @@
                 $("#provider-list").hide("slow");
             }
         });
+        if($("#sel-collections")){
+            $("#sel-counties").change(function() {
+            if ($("#sel-counties :selected").val() == "false") {
+                $("#county-list").show("slow");
+            }
+            if ($("#sel-counties :selected").val() == "true") {
+                $("#county-list").hide("slow");
+            }
+            });
+         }
 
     });
 
