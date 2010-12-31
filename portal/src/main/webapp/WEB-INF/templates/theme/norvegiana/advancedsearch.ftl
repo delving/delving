@@ -98,10 +98,10 @@
             <tr>
                 <td align="right"><@spring.message '_metadata.europeana.type'/>:</td>
                 <td>
-                    <input type="checkbox" name="type" value="TYPE:IMAGE"/><@spring.message '_metadata.type.images'/>
-                    <input type="checkbox" name="type" value="TYPE:TEXT"/><@spring.message '_metadata.type.texts'/>
-                    <input type="checkbox" name="type" value="TYPE:SOUND"/><@spring.message '_metadata.type.sounds'/>
-                    <input type="checkbox" name="type" value="TYPE:VIDEO"/><@spring.message '_metadata.type.videos'/>
+                    <input type="checkbox" name="typeList" value="IMAGE"/><@spring.message '_metadata.type.images'/>
+                    <input type="checkbox" name="typeList" value="TEXT"/><@spring.message '_metadata.type.texts'/>
+                    <input type="checkbox" name="typeList" value="SOUND"/><@spring.message '_metadata.type.sounds'/>
+                    <input type="checkbox" name="typeList" value="VIDEO"/><@spring.message '_metadata.type.videos'/>
                 </td>
             </tr>
              <tr>
