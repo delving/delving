@@ -66,7 +66,7 @@
             <#if (user??) && (user.role=="ROLE_ADMINISTRATOR" || user.role=="ROLE_GOD")>
                 <#if collections??>
                 <tr>
-                    <td align="right"><@spring.message '_metadata.abm.data.collections'/>:</td>
+                    <td align="right"><@spring.message '_search.field.collection'/>:</td>
                     <td>
                         <select name="allCollections" id="sel-collections">
                            <option value="true"><@spring.message '_metadata.type.all'/></option>
@@ -160,12 +160,12 @@
             }
         });
         if($("#sel-collections")){
-            $("#sel-counties").change(function() {
-            if ($("#sel-counties :selected").val() == "false") {
-                $("#county-list").show("slow");
+            $("#sel-collections").change(function() {
+            if ($("#sel-collections :selected").val() == "false") {
+                $("#collections-list").show("slow");
             }
-            if ($("#sel-counties :selected").val() == "true") {
-                $("#county-list").hide("slow");
+            if ($("#sel-collections :selected").val() == "true") {
+                $("#collections-list").hide("slow");
             }
             });
          }
