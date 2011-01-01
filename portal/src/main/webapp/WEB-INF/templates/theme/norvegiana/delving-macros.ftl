@@ -1036,6 +1036,7 @@
     <input type="hidden" name="query" value="${justTheQuery}"/>
     <input type="hidden" name="start" value="${start}"/>
     <input type="hidden" name="view" value="${view}"/>
+    <input type="hidden" name="tab" value="${tab}"/>
     <input type="hidden" name="sortBy" id="sortBy" value=""/>
 </form>
 </#macro>
