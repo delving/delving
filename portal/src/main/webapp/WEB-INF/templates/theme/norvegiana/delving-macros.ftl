@@ -273,16 +273,16 @@
 <#macro getFacetCount facetName typeName>
     <#assign facetMap = result.getFacetMap()>
     <#assign facet = facetMap.getFacet(facetName)>
+    <#assign count = 0/>
     <#--<#if !facet.type?starts_with("unknown")>-->
     <#if facet.links?size &gt; 0>
         <#list facet.links as link>
             <#if link.value == typeName>
-                ${link.count}
+                <#assign count = link.count>
             </#if>
         </#list>
-    <#else>
-        ${0}
     </#if>
+    ${count}
     <#--</#if>-->
 </#macro>
 
