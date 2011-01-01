@@ -50,22 +50,63 @@ function editWysiwyg(){
         ,external_link_list_url : portalName+"/_.dml?javascript=true"
     });
 }
+
+function createPage(page) {
+    var targetURL = $("#pagePath").attr("value");
+    //check if the extension was added, if not, add it.
+    if(targetURL.indexOf(".dml") == -1){
+        targetURL = targetURL+".dml";
+    }
+    window.location.href = targetURL + "?edit=true";
+}
+
 $(document).ready(function() {
 
-    editSource("editor");
-
-    $("button#edit-source").click(function(){
+    if($("form#form-edit").length){
+        // show the editor with syntax hightlighting as default.
         editSource("editor");
-        $(this).addClass("ui-state-active");
-        $("button#edit-wysiwyg").removeClass("ui-state-active");
-        return false;
-    });
-    $("button#edit-wysiwyg").click(function(){
-        eAL.toggle("editor","off");
-        editWysiwyg();
-        $(this).addClass("ui-state-active");
-        $("button#edit-source").removeClass("ui-state-active");
-        return false;
-    });
+        $("button#edit-source").click(function(){
+            editSource("editor");
+            $(this).addClass("ui-state-active");
+            $("button#edit-wysiwyg").removeClass("ui-state-active");
+            return false;
+        });
+        $("button#edit-wysiwyg").click(function(){
+            eAL.toggle("editor","off");
+            editWysiwyg();
+            $(this).addClass("ui-state-active");
+            $("button#edit-source").removeClass("ui-state-active");
+            return false;
+        });
+    }
 
+    if($("a.delete").length){
+        $("a.delete").click(function() {
+            var target = $(this).attr("name");
+            var targetURL = $(this).attr("href");
+            var confirmation = confirm("Pagina: " + targetURL + " verwijderen ?");
+            if (confirmation) {
+                $.ajax({
+                    url: targetURL+"?delete=true",
+                    type: "POST",
+                    data: "content=",
+                    success: function(data) {
+                        $("table.user-pages tr#" + target).css("display", "none");
+                        showMessage("success", "The page: " + targetURL + " has been deleted.");
+                    },
+                    error: function(data) {
+                        showMessage("fail", "The page: " + targetURL + " could not be deleted.");
+                    }
+                });
+                return false;
+            }
+            else {
+                return false;
+            }
+        });
+    }
 });
+
+
+
+

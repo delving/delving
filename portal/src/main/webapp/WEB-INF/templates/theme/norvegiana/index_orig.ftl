@@ -2,7 +2,7 @@
     <#assign thisPage = "index.html"/>
     <#include "includeMarcos.ftl"/>
 
-<@addHeader "${portalDisplayName}", "",["index.js","cycle/jquery.cycle.min.js"],[]/>
+<@addHeader "${portalDisplayName}", "",["cycle/jquery.cycle.lite.min.js","index.js"],[]/>
 
 <section id="leftbar" class="grid_3" role="complimentary">
        <div class="slideshow">

@@ -1,4 +1,3 @@
-
 <#compress>
     <#if imagePathList??>
         <#if javascript>
@@ -7,33 +6,35 @@
                  ["${imagePath}","${imagePath}"]<#if imagePath_has_next>,</#if>
             </#list>
             );
-
         <#else>
             <#assign thisPage = "static-image.dml"/>
             <#assign pageId = "static"/>
             <#include "includeMarcos.ftl">
 
-            <@addHeader "${portalDisplayName}", "",[],[]/>
-
+            <@addHeader "${portalDisplayName}", "",["static-image.js"],[]/>
+            <script type="text/javascript">
+                var deleteConfirm = "<@spring.message '_cms.image.delete.question' />";
+                var deleteFail = "<@spring.message '_cms.image.delete.fail' />";
+            </script>
 
             <section role="main" class="grid_12" >
 
                 <h1><@spring.message '_cms.administration.images' /></h1>
 
                 <div class="grid_8 alpha">
-                     <table summary="List of existing images" class="user-options zebra">
+                     <table summary="List of existing images" class="user-images zebra">
                         <thead>
                             <tr>
                                 <th colspan="4"><@spring.message '_cms.existing.images' /></th>
                             </tr>
                         </thead>
                         <#list imagePathList as imagePath>
-                            <tr>
+                            <tr id="${imagePath_index}">
                                 <td width="50"><img src="${imagePath}" alt="thumbnail" height="20"/></td>
                                 <td width="300"><a href="${imagePath}?edit=true"><span class="ui-icon ui-icon-image"></span>${imagePath}</a></td>
                                 <td width="85"><a href="${imagePath}?edit=true"><span class="ui-icon ui-icon-pencil"></span><@spring.message '_cms.edit' /></a></td>
                                 <td width="85">
-                                     <a class="delete" id="delete_${imagePath_index}" href="${imagePath}"><span class="ui-icon ui-icon-trash"></span><@spring.message '_cms.delete' /></a>
+                                     <a class="delete" name="${imagePath_index}" href="${imagePath}"><span class="ui-icon ui-icon-trash"></span><@spring.message '_cms.delete' /></a>
                                 </td>
                             </tr>
                         </#list>
@@ -58,34 +59,7 @@
                         </table>
                     </form>
                       </fieldset>
-                    <script type="text/javascript">
-                        function createImage(){
-                            var name = $("#imgName").attr("value");
-                            var ext = $("#imgExt :selected").text();
-                            var pName = $("#pName").attr("value");
-                            var makeURL = pName+name+ext+".img";
-                            window.location.href=makeURL+"?edit=true";
-                        }
 
-                        $("a.delete").click(function(){
-                            var target = $(this).attr("id");
-                            var targetURL = $(this).attr("href");
-                            var confirmation = confirm("<@spring.message '_cms.image.delete.question' />")
-                            if(confirmation){
-                                $.ajax({
-                                    url: targetURL+"?edit=false&delete=true",
-                                    type: "GET",
-                                    success: function(data) {
-                                        window.location.reload();
-                                    },
-                                    error: function(data) {
-                                        alert("<@spring.message '_cms.image.delete.fail' />");
-                                    }
-                                });
-                            }
-                            return false;
-                        });
-                    </script>
                 </div>
             </section>
 

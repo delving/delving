@@ -20,7 +20,7 @@
         <#assign pageId = "static"/>
         <#include "includeMarcos.ftl">
 
-        <@addHeader "${portalDisplayName}", "",[],[]/>
+        <@addHeader "${portalDisplayName}", "",["static-page.js"],[]/>
 
         <section role="main" class="main">
             <h1 class="grid_12"><@spring.message '_cms.administration.pages' /></h1>
@@ -42,7 +42,7 @@
                             <@spring.message '_cms.edit' /></a>
                             </td>
                             <td width="100">
-                                <a class="delete" id="${pagePath_index}" href="${pagePath}?delete=true">
+                                <a class="delete" name="${pagePath_index}" href="${pagePath}">
                                     <span class="ui-icon ui-icon-trash"></span>
                                     <@spring.message '_cms.delete' />
                                 </a>
@@ -69,40 +69,6 @@
 
         </section>
 
-        <script type="text/javascript">
-
-            $("a.delete").click(function() {
-                var target = $(this).attr("id");
-                var targetURL = $(this).attr("href");
-                var confirmation = confirm("Pagina: " + targetURL + " verwijderen ?");
-                if (confirmation) {
-                    $.ajax({
-                        url: targetURL,
-                        type: "POST",
-                        data: "content=",
-                        success: function(data) {
-                            $("table.user-pages tr#" + target).css("display", "none");
-                            showMessage("success", "The page: " + targetURL + " has been deleted.");
-                        },
-                        error: function(data) {
-                            showMessage("fail", "The page: " + targetURL + " could not be deleted.");
-                        }
-                    });
-                    return false;
-                }
-                else {
-                    return false;
-                }
-            });
-
-            function createPage(page) {
-                var targetURL = $("#pagePath").attr("value");
-                window.location.href = targetURL + "?edit=true";
-            }
-
-            //                styleUIButtons();
-        </script>
-
         <@addFooter/>
 
     </#if>
@@ -122,7 +88,7 @@
     <#assign thisPage = "static-page.dml"/>
     <#assign pageId = page.path/>
     <#include "includeMarcos.ftl">
-    <@addHeader "${portalDisplayName}", "",["edit_area/edit_area_full.js"],[]/>
+    <@addHeader "${portalDisplayName}", "",["edit_area/edit_area_full.js","tiny_mce/tiny_mce_src.js","static-page.js"],[]/>
 
     <section role="main" class="grid_12">
    <#--
@@ -194,8 +160,6 @@
 
 </section>
 
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/tiny_mce/tiny_mce_src.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/static-page.js"></script>
     <@addFooter/>
     </div>
 </#if>

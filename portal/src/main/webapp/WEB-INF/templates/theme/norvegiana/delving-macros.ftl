@@ -98,11 +98,13 @@
             <!--[if lte IE 9]>
             <script src="/${portalName}/${portalTheme}/js/html5.js" type="text/javascript"></script>
             <![endif]-->
+
+            <#-- Javascript files are written to the footer !!! -->
             <@addJavascript ["jquery-1.4.2.min.js","jquery.validate.pack.js","jquery-ui-1.8.5.custom.min.js","jquery.cookie.js", "js_utilities.js"]/>
             <#if (pageJsFiles?size &gt; 0)>
                 <@addJavascript pageJsFiles/>
             </#if>
-            ${javascriptFiles}
+
         </head>
         <body class="${bodyClass}">
 
@@ -167,11 +169,14 @@
                 <div id="footer-dynamic-content"></div>
             </div>
         </footer>
+
+        </div><#-- // container_12 -->
+
+        ${javascriptFiles}
         <script type="text/javascript">
             delvingPageCall("#footer-dynamic-content", portalName+"/footer.dml?embedded=true"," "," "," ");
         </script>
-
-        </div><#-- // container_12 -->
+ 
         <#if trackingCode??>
             <script type="text/javascript">
 
@@ -371,7 +376,6 @@
     <tr>
         <td valign="top" width="80">
             <div class="brief-thumb-container-listview">
-                <#--<a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}${defaultParams}&amp;pageId=brd">-->
                 <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}${defaultParams}&amp;pageId=brd">
                     <#if useCache="true">
                         <img class="thumb"
@@ -396,19 +400,11 @@
         </td>
         <td class="${cell.type} ">
                 <h6>
-                    <#--<a class="fg-gray" href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}${defaultParams}&amp;pageId=brd">-->
-                    <a class="fg-gray" href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}${defaultParams}&amp;pageId=brd">
+                  <a class="fg-gray" href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}${defaultParams}&amp;pageId=brd">
                         <@stringLimiter "${cell.title}" "100"/></a>
                 </h6>
                 <p>
-                <#-- without labels -->
-                <#--
-                <#if !cell.creator[0]?matches(" ")>${cell.creator}<br/></#if>
-                <#if !cell.year?matches(" ")><#if cell.year != "0000">${cell.year}<br/></#if></#if>
-                <#if !cell.provider?matches(" ")>${cell.provider}</#if>
-                --->
-                <#-- with labels -->
-                <#if !cell.creator[0]?matches("")><span><@spring.message '_search.field.creator' />: </span>${cell.creator}<br/></#if>
+                <#if !cell.creator?matches("")><span><@spring.message '_search.field.creator' />: </span>${cell.creator}<br/></#if>
                 <#if !cell.year?matches("")><#if cell.year != "0000"><span><@spring.message '_search.field.date' />: </span>${cell.year}<br/></#if></#if>
                 <#if !cell.dataProvider?matches("")><@spring.message '_search.field.provider' />: <span class="provider">${cell.dataProvider}</span><br></#if>
                 <#if !cell.type?matches("")><@spring.message '_metadata.dc.type' />: <span class="type">${cell.type}</span></#if>
