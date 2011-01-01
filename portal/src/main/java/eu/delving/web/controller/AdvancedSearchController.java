@@ -51,7 +51,7 @@ public class AdvancedSearchController {
         final String dataProvider = "DATAPROVIDER";
         final String abmMunicipality = "MUNICIPALITY";
         final String europeanaType = "TYPE";
-        query.addFacetField(collectionsName, abmCounty, europeanaType, abmMunicipality);
+        query.addFacetField(collectionsName, abmCounty, europeanaType, abmMunicipality, dataProvider);
         QueryResponse response = beanQueryModelFactory.getSolrResponse(query);
         List<FacetField> facetFields = response.getFacetFields();
         for (FacetField facetField : facetFields) {
@@ -62,7 +62,7 @@ public class AdvancedSearchController {
                 mav.addObject("county", facetField.getValues());
             }
             else if (facetField.getName().equalsIgnoreCase(dataProvider)) {
-                mav.addObject("dataProvider", facetField.getValues());
+                mav.addObject("dataProviders", facetField.getValues());
             }
             else if (facetField.getName().equalsIgnoreCase(europeanaType)) {
                 mav.addObject("type", facetField.getValues());
