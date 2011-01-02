@@ -21,6 +21,8 @@
 
 package eu.europeana.core.util.web;
 
+import eu.delving.core.binding.FreemarkerUtil;
+import eu.delving.core.binding.QueryParamList;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -80,7 +82,9 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
             modelAndView.addObject("portalBaseUrl", portalBaseUrl);
             modelAndView.addObject("portalTheme", portalTheme);
             modelAndView.addObject("portalColor", portalColor);
-            modelAndView.addObject("defaultParams", getDefaultParameters(httpServletRequest.getParameterMap()));
+            final QueryParamList queryParamList = FreemarkerUtil.createQueryParamList(httpServletRequest.getParameterMap());
+            modelAndView.addObject("queryParamList", queryParamList);
+            modelAndView.addObject("defaultParams", queryParamList.getDefaultParamsFormatted());
             modelAndView.addObject("includedMacros", includedMacros);
             if (!googleAnalyticsTrackingCode.isEmpty()) {
                 modelAndView.addObject("googleAnalyticsTrackingCode", googleAnalyticsTrackingCode);
