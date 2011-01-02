@@ -36,7 +36,7 @@
         <dd class="container">
             <#--<@resultBriefFacets "PROVIDER",  "_metadata.europeana.provider", 1/>-->
             <@resultBriefFacets "DATAPROVIDER",  "_metadata.abm.contentProvider", 1/>
-            <@resultBriefFacets "COUNTY",  "_meCtadata.abm.county", 1/>
+            <@resultBriefFacets "COUNTY",  "_metadata.abm.county", 1/>
             <@resultBriefFacets "MUNICIPALITY",  "_metadata.abm.municipality", 1/>
             <@resultBriefFacets "TYPE",  "_metadata.dc.type", 1/>
             <@resultBriefFacets "HASDIGITALOBJECT",  "Has digital object", 1/>
@@ -84,16 +84,16 @@
                 <a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&tab=all" rel="nofollow"><@spring.message '_metadata.type.all'/></a>
             </li>
             <li class="ui-state-default ui-corner-top <#if tab = 'images'>ui-state-active</#if>">
-                <a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:IMAGE&tab=images" rel="nofollow"><@spring.message '_metadata.type.images'/> (<@getFacetCount "TYPE" "IMAGE"/>)</a>
+                <a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:IMAGE&tab=images" rel="nofollow"><@spring.message '_metadata.type.images'/> (<@getFacetCount result "TYPE" "IMAGE"/>)</a>
             </li>
             <li class="ui-state-default ui-corner-top <#if tab = 'texts'>ui-state-active</#if>">
-                <a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:TEXT&tab=texts" rel="nofollow"><@spring.message '_metadata.type.texts'/> (<@getFacetCount "TYPE" "TEXT"/>)</a>
+                <a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:TEXT&tab=texts" rel="nofollow"><@spring.message '_metadata.type.texts'/> (<@getFacetCount result "TYPE" "TEXT"/>)</a>
             </li>
             <li class="ui-state-default ui-corner-top <#if tab = 'videos'>ui-state-active</#if>">
-                <a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:VIDEO&tab=videos" rel="nofollow"><@spring.message '_metadata.type.videos'/> (<@getFacetCount "TYPE" "VIDEO"/>)</a>
+                <a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:VIDEO&tab=videos" rel="nofollow"><@spring.message '_metadata.type.videos'/> (<@getFacetCount result "TYPE" "VIDEO"/>)</a>
             </li>
             <li class="ui-state-default ui-corner-top <#if tab = 'sounds'>ui-state-active</#if>">
-                <a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:TEXT&tab=sounds" rel="nofollow"><@spring.message '_metadata.type.sounds'/> (<@getFacetCount "TYPE" "AUDIO"/>)</a>
+                <a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:TEXT&tab=sounds" rel="nofollow"><@spring.message '_metadata.type.sounds'/> (<@getFacetCount result "TYPE" "AUDIO"/>)</a>
             </li>
         </ul>
     </div>

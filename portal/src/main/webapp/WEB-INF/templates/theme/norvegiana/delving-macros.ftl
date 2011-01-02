@@ -104,13 +104,11 @@
             <!--[if lte IE 9]>
             <script src="/${portalName}/${portalTheme}/js/html5.js" type="text/javascript"></script>
             <![endif]-->
-
-            <#-- Javascript files are written to the footer !!! -->
             <@addJavascript ["jquery-1.4.2.min.js","jquery.validate.pack.js","jquery-ui-1.8.5.custom.min.js","jquery.cookie.js", "js_utilities.js"]/>
             <#if (pageJsFiles?size &gt; 0)>
                 <@addJavascript pageJsFiles/>
             </#if>
-
+            ${javascriptFiles}
         </head>
         <body class="${bodyClass}">
 
@@ -178,7 +176,7 @@
 
         </div><#-- // container_12 -->
 
-        ${javascriptFiles}
+
         <script type="text/javascript">
             delvingPageCall("#footer-dynamic-content", portalName+"/footer.dml?embedded=true"," "," "," ");
         </script>
@@ -273,14 +271,14 @@
  * getFacetCount
  *
  * generates a table with 4x4 rows of brief result data
+ * @param obj: page object containing the data
  * @param facetName : the name of the facet
  * @param typeName : specific type attribute (e.g. for facetName TYPE, typeName(s) could be IMAGE, TEXT, VIDEO, AUDIO
  -->
-<#macro getFacetCount facetName typeName>
-    <#assign facetMap = result.getFacetMap()>
+<#macro getFacetCount obj facetName typeName>
+    <#assign facetMap = obj.getFacetMap()>
     <#assign facet = facetMap.getFacet(facetName)>
     <#assign count = 0/>
-    <#--<#if !facet.type?starts_with("unknown")>-->
     <#if facet.links?size &gt; 0>
         <#list facet.links as link>
             <#if link.value == typeName>
@@ -289,7 +287,6 @@
         </#list>
     </#if>
     ${count}
-    <#--</#if>-->
 </#macro>
 
 <#--
