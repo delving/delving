@@ -30,9 +30,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.text.MessageFormat;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -93,23 +91,5 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
                 modelAndView.addObject("addThisTrackingCode", addThisTrackingCode);
             }
         }
-    }
-
-    private String getDefaultParameters(Map<String, String[]> params) {
-        StringBuilder out = new StringBuilder();
-        out.append(getKey("view", params));
-        out.append(getKey("tab", params));
-        out.append(getKey("sortBy", params));
-        out.append(getKey("sortOrder", params));
-        out.append(getKey("siwa", params));
-        out.append(getKey("debug", params));
-        return out.toString();
-    }
-
-    private String getKey(String key, Map<String, String[]> params) {
-        if (params.containsKey(key) && !params.get(key)[0].isEmpty()) {
-            return MessageFormat.format("&{0}={1}", key, params.get(key)[0]);
-        }
-        return "";
     }
 }

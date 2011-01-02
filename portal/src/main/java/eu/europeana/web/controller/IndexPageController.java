@@ -72,7 +72,7 @@ public class IndexPageController {
         statsQuery.setFacetLimit(100);
         statsQuery.addFacetField("DATAPROVIDER", "COUNTY", "HASDIGITALOBJECT");
         statsQuery.setRows(0);
-        final QueryResponse statsResponse = beanQueryModelFactory.getSolrResponse(solrQuery);
+        final QueryResponse statsResponse = beanQueryModelFactory.getSolrResponse(statsQuery);
         final List<FacetField> facetFields = statsResponse.getFacetFields();
         final FacetStatisticsMap facetStatistics = SolrBindingService.createFacetStatistics(facetFields);
         page.addObject("facetMap", facetStatistics);
