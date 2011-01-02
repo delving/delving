@@ -29,8 +29,16 @@ $(document).ready(function() {
         var images = ['bg-houses.jpg', 'bg-cows.jpg','bg-statues-close.jpg','bg-lion.jpg'];
         $('div#header.home').css({'background-image': 'url('+baseThemePath+'/images/' + images[Math.floor(Math.random() * images.length)] + ')'});
         // slidshow
-        $('.slideshow').cycle({
-            fx: 'fade' // choose your transition type, ex: fade, scrollUp, shuffle, etc...
+//        $('.slideshow').cycle({
+//            fx: 'fade' // choose your transition type, ex: fade, scrollUp, shuffle, etc...
+//        });
+        $("ul#mycarousel li img[title]").tooltip({ position: "top center", opacity: 1, offset:[0,0]});
+        $('ul#mycarousel').jcarousel({
+            animation: 2000,
+            auto: 2,
+            scroll: 1,
+            visible: 5,
+            wrap: "last"
         });
     }else{
         // REDIRECT
