@@ -21,7 +21,7 @@ class FreemarkerUtilSpec extends Spec with ShouldMatchers {
         val qpl = FreemarkerUtil.createQueryParamList(params)
         
         it("should give back all query params") {
-          qpl.getQueryParamList.size should equal (3)
+          qpl.getList.size should equal (3)
         }
 
         it("should give back a filtered list when requested") {

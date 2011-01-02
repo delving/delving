@@ -5,6 +5,13 @@ import scala.collection.JavaConversions._
 import scala.collection.mutable.Map
 
 /**
+ * Example Freemarker usage:
+ *
+ *  <#list queryParamList.getListFiltered(true, ['view', 'tab', 'orderBy']) as qp>
+ *    ${qp.key} ${qp.getFirst()}
+ *  </#list>
+ *
+ *
  *
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  * @since 1/2/11 1:11 PM  
@@ -20,9 +27,9 @@ case class QueryParamList(params: Map[String, Array[String]]) {
 
   def formatAsUrl(params : JList[QueryParam]) : String = params.map(param => param.format).mkString("&")
 
-  def getQueryParamList : JList[QueryParam] = asJavaList(params.toList.map(qp => QueryParam(qp._1, qp._2)))
+  def getList : JList[QueryParam] = asJavaList(params.toList.map(qp => QueryParam(qp._1, qp._2)))
 
-  def getQueryParamListFormated : String = formatAsUrl(getQueryParamList)
+  def getListFormatted : String = formatAsUrl(getList)
 
   def getListFiltered(include: Boolean, fields: Array[String]) : JList[QueryParam] = {
     asJavaList(params.filterKeys(qp => fields.contains(qp) == include).toList.map(qp => QueryParam(qp._1, qp._2)))
@@ -40,10 +47,13 @@ case class QueryParamList(params: Map[String, Array[String]]) {
 
   def hasKey(key : String) = params.contains(key)
 
+  def getQueryParam(key : String) = params.get(key).getOrElse(Array(""))
+
   def getKeys : JList[String] = asJavaList(params.keys.toList)
 }
 
 case class QueryParam(key: String, values: Array[String]) {
   def isNotEmpty = values.length != 0
   def format = values.map(param => key + "=" + param).mkString("&")
+  def getFirst = values.headOption.getOrElse("")
 }
