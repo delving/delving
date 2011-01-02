@@ -508,7 +508,7 @@
                 <#if link.linked>
                     <#assign lstart = link.start/>
                         <a
-                                href="?${queryStringForPresentation?html}&amp;start=${link.start?c}${defaultParams}"
+                                href="?${queryStringForPresentation?html}&amp;start=${link.start?c}&amp;${defaultParams}"
                                 class="fg-button ui-state-default ${uiClassBorder}"
                         >
                             ${link.display?c}
