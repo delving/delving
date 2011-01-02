@@ -1,7 +1,7 @@
 <#compress>
 <#include "includeMarcos.ftl">
 <#assign title><@spring.message '_action.advanced.search'/></#assign>
-<@addHeader "${portalDisplayName} - ${title}", "",[],[]/>
+<@addHeader "${portalDisplayName} - ${title}", "",["advanced-search.js"],[]/>
 <section id="search_advanced" class="grid_10 prefix_2 main"  role="search">
     <div class="inner">
        <h1><@spring.message '_action.advanced.search'/></h1>
@@ -141,37 +141,6 @@
         </form>
 </div>
 </section><!-- end search -->
-<script type="text/javascript">
-    $(document).ready(function() {
-        $("#sel-counties").change(function() {
-            if ($("#sel-counties :selected").val() == "false") {
-                $("#county-list").show("slow");
-            }
-            if ($("#sel-counties :selected").val() == "true") {
-                $("#county-list").hide("slow");
-            }
-        });
-        $("#sel-dataproviders").change(function() {
-            if ($("#sel-dataproviders :selected").val() == "false") {
-                $("#provider-list").show("slow");
-            }
-            if ($("#sel-dataproviders :selected").val() == "true") {
-                $("#provider-list").hide("slow");
-            }
-        });
-        if($("#sel-collections")){
-            $("#sel-collections").change(function() {
-            if ($("#sel-collections :selected").val() == "false") {
-                $("#collections-list").show("slow");
-            }
-            if ($("#sel-collections :selected").val() == "true") {
-                $("#collections-list").hide("slow");
-            }
-            });
-         }
 
-    });
-
-</script>
 <@addFooter/>
 </#compress>
