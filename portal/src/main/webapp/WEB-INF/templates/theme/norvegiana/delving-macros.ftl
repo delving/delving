@@ -286,7 +286,7 @@
             </#if>
         </#list>
     </#if>
-    ${count}
+    ${count?trim}
 </#macro>
 
 <#--

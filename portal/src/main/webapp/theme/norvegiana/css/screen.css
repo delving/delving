@@ -387,6 +387,13 @@ section[role="main"],section[role="complementary"]
 	padding:0 0 0 8px;
 }
 
+/* RESULT TABS ********************************/
+
+#type-tabs li a span {
+    color: #999999;
+    font-weight: normal;
+}
+
 /* RESULTS ************************************/
 #result_sort,#result_view_select
 {
