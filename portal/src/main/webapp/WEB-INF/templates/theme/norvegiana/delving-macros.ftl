@@ -439,12 +439,12 @@
                             <td align="left" style="padding: 2px;" <#if (columnSize==2)>width="50%"</#if>>
                             <#-- DO NOT ENCODE link.url. This is already done in the java code. Encoding it will break functionality !!!  -->
                                 <#if !link.remove = true>
-                                    <a class="add" href="?query=${query?html}${link.url?html}${defaultParams}" title="${link.value}">
+                                    <a class="add" href="?query=${query?html}${link.url?html}&amp;${defaultParams}" title="${link.value}">
                                     <#--<input type="checkbox" value="" onclick="document.location.href='?query=${query?html}${link.url}';"/>-->
                                         <@stringLimiter "${link.value}" "25"/><span>(${link.count})</span>
                                     </a>
                                 <#else>
-                                    <a class="remove" href="?query=${query?html}${link.url?html}${defaultParams}" title="${link.value}">
+                                    <a class="remove" href="?query=${query?html}${link.url?html}&amp;${defaultParams}" title="${link.value}">
                                         <@stringLimiter "${link.value}" "25"/>(<span>${link.count})</span>
                                     </a>
                                 </#if>
@@ -529,7 +529,7 @@
                 <#assign uiClassStateNext = "ui-state-disabled">
             </#if>
             <a
-                    href="?${queryStringForPresentation?html}&amp;start=${pagination.previousPage?c}${defaultParams}"
+                    href="?${queryStringForPresentation?html}&amp;start=${pagination.previousPage?c}&amp;${defaultParams}"
                     class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}"
                     alt="<@spring.message '_action.alt.previous.page' />"
                     style="margin: 0 8px;"
@@ -537,7 +537,7 @@
                <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message '_action.previous' />
             </a>
             <a
-                    href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}${defaultParams}"
+                    href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}&amp;${defaultParams}"
                     class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}"
                     alt="<@spring.message '_action.alt.next.page' />"
                     >
