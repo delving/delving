@@ -21,9 +21,11 @@
 
 package eu.delving.services.controller;
 
+import eu.delving.services.cache.image.ImageCacheService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -69,6 +71,16 @@ public class ServiceController {
                 response.sendRedirect(redirect);
             }
         }
+    }
+
+    @RequestMapping("/image")
+    public void imageProxy(
+            HttpServletResponse response,
+            @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "item", required = false) String item,
+            @RequestParam(value = "size", required = false) String sizeString
+    ) throws IOException {
+        ImageCacheService.retrieveImageFromCache(item, response);
     }
 
     private static void report(HttpServletResponse response, String message) throws IOException {
