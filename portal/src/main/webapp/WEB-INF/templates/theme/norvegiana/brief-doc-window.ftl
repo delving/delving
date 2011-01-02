@@ -36,8 +36,8 @@
         <dd class="container">
             <#--<@resultBriefFacets "PROVIDER",  "_metadata.europeana.provider", 1/>-->
             <@resultBriefFacets "DATAPROVIDER",  "_metadata.abm.contentProvider", 1/>
+            <@resultBriefFacets "COUNTY",  "_meCtadata.abm.county", 1/>
             <@resultBriefFacets "MUNICIPALITY",  "_metadata.abm.municipality", 1/>
-            <@resultBriefFacets "COUNTY",  "_metadata.abm.county", 1/>
             <@resultBriefFacets "TYPE",  "_metadata.dc.type", 1/>
             <@resultBriefFacets "HASDIGITALOBJECT",  "Has digital object", 1/>
         </dd>
