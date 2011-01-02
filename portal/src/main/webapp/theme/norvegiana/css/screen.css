@@ -193,6 +193,11 @@ section#info p
 
 /* CAROUSEL *************************************/
 
+li.jcarousel-item {
+    margin: 0 0 1em 1em;
+}
+
+/* TOOLTIP *************************************/
 
 .tooltip {
 	display:none;
@@ -735,7 +740,7 @@ dl.info-box
 {
 	-moz-border-radius:5px;
 	-webkit-border-radius:5px;
-	background:#eeeee0;
+	background:#fffff0;
 	border:1px solid #ddddd0;
 	border-radius:5px;
 	/*height:100%;*/
@@ -744,6 +749,8 @@ dl.info-box
 
 dl.info-box dt, h3.header
 {
+	-moz-border-radius:5px 5px 0 0;
+	-webkit-border-radius:5px 5px 0 0;
     background:#6699cc;
 	border:1px solid #fff;
 	border-radius:5px 5px 0 0;

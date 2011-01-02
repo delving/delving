@@ -22,18 +22,15 @@ $(document).ready(function() {
     if(!$.cookie('takeMeBack')){
         // STAY ON PAGE
         // fill in text under the search input
-        delvingPageCall("section#info", portalName+"/home.dml?embedded=true"," "," "," ");
-        // fill in text on page
         delvingPageCall("p#intro-text", portalName+"/home/intro-text.dml?embedded=true"," "," "," ");
+        // fill in text on page
+        delvingPageCall("div#info", portalName+"/home.dml?embedded=true"," "," "," ");
         // random background images for the header
         var images = ['bg-houses.jpg', 'bg-cows.jpg','bg-statues-close.jpg','bg-lion.jpg'];
         $('div#header.home').css({'background-image': 'url('+baseThemePath+'/images/' + images[Math.floor(Math.random() * images.length)] + ')'});
-        // slidshow
-//        $('.slideshow').cycle({
-//            fx: 'fade' // choose your transition type, ex: fade, scrollUp, shuffle, etc...
-//        });
-        $("ul#mycarousel li img[title]").tooltip({ position: "top center", opacity: 1, offset:[0,0]});
-        $('ul#mycarousel').jcarousel({
+
+        $("ul#random-carousel li img[title]").tooltip({ position: "top center", opacity: 1, offset:[0,0]});
+        $('ul#random-carousel').jcarousel({
             animation: 2000,
             auto: 2,
             scroll: 1,
