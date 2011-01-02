@@ -156,6 +156,8 @@ case class FacetStatisticsMap(private val facets: List[FacetField]) {
     facetField
   }
 
+  def getFacetCount(key: String) = facets.filter(ff => ff.getName == key).headOption.getOrElse(getDummyFacetField).getValueCount
+
   def getFacet(key: String) : JList[FacetField.Count] = facetsMap.getOrElse(key, getDummyFacetField.getValues)
 
 }
