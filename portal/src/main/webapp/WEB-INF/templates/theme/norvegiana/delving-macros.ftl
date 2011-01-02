@@ -21,6 +21,12 @@
 <#if !thisPage??>
     <#assign thisPage = ""/>
 </#if>
+
+<#--<#assign test = RequestParameters['qf']/>-->
+<#--${test}<br/>-->
+<#--${query?html}<br/>-->
+<#--${defaultParams}<br/>-->
+
 <#--
  * adminBlock
  *
@@ -1021,7 +1027,7 @@
 <#--
  * sortResults
  *
- * Macro to generate a dropdow with sorting options
+ * Macro to generate a dropdown with sorting options
  -->
 <#macro sortResults>
 <select id="sortOptions" name="sortBy" onchange="$('input#sortBy').val(this.value);$('form#form-sort').submit();">

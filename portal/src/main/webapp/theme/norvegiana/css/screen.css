@@ -166,6 +166,7 @@ section#info p
 	padding:0 1em;
 }
 
+
 /* SLIDESHOW *****************************************/
 .slideshow {
     height: 232px;
@@ -188,6 +189,19 @@ section#info p
 .slideshow img {
     -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
+}
+
+/* CAROUSEL *************************************/
+
+
+.tooltip {
+	display:none;
+	background:transparent url(../images/tooltip/white_arrow.png);
+	font-size:12px;
+	height:70px;
+	width:160px;
+	padding:25px;
+	color:#336699;
 }
 
 /* USERBAR **************************************/
