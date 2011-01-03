@@ -19,7 +19,6 @@ import com.mongodb. {DBObject, MongoOptions, Mongo}
 
 object ImageCacheService {
 
-
   // Mongo Settings
   val mongoOptions = new MongoOptions()
   mongoOptions.connectionsPerHost = 100
@@ -60,7 +59,8 @@ object ImageCacheService {
     }
     catch {
       case ia : IllegalArgumentException =>
-        log.error("problem with processing this url: \"" + url + "\"http://localhost:8983/services/image?id=http%3A%2F%2Fwww.sffarkiv.no%2Fwebdb%2FfileStream.aspx%3FfileName%3Ddbatlas_leks%5COFdf-113832%5Ckvalitet2%5COFdf-113832.84287.jpg&size=BRIEF_DOC&type=IMAGE\n" + ia.getStackTraceString)    //move to debug later
+        log.error("problem with processing this url: \"" + url + "\"")
+//        log.error(ia.getStackTraceString)//move to debug later
         respondWithNotFound(url, response)
       case ex: Exception =>
         log.error("unable to find image: \"" + url + "\"\n" + ex.getStackTraceString)
@@ -88,7 +88,6 @@ object ImageCacheService {
       setImageCacheControlHeaders(image, response)
     }
   }
-
 
   // storeImage
   def storeImage(url: String) : CachedItem = {
