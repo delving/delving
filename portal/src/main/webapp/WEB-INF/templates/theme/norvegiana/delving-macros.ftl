@@ -486,7 +486,7 @@ getSearchParamsFormatted(): ${queryParamList.getSearchParamsFormatted()}<br/>
         <#if link.linked>
             <#assign lstart = link.start/>
                 <#--<a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${link.start?c}${defaultParams}">-->
-                <a href="?${queryStringForPresentation?html}&amp;start=${link.start?c}${defaultParams}}">
+                <a href="?${queryStringForPresentation?html}&amp;start=${link.start?c}&amp;${queryParamList.getDefaultParamsFormatted()}">
                     ${link.display?c}
                 </a>
          <#else>
@@ -497,13 +497,13 @@ getSearchParamsFormatted(): ${queryParamList.getSearchParamsFormatted()}<br/>
     </#list>
     <#if pagination.previous>
         <#--<a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}${defaultParams}" alt="<@spring.message '_action.alt.previous.page' />">-->
-        <a href="?${queryStringForPresentation?html}}&amp;start=${pagination.previousPage?c}${defaultParams}" alt="<@spring.message '_action.alt.previous.page' />">
+        <a href="?${queryStringForPresentation?html}}&amp;start=${pagination.previousPage?c}&amp;${queryParamList.getDefaultParamsFormatted()}" alt="<@spring.message '_action.alt.previous.page' />">
        <@spring.message '_action.previous' />
     </a>
     </#if>
     <#if pagination.next>
         <#--<a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}${defaultParams}" alt="<@spring.message '_action.alt.next.page' />">-->
-        <a href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}${defaultParams}" alt="<@spring.message '_action.alt.next.page' />">
+        <a href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}&amp;${queryParamList.getDefaultParamsFormatted()}" alt="<@spring.message '_action.alt.next.page' />">
             <@spring.message '_portal.ui.navigation.next' />
         </a>
     </#if>
@@ -512,9 +512,6 @@ getSearchParamsFormatted(): ${queryParamList.getSearchParamsFormatted()}<br/>
 <#macro resultBriefPaginationStyled>
         <div class="fg-buttonset fg-buttonset-multi">
 
-            <#--<@spring.message '_portal.ui.navigation.results' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message '_portal.ui.navigation.of' /> ${pagination.getNumFound()?c}-->
-
-            <#--<@spring.message '_portal.ui.navigation.page' />:-->
             <#list pagination.pageLinks as link>
             <#assign uiClassBorder = ""/>
             <#if link_index == 0>
@@ -526,7 +523,7 @@ getSearchParamsFormatted(): ${queryParamList.getSearchParamsFormatted()}<br/>
                 <#if link.linked>
                     <#assign lstart = link.start/>
                         <a
-                                href="?${queryStringForPresentation?html}&amp;start=${link.start?c}&amp;${defaultParams}"
+                                href="?${queryStringForPresentation?html}&amp;start=${link.start?c}&amp;${queryParamList.getDefaultParamsFormatted()}"
                                 class="fg-button ui-state-default ${uiClassBorder}"
                         >
                             ${link.display?c}
@@ -547,7 +544,7 @@ getSearchParamsFormatted(): ${queryParamList.getSearchParamsFormatted()}<br/>
                 <#assign uiClassStateNext = "ui-state-disabled">
             </#if>
             <a
-                    href="?${queryStringForPresentation?html}&amp;start=${pagination.previousPage?c}&amp;${defaultParams}"
+                    href="?${queryStringForPresentation?html}&amp;start=${pagination.previousPage?c}&amp;${queryParamList.getDefaultParamsFormatted()}"
                     class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}"
                     alt="<@spring.message '_action.alt.previous.page' />"
                     style="margin: 0 8px;"
@@ -555,7 +552,7 @@ getSearchParamsFormatted(): ${queryParamList.getSearchParamsFormatted()}<br/>
                <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message '_action.previous' />
             </a>
             <a
-                    href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}&amp;${defaultParams}"
+                    href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}&amp;${queryParamList.getDefaultParamsFormatted()}"
                     class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}"
                     alt="<@spring.message '_action.alt.next.page' />"
                     >
