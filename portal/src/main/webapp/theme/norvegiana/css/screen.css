@@ -578,6 +578,12 @@ h4.active:hover
 	text-decoration:none;
 }
 
+/* ACTIONS (FULL VIEW ***************************/
+
+#actions {
+    margin: 1em 0 0 0;
+}
+
 /* ITEM (FULL VIEW) *****************************/
 #itemImage
 {
@@ -854,6 +860,9 @@ h3.header.actions
 }
 
 /* DEFINITION LIST MENU STYLE */
+dl.menu {
+
+}
 dl.menu dt
 {
 	border-bottom:1px solid #aaaaa0;
@@ -887,6 +896,12 @@ dl.menu dd img
 	float:left;
 	margin:0 .25em .25em 0;
 }
+
+
+dl.zebra dd:nth-child(even){
+    background-color: #fffff0;
+}
+
 
 /* TABLES */
 table

@@ -32,7 +32,7 @@
         <a class="fg-button ui-state-default ui-corner-all" href='/${portalName}/brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message '_action.see.all.related.items' /></a>
     </#if>
 
-    <dl class="menu">
+    <dl class="menu" id="actions">
         <dt><@spring.message '_portal.ui.message.actions' /></dt>
         <#if result.fullDoc.europeanaType == "IMAGE">
             <#if result.fullDoc.europeanaIsShownBy[0]?? && imageAnnotationToolBaseUrl?? && imageAnnotationToolBaseUrl!="">
@@ -88,6 +88,7 @@
     </div>
 
     <div class="ui-widget ui-widget-content ui-corner-all ui-helper-clearfix">
+        
         <nav class="pagination" role="navigation">
             <div class="inner1">
             <@resultFullPagination/>
