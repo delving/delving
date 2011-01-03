@@ -394,6 +394,11 @@ section[role="main"],section[role="complementary"]
     font-weight: normal;
 }
 
+#type-tabs li.ui-state-active a span {
+    color: #ccffff;
+    font-weight: normal;
+}
+
 /* RESULTS ************************************/
 #result_sort,#result_view_select
 {
