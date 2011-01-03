@@ -11,7 +11,7 @@
 <#if RequestParameters.view??>
     <#assign view = RequestParameters.view/>
 </#if>
-<#assign useCache = "false">
+<#assign useCache = "true">
 <#assign javascriptFiles = ""/>
 <#assign cssFiles = ""/>
 <#assign contentOnly = "false"/>
@@ -326,7 +326,7 @@ getSearchParamsFormatted(): ${queryParamList.getSearchParamsFormatted()}<br/>
                                  class="thumb"
                                  id="thumb_${cell.index()?c}"
                                  align="middle"
-                                 src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}" alt="<@spring.message '_action.alt.more.info' />"
+                                 src="${cacheUrl}id=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}" alt="<@spring.message '_action.alt.more.info' />"
                                  onload="checkSize(this.id,'brief',this.width);"
                                  onerror="showDefaultSmall(this,'${cell.type}')"
                                  height="110"
@@ -401,7 +401,7 @@ getSearchParamsFormatted(): ${queryParamList.getSearchParamsFormatted()}<br/>
                         <img class="thumb"
                              id="thumb_${cell.index()}"
                              align="middle"
-                             src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}"
+                             src="${cacheUrl}id=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}"
                              alt="<@spring.message '_action.alt.more.info' />"
                              height="50"
                           />
@@ -628,7 +628,7 @@ getSearchParamsFormatted(): ${queryParamList.getSearchParamsFormatted()}<br/>
             <#assign match = result.matchDoc/>
             <a href="${match.fullDocUrl()}">
                 <#if useCache="true">
-                    <img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                    <img src="${cacheUrl}id=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
                 <#else>
                     <img src="${match.thumbnail}" alt="${match.title}" height="25"/>${match.title}
                 </#if>
@@ -659,7 +659,7 @@ getSearchParamsFormatted(): ${queryParamList.getSearchParamsFormatted()}<br/>
                 <#assign match = result.matchDoc/>
                 <a href="${match.fullDocUrl}">
                     <#if useCache="true">
-                        <img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                        <img src="${cacheUrl}id=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
                     <#else>
                         <img src="${match.thumbnail}" alt="${match.title}" height="25"/>
                     </#if>
@@ -708,8 +708,8 @@ getSearchParamsFormatted(): ${queryParamList.getSearchParamsFormatted()}<br/>
                     <#--todo review this. It seems wrong to display the image of the current full-doc instead of the original related item search-->
                     <a href="full-doc.html?&amp;uri=${match.id}">
                     <#if useCache="true">
-                        <#--<img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>-->
-                        <img src="${cacheUrl}uri=${imgSrc?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                        <#--<img src="${cacheUrl}id=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>-->
+                        <img src="${cacheUrl}id=${imgSrc?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
                     <#else>
                         <img src="${imgSrc}" alt="${match.getFieldValue("dc_title").getFirst()}" height="25"/>
                     </#if>
@@ -737,7 +737,7 @@ getSearchParamsFormatted(): ${queryParamList.getSearchParamsFormatted()}<br/>
                     <#--todo review this. It seems wrong to display the image of the current full-doc instead of the original related item search-->
                     <a href="full-doc.html?&amp;uri=${match.id}">
                     <#if useCache="true">
-                        <img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                        <img src="${cacheUrl}id=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
                     <#else>
                         <img src="${match.thumbnail}" alt="${match.title}" height="25"/>
                     </#if>
@@ -843,7 +843,7 @@ getSearchParamsFormatted(): ${queryParamList.getSearchParamsFormatted()}<br/>
        <#--alt="<@spring.message '_action.view.in.original.context' /> <@spring.message '_action.OpenInNewWindow'/>"-->
     <#-->-->
     <#if useCache="true">
-        <img src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
+        <img src="${cacheUrl}id=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
              class="full"
              alt="${result.fullDoc.dcTitle[0]}"
              id="imgview"
@@ -861,7 +861,7 @@ getSearchParamsFormatted(): ${queryParamList.getSearchParamsFormatted()}<br/>
         />
     </#if>
     <#--<#if useCache="true">-->
-        <#--<img src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"-->
+        <#--<img src="${cacheUrl}id=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"-->
              <#--class="full"-->
              <#--alt="${result.fullDoc.dcTitle[0]}"-->
              <#--id="imgview"-->
@@ -906,11 +906,11 @@ getSearchParamsFormatted(): ${queryParamList.getSearchParamsFormatted()}<br/>
             <@resultFullDataRow "dc_date"/>
             <@resultFullDataRow "dc_creator"/>
             <@resultFullDataRow "dc_description"/>
+            <@resultFullDataRow "dc:subject"/>
             <@resultFullDataRow "dc_language"/>
             <@resultFullDataRow "dc_source"/>
             <@resultFullDataRow "dc_rights"/>
             <@resultFullDataRow "europeana_dataProvider"/>
-            <@resultFullDataRow "europeana_provider"/>
             <@resultFullDataRow "europeana_country"/>
             <@resultFullDataRow "dc_identifier"/>
             <@resultFullDataRow "dc_publisher"/>
