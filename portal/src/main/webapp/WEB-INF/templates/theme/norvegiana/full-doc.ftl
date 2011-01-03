@@ -10,75 +10,64 @@
 
     <dl class="menu">
         <dt><@spring.message '_portal.ui.message.relatedcontent' /></dt>
-            <#assign max=5/><!-- max shown in list -->
-            <#list result.relatedItems as doc>
-                <#if doc_index &gt; (max-1)><#break/></#if>
-             <dd>
-                 <#if useCache="true">
-                         <img src="${cacheUrl}id=${doc.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" onerror="showDefaultSmall(this,'${doc.type}')" alt="Click here to view related item" width="25"/>
-                     <#else>
-                         <img src="${doc.thumbnail}" alt="Click here to view related item" width="25" onerror="showDefaultSmall(this,'${doc.type}')"/>
-                 </#if>
-                  <#if queryStringForPaging??>
-                    <a href='${doc.fullDocUrl()}?query=europeana_uri:"${doc.id?url('utf-8')}"&amp;start=${doc.index()?c}&amp;startPage=1&amp;pageId=brd'><@stringLimiter "${doc.title}" "40"/></a>
-                  <#else>
-                       <a href="${doc.fullDocUrl()}"><@stringLimiter "${doc.title}" "40"/></a>
+        <#assign max=5/><!-- max shown in list -->
+        <#list result.relatedItems as doc>
+            <#if doc_index &gt; (max-1)><#break/></#if>
+            <dd>
+                <#if useCache="true">
+                    <img src="${cacheUrl}id=${doc.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" onerror="showDefaultSmall(this,'${doc.type}')" alt="Click here to view related item" width="25"/>
+                    <#else>
+                        <img src="${doc.thumbnail}" alt="Click here to view related item" width="25" onerror="showDefaultSmall(this,'${doc.type}')"/>
                 </#if>
-             </dd>
+                <#if queryStringForPaging??>
+                    <a href='${doc.fullDocUrl()}?query=europeana_uri:"${doc.id?url('utf-8')}"&amp;start=${doc.index()?c}&amp;startPage=1&amp;pageId=brd'><@stringLimiter "${doc.title}" "40"/></a>
+                    <#else>
+                        <a href="${doc.fullDocUrl()}"><@stringLimiter "${doc.title}" "40"/></a>
+                </#if>
+            </dd>
 
-            </#list>
-            <#if result.relatedItems?size &gt; max-1>
-                <dd>
-                     <a class="fg-button" href='/${portalName}/brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message '_action.see.all.related.items' /></a>
-                </dd>
-            </#if>
+        </#list>
     </dl>
+    <#if result.relatedItems?size &gt; max-1>
+        <a class="fg-button ui-state-default ui-corner-all" href='/${portalName}/brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message '_action.see.all.related.items' /></a>
+    </#if>
 
-
-
-                                              
-        <dl class="menu">
-            <dt><@spring.message '_portal.ui.message.actions' /></dt>
-            <#if result.fullDoc.europeanaType == "IMAGE">
-                <#if result.fullDoc.europeanaIsShownBy[0]?? && imageAnnotationToolBaseUrl?? && imageAnnotationToolBaseUrl!="">
+    <dl class="menu">
+        <dt><@spring.message '_portal.ui.message.actions' /></dt>
+        <#if result.fullDoc.europeanaType == "IMAGE">
+            <#if result.fullDoc.europeanaIsShownBy[0]?? && imageAnnotationToolBaseUrl?? && imageAnnotationToolBaseUrl!="">
                 <dd>
                     <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}&id=${result.fullDoc.id}" target="_blank"><@spring.message '_action.add.annotation' /></a>
                 </dd>
+            </#if>
+        </#if>
+        <#if addThisTrackingCode??>
+            <dd>
+            <@addThis "${addThisTrackingCode}"/>
+            </dd>
+        </#if>
+        <#if user??>
+            <dd>
+                <a href="#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.getFieldValue("europeana_object").getFirst()?js_string}','${result.fullDoc.europeanaType}');"><@spring.message '_action.save.to.mine' /></a>
+            </dd>
+            <#if result.fullDoc.europeanaType == "IMAGE">
+                <#if result.fullDoc.europeanaIsShownBy[0]?? && imageAnnotationToolBaseUrl?? && imageAnnotationToolBaseUrl!="">
+                    <dd>
+                        <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}&id=${result.fullDoc.id}" target="_blank"><@spring.message '_action.add.annotation' /></a>
+                    </dd>
                 </#if>
             </#if>
-            <#if addThisTrackingCode??>
-                <dd>
-                    <#--<@addThis "${addThisTrackingCode}"/>-->
-                </dd>
-            </#if>
-            <#if user??>
+        <#else>
+            <dd>
+                <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); showMessage('error','<@spring.message '_mine.user.notification.login.required'/>'); return false;"><@spring.message '_action.add.tag' /></a>
+            </dd>
 
-
-                <dd>
-                    <a href="#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.getFieldValue("europeana_object").getFirst()?js_string}','${result.fullDoc.europeanaType}');"><@spring.message '_action.save.to.mine' /></a>
-                </dd>
-
-                <#if result.fullDoc.europeanaType == "IMAGE">
-                	<#if result.fullDoc.europeanaIsShownBy[0]?? && imageAnnotationToolBaseUrl?? && imageAnnotationToolBaseUrl!="">
-	                    <dd>
-		                    <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}&id=${result.fullDoc.id}" target="_blank"><@spring.message '_action.add.annotation' /></a>
-		                </dd>
-	                </#if>
-                </#if>
-
-            <#else>
-                <dd>
-                    <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); showMessage('error','<@spring.message '_mine.user.notification.login.required'/>'); return false;"><@spring.message '_action.add.tag' /></a>
-                </dd>
-
-                <dd>
-                    <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); showMessage('error','<@spring.message '_mine.user.notification.login.required'/>'); return false;"><@spring.message '_action.save.to.mine' /></a>
-                </dd>
-
-
-            </#if>
-            <div id="msg-save-item" class="msg-hide"></div>
-        </dl>
+            <dd>
+                <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); showMessage('error','<@spring.message '_mine.user.notification.login.required'/>'); return false;"><@spring.message '_action.save.to.mine' /></a>
+            </dd>
+        </#if>
+        <div id="msg-save-item" class="msg-hide"></div>
+    </dl>
 </section>
 
 
