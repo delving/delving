@@ -38,6 +38,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -45,6 +46,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.KeyStroke;
 import javax.swing.ProgressMonitor;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -556,17 +558,30 @@ public class DataSetActions {
         }
     }
 
-    private JPanel createFinishedPanel(final JDialog frame) {
+    private JPanel createFinishedPanel(JDialog dialog) {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton hide = new JButton("Finished");
-        hide.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                setEntry(entry);
-                frame.setVisible(false);
-            }
-        });
+        Action finishedAction = new FinishedAction(dialog);
+        ((JComponent)dialog.getContentPane()).getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("ESCAPE"), "finished");
+        ((JComponent)dialog.getContentPane()).getActionMap().put("finished", finishedAction);
+        JButton hide = new JButton(finishedAction);
         panel.add(hide);
         return panel;
+    }
+
+    private class FinishedAction extends AbstractAction {
+
+        private JDialog dialog;
+
+        private FinishedAction(JDialog dialog) {
+            this.dialog = dialog;
+            putValue(NAME, "Finished (ESCAPE)");
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ESC"));
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            setEntry(entry);
+            dialog.setVisible(false);
+        }
     }
 }
