@@ -19,7 +19,7 @@
         <#assign tab = RequestParameters.tab/>
     </#if>
     <#include "includeMarcos.ftl">
-
+  
 <@addHeader "${portalDisplayName}", "",["results.js"],[]/>
 
 <script type="text/javascript">
