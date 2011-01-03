@@ -10,6 +10,7 @@ import org.apache.commons.httpclient. {Header, HttpClient, MultiThreadedHttpConn
 import annotation.tailrec
 import org.apache.log4j.Logger
 import com.mongodb. {DBObject, MongoOptions, Mongo}
+import java.util.Date
 
 /**
  *
@@ -41,6 +42,10 @@ object ImageCacheService {
   def findImageInCache(url: String) : GridFSDBFile = {
     log info ("attempting to retrieve: " + url)
     val image : GridFSDBFile = myFS.findOne(url)
+    image.put("lastViewed", new Date)
+    val viewed : Int = image.get("viewed").asInstanceOf[Int]
+    image.put("viewed", viewed + 1)
+    image.save
     image
   }
 
@@ -95,6 +100,8 @@ object ImageCacheService {
     if (image.storable) {
       val inputFile = myFS.createFile(image.dataAsStream, image.url)
       inputFile setContentType(image.contentType)
+      inputFile put ("viewed", 0)
+      inputFile put ("lastViewed", new Date)
       inputFile.save
       CachedItem(true, inputFile)
     }
