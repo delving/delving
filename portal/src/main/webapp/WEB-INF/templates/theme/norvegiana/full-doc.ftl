@@ -48,7 +48,7 @@
             </#if>
             <#if addThisTrackingCode??>
                 <dd>
-                    <@addThis "${addThisTrackingCode}"/>
+                    <#--<@addThis "${addThisTrackingCode}"/>-->
                 </dd>
             </#if>
             <#if user??>
@@ -90,7 +90,7 @@
 
     <div class="clear"></div>
 
-    <div class="ui-tabs" style="padding:0 0 0 .5em;">
+    <div class="ui-tabs" style="padding:0 0 0 1em;">
         <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget" id="type-tabs">
             <li class="ui-state-default ui-corner-top ui-state-active"><a href="">Basic view</a></li>
             <li class="ui-state-default ui-corner-top ui-state-disabled"><a href="">Alternative view 1</a></li>
@@ -100,12 +100,10 @@
 
     <div class="ui-widget ui-widget-content ui-corner-all ui-helper-clearfix">
         <nav class="pagination" role="navigation">
-            <div class="inner">
+            <div class="inner1">
             <@resultFullPagination/>
             </div>
         </nav>
-
-        <div class="clear"></div>
 
         <div id="itemData">
             <div id="itemImage">
