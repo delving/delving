@@ -65,7 +65,7 @@ import java.util.List;
  */
 
 public class DataSetActions {
-    private static final Dimension SIZE = new Dimension(1024 - 60, 768 - 60);
+    private static final Dimension SIZE = new Dimension(1024, 768);
     private JFrame frame;
     private RecordStatisticsDialog recordStatisticsDialog;
     private AnalysisFactsDialog analysisFactsDialog;
@@ -118,6 +118,7 @@ public class DataSetActions {
                     buildPanel();
                     panel.invalidate();
                     frame.getContentPane().validate();
+                    setEntry(null);
                 }
             });
             menu.add(box);
@@ -153,6 +154,7 @@ public class DataSetActions {
         JPanel remote = createRemotePanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
         panel.add(local);
+        panel.add(Box.createVerticalGlue());
         panel.add(remote);
         panel.add(Box.createVerticalGlue());
     }
@@ -160,7 +162,6 @@ public class DataSetActions {
     private JPanel createRemotePanel() {
         JPanel remote = new JPanel(new GridLayout(0, 1, 5, 5));
         remote.setBorder(BorderFactory.createTitledBorder("Remote Actions"));
-        createRemoteActions();
         for (Action action : remoteActions) {
             remote.add(new JButton(action));
         }
@@ -170,7 +171,6 @@ public class DataSetActions {
     private JPanel createLocalPanel() {
         JPanel local = new JPanel(new GridLayout(0, 1, 5, 5));
         local.setBorder(BorderFactory.createTitledBorder("Local Actions"));
-        createLocalActions(sipModel);
         for (Action action : localActions) {
             local.add(new JButton(action));
         }
