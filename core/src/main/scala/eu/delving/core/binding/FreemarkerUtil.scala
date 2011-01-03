@@ -56,4 +56,5 @@ case class QueryParam(key: String, values: Array[String]) {
   def isNotEmpty = values.length != 0
   def format = values.map(param => key + "=" + param).mkString("&")
   def getFirst = values.headOption.getOrElse("")
+  def getKey = key
 }
