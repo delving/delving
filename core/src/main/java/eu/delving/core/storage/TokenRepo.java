@@ -33,6 +33,9 @@ import java.util.Date;
 
 public interface TokenRepo extends PersistentTokenRepository {
 
+    String REGISTRATION_COLLECTION = "registration-token";
+    String AUTHENTICATION_COLLECTION = "authentication-token";
+
     RegistrationToken createRegistrationToken(String email);
 
     RegistrationToken getRegistrationToken(String id);
@@ -41,21 +44,26 @@ public interface TokenRepo extends PersistentTokenRepository {
 
         String getId();
         String getEmail();
-        void isOlderThan(long time);
+        boolean isOlderThan(long time);
         void delete();
 
         String EMAIL = "email";
+        String ID = "_id";
     }
 
     public interface AuthenticationToken {
 
-        String getId();
+        String getTokenValue();
 
         String getSeries();
 
         String getEmail();
 
-        Date getLastUsed();
+        Date getDate();
 
+        String TOKEN_VALUE = "token_value";
+        String SERIES = "series";
+        String EMAIL = "email";
+        String DATE = "date";
     }
 }
