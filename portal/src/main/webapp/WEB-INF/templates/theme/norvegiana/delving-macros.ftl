@@ -24,9 +24,9 @@
 
 
 
-getSearchParams: <#list queryParamList.getSearchParams() as qp>${qp.key()}=${qp.getFirst()}&</#list><br/>
+<#--getSearchParams: <#list queryParamList.getSearchParams() as qp>${qp.key()}=${qp.getFirst()}&</#list><br/>-->
 
-getSearchParamsFormatted(): ${queryParamList.getSearchParamsFormatted()}<br/>
+<#--getSearchParamsFormatted(): ${queryParamList.getSearchParamsFormatted()}<br/>-->
 
 <#--getDefaultParams(): <#list queryParamList.getDefaultParams() as qp>${qp.key()}=${qp.getFirst()}&</#list><br/>-->
 
