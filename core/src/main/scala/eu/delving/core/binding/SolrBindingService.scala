@@ -9,8 +9,9 @@ import eu.europeana.core.querymodel.query._
 import org.apache.solr.client.solrj.response. {FacetField, QueryResponse}
 import java.net.URL
 import xml. {MetaData, NodeSeq, Elem, XML}
-import collection.mutable. {ListBuffer, Map}
 import collection.immutable. {HashMap, Map => ImMap}
+import org.apache.solr.client.solrj.response.FacetField.Count
+import collection.mutable. {Buffer, ListBuffer, Map}
 
 /**
  *
@@ -154,6 +155,11 @@ case class FacetStatisticsMap(private val facets: List[FacetField]) {
     val facetField = new FacetField("unknown")
     facetField.add("nothing", 0)
     facetField
+  }
+
+  def getFacetValueCount(key: String, facetName: String) = {
+    val count : Count = getFacet(facetName).filter(fc => fc.getName == key).headOption.getOrElse(new FacetField.Count(getDummyFacetField, "unknown", 0))
+    count.getCount
   }
 
   def getFacetCount(key: String) = facets.filter(ff => ff.getName == key).headOption.getOrElse(getDummyFacetField).getValueCount
