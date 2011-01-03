@@ -41,16 +41,12 @@ import java.util.Date;
  */
 
 public class TokenRepoImpl implements TokenRepo {
-
     private Logger log = Logger.getLogger(getClass());
+    private String databaseName = "tokens";
+    private DB mongoDatabase;
 
     @Autowired
     private Mongo mongo;
-
-    @Autowired
-    private String databaseName = "token";
-
-    private DB mongoDatabase;
 
     public void setMongo(Mongo mongo) {
         this.mongo = mongo;

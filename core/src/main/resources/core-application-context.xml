@@ -100,9 +100,13 @@
         <property name="properties" ref="launchProperties"/>
     </bean>
 
-    <bean name="annotationDao" class="eu.delving.core.storage.annotation.AnnotationDaoImpl"/>
+    <bean id="mongo" class="com.mongodb.Mongo"/>
 
-    <bean name="tokenRepositoryService" class="eu.delving.core.storage.TokenRepositoryService"/>
+    <bean id="userRepo" class="eu.delving.core.storage.impl.UserRepoImpl"/>
+
+    <bean id="tokenRepo" class="eu.delving.core.storage.impl.TokenRepoImpl"/>
+
+    <bean id="userDetailsService" class="eu.delving.core.storage.SpringUserService"/>
 
     <bean id="solrSelectServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
         <!--<constructor-arg value="#{launchProperties['services.url']}/api/solr"/>-->
@@ -237,14 +241,6 @@
             </list>
         </property>
     </bean>
-
-    <bean id="mongo" class="com.mongodb.Mongo"/>
-
-    <bean id="userRepo" class="eu.delving.core.storage.impl.UserRepoImpl"/>
-
-    <bean id="tokenRepo" class="eu.delving.core.storage.impl.TokenRepoImpl"/>
-
-    <bean id="userDetailsService" class="eu.delving.core.storage.SpringUserService"/>
 
 </beans>
 
