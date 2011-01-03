@@ -7,9 +7,9 @@ import org.apache.commons.httpclient.methods.GetMethod
 import com.mongodb.gridfs. {GridFSInputFile, GridFSDBFile, GridFS}
 import org.apache.commons.io.IOUtils
 import org.apache.commons.httpclient. {Header, HttpClient, MultiThreadedHttpConnectionManager}
-import com.mongodb. {MongoOptions, Mongo}
 import annotation.tailrec
 import org.apache.log4j.Logger
+import com.mongodb. {DBObject, MongoOptions, Mongo}
 
 /**
  *
@@ -41,7 +41,8 @@ object ImageCacheService {
   // findImageInCache
   def findImageInCache(url: String) : GridFSDBFile = {
     log info ("attempting to retrieve: " + url)
-    myFS.findOne(url)
+    val image : GridFSDBFile = myFS.findOne(url)
+    image
   }
 
   private[image] def sanitizeUrl(url: String) : String = {
@@ -51,17 +52,18 @@ object ImageCacheService {
 
   def retrieveImageFromCache(url: String, response : HttpServletResponse) : HttpServletResponse = {
     // catch try block to harden the application and always give back a 404 for the application
-    require(url != null)
-    require(url != "noImageFound")
     try {
+      require(url != null)
+      require(url != "noImageFound")
+      require(!url.isEmpty)
       findOrInsert(sanitizeUrl(url), response)
     }
     catch {
       case ia : IllegalArgumentException =>
-        log.error(ia.getStackTraceString)    //move to debug later
+        log.error("problem with processing this url: \"" + url + "\"http://localhost:8983/services/image?id=http%3A%2F%2Fwww.sffarkiv.no%2Fwebdb%2FfileStream.aspx%3FfileName%3Ddbatlas_leks%5COFdf-113832%5Ckvalitet2%5COFdf-113832.84287.jpg&size=BRIEF_DOC&type=IMAGE\n" + ia.getStackTraceString)    //move to debug later
         respondWithNotFound(url, response)
       case ex: Exception =>
-        log.error("unable to find image: " + url + "\n" + ex.getStackTraceString)
+        log.error("unable to find image: \"" + url + "\"\n" + ex.getStackTraceString)
         respondWithNotFound(url, response)
     }
   }
@@ -126,7 +128,7 @@ object ImageCacheService {
     response.setContentType("text/xml")
     response.setCharacterEncoding("UTF-8")
     response.getWriter.write(format("""
-    <?xml encoding="utf-8"?>;
+    <?xml encoding="utf-8"?>
     <error>
       <message>Unable to retrieve your image (%s) through the CacheProxy</message>
     </error>
