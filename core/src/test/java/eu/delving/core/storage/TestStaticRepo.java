@@ -7,11 +7,9 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.net.UnknownHostException;
 import java.util.Locale;
 
 /**
@@ -19,12 +17,6 @@ import java.util.Locale;
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-        "/core-application-context.xml",
-        "/test-portal-application-context.xml"
-})
 
 public class TestStaticRepo {
     private static final String TEST_DB_NAME = "test-static";
@@ -36,7 +28,10 @@ public class TestStaticRepo {
     private StaticRepoImpl repo;
 
     @Before
-    public void before() {
+    public void before() throws UnknownHostException {
+        mongo = new Mongo();
+        repo = new StaticRepoImpl();
+        repo.setMongo(mongo);
         repo.setDatabaseName(TEST_DB_NAME);
         mongo.dropDatabase(TEST_DB_NAME);
     }

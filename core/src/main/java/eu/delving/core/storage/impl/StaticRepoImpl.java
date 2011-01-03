@@ -51,10 +51,14 @@ public class StaticRepoImpl implements StaticRepo {
     private Mongo mongo;
 
     @Value("#{launchProperties['portal.name']}")
-    private String portalName;
+    private String portalName = "";
 
     @Value("#{launchProperties['portal.mongo.dbName']}")
     private String databaseName;
+
+    public void setMongo(Mongo mongo) {
+        this.mongo = mongo;
+    }
 
     public void setDatabaseName(String databaseName) {
         this.databaseName = databaseName;

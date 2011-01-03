@@ -28,22 +28,15 @@ import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-        "/core-application-context.xml"
-})
 
 public class TestUserRepo {
     private static final String TEST_DB_NAME = "test-person";
@@ -52,14 +45,17 @@ public class TestUserRepo {
     private Mongo mongo;
 
     @Autowired
-    private UserRepoImpl personStorage;
+    private UserRepoImpl userRepo;
     public static final String EMAIL = "dude@delving.eu";
 
     @Before
-    public void before() {
-        personStorage.setDatabaseName(TEST_DB_NAME);
+    public void before() throws UnknownHostException {
+        mongo = new Mongo();
+        userRepo = new UserRepoImpl();
+        userRepo.setMongo(mongo);
+        userRepo.setDatabaseName(TEST_DB_NAME);
         mongo.dropDatabase(TEST_DB_NAME);
-        User user = personStorage.createUser(EMAIL);
+        User user = userRepo.createUser(EMAIL);
         user.setEnabled(true);
         user.setFirstName("Joe");
         user.setPassword("gumby");
@@ -75,27 +71,27 @@ public class TestUserRepo {
 
     @Test
     public void authenticate() {
-        User dude = personStorage.authenticate(EMAIL, "gumbi");
+        User dude = userRepo.authenticate(EMAIL, "gumbi");
         Assert.assertNull(dude);
-        dude = personStorage.authenticate(EMAIL, "gumby");
+        dude = userRepo.authenticate(EMAIL, "gumby");
         Assert.assertNotNull(dude);
     }
 
     @Test
     public void changeField() {
-        User dude = personStorage.byEmail(EMAIL);
+        User dude = userRepo.byEmail(EMAIL);
         dude.setFirstName("Mary");
         dude.save();
-        dude = personStorage.byEmail(EMAIL);
+        dude = userRepo.byEmail(EMAIL);
         Assert.assertEquals("New name didn't hold", "Mary", dude.getFirstName());
     }
 
     @Test
     public void addRemoveItem() {
-        User dude = personStorage.byEmail(EMAIL);
+        User dude = userRepo.byEmail(EMAIL);
         dude.addItem("Author", "Title", Language.NO);
         dude.save();
-        dude = personStorage.byEmail(EMAIL);
+        dude = userRepo.byEmail(EMAIL);
         List<User.Item> items = dude.getItems();
         Assert.assertEquals("Should be one item", 1, items.size());
         User.Item item = items.get(0);
@@ -104,16 +100,16 @@ public class TestUserRepo {
         Assert.assertEquals("field wrong", Language.NO, item.getLanguage());
         item.remove();
         dude.save();
-        dude = personStorage.byEmail(EMAIL);
+        dude = userRepo.byEmail(EMAIL);
         Assert.assertEquals("Should be empty", 0, dude.getItems().size());
     }
 
     @Test
     public void addRemoveSearch() {
-        User dude = personStorage.byEmail(EMAIL);
+        User dude = userRepo.byEmail(EMAIL);
         dude.addSearch("Query", "QueryString", Language.FI);
         dude.save();
-        dude = personStorage.byEmail(EMAIL);
+        dude = userRepo.byEmail(EMAIL);
         List<User.Search> searches = dude.getSearches();
         Assert.assertEquals("Should be one item", 1, searches.size());
         User.Search search = searches.get(0);
@@ -122,7 +118,7 @@ public class TestUserRepo {
         Assert.assertEquals("field wrong", Language.FI, search.getLanguage());
         search.remove();
         dude.save();
-        dude = personStorage.byEmail(EMAIL);
+        dude = userRepo.byEmail(EMAIL);
         Assert.assertEquals("Should be empty", 0, dude.getSearches().size());
     }
 }

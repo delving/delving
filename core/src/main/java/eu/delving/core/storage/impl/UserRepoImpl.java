@@ -44,10 +44,14 @@ import java.util.List;
 
 public class UserRepoImpl implements UserRepo {
 
-    private String databaseName = "persons";
+    private String databaseName = "users";
 
     @Autowired
     private Mongo mongo;
+
+    public void setMongo(Mongo mongo) {
+        this.mongo = mongo;
+    }
 
     public void setDatabaseName(String databaseName) {
         this.databaseName = databaseName;
