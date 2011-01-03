@@ -583,7 +583,8 @@ h4.active:hover
 {
 	float:left;
 	text-align:center;
-	width:45%;
+	width:auto;
+    padding: 0 1em;
 }
 
 #itemMetaData
@@ -1031,6 +1032,11 @@ body#mceTemplatePreview,
 .inner
 {
 	padding: .5em;
+}
+
+.inner1
+{
+	padding: 1em;
 }
 
 td .ui-icon

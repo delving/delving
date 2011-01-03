@@ -78,7 +78,7 @@
 
     <div class="clear"></div>
 
-    <div class="ui-tabs" style="padding:0 0 0 .5em;">
+    <div class="ui-tabs" style="padding:0 0 0 1em;">
         <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget" id="type-tabs">
             <li class="ui-state-default ui-corner-top <#if tab = 'all'>ui-state-active</#if>">
                 <a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&tab=all" rel="nofollow"><@spring.message '_metadata.type.all'/></a>
@@ -99,8 +99,8 @@
     </div>
 
     <div class="ui-widget ui-widget-content ui-corner-all">
-        <nav class="pagination" style="margin: .5em 0;">
-            <div class="inner">
+        <nav class="pagination">
+            <div class="inner1">
             <@resultBriefPaginationStyled/>
             </div>
         </nav>
@@ -112,7 +112,7 @@
         </#if>
 
         <nav class="pagination">
-            <div class="inner">
+            <div class="inner1">
             <@resultBriefPaginationStyled/>
             </div>
         </nav>
@@ -121,21 +121,21 @@
 <#else>
     <section role="main" class="main no-result">
     <div class="ui-tabs" style="padding:0 0 0 .5em;">
-        <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget">
+        <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget" id="type-tabs">
             <li class="ui-state-default ui-corner-top <#if tab = 'all'>ui-state-active</#if>">
                 <a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&tab=all" rel="nofollow"><@spring.message '_metadata.type.all'/></a>
             </li>
             <li class="ui-state-default ui-corner-top <#if tab = 'images'>ui-state-active</#if>">
-                <a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:IMAGE&tab=images" rel="nofollow"><@spring.message '_metadata.type.images'/> (<@getFacetCount "TYPE" "IMAGE"/>)</a>
+                <a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:IMAGE&tab=images" rel="nofollow"><@spring.message '_metadata.type.images'/><span><@getFacetCount result "TYPE" "IMAGE"/></span></a>
             </li>
             <li class="ui-state-default ui-corner-top <#if tab = 'texts'>ui-state-active</#if>">
-                <a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:TEXT&tab=texts" rel="nofollow"><@spring.message '_metadata.type.texts'/> (<@getFacetCount "TYPE" "TEXT"/>)</a>
+                <a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:TEXT&tab=texts" rel="nofollow"><@spring.message '_metadata.type.texts'/><span><@getFacetCount result "TYPE" "TEXT"/></span></a>
             </li>
             <li class="ui-state-default ui-corner-top <#if tab = 'videos'>ui-state-active</#if>">
-                <a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:VIDEO&tab=videos" rel="nofollow"><@spring.message '_metadata.type.videos'/> (<@getFacetCount "TYPE" "VIDEO"/>)</a>
+                <a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:VIDEO&tab=videos" rel="nofollow"><@spring.message '_metadata.type.videos'/><span><@getFacetCount result "TYPE" "VIDEO"/></span></a>
             </li>
             <li class="ui-state-default ui-corner-top <#if tab = 'sounds'>ui-state-active</#if>">
-                <a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:TEXT&tab=sounds" rel="nofollow"><@spring.message '_metadata.type.sounds'/> (<@getFacetCount "TYPE" "AUDIO"/>)</a>
+                <a href="?${baseQuery?html}&amp;start=1&amp;view=${view}&qf=TYPE:TEXT&tab=sounds" rel="nofollow"><@spring.message '_metadata.type.sounds'/><span><@getFacetCount result "TYPE" "AUDIO"/></span></a>
             </li>
         </ul>
     </div>
