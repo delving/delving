@@ -699,21 +699,22 @@
                         <strong>${crumb.display?html}</strong>
                     </#if>
                 </#list>
-            <#else>
-                    <@spring.message '_portal.ui.viewingrelateditems' />
-                    <#assign match = result.fullDoc />
-                    <#assign imgSrc = match.getAsString("europeana_object")/>
-
-
-                    <#--todo review this. It seems wrong to display the image of the current full-doc instead of the original related item search-->
-                    <a href="full-doc.html?&amp;uri=${match.id}">
-                    <#if useCache="true">
-                        <#--<img src="${cacheUrl}id=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>-->
-                        <img src="${cacheUrl}id=${imgSrc?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
-                    <#else>
-                        <img src="${imgSrc}" alt="${match.getFieldValue("dc_title").getFirst()}" height="25"/>
-                    </#if>
-                    </a>
+            <#-- TODO: find a more elegant way of indicating to which item the related items being viewed belong to -->
+            <#--<#else>-->
+                    <#--<@spring.message '_portal.ui.viewingrelateditems' />-->
+                    <#--<#assign match = result.fullDoc />-->
+                    <#--<#assign imgSrc = match.getAsString("europeana_object")/>-->
+                    <#--<#assign type = match.getFieldValue("europeana_type").getFirst()/>-->
+                    <#--<#assign title = match.getFieldValue("dc_title").getFirst()/>-->
+                    <#--&lt;#&ndash;todo review this. It seems wrong to display the image of the current full-doc instead of the original related item search&ndash;&gt;-->
+                    <#--<a href="full-doc.html?&amp;uri=${match.id}">-->
+                    <#--<#if useCache="true">-->
+                        <#--&lt;#&ndash;<img src="${cacheUrl}id=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>&ndash;&gt;-->
+                        <#--<img src="${cacheUrl}id=${imgSrc?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${type}" alt="${title}" height="25"/>-->
+                    <#--<#else>-->
+                        <#--<img src="${imgSrc}" alt="${match.getFieldValue("dc_title").getFirst()}" height="25"/>-->
+                    <#--</#if>-->
+                    <#--</a>-->
             </#if>
     </#if>
 </#macro>

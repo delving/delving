@@ -6,18 +6,18 @@
 
 <section class="grid_3 main" role="complimentary">
 
-    <dl class="menu">
+    <dl class="menu zebra">
         <dt>${portalDisplayName}</dt>
-        <dd> total number of items: <strong>${totalCount?c}</strong></dd>
+        <dd> total nr. of records: <strong>${totalCount?c}</strong></dd>
         <#if facetMap.facetExists("HASDIGITALOBJECT")>
-            <dd> total number of digital objects: <strong>${facetMap.getFacetValueCount("true", "HASDIGITALOBJECT")?c}</strong></dd>
+            <dd>nr. of digital objects: <strong>${facetMap.getFacetValueCount("true", "HASDIGITALOBJECT")?c}</strong></dd>
         </#if>
         <#if facetMap.facetExists("DATAPROVIDER")>
             <dd><@spring.message 'dataproviders'/>: <strong>${facetMap.getFacetCount("DATAPROVIDER")}</strong></dd>
         </#if>
-        <#if facetMap.facetExists("COUNTY")>
-            <dd><@spring.message '_metadata.abm.county'/>: <strong>${facetMap.getFacetCount("COUNTY")}</strong></dd>
-        </#if>
+        <#--<#if facetMap.facetExists("COUNTY")>-->
+            <#--<dd><@spring.message '_metadata.abm.county'/>: <strong>${facetMap.getFacetCount("COUNTY")}</strong></dd>-->
+        <#--</#if>-->
     </dl>
 
 
