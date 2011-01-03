@@ -172,7 +172,7 @@
 
     <bean id="docIdWindowPagerFactory" class="eu.europeana.core.querymodel.query.DocIdWindowPagerFactory"/>
 
-    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <bean id="mailSender" class="eu.europeana.core.util.web.EnhancedJavaMailSender">
         <property name="host" value="#{launchProperties['smtp.host']}"/>
         <property name="username" value="#{launchProperties['smtp.username']}"/>
         <property name="password" value="#{launchProperties['smtp.password']}"/>

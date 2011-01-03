@@ -38,20 +38,20 @@
                     </fieldset>
                     </div>
 
-                    <div class="grid_3">
-                    <fieldset id="pt2">
+                    <#--<div class="grid_3">-->
+                    <#--<fieldset id="pt2">-->
 
 
-                        <legend><span>Step </span>2. <span>: Login details</span></legend>
-                        <h3><@spring.message '_mine.user.register.username.choose' />.</h3>
-                        <div class="help"><@spring.message '_mine.user.register.username.explain' />.</div>
-                        <label for="userName">Username</label>
-                        <@spring.formInput "command.userName"/>
-                        <@spring.bind "command.userName" />
-                        <#list spring.status.errorMessages as error> <i>${error}</i> <br> </#list>
+                        <#--<legend><span>Step </span>2. <span>: Login details</span></legend>-->
+                        <#--<h3><@spring.message '_mine.user.register.username.choose' />.</h3>-->
+                        <#--<div class="help"><@spring.message '_mine.user.register.username.explain' />.</div>-->
+                        <#--<label for="userName">Username</label>-->
+                        <#--<@spring.formInput "command.userName"/>-->
+                        <#--<@spring.bind "command.userName" />-->
+                        <#--<#list spring.status.errorMessages as error> <i>${error}</i> <br> </#list>-->
 
-                    </fieldset>
-                    </div>
+                    <#--</fieldset>-->
+                    <#--</div>-->
 
                     <div class="grid_3">
                     <fieldset id="pt3">
