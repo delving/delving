@@ -77,10 +77,10 @@ public class ServiceController {
     public void imageProxy(
             HttpServletResponse response,
             @RequestParam(value = "type", required = false) String type,
-            @RequestParam(value = "item", required = false) String item,
+            @RequestParam(value = "id", required = false) String url,
             @RequestParam(value = "size", required = false) String sizeString
     ) throws IOException {
-        ImageCacheService.retrieveImageFromCache(item, response);
+        ImageCacheService.retrieveImageFromCache(url, response);
     }
 
     private static void report(HttpServletResponse response, String message) throws IOException {
