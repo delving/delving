@@ -28,7 +28,6 @@ import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.UnknownHostException;
 import java.util.Date;
@@ -40,13 +39,10 @@ import java.util.List;
 
 public class TestUserRepo {
     private static final String TEST_DB_NAME = "test-person";
+    private static final String EMAIL = "dude@delving.eu";
 
-    @Autowired
     private Mongo mongo;
-
-    @Autowired
     private UserRepoImpl userRepo;
-    public static final String EMAIL = "dude@delving.eu";
 
     @Before
     public void before() throws UnknownHostException {

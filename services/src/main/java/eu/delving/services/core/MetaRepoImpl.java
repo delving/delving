@@ -55,7 +55,11 @@ public class MetaRepoImpl implements MetaRepo {
     private GroovyCodeResource groovyCodeResource;
 
     @Value("#{launchProperties['services.mongo.dbName']}")
-    private String mongoDatabaseName = null;
+    private String mongoDatabaseName;
+
+    public void setMongoDatabaseName(String mongoDatabaseName) {
+        this.mongoDatabaseName = mongoDatabaseName;
+    }
 
     public void setResponseListSize(int responseListSize) {
         factory().setResponseListSize(responseListSize);
