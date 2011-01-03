@@ -29,7 +29,7 @@
             </#list>
             <#if result.relatedItems?size &gt; max-1>
                 <dd>
-                     <a href='/${portalName}/brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message '_action.see.all.related.items' /></a>
+                     <a class="fg-button" href='/${portalName}/brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message '_action.see.all.related.items' /></a>
                 </dd>
             </#if>
     </dl>
@@ -90,28 +90,35 @@
 
     <div class="clear"></div>
 
-    <nav class="pagination" role="navigation">
-        <div class="inner">
-        <@resultFullPagination/>
-
-
-        </div>
-    </nav>
-
-    <div class="clear"></div>
-
-    <div id="itemData">
-        <div id="itemImage">
-   
-            <@resultFullImage/>
-
-        </div>
-
-        <div id="itemMetaData">
-            <@resultFullList/>
-        </div>
+    <div class="ui-tabs" style="padding:0 0 0 .5em;">
+        <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget" id="type-tabs">
+            <li class="ui-state-default ui-corner-top ui-state-active"><a href="">Basic view</a></li>
+            <li class="ui-state-default ui-corner-top ui-state-disabled"><a href="">Alternative view 1</a></li>
+            <li class="ui-state-default ui-corner-top ui-state-disabled"><a href="">Alternative view 2</a></li>
+        </ul>
     </div>
 
+    <div class="ui-widget ui-widget-content ui-corner-all ui-helper-clearfix">
+        <nav class="pagination" role="navigation">
+            <div class="inner">
+            <@resultFullPagination/>
+            </div>
+        </nav>
+
+        <div class="clear"></div>
+
+        <div id="itemData">
+            <div id="itemImage">
+
+                <@resultFullImage/>
+
+            </div>
+
+            <div id="itemMetaData">
+                <@resultFullList/>
+            </div>
+        </div>
+     </div>
 
 </section>
 
