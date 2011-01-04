@@ -44,8 +44,8 @@ object ImageCacheService {
     val image : GridFSDBFile = myFS.findOne(url)
     if (image != null) {
       image.put("lastViewed", new Date)
-      val viewed : Int = image.get("viewed").asInstanceOf[Int]
-      image.put("viewed", viewed + 1)
+      val viewed  = image.get("viewed")
+      if (viewed != null) image.put("viewed", viewed.asInstanceOf[Int] + 1) else image.put("viewed", 1)
       image.save
     }
     image
