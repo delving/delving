@@ -42,10 +42,12 @@ object ImageCacheService {
   def findImageInCache(url: String) : GridFSDBFile = {
     log info ("attempting to retrieve: " + url)
     val image : GridFSDBFile = myFS.findOne(url)
-    image.put("lastViewed", new Date)
-    val viewed : Int = image.get("viewed").asInstanceOf[Int]
-    image.put("viewed", viewed + 1)
-    image.save
+    if (image != null) {
+      image.put("lastViewed", new Date)
+      val viewed : Int = image.get("viewed").asInstanceOf[Int]
+      image.put("viewed", viewed + 1)
+      image.save
+    }
     image
   }
 
