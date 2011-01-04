@@ -58,8 +58,6 @@ public interface MetaRepo {
 
     DataSet getFirstDataSet(DataSetState dataSetState);
 
-    void incrementRecordCount(String spec, int increment);
-
     Set<? extends MetadataFormat> getMetadataFormats();
 
     Set<? extends MetadataFormat> getMetadataFormats(String id, String accessKey) throws MappingNotFoundException, AccessKeyException;
@@ -96,6 +94,7 @@ public interface MetaRepo {
 
         int getRecordsIndexed();
         void setRecordsIndexed(int count);
+        void incrementRecordsIndexed(int increment);
 
         Map<String,Mapping> mappings();
         int getRecordCount();
@@ -190,7 +189,7 @@ public interface MetaRepo {
 
     public interface Record {
         ObjectId getId();
-        PmhSet getPmhSet();
+        String getUnique();
         Date getModifiedDate();
         boolean isDeleted();
         DBObject getNamespaces();

@@ -47,7 +47,7 @@
                         <#assign thumbnail = "${result.fullDoc.thumbnails[0]}"/>
                     </#if>
                         <#if useCache="true">
-                            <img src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
+                            <img src="${cacheUrl}id=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
                                  class="full" 
                                  alt="${result.fullDoc.dcTitle[0]}"
                                  id="imgview"

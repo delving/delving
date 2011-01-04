@@ -51,7 +51,7 @@ public class MetadataParser {
     private Path recordRoot;
     private int recordIndex, recordCount;
     private Path path = new Path();
-    private Map<String,String> namespaces = new TreeMap<String,String>();
+    private Map<String, String> namespaces = new TreeMap<String, String>();
     private MetadataRecord.Factory factory = new MetadataRecord.Factory(namespaces);
     private ProgressListener progressListener;
 
@@ -107,7 +107,6 @@ public class MetadataParser {
                     break;
                 case XMLEvent.END_ELEMENT:
                     if (node != null) {
-                        node = node.parent();
                         String valueString = value.toString().replaceAll("\n", " ").replaceAll(" +", " ").trim();
                         value.setLength(0);
                         if (valueString.length() > 0) {
@@ -124,6 +123,9 @@ public class MetadataParser {
                                 }
                             }
                             node = null;
+                        }
+                        else {
+                            node = node.parent();
                         }
                     }
                     path.pop();

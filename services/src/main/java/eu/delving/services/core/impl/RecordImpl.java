@@ -54,8 +54,8 @@ class RecordImpl implements MetaRepo.Record {
     }
 
     @Override
-    public MetaRepo.PmhSet getPmhSet() {
-        return null;  //TODO: implement this
+    public String getUnique() {
+        return (String) object.get(UNIQUE);
     }
 
     @Override

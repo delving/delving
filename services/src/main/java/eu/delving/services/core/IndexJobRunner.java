@@ -22,8 +22,6 @@
 package eu.delving.services.core;
 
 import eu.delving.sip.DataSetState;
-import eu.europeana.core.database.ConsoleDao;
-import eu.europeana.core.database.domain.EuropeanaCollection;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,9 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class IndexJobRunner {
     private Logger log = Logger.getLogger(getClass());
-
-    @Autowired
-    private ConsoleDao consoleDao;
 
     @Autowired
     private Harvindexer harvindexer;
@@ -51,11 +46,10 @@ public class IndexJobRunner {
         }
         else {
             log.info("found collection to index: " + dataSet.getSpec());
-            EuropeanaCollection collection = consoleDao.fetchCollection(dataSet.getSpec(), dataSet.getSpec() + ".xml", true);
             dataSet.setState(DataSetState.INDEXING);
             dataSet.setRecordsIndexed(0);
             dataSet.save();
-            harvindexer.commenceImport(collection.getId());
+            harvindexer.commenceImport(dataSet);
         }
     }
 }

@@ -36,7 +36,7 @@
     <beans:import resource="classpath:/core-application-context.xml"/>
 
     <authentication-manager alias="authenticationManager">
-        <authentication-provider user-service-ref="daoUserDetailsService">
+        <authentication-provider user-service-ref="userDetailsService">
             <password-encoder hash="sha"/>
         </authentication-provider>
     </authentication-manager>
@@ -76,6 +76,6 @@
         <!--<beans:property name="key" value="europeanaKey"/>-->
     <!--</beans:bean>-->
 
-    <beans:bean id="staticPageRepo" class="eu.delving.web.controller.StaticRepo"/>
+    <beans:bean id="staticPageRepo" class="eu.delving.core.storage.impl.StaticRepoImpl"/>
 
 </beans:beans>

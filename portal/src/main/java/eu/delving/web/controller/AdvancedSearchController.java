@@ -1,7 +1,6 @@
 package eu.delving.web.controller;
 
 import eu.delving.web.controller.norvegiana.AdvancedSearchForm;
-import eu.europeana.core.database.domain.StaticPageType;
 import eu.europeana.core.querymodel.query.EuropeanaQueryException;
 import eu.europeana.core.querymodel.query.QueryModelFactory;
 import eu.europeana.core.querymodel.query.QueryType;
@@ -72,7 +71,7 @@ public class AdvancedSearchController {
             }
         }
         mav.addObject("ramdomSortKey", SolrQueryUtil.createRandomSortKey());
-        clickStreamLogger.logStaticPageView(request, StaticPageType.ADVANCED_SEARCH);
+        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.ADVANCED_SEARCH);
         return mav;
     }
 
