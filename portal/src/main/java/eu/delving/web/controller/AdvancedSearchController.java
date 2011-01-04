@@ -1,6 +1,5 @@
 package eu.delving.web.controller;
 
-import eu.europeana.core.database.domain.StaticPageType;
 import eu.europeana.core.querymodel.query.EuropeanaQueryException;
 import eu.europeana.core.querymodel.query.QueryModelFactory;
 import eu.europeana.core.querymodel.query.QueryType;
@@ -53,7 +52,7 @@ public class AdvancedSearchController {
                 mav.addObject("collections", facetField.getValues());
             }
         }
-        clickStreamLogger.logStaticPageView(request, StaticPageType.ADVANCED_SEARCH);
+//        clickStreamLogger.logStaticPageView(request, StaticPageType.ADVANCED_SEARCH); todo: something better than StaticPageType
         return mav;
     }
 

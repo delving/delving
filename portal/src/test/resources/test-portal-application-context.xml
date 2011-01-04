@@ -14,7 +14,7 @@
 
     <bean id="mongo" class="com.mongodb.Mongo"/>
 
-    <bean id="staticRepo" class="eu.delving.web.controller.StaticRepo"/>
+    <bean id="staticRepo" class="eu.delving.core.storage.impl.StaticRepoImpl"/>
 
     <bean id="messageSource" class="eu.delving.core.util.MessageSourceRepo">
         <property name="parentMessageSource">

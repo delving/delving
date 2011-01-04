@@ -100,53 +100,13 @@
         <property name="properties" ref="launchProperties"/>
     </bean>
 
-    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-        <property name="driverClass" value="#{launchProperties['db.driverClass']}"/>
-        <property name="jdbcUrl" value="#{launchProperties['db.jdbcUrl']}"/>
-        <property name="user" value="#{launchProperties['db.user']}"/>
-        <property name="password" value="#{launchProperties['db.password']}"/>
-    </bean>
+    <bean id="mongo" class="com.mongodb.Mongo"/>
 
-    <!--todo: these declarations are related to using annotation-based validation-->
-    <!--<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>-->
-    <!--<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">-->
-    <!--<property name="webBindingInitializer">-->
-    <!--<bean class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">-->
-    <!--<property name="validator" ref="validator"/>-->
-    <!--</bean>-->
-    <!--</property>-->
-    <!--</bean>-->
+    <bean id="userRepo" class="eu.delving.core.storage.impl.UserRepoImpl"/>
 
-    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="persistenceXmlLocation" value="classpath:/db/persistence.xml"/>
-        <property name="dataSource" ref="dataSource"/>
-        <property name="jpaVendorAdapter">
-            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-                <property name="showSql" value="false"/>
-                <property name="generateDdl" value="true"/>
-                <!--<property name="database" value="HSQL"/>-->
-            </bean>
-        </property>
-    </bean>
+    <bean id="tokenRepo" class="eu.delving.core.storage.impl.TokenRepoImpl"/>
 
-    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-        <property name="entityManagerFactory" ref="entityManagerFactory"/>
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-
-    <bean name="userDao" class="eu.europeana.core.database.dao.UserDaoImpl"/>
-
-    <bean name="annotationDao" class="eu.europeana.core.database.dao.AnnotationDaoImpl"/>
-
-    <bean name="consoleDao" class="eu.europeana.core.database.dao.ConsoleDaoImpl"/>
-
-    <bean name="tokenRepositoryService" class="eu.europeana.core.util.web.TokenRepositoryService"/>
-
-    <bean name="tokenDao" class="eu.europeana.core.database.dao.TokenDaoImpl"/>
-
-    <bean name="tokenService" class="eu.europeana.core.util.web.TokenService"/>
-
-    <bean id="sorlIndexUtil" class="eu.europeana.core.util.indexing.SorlIndexUtil"/>
+    <bean id="userDetailsService" class="eu.delving.core.storage.SpringUserService"/>
 
     <bean id="solrSelectServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
         <!--<constructor-arg value="#{launchProperties['services.url']}/api/solr"/>-->
@@ -212,14 +172,10 @@
 
     <bean id="docIdWindowPagerFactory" class="eu.europeana.core.querymodel.query.DocIdWindowPagerFactory"/>
 
-    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <bean id="mailSender" class="eu.europeana.core.util.web.EnhancedJavaMailSender">
         <property name="host" value="#{launchProperties['smtp.host']}"/>
         <property name="username" value="#{launchProperties['smtp.username']}"/>
         <property name="password" value="#{launchProperties['smtp.password']}"/>
-    </bean>
-
-    <bean id="daoUserDetailsService" class="eu.europeana.core.util.web.UserDaoDetailsService">
-        <property name="userDao" ref="userDao"/>
     </bean>
 
     <bean id="emailSenderForExceptions" class="eu.europeana.core.util.web.EmailSender">
@@ -285,10 +241,6 @@
             </list>
         </property>
     </bean>
-
-    <bean id="mongo" class="com.mongodb.Mongo"/>
-
-    <bean id="personStorage" class="eu.delving.core.storage.PersonStorageImpl"/>
 
 </beans>
 

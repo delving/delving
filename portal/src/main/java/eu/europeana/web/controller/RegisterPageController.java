@@ -21,14 +21,12 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.core.database.UserDao;
-import eu.europeana.core.database.domain.Role;
-import eu.europeana.core.database.domain.Token;
-import eu.europeana.core.database.domain.User;
+import eu.delving.core.storage.TokenRepo;
+import eu.delving.core.storage.User;
+import eu.delving.core.storage.UserRepo;
 import eu.europeana.core.querymodel.query.EuropeanaQueryException;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.EmailSender;
-import eu.europeana.core.util.web.TokenService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -45,8 +43,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -63,10 +59,10 @@ public class RegisterPageController {
     private Logger log = Logger.getLogger(getClass());
 
     @Autowired
-    private UserDao userDao;
+    private UserRepo userRepo;
 
     @Autowired
-    private TokenService tokenService;
+    private TokenRepo tokenRepo;
 
     @Autowired
     @Qualifier("emailSenderForRegisterNotify")
@@ -84,30 +80,28 @@ public class RegisterPageController {
     protected String getRequest(@RequestParam("token") String tokenKey, @ModelAttribute("command") RegistrationForm regForm, HttpServletRequest request) throws EuropeanaQueryException {
         log.info("Received get request, putting token into registration form model attribute");
         // todo: when token is null, no useful message appears
-        Token token = tokenService.getToken(tokenKey);
-        regForm.setToken(token.getToken());
+        TokenRepo.RegistrationToken token = tokenRepo.getRegistrationToken(tokenKey);
+        regForm.setToken(token.getId());
         regForm.setEmail(token.getEmail());
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.REGISTER);
         return "register";
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    protected String formSubmit(@Valid @ModelAttribute("command") RegistrationForm regForm, BindingResult result, HttpServletRequest request) throws EuropeanaQueryException {
+    protected String formSubmit(@ModelAttribute("command") RegistrationForm form, BindingResult result, HttpServletRequest request) throws EuropeanaQueryException {
         if (result.hasErrors()) {
             log.info("The registration form has errors");
             clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.REGISTER_FAILURE);
             return "register";
         }
-        Token token = tokenService.getToken(regForm.getToken()); //the token was validated in handleRequestInternal
-        User user = new User();
-        user.setEmail(token.getEmail());  //use email from token. not from form.
-        user.setUserName(regForm.getUserName());
-        user.setPassword(regForm.getPassword());
-        user.setRegistrationDate(new Date());
+        TokenRepo.RegistrationToken token = tokenRepo.getRegistrationToken(form.getToken()); //the token was validated in handleRequestInternal
+//        user.setUserName(form.getUserName());
+        token.delete();
+        User user = userRepo.createUser(token.getEmail());//use email from token. not from form.
+        user.setPassword(form.getPassword());
         user.setEnabled(true);
-        user.setRole(Role.ROLE_USER);
-        tokenService.removeToken(token);    //remove token. it can not be used any more.
-        userDao.addUser(user);  //finally save the user.
+        user.setRole(User.Role.ROLE_USER);
+        user.save();
         sendNotificationEmail(user);
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.REGISTER_SUCCESS);
         return "register-success";
@@ -127,7 +121,6 @@ public class RegisterPageController {
     public static class RegistrationForm {
         private String token;
         private String email;
-        private String userName;
         private String password;
         private String password2;
         private Boolean disclaimer;
@@ -146,14 +139,6 @@ public class RegisterPageController {
 
         public void setEmail(String email) {
             this.email = email;
-        }
-
-        public String getUserName() {
-            return userName;
-        }
-
-        public void setUserName(String userName) {
-            this.userName = userName;
         }
 
         public String getPassword() {
@@ -195,17 +180,6 @@ public class RegisterPageController {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "password.required", "Password is required");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password2", "password2.required", "Repeat Password is required");
 
-            if (!validUserName(form.getUserName())) {
-                errors.rejectValue("userName", "_mine.user.validation.username.invalid.chars", "Username may only contain letters, digits, spaces and underscores");
-            }
-            if (form.getUserName().length() > User.USER_NAME_LENGTH) {
-                errors.rejectValue("userName", "_mine.user.validation.username.long", "Username is too long");
-            }
-
-            if (userDao.userNameExists(form.getUserName())) {
-                errors.rejectValue("userName", "_mine.user.validation.username.exists", "Username already exists");
-            }
-
             if (!form.getPassword().equals(form.getPassword2())) {
                 errors.rejectValue("password", "_mine.user.validation.password.mismatch", "Passwords do not match");
             }
@@ -221,17 +195,6 @@ public class RegisterPageController {
             if (!form.getDisclaimer()) {
                 errors.rejectValue("disclaimer", "_mine.user.validation.disclaimer.unchecked", "Disclaimer must be accepted");
             }
-        }
-
-        private boolean validUserName(String userName) {
-            //may only contain alphanumeric, spaces and underscore.
-            for (int i = 0; i < userName.length(); i++) {
-                char c = userName.charAt(i);
-                if (!(Character.isLetterOrDigit(c) || c == ' ' || c == '_')) {
-                    return false;
-                }
-            }
-            return true;
         }
     }
 }

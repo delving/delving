@@ -77,7 +77,7 @@ import java.util.List;
 public class SipCreatorGUI extends JFrame {
     private static final String LOCAL_SETS = "Local Data Sets";
     private static final String LOCAL_AND_REMOTE_SETS = "Local and Remote Data Sets";
-    private static final Dimension SIZE = new Dimension(1024 - 60, 768 - 60);
+    private static final Dimension SIZE = new Dimension(1024, 768);
     private static final int MARGIN = 15;
     private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel;
