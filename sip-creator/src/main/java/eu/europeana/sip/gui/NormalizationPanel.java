@@ -142,7 +142,7 @@ public class NormalizationPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             if (storeNormalizedBox.isSelected()) {
-                File normalizeDirectory = new File(sipModel.getNormalizeDirectory());
+                File normalizeDirectory = new File(sipModel.getAppConfigModel().getNormalizeDirectory());
                 chooser.setCurrentDirectory(normalizeDirectory);
                 chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                 chooser.setFileFilter(new FileFilter() {
@@ -160,7 +160,7 @@ public class NormalizationPanel extends JPanel {
                 int choiceMade = chooser.showOpenDialog(NormalizationPanel.this);
                 if (choiceMade == JFileChooser.APPROVE_OPTION) {
                     normalizeDirectory = chooser.getSelectedFile();
-                    sipModel.setNormalizeDirectory(normalizeDirectory);
+                    sipModel.getAppConfigModel().setNormalizeDirectory(normalizeDirectory);
                     normalizeTo(normalizeDirectory);
                 }
             }

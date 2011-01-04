@@ -103,7 +103,7 @@ class MappingImpl implements MetaRepo.Mapping, MappingInternal, Comparable<MetaR
                     else {
                         log.info("invalid record: " + recordString);
                         invalidCount++;
-                        walk.remove();
+                        walk.remove(); // todo: separate fetching from mapping
                     }
                 }
                 catch (MappingException e) {

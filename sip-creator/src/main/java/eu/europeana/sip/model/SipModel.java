@@ -74,7 +74,7 @@ public class SipModel {
     private FileStore fileStore;
     private MetadataModel metadataModel;
     private GroovyCodeResource groovyCodeResource;
-    private AppConfig appConfig;
+    private AppConfigModel appConfigModel;
     private FileStore.DataSetStore dataSetStore;
     private Facts facts;
     private UserNotifier userNotifier;
@@ -117,7 +117,12 @@ public class SipModel {
 
     public SipModel(FileStore fileStore, MetadataModel metadataModel, GroovyCodeResource groovyCodeResource, UserNotifier userNotifier) throws FileStoreException {
         this.fileStore = fileStore;
-        this.appConfig = fileStore.getAppConfig();
+        this.appConfigModel = new AppConfigModel(fileStore.getAppConfig(), new AppConfigModel.Listener() {
+            @Override
+            public void appConfigUpdated(AppConfig appConfig) {
+                executor.execute(new AppConfigSetter(appConfig));
+            }
+        });
         this.metadataModel = metadataModel;
         this.groovyCodeResource = groovyCodeResource;
         this.userNotifier = userNotifier;
@@ -172,54 +177,12 @@ public class SipModel {
         return factModel;
     }
 
-    public String getServerHostPort() {
-        return appConfig.getServerHostPort();
-    }
-
-    public void setServerHostPort(String hostPort) {
-        appConfig.setServerHostPort(hostPort);
-        executor.execute(new AppConfigSetter());
-    }
-
-    public String getServerUrl() {
-        return String.format("http://%s/services/dataset", appConfig.getServerHostPort());
-    }
-
-    public String getAccessKey() {
-        return appConfig.getAccessKey();
-    }
-
-    public void setServerAccessKey(String key) {
-        appConfig.setAccessKey(key);
-        executor.execute(new AppConfigSetter());
-    }
-
-    public String getRecentDirectory() {
-        return appConfig.getRecentDirectory();
-    }
-
-    public void setRecentDirectory(File directory) {
-        if (!directory.isDirectory()) {
-            directory = directory.getParentFile();
-        }
-        appConfig.setRecentDirectory(directory.getAbsolutePath());
-        executor.execute(new AppConfigSetter());
-    }
-
-    public String getNormalizeDirectory() {
-        return appConfig.getNormalizeDirectory();
-    }
-
-    public void setNormalizeDirectory(File directory) {
-        if (!directory.isDirectory()) {
-            directory = directory.getParentFile();
-        }
-        appConfig.setNormalizeDirectory(directory.getAbsolutePath());
-        executor.execute(new AppConfigSetter());
-    }
-
     public FileStore.DataSetStore getDataSetStore() {
         return dataSetStore;
+    }
+
+    public AppConfigModel getAppConfigModel() {
+        return appConfigModel;
     }
 
     public MetadataModel getMetadataModel() {
@@ -693,6 +656,12 @@ public class SipModel {
     }
 
     private class AppConfigSetter implements Runnable {
+        private AppConfig appConfig;
+
+        private AppConfigSetter(AppConfig appConfig) {
+            this.appConfig = appConfig;
+        }
+
         @Override
         public void run() {
             try {

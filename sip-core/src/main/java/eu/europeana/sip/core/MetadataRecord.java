@@ -22,7 +22,6 @@
 package eu.europeana.sip.core;
 
 import com.ctc.wstx.exc.WstxParsingException;
-import eu.delving.metadata.Sanitizer;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 
@@ -37,7 +36,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 /**
  * Something to hold the groovy node and turn it into a string
@@ -87,7 +85,7 @@ public class MetadataRecord {
             StringBuilder out = new StringBuilder();
             Iterator<GroovyNode> nodeWalk = path.iterator();
             while (nodeWalk.hasNext()) {
-                String nodeName = (String) nodeWalk.next().name();
+                String nodeName = nodeWalk.next().name();
                 out.append(nodeName);
                 if (nodeWalk.hasNext()) {
                     out.append('.');
@@ -100,7 +98,7 @@ public class MetadataRecord {
 
     public String toHtml() {
         StringBuilder out = new StringBuilder("<html><table border=1 width=100%>");
-        out.append(String.format("<tr><th colspan=2>Record %d</th></tr>\n",recordNumber));
+        out.append(String.format("<tr><th colspan=2>Record %d</th></tr>\n", recordNumber));
         for (MetadataVariable variable : getVariables()) {
             out.append(String.format("<tr><td width=40%%>%s</td><td width=60%%><strong>%s</strong></td></tr>\n", variable.getName(), variable.getValue()));
         }
@@ -138,49 +136,37 @@ public class MetadataRecord {
             try {
                 Reader reader = new StringReader(recordString);
                 XMLStreamReader2 input = (XMLStreamReader2) inputFactory.createXMLStreamReader(reader);
-                Stack<GroovyNode> nodeStack = new Stack<GroovyNode>();
+                GroovyNode node = null;
                 StringBuilder value = new StringBuilder();
                 while (true) {
                     switch (input.getEventType()) {
                         case XMLEvent.START_DOCUMENT:
                             break;
                         case XMLEvent.START_ELEMENT:
-                            if (nodeStack.isEmpty()) {
-                                nodeStack.push(new GroovyNode(null, "input"));
+                            node = (node == null)? new GroovyNode("input") : new GroovyNode(node, input.getNamespaceURI(), input.getLocalName(), input.getPrefix());
+                            if (input.getAttributeCount() > 0) {
+                                for (int walk = 0; walk < input.getAttributeCount(); walk++) {
+                                    QName attributeName = input.getAttributeName(walk);
+                                    node.attributes().put(attributeName.getLocalPart(), input.getAttributeValue(walk));
+                                }
                             }
-                            else {
-                                GroovyNode parent = nodeStack.peek();
-                                String nodeName;
-                                if (input.getPrefix().isEmpty()) {
-                                    nodeName = Sanitizer.tagToVariable(input.getLocalName());
-                                }
-                                else {
-                                    nodeName = input.getPrefix() + "_" + Sanitizer.tagToVariable(input.getLocalName());
-                                }
-                                GroovyNode node = new GroovyNode(parent, nodeName);
-                                if (input.getAttributeCount() > 0) {
-                                    for (int walk = 0; walk < input.getAttributeCount(); walk++) {
-                                        QName attributeName = input.getAttributeName(walk);
-                                        node.attributes().put(attributeName.getLocalPart(), input.getAttributeValue(walk));
-                                    }
-                                }
-                                nodeStack.push(node);
-                                value.setLength(0);
-                            }
+                            value.setLength(0);
                             break;
                         case XMLEvent.CHARACTERS:
                         case XMLEvent.CDATA:
                             value.append(input.getText());
                             break;
                         case XMLEvent.END_ELEMENT:
-                            if (nodeStack.size() == 1) {
-                                return new MetadataRecord(nodeStack.peek(), -1);
-                            }
-                            GroovyNode node = nodeStack.pop();
-                            String valueString = value.toString().replaceAll("\n", " ").replaceAll(" +", " ").trim();
-                            value.setLength(0);
-                            if (valueString.length() > 0) {
-                                node.setValue(valueString);
+                            if (node != null) {
+                                node = node.parent();
+                                String valueString = value.toString().replaceAll("\n", " ").replaceAll(" +", " ").trim();
+                                value.setLength(0);
+                                if (valueString.length() > 0) {
+                                    node.setValue(valueString);
+                                }
+                                if (node.parent() == null) {
+                                    return new MetadataRecord(node, -1);
+                                }
                             }
                             break;
                         case XMLEvent.END_DOCUMENT: {
@@ -194,7 +180,7 @@ public class MetadataRecord {
                 }
             }
             catch (WstxParsingException e) {
-                throw new XMLStreamException("Problem parsing record:\n"+recordString, e);
+                throw new XMLStreamException("Problem parsing record:\n" + recordString, e);
             }
             throw new XMLStreamException("Unexpected end while parsing");
         }
