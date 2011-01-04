@@ -68,7 +68,7 @@ public class QueryAnalyzer {
                     else if ("tag".equalsIgnoreCase(field)) {
                         return QueryType.ADVANCED_QUERY;
                     }
-                    else if ("tag".equalsIgnoreCase(field)) {
+                    else if ("text".equalsIgnoreCase(field)) {
                         return QueryType.ADVANCED_QUERY;
                     }
                     else {

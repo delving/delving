@@ -9,8 +9,9 @@ import eu.europeana.core.querymodel.query._
 import org.apache.solr.client.solrj.response. {FacetField, QueryResponse}
 import java.net.URL
 import xml. {MetaData, NodeSeq, Elem, XML}
-import collection.mutable. {ListBuffer, Map}
 import collection.immutable. {HashMap, Map => ImMap}
+import org.apache.solr.client.solrj.response.FacetField.Count
+import collection.mutable. {Buffer, ListBuffer, Map}
 
 /**
  *
@@ -60,6 +61,7 @@ object SolrBindingService {
     val ArrayListObject = classOf[ArrayList[Any]]
     val StringObject = classOf[String]
     val DateObject = classOf[Date]
+    val BooleanObject = classOf[JBoolean]
     // check for required fields else check exception
     solrDocumentList.foreach{
         doc =>
@@ -71,7 +73,8 @@ object SolrBindingService {
                 case ArrayListObject => solrDoc.add(field.getKey, addFieldNodes(field.getKey, field.getValue.asInstanceOf[ArrayList[Any]].toList))
                 case StringObject => solrDoc.add(field.getKey, List(FieldValueNode(field.getKey, field.getValue.toString)))
                 case DateObject => solrDoc.add(field.getKey, List(FieldValueNode(field.getKey, field.getValue.toString)))
-                case _ => println("unknown class " + field.getKey)
+                case BooleanObject => solrDoc.add(field.getKey, List(FieldValueNode(field.getKey, field.getValue.toString)))
+                case _ => println("unknown class in SolrBindingService " + field.getKey )
               }
           }
       docs add solrDoc
@@ -153,6 +156,13 @@ case class FacetStatisticsMap(private val facets: List[FacetField]) {
     facetField.add("nothing", 0)
     facetField
   }
+
+  def getFacetValueCount(key: String, facetName: String) = {
+    val count : Count = getFacet(facetName).filter(fc => fc.getName == key).headOption.getOrElse(new FacetField.Count(getDummyFacetField, "unknown", 0))
+    count.getCount
+  }
+
+  def getFacetCount(key: String) = facets.filter(ff => ff.getName == key).headOption.getOrElse(getDummyFacetField).getValueCount
 
   def getFacet(key: String) : JList[FacetField.Count] = facetsMap.getOrElse(key, getDummyFacetField.getValues)
 

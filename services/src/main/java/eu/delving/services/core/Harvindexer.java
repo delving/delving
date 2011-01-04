@@ -165,12 +165,36 @@ public class Harvindexer {
         @Override
         public void run() {
             log.info("Importing " + collection);
+            int retries = 0;
+            final int nrOfRetries = 3;
             try {
                 DateTime now = new DateTime(DateTimeZone.UTC);
                 DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
                 importPmh(collection);
-                solrServer.deleteByQuery("europeana_collectionName:" + collection.getName() + " AND timestamp:[* TO " + fmt.print(now) + "]");
-//                solrServer.commit(); // now you don't have to
+                while (retries < nrOfRetries) {
+                    try {
+                        solrServer.deleteByQuery("europeana_collectionName:" + collection.getName() + " AND timestamp:[* TO " + fmt.print(now) + "]");
+                        log.info("deleting orphaned entries from the SolrIndex for collection" + collection.getName());
+                        break;
+                    } catch (SolrServerException e) {
+                        if (retries < nrOfRetries) {
+                            retries += 1;
+                            log.info("unable to delete orphans. Retrying...");
+                        }
+                        else {
+                            throw new SolrServerException(e);
+                        }
+
+                    } catch (IOException e) {
+                        if (retries < nrOfRetries) {
+                            retries += 1;
+                            log.info("unable to delete orphans. Retrying...");
+                        }
+                        else {
+                            throw new IOException(e);
+                        }
+                    }
+                }
                 if (thread != null) {
                     log.info("Finished importing " + collection);
                     collection = consoleDao.updateCollectionCounters(collection.getId());
@@ -336,12 +360,11 @@ public class Harvindexer {
                                 throw new HarvindexingException("Normalized Record must have a field designated as europeana uri", recordCount);
                             }
                             Collection<Object> objectUrls = solrInputDocument.getFieldValues("europeana_object");
-                            if (objectUrls != null) {
-                                for (Object object : objectUrls) {
-                                    String url = (String) object;
-                                }
+                            if (objectUrls != null && !objectUrls.isEmpty()) {
+                                solrInputDocument.addField("europeana_hasDigitalObject", true);
                             }
-                            else if ("true".equals(solrInputDocument.getFieldValue("europeana_hasObject"))) {
+                            else {
+                                solrInputDocument.addField("europeana_hasDigitalObject", false);
                                 log.warn("No object urls for " + europeanaId.getEuropeanaUri());
                             }
                             if (!solrInputDocument.containsKey("europeana_collectionName")) {

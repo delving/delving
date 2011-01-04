@@ -11,6 +11,9 @@ $(document).ready(function() {
         delvingPageCall("#block-2", portalName+"/home/block2.dml?embedded=true"," "," "," ");
         delvingPageCall("#block-3", portalName+"/home/block3.dml?embedded=true"," "," "," ");
     }
+    var langTab = "1";
+    if(locale=="no"){langTab=0}
+    $("#aboutTabs").tabs({selected: langTab});    
 });
 
 
