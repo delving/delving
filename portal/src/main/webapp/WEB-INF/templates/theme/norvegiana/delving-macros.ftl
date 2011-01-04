@@ -846,14 +846,14 @@
     <#if useCache="true">
         <img src="${cacheUrl}id=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
              class="full"
-             alt="${result.fullDoc.dcTitle[0]}"
+             alt="${result.fullDoc.getAsString("dc_title")}"
              id="imgview"
              onload="checkSize(this.id,'full',this.width);"
              onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"
         />
     <#else>
         <img
-            alt="${result.fullDoc.dcTitle[0]}"
+            alt="${result.fullDoc.getAsString("dc_title")}
             id="imgview"
             src="${thumbnail}"
             onload="checkSize(this.id,'full',this.width);"
