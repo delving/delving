@@ -5,8 +5,6 @@
 <@addHeader "${portalDisplayName}", "",[],[]/>
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript">
-
-
 function scriptPieChart(facetName, drawTarget, height, width, dataArray){
     // Load the Visualization API and the piechart package.
     google.load('visualization', '1', {'packages':['corechart']});
@@ -33,64 +31,55 @@ function scriptPieChart(facetName, drawTarget, height, width, dataArray){
       var margin = "-"+topMargin+"px 0 0 0";
       $("div#"+drawTarget+" iframe").css("height","300px");
       $("div#"+drawTarget+" iframe").contents().find('body').css("margin",margin);
-      //$("div#"+drawTarget+" iframe").contents().find('div#chartArea').css({"position":"absolute","top":"0px"});
     }
 
 }
 </script>
 <style>
-    h6 {font-weight: bold;margin:0 .25em;text-transform:uppercase;}
     div.facets_container {
         background: #fff;
-        max-height: 165px;
+        max-height: 250px;
         min-height: 100px;
-        height: 120px;
         margin-bottom: 1em;
         padding:0;
         border: none;
     }
-    div.graph {
-        margin-top: 1.5em;
-    }
-
 </style>
 
 <section role="main" class="grid_12 main">
 
     <h1><@spring.message '_portal.ui.statistics' /></h1>
-    <div class="grid_6 alpha">
+    <div class="grid_4 alpha">
         <h3 class="header"><@spring.message '_metadata.europeana.dataProvider'/></h3>
-        <@createStatsRowsAndData "DATAPROVIDER" 400 400/>
+        <@createStatsRowsAndData "DATAPROVIDER" 400 600/>
     </div>
-    <div class="grid_6 omega">
+    <div class="grid_8 omega">
         <div id="chart-div-DATAPROVIDER"></div>
     </div>
     <hr/>
-    <div class="grid_6 alpha">
+    <div class="grid_4 alpha">
         <h3 class="header"><@spring.message '_metadata.abm.county'/></h3>
-        <@createStatsRowsAndData "COUNTY" 400 400/>
+        <@createStatsRowsAndData "COUNTY" 400 600/>
     </div>
-    <div class="grid_6 omega">
+    <div class="grid_8 omega">
         <div id="chart-div-COUNTY" class="chart-container"></div>
     </div>
     <hr/>
-    <div class="grid_6 alpha">
+    <div class="grid_4 alpha">
         <h3 class="header"><@spring.message '_metadata.abm.municipality'/></h3>
-        <@createStatsRowsAndData "MUNICIPALITY"/>
+        <@createStatsRowsAndData "MUNICIPALITY" 400 600/>
     </div>
-    <div class="grid_6 omega">
+    <div class="grid_8 omega">
         <div id="chart-div-MUNICIPALITY" class="chart-container"></div>
     </div>
     <hr/>
 </section>
 
-
-
 <@addFooter/>
 
 </#compress>
 
-<#macro createStatsRowsAndData facetName height=400 width=400>
+<#macro createStatsRowsAndData facetName height=600 width=500>
     <#assign totalItems = getTotalCount (facetName)/>
     <#assign dataScript = ""/>
     <#assign dataRows = ""/>
@@ -117,10 +106,8 @@ function scriptPieChart(facetName, drawTarget, height, width, dataArray){
     </#list>
 
     <script type="text/javascript">
-
         var dataArray = [${dataScript}];
         scriptPieChart("${facetName}","chart-div-${facetName}", ${height}, ${width}, dataArray);
-
     </script>
 
     <#-- DATA TABLE -->
