@@ -933,7 +933,7 @@
             <tr>
                 <#--<th scrope="row">${field.getKeyAsXml()}</th>-->
                 <th scope="row"><@spring.messageText '${field.getKeyAsMessageKey()}', '${field.getKeyAsXml()}' />:</th>
-                <td>${field.getFirst()}</td>
+                <td>${field.getArrayAsString(";&#160;")}</td>
             </tr>
         </#list>
         </tbody>
