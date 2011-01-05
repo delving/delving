@@ -26,19 +26,14 @@
         xmlns:context="http://www.springframework.org/schema/context"
         xmlns:util="http://www.springframework.org/schema/util"
         xmlns:tx="http://www.springframework.org/schema/tx"
-        xmlns:security="http://www.springframework.org/schema/security"
-        xsi:schemaLocation="
-        http://www.springframework.org/schema/beans
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
         http://www.springframework.org/schema/tx
         http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context-3.0.xsd
         http://www.springframework.org/schema/util
-        http://www.springframework.org/schema/util/spring-util-3.0.xsd
-        http://www.springframework.org/schema/security
-        http://www.springframework.org/schema/security/spring-security-3.0.xsd
-        ">
+        http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
     <context:annotation-config/>
 
@@ -47,10 +42,6 @@
     <bean id="launchProperties" class="eu.delving.core.util.LaunchProperties">
         <constructor-arg>
             <list>
-                <value>db.driverClass</value>
-                <value>db.jdbcUrl</value>
-                <value>db.user</value>
-                <value>db.password</value>
                 <value>solr.selectUrl</value>
                 <value>solr.updateUrl</value>
                 <value>solr.timeout</value>

@@ -6,6 +6,7 @@ This email is to inform you that someone has registered:
 
 ==========
 email        : ${user.email}
+username     : ${user.userName}
 registration : ${user.registrationDate?date}
 ==========
 

@@ -77,10 +77,12 @@ public class RegisterPageController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    protected String getRequest(@RequestParam("token") String tokenKey, @ModelAttribute("command") RegistrationForm regForm, HttpServletRequest request) throws EuropeanaQueryException {
+    protected String getRequest(@RequestParam("token") String tokenKey, @ModelAttribute("command") RegistrationForm regForm, HttpServletRequest request) throws EuropeanaQueryException { // todo: query exception??
         log.info("Received get request, putting token into registration form model attribute");
-        // todo: when token is null, no useful message appears
         TokenRepo.RegistrationToken token = tokenRepo.getRegistrationToken(tokenKey);
+        if (token == null) {
+            throw new EuropeanaQueryException("Registration must be retried, no token for "+tokenKey);  // todo: query exception??
+        }
         regForm.setToken(token.getId());
         regForm.setEmail(token.getEmail());
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.REGISTER);
@@ -88,16 +90,16 @@ public class RegisterPageController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    protected String formSubmit(@ModelAttribute("command") RegistrationForm form, BindingResult result, HttpServletRequest request) throws EuropeanaQueryException {
+    protected String formSubmit(@ModelAttribute("command") RegistrationForm form, BindingResult result, HttpServletRequest request) throws EuropeanaQueryException { // todo: query exception??
         if (result.hasErrors()) {
             log.info("The registration form has errors");
             clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.REGISTER_FAILURE);
             return "register";
         }
         TokenRepo.RegistrationToken token = tokenRepo.getRegistrationToken(form.getToken()); //the token was validated in handleRequestInternal
-//        user.setUserName(form.getUserName());
         token.delete();
         User user = userRepo.createUser(token.getEmail());//use email from token. not from form.
+        user.setUserName(form.getUserName());
         user.setPassword(form.getPassword());
         user.setEnabled(true);
         user.setRole(User.Role.ROLE_USER);
@@ -121,6 +123,7 @@ public class RegisterPageController {
     public static class RegistrationForm {
         private String token;
         private String email;
+        private String userName;
         private String password;
         private String password2;
         private Boolean disclaimer;
@@ -139,6 +142,17 @@ public class RegisterPageController {
 
         public void setEmail(String email) {
             this.email = email;
+        }
+
+        public String getUserName() {
+            if (userName == null && email != null) {
+                userName = email.substring(0, email.indexOf("@")).toLowerCase();
+            }
+            return userName;
+        }
+
+        public void setUserName(String userName) {
+            this.userName = userName;
         }
 
         public String getPassword() {
@@ -179,6 +193,10 @@ public class RegisterPageController {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "userName", "username.required", "Username is required");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "password.required", "Password is required");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password2", "password2.required", "Repeat Password is required");
+
+            if (!userRepo.isProperUserName(form.getUserName())) {
+                errors.rejectValue("userName", "_mine.user.validation.username.invalid", "User name invalid");
+            }
 
             if (!form.getPassword().equals(form.getPassword2())) {
                 errors.rejectValue("password", "_mine.user.validation.password.mismatch", "Passwords do not match");

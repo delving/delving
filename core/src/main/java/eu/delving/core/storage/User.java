@@ -33,6 +33,7 @@ import java.util.List;
  */
 
 public interface User {
+    String getId();
     void setEmail(String email);
     String getEmail();
     void setPassword(String password);
@@ -41,12 +42,15 @@ public interface User {
     Role getRole();
     void setEnabled(boolean enabled);
     boolean isEnabled();
+    void setUserName(String userName);
+    String getUserName();
     void setFirstName(String firstName);
     String getFirstName();
     void setLastName(String lastName);
     String getLastName();
     void setLastLogin(Date lastLogin);
     Date getLastLogin();
+    Date getRegistrationDate();
     Item addItem(String author, String title, Language language);
     List<Item> getItems();
     Search addSearch(String query, String queryString, Language language);
@@ -54,10 +58,12 @@ public interface User {
     void save();
     void delete();
 
+    String ID = "_id";
     String EMAIL = "email";
     String PASSWORD = "password";
     String ROLE = "role";
     String ENABLED = "enabled";
+    String USER_NAME = "user_name";
     String FIRST_NAME = "first_name";
     String LAST_NAME = "last_name";
     String LAST_LOGIN = "last_login";
