@@ -51,15 +51,15 @@ object Harvester {
   def writeRecordsToFile(baseUrl: String, fileName: String, metadataPrefix: String = "oai_dc", setSpec: String = ""): processLog = {
     require(!baseUrl.isEmpty && !fileName.isEmpty && !metadataPrefix.isEmpty)
 
-    val hasSet: String = if (!setSpec.isEmpty) "&setSpec=" + setSpec else setSpec
+    val hasSet: String = if (!setSpec.isEmpty) "&set=" + setSpec else setSpec
 
     def getRecords(baseUrl: String, writer: PrintWriter, resumptionToken: String = "": String,
                    pagesRetrieved: Int = 0, recordsRetrieved: Int = 0): (Int, Int) = {
       val elem: Elem =
       if (resumptionToken.isEmpty)
-        XML.load(new URL(baseUrl + "?verb=ListRecords&metadataPrefix=" + metadataPrefix + hasSet))
+        XML.load(new URL(baseUrl + "?verb=ListRecords&accessKey=CW-E02A6689E8B183A5915A&metadataPrefix=" + metadataPrefix + hasSet))
       else
-        XML.load(new URL(baseUrl + "?verb=ListRecords&resumptionToken=" + resumptionToken))
+        XML.load(new URL(baseUrl + "?verb=ListRecords&accessKey=CW-E02A6689E8B183A5915A&resumptionToken=" + resumptionToken))
 
       val token: NodeSeq = elem \\ "resumptionToken"
       val completeListSize = (elem \\ "@completeListSize").text

@@ -3,12 +3,7 @@ package eu.europeana.core.querymodel.query;
 import org.apache.solr.client.solrj.SolrQuery;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -16,6 +11,7 @@ import java.util.TreeMap;
  */
 public class SolrQueryUtil {
 
+    private static final int RANDOM_RANGE = 1000;
 
     public static String[] getFilterQueriesAsPhrases(SolrQuery solrQuery) {
         String[] filterQueries = solrQuery.getFilterQueries();
@@ -184,5 +180,14 @@ public class SolrQueryUtil {
         }
         solrQuery.setFilterQueries(SolrQueryUtil.getFilterQueriesAsPhrases(solrQuery));
         return solrQuery;
+    }
+
+    public static int createRandomNumber() {
+        Random randomGenerator = new Random();
+        return randomGenerator.nextInt(RANDOM_RANGE);
+    }
+
+    public static String createRandomSortKey() {
+        return "random_" + createRandomNumber();
     }
 }

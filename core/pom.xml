@@ -25,7 +25,7 @@
     <artifactId>core</artifactId>
     <packaging>jar</packaging>
     <name>Europeana Core</name>
-    <version>0.1.6</version>
+    <version>0.1.7</version>
     <description>Core classes for Europeana</description>
     <inceptionYear>2008</inceptionYear>
 
@@ -95,11 +95,7 @@
         <dependency>
             <groupId>eu.delving</groupId>
             <artifactId>metameta</artifactId>
-            <version>0.1.6</version>
-        </dependency>
-        <dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
+            <version>0.1.7</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -108,14 +104,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-orm</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -154,26 +142,6 @@
             <artifactId>spring-security-config</artifactId>
         </dependency>
         <dependency>
-            <groupId>c3p0</groupId>
-            <artifactId>c3p0</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
-        </dependency>
-        <dependency>
             <groupId>concurrent</groupId>
             <artifactId>concurrent</artifactId>
         </dependency>
@@ -192,11 +160,6 @@
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>woodstox-core-asl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hsqldb</groupId>
-            <artifactId>hsqldb</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>

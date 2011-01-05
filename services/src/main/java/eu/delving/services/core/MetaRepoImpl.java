@@ -19,6 +19,7 @@ import eu.europeana.sip.core.GroovyCodeResource;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ public class MetaRepoImpl implements MetaRepo {
     @Autowired
     private AccessKey accessKey;
 
+    @Qualifier("mongo")
     @Autowired
     private Mongo mongo;
 
@@ -55,7 +57,11 @@ public class MetaRepoImpl implements MetaRepo {
     private GroovyCodeResource groovyCodeResource;
 
     @Value("#{launchProperties['services.mongo.dbName']}")
-    private String mongoDatabaseName = null;
+    private String mongoDatabaseName;
+
+    public void setMongoDatabaseName(String mongoDatabaseName) {
+        this.mongoDatabaseName = mongoDatabaseName;
+    }
 
     public void setResponseListSize(int responseListSize) {
         factory().setResponseListSize(responseListSize);
@@ -125,24 +131,6 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public void incrementRecordCount(String spec, int increment) {
-        DBCollection collection = db().getCollection(DATASETS_COLLECTION);
-        collection.update(
-                new BasicDBObject(
-                        DataSet.SPEC,
-                        spec
-                ),
-                new BasicDBObject(
-                        "$inc",
-                        new BasicDBObject(
-                                DataSet.RECORDS_INDEXED,
-                                increment
-                        )
-                )
-        );
-    }
-
-    @Override
     public Set<MetadataFormat> getMetadataFormats() {
         Set<MetadataFormat> set = new TreeSet<MetadataFormat>();
         for (DataSet dataSet : getDataSets()) {
@@ -171,7 +159,7 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String accessKey) throws DataSetNotFoundException, MappingNotFoundException, AccessKeyException {
+    public HarvestStep getFirstHarvestStep(PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String accessKey) throws DataSetNotFoundException, MappingNotFoundException, AccessKeyException {
         DataSet dataSet = getDataSet(set);
         if (dataSet == null) {
             String errorMessage = String.format("Cannot find set [%s]", set);

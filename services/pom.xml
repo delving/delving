@@ -5,7 +5,7 @@
     <artifactId>services</artifactId>
     <packaging>war</packaging>
     <name>Services</name>
-    <version>0.1.6</version>
+    <version>0.1.7</version>
     <inceptionYear>2010</inceptionYear>
     <parent>
         <groupId>eu.europeana</groupId>
@@ -124,12 +124,12 @@
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>core</artifactId>
-            <version>0.1.6</version>
+            <version>0.1.7</version>
         </dependency>
         <dependency>
             <groupId>eu.delving</groupId>
             <artifactId>sip-core</artifactId>
-            <version>0.1.6</version>
+            <version>0.1.7</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
@@ -213,6 +213,10 @@
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
         </dependency>
     </dependencies>
 </project>

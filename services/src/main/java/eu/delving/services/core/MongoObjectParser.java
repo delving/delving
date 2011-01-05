@@ -140,7 +140,7 @@ public class MongoObjectParser {
                             String content = contentBuffer.toString();
                             record.put(metadataPrefix, content);
                             record.put(MetaRepo.Record.MODIFIED, new Date());
-                            if (uniqueContent != null) {
+                            if (uniqueContent != null) { // todo: should it not always be there?  should we not save if it isn't?
                                 record.put(MetaRepo.Record.UNIQUE, uniqueContent);
                             }
                             contentBuffer.setLength(0);

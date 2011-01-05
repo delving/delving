@@ -26,8 +26,8 @@
     <artifactId>portal</artifactId>
     <packaging>war</packaging>
     <name>Portal Web Application</name>
-    <version>0.1.6</version>
-    <description></description>
+    <version>0.1.7</version>
+    <description>Human Interface</description>
     <inceptionYear>2009</inceptionYear>
 
     <parent>
@@ -108,16 +108,12 @@
 		<dependency>
 			<groupId>eu.europeana</groupId>
 			<artifactId>core</artifactId>
-			<version>0.1.6</version>
+			<version>0.1.7</version>
 		</dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
         </dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>org.mortbay.jetty</groupId>
 			<artifactId>jetty</artifactId>

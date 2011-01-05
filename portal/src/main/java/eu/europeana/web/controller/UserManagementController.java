@@ -21,8 +21,7 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.core.database.UserDao;
-import eu.europeana.core.database.domain.User;
+import eu.delving.core.storage.UserRepo;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import eu.europeana.core.util.web.TokenReplyEmailSender;
@@ -47,7 +46,7 @@ public class UserManagementController {
     private TokenReplyEmailSender tokenReplyEmailSender;
 
     @Autowired
-    private UserDao userDao;
+    private UserRepo userRepo;
 
     @Autowired
     private ClickStreamLogger clickStreamLogger;
@@ -55,10 +54,6 @@ public class UserManagementController {
     @RequestMapping("/mine.html")
     public ModelAndView personalPage(HttpServletRequest request) throws Exception {
         ModelAndView page = ControllerUtil.createModelAndViewPage("mine");
-        User user = ControllerUtil.getUser();
-        if (user != null) {
-            ControllerUtil.setUser(userDao.updateUser(user));
-        }
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.MY_EUROPEANA);
         return page;
     }
@@ -93,7 +88,7 @@ public class UserManagementController {
             if (!ControllerUtil.validEmailAddress(email)) {
                 state = "formatFailure";
             }
-            else if (userDao.fetchUserByEmail(email) == null) {
+            else if (userRepo.byEmail(email) == null) {
                 state = "nonexistentFailure";
             }
             else {
@@ -121,7 +116,7 @@ public class UserManagementController {
             if (!ControllerUtil.validEmailAddress(email)) {
                 state = "formatFailure";
             }
-            else if (userDao.fetchUserByEmail(email) != null) {
+            else if (userRepo.byEmail(email) != null) {
                 state = "existenceFailure";
             }
             else {

@@ -1,6 +1,5 @@
 package eu.delving.web.controller;
 
-import eu.europeana.core.database.domain.StaticPageType;
 import eu.europeana.core.querymodel.query.EuropeanaQueryException;
 import eu.europeana.core.querymodel.query.QueryModelFactory;
 import eu.europeana.core.querymodel.query.QueryType;
@@ -18,6 +17,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+
+import static eu.europeana.core.util.web.ClickStreamLogger.UserAction.*;
 
 /**
  * todo: javadoc
@@ -53,7 +54,7 @@ public class AdvancedSearchController {
                 mav.addObject("collections", facetField.getValues());
             }
         }
-        clickStreamLogger.logStaticPageView(request, StaticPageType.ADVANCED_SEARCH);
+        clickStreamLogger.logUserAction(request, ADVANCED_SEARCH);// todo: something better than StaticPageType
         return mav;
     }
 
@@ -64,7 +65,7 @@ public class AdvancedSearchController {
     ) {
         String queryString = advancedSearchForm.toSolrQuery();
         log.info(advancedSearchForm);
-        clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.ADVANCED_SEARCH, advancedSearchForm.toString());
+        clickStreamLogger.logCustomUserAction(request, ADVANCED_SEARCH, advancedSearchForm.toString());
         return "redirect:/brief-doc.html?query=" + queryString;
     }
 
