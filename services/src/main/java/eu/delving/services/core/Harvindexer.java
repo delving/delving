@@ -150,14 +150,14 @@ public class Harvindexer {
             try {
                 DateTime now = new DateTime(DateTimeZone.UTC);
                 DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-                importPmh(dataSet);
                 while (retries < nrOfRetries) {
                     try {
                         importPmh(dataSet);
                         solrServer.deleteByQuery("europeana_collectionName:" + dataSet.getSpec() + " AND timestamp:[* TO " + fmt.print(now) + "]");
                         log.info("deleting orphaned entries from the SolrIndex for collection" + dataSet.getSpec());
                         break;
-                    } catch (SolrServerException e) {
+                    }
+                    catch (SolrServerException e) {
                         if (retries < nrOfRetries) {
                             retries += 1;
                             log.info("unable to delete orphans. Retrying...");
@@ -166,7 +166,8 @@ public class Harvindexer {
                             throw new SolrServerException(e);
                         }
 
-                    } catch (IOException e) {
+                    }
+                    catch (IOException e) {
                         if (retries < nrOfRetries) {
                             retries += 1;
                             log.info("unable to delete orphans. Retrying...");
@@ -185,7 +186,7 @@ public class Harvindexer {
                     log.info("Aborted importing " + dataSet);
                     dataSet.setState(DataSetState.EMPTY);
                 }
-                enableDataSet();
+                dataSet.save();
             }
             catch (HarvindexingException e) {
                 recordProblem(e);
@@ -197,11 +198,6 @@ public class Harvindexer {
                 processors.remove(this);
                 thread = null;
             }
-        }
-
-        private void enableDataSet() {
-            dataSet.setState(DataSetState.ENABLED);
-            dataSet.save();
         }
 
         private void recordProblem(Exception ex) {
@@ -299,7 +295,7 @@ public class Harvindexer {
                                 }
                             }
                             if (text.length() > 10000) {
-                                log.warn("Truncated value from "+text.length());
+                                log.warn("Truncated value from " + text.length());
                                 text = text.substring(0, 9999);
                             }
                             // language being ignored if (language != null) {...}
