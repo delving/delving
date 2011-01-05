@@ -18,7 +18,7 @@
                 <europeana:record>
                 <#list result.fullDoc.getFieldValueList() as field>
                     <#list field.getValueAsArray() as value>
-                        <${field.getKeyAsXml()}<#if value?starts_with("http://")> xsi:type="dcterms:URI"</#if>>${value}</${field.getKeyAsXml()}>
+                        <${field.getKeyAsXml()}<#if value?starts_with("http://")> xsi:type="dcterms:URI">${value?html}<#else>>${value}</#if></${field.getKeyAsXml()}>
                     </#list>
                 </#list>
                 </europeana:record>
