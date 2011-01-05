@@ -194,6 +194,7 @@ case class SolrDocument(fieldMap : Map[String, List[FieldValueNode]] = Map[Strin
 
 case class FieldFormatted (key: String, values: Array[String]) {
   def getKey : String = key
+  def getKeyAsMessageKey = "_metadata.%s" format (key.replaceFirst("_", "."))
   def getValues : Array[String] = values
   def getValuesFormatted(separator: String = ";&#160;") : String = values.mkString(separator)
   def isNotEmpty : Boolean = !values.isEmpty

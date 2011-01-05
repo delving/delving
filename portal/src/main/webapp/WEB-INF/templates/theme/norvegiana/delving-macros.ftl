@@ -899,7 +899,7 @@
     </#if>
 </#macro>
 
-<#macro resultFullList>
+<#macro resultFullListCustom>
     <table summary="This table contains the metadata for the object being viewed" width="100%">
         <caption>Object metadata</caption>
         <tbody>
@@ -919,17 +919,73 @@
             <@resultFullDataRow "europeana_type"/>
             <@resultFullDataRow "dc_relation"/>
 
-
-        <#--<#list result.fullDoc.getFieldValuesFiltered(false, ['europeana_uri', 'delving_pmhId', 'europeana_collectionName', 'europeana_collectionTitle',-->
-        <#--'europeana_object', 'europeana_isShownAt', 'europeana_isShownBy', 'europeana_language', 'europeana_rights', 'europeana_type']) as field>-->
-            <#--<tr>-->
-                <#--&lt;#&ndash;<th scrope="row">${field.getKeyAsXml()}</th>&ndash;&gt;-->
-                <#--<th scope="row"><@spring.messageText '${field.getKeyAsMessageKey()}', '${field.getKeyAsXml()}' />:</th>-->
-                <#--<td>${field.getFirst()}</td>-->
-            <#--</tr>-->
-        <#--</#list>-->
         </tbody>
     </table>
+</#macro>
+
+<#macro resultFullList>
+    <table summary="This table contains the metadata for the object being viewed" width="100%">
+        <caption>Object metadata</caption>
+        <tbody>
+
+        <#list result.fullDoc.getFieldValuesFiltered(false, ['europeana_uri', 'delving_pmhId', 'europeana_collectionName', 'europeana_collectionTitle',
+        'europeana_object', 'europeana_isShownAt', 'europeana_isShownBy', 'europeana_language', 'europeana_rights', 'europeana_type']) as field>
+            <tr>
+                <#--<th scrope="row">${field.getKeyAsXml()}</th>-->
+                <th scope="row"><@spring.messageText '${field.getKeyAsMessageKey()}', '${field.getKeyAsXml()}' />:</th>
+                <td>${field.getFirst()}</td>
+            </tr>
+        </#list>
+        </tbody>
+    </table>
+</#macro>
+
+<#macro resultFullListFormatted>
+    <table summary="This table contains the metadata for the object being viewed" width="100%">
+        <caption>Object metadata</caption>
+        <#assign doc = result.fullDoc/>
+        <tbody>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_title", ["dc_title"])/>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_creator", ["dc_creator"])/>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("searchfield.contributor", ["dc_contributor"])/>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_date", ["dc_date", "dcterms_created", "dcterms_issued"])/>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_type", ["dc_type"])/>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_format", ["dc_format", "dcterms_extent", "dcterms_medium"])/>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_language", ["dc_language"])/>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_description", ["dc_description"])/> <#-- todo add return + trunc -->
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_subject", ["dc_subject", "dcterms_temporal", "dcterms_spatial", "dc_coverage"])/>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_identifier", ["dc_identifier"])/>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_source", ["dc_source"])/>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_rights", ["dc_rights"])/>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_publisher", ["dc_publisher"])/>
+            <@resultFullDataRowConcatenated2 doc.getConcatenatedArray("europeana_provider", ["europeana_provider", "europeana_dataProvider"]) doc.getFieldValue("europeana_country")/>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_relation", ["dc_relation", "dcterms_references",
+            "dcterms_isReferencedBy", "dcterms_isReplacedBy", "dcterms_isRequiredBy", "dcterms_isPartOf", "dcterms_hasPart",
+            "dcterms_replaces", "dcterms_requires", "dcterms_isVersionOf", "dcterms_hasVersion",
+            "dcterms_conformsTo", "dcterms_hasFormat"])/>
+
+        </tbody>
+    </table>
+</#macro>
+
+
+<#macro resultFullDataRowConcatenated fieldFormatted>
+    <#if fieldFormatted.isNotEmpty()>
+        <tr>
+            <th scope="row"><@spring.messageText '${fieldFormatted.getKeyAsMessageKey()}', '${fieldFormatted.getKey()}' />:</th>
+            <td>${fieldFormatted.getValuesFormatted(";&#160;")}
+            </td>
+        </tr>
+    </#if>
+</#macro>
+
+<#macro resultFullDataRowConcatenated2 fieldFormatted fieldvalue>
+    <#if fieldFormatted.isNotEmpty()>
+        <tr>
+            <th scope="row"><@spring.messageText '${fieldFormatted.getKeyAsMessageKey()}', '${fieldFormatted.getKey()}' />:</th>
+            <td>${fieldFormatted.getValuesFormatted(";&#160;")}<#if fieldvalue.isNotEmpty()>;&#160; ${fieldvalue.getFirst()}</#if></td>
+        </tr>
+    </#if>
 </#macro>
 
 <#macro resultFullDataRow key>
