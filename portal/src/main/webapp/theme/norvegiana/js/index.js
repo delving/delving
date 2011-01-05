@@ -29,7 +29,12 @@ $(document).ready(function() {
         var images = ['bg-houses.jpg', 'bg-cows.jpg','bg-statues-close.jpg','bg-lion.jpg'];
         $('div#header.home').css({'background-image': 'url('+baseThemePath+'/images/' + images[Math.floor(Math.random() * images.length)] + ')'});
 
-        $("ul#random-carousel li img[title]").tooltip({ position: "top center", opacity: 1, offset:[0,0]});
+        $("ul#random-carousel li img[title]").tooltip({
+            position: "top center",
+            opacity: 1,
+            offset:[0,0],
+            effect: 'fade'
+        });
         $('ul#random-carousel').delay("2000").jcarousel({
             animation: 2000,
             auto: 2,

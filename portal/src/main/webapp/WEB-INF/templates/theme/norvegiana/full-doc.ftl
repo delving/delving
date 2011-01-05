@@ -103,7 +103,7 @@
             </div>
 
             <div id="itemMetaData">
-                <@resultFullList/>
+                <@resultFullListFormatted/>
             </div>
         </div>
      </div>

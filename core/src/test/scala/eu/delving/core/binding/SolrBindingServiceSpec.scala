@@ -88,6 +88,20 @@ class SolrBindingServiceSpec extends Spec with ShouldMatchers with BeforeAndAfte
         fv.getValueAsArray.length should equal (2)
       }
 
+      it("should give access to FieldFormatted for a concatenated Array") {
+        val fullDoc = fullDocList.head
+        val formattedField = fullDoc.getConcatenatedArray("dc_title", Array("dc_title", "dc_date"))
+        formattedField.getKey should equal ("dc_title")
+        formattedField.getValuesFormatted(";;") should equal ("dc_title=1;;dc_title=12;;dc_date=1;;dc_date=12")
+        formattedField.getValues.size should equal (4)
+        formattedField.isNotEmpty should be (true)
+        val emptyField = fullDoc.getConcatenatedArray("dc_date", Array("dcterms_created", "dcterms_issued"))
+        emptyField.getValues.size should equal (0)
+        emptyField.getValuesFormatted() should equal ("")
+        emptyField.isNotEmpty should be (false)
+
+      }
+
     }
 
     describe("(when giving parsing a Record from a OAI-PMH GetRecord response)") {

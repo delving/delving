@@ -31,8 +31,8 @@ class ImageCacheServiceSpec extends Spec with ShouldMatchers {
           cachedImage.getFilename should equal (sanitizedUrl)
           cachedImage.get("viewed").asInstanceOf[Int] should not equal (0)
         }
+        
+        }
 
       }
-      
     }
-}
