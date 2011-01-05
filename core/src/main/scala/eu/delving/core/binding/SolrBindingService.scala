@@ -185,6 +185,19 @@ case class SolrDocument(fieldMap : Map[String, List[FieldValueNode]] = Map[Strin
   def getFieldValueList : List[FieldValue] = for (key <- fieldMap.keys.toList.filter(_.matches(".*_.*"))) yield FieldValue(key, this)
 
   def getFieldValuesFiltered(include: Boolean, fields : List[String]) : List[FieldValue] = getFieldValueList.filter((fv => fields.contains(fv.getKey) == include))
+
+  def getConcatenatedArray(key: String, fields: List[String]) : FieldFormatted = {
+    val concatArray : Array[String] = getFieldValuesFiltered(true, fields).map(fv => fv.getValueAsArray).flatten.toArray
+    FieldFormatted(key, concatArray)
+  }
+}
+
+case class FieldFormatted (key: String, values: Array[String]) {
+  def getKey : String = key
+  def getValues : Array[String] = values
+  def getValuesFormatted(separator: String = ";&#160;") : String = values.mkString(separator)
+  def isNotEmpty : Boolean = !values.isEmpty
+
 }
 
 case class FieldValue (key: String, solrDocument: SolrDocument) {
@@ -290,6 +303,8 @@ case class FullDocItem(solrDocument : SolrDocument) extends FullDoc {
     override def getFieldValueList() : JList[FieldValue] = solrDocument.getFieldValueList
 
     override def getFieldValuesFiltered(include: Boolean, fields: Array[String]) : JList[FieldValue] = solrDocument.getFieldValuesFiltered(include, fields.toList)
+
+    override def getConcatenatedArray(key: String, fields: Array[String]) : FieldFormatted = solrDocument.getConcatenatedArray(key, fields.toList)
 
     // Europeana elements
     override def getId : String = assignFirst("europeana_uri")
