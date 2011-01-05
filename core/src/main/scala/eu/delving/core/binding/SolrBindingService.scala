@@ -235,6 +235,13 @@ case class FieldValue (key: String, solrDocument: SolrDocument) {
   def getValueAsArray : Array[String] = fieldValues.asInstanceOf[List[String]].toArray
 
   /**
+   * Give back all values found in the fieldMap retrieved with 'key' in the SolrDocument as a Formatted String. When the
+   * key is not found an empty String is returned.
+   */
+
+  def getArrayAsString(separator: String = ";&#160;") : String = fieldValues.mkString(separator)
+
+  /**
    * This function gives back a boolean to say if the results returned from the fieldMap in the SolrDocument will be empty or not
    */
   def isNotEmpty = fieldValues.length != 0

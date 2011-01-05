@@ -937,7 +937,7 @@
     <#if keyVal.isNotEmpty()>
         <tr>
             <th scope="row"><@spring.messageText '${keyVal.getKeyAsMessageKey()}', '${keyVal.getKeyAsXml()}' />:</th>
-            <td>${keyVal.getFirst()}</td>
+            <td>${keyVal.getArrayAsString(";&#160;")}</td>
         </tr>
     </#if>
 </#macro>
