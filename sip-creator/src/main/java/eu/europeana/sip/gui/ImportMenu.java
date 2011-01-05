@@ -82,7 +82,7 @@ public class ImportMenu extends JMenu {
             int choiceMade = chooser.showOpenDialog(parent);
             if (choiceMade == JFileChooser.APPROVE_OPTION) {
                 File file = chooser.getSelectedFile();
-                sipModel.setRecentDirectory(file);
+                sipModel.getAppConfigModel().setRecentDirectory(file);
                 selectInputFile(file);
                 refresh();
             }
@@ -174,7 +174,7 @@ public class ImportMenu extends JMenu {
 
     private void refresh() {
         removeAll();
-        File directory = new File(sipModel.getRecentDirectory());
+        File directory = new File(sipModel.getAppConfigModel().getRecentDirectory());
         while (directory != null) {
             add(new LoadNewFileAction(directory));
             directory = directory.getParentFile();

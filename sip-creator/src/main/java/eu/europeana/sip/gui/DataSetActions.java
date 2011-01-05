@@ -33,9 +33,14 @@ import eu.europeana.sip.model.SipModel;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -44,6 +49,7 @@ import javax.swing.ProgressMonitor;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -59,7 +65,7 @@ import java.util.List;
  */
 
 public class DataSetActions {
-    private static final Dimension SIZE = new Dimension(1024 - 60, 768 - 60);
+    private static final Dimension SIZE = new Dimension(1024, 768);
     private JFrame frame;
     private RecordStatisticsDialog recordStatisticsDialog;
     private AnalysisFactsDialog analysisFactsDialog;
@@ -71,6 +77,7 @@ public class DataSetActions {
     private List<DataSetAction> localActions = new ArrayList<DataSetAction>();
     private List<DataSetAction> remoteActions = new ArrayList<DataSetAction>();
     private List<DataSetAction> actions = new ArrayList<DataSetAction>();
+    private JPanel panel;
 
     public DataSetActions(JFrame frame, SipModel sipModel, DataSetClient dataSetClient, Runnable refreshList) {
         this.frame = frame;
@@ -84,26 +91,39 @@ public class DataSetActions {
         createRemoteActions();
         actions.addAll(localActions);
         actions.addAll(remoteActions);
+        setEntry(null);
     }
 
-    private void createRemoteActions() {
-        remoteActions.add(createUploadFactsAction());
-        remoteActions.add(createUploadSourceAction());
-        for (String prefix : sipModel.getMetadataModel().getPrefixes()) {
-            remoteActions.add(createUploadMappingAction(prefix));
+    public JPanel getPanel() {
+        if (panel == null) {
+            panel = new JPanel();
+            buildPanel();
         }
-        for (DataSetCommand command : DataSetCommand.values()) {
-            remoteActions.add(createCommandAction(command, command == DataSetCommand.DELETE));
-        }
+        return panel;
     }
 
-    private void createLocalActions(SipModel sipModel) {
-        localActions.add(createAnalyzeFactsAction());
-        for (String metadataPrefix : sipModel.getMetadataModel().getPrefixes()) {
-            localActions.add(createEditMappingAction(metadataPrefix));
+    public JMenu createPrefixActivationMenu() {
+        JMenu menu = new JMenu("Mappings");
+        List<String> activePrefixes = sipModel.getAppConfigModel().getActiveMetadataPrefixes();
+        for (final String prefix : sipModel.getMetadataModel().getPrefixes()) {
+            final JCheckBoxMenuItem box = new JCheckBoxMenuItem(String.format("Mapping '%s'", prefix));
+            if (activePrefixes.contains(prefix)) {
+                box.setState(true);
+            }
+            box.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent actionEvent) {
+                    sipModel.getAppConfigModel().setMetadataPrefixActive(prefix, box.getState());
+                    panel.removeAll();
+                    buildPanel();
+                    panel.invalidate();
+                    frame.getContentPane().validate();
+                    setEntry(null);
+                }
+            });
+            menu.add(box);
         }
-        localActions.add(createRecordStatisticsAction());
-        localActions.add(createDeleteLocalAction());
+        return menu;
     }
 
     public List<Action> getLocalActions() {
@@ -126,6 +146,56 @@ public class DataSetActions {
             for (DataSetAction dataSetAction : actions) {
                 dataSetAction.setEntry(entry);
             }
+        }
+    }
+
+    private void buildPanel() {
+        JPanel local = createLocalPanel();
+        JPanel remote = createRemotePanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+        panel.add(local);
+        panel.add(Box.createVerticalGlue());
+        panel.add(remote);
+        panel.add(Box.createVerticalGlue());
+    }
+
+    private JPanel createRemotePanel() {
+        JPanel remote = new JPanel(new GridLayout(0, 1, 5, 5));
+        remote.setBorder(BorderFactory.createTitledBorder("Remote Actions"));
+        for (Action action : remoteActions) {
+            remote.add(new JButton(action));
+        }
+        return remote;
+    }
+
+    private JPanel createLocalPanel() {
+        JPanel local = new JPanel(new GridLayout(0, 1, 5, 5));
+        local.setBorder(BorderFactory.createTitledBorder("Local Actions"));
+        for (Action action : localActions) {
+            local.add(new JButton(action));
+        }
+        return local;
+    }
+
+    private void createLocalActions(SipModel sipModel) {
+        localActions.clear();
+        localActions.add(createAnalyzeFactsAction());
+        for (String metadataPrefix : sipModel.getAppConfigModel().getActiveMetadataPrefixes()) {
+            localActions.add(createEditMappingAction(metadataPrefix));
+        }
+        localActions.add(createRecordStatisticsAction());
+        localActions.add(createDeleteLocalAction());
+    }
+
+    private void createRemoteActions() {
+        remoteActions.clear();
+        remoteActions.add(createUploadFactsAction());
+        remoteActions.add(createUploadSourceAction());
+        for (String prefix : sipModel.getAppConfigModel().getActiveMetadataPrefixes()) {
+            remoteActions.add(createUploadMappingAction(prefix));
+        }
+        for (DataSetCommand command : DataSetCommand.values()) {
+            remoteActions.add(createCommandAction(command, command == DataSetCommand.DELETE));
         }
     }
 

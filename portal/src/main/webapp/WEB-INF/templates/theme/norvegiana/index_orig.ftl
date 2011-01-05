@@ -27,7 +27,16 @@
     <#if randomItems??>
     <ul id="random-carousel">
     <#list randomItems as item>
-        <li><a href="/${portalName}/record/${item.id}.html""><img src="${item.thumbnail}" width="100" height="100" title="<@stringLimiter item.title 50/>"/></a></li>
+        <#if useCache="true">
+            <li><a href="/${portalName}/record/${item.id}.html""><img src="${cacheUrl}id=${item.thumbnail}" width="100"
+                                                                      height="100"
+                                                                      title="<@stringLimiter item.title 50/>"/></a></li>
+            <#else>
+                <li><a href="/${portalName}/record/${item.id}.html""><img src="${item.thumbnail}"
+                                                                          width="100" height="100"
+                                                                          title="<@stringLimiter item.title 50/>"/></a>
+                </li>
+        </#if>
     </#list>
     </ul>
     </#if>

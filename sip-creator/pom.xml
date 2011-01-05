@@ -90,6 +90,12 @@
             <artifactId>httpclient</artifactId>
         </dependency>
         <dependency>
+            <groupId>javax.jnlp</groupId>
+            <artifactId>jnlp-api</artifactId>
+            <version>1.5.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest</artifactId>
             <scope>test</scope>
@@ -103,12 +109,6 @@
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.jnlp</groupId>
-            <artifactId>jnlp-api</artifactId>
-            <version>1.5.0</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

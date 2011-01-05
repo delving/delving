@@ -15,7 +15,6 @@ class ImageCacheServiceSpec extends Spec with ShouldMatchers {
       
       describe("(when an object is not found in the cache)") {
 
-//        val testUrl = "http://www.delving.eu/images/erasmus-bridge-1.png"
         val testUrl = """http://www.sffarkiv.no/webdb/fileStream.aspx?fileName=dbatlas_leks\1412-sol\1412001004.jpg"""
         val sanitizedUrl : String = ImageCacheService.sanitizeUrl(testUrl)
 
@@ -30,6 +29,7 @@ class ImageCacheServiceSpec extends Spec with ShouldMatchers {
         it("should find the saved item") {
           val cachedImage = ImageCacheService.findImageInCache(sanitizedUrl)
           cachedImage.getFilename should equal (sanitizedUrl)
+          cachedImage.get("viewed").asInstanceOf[Int] should not equal (0)
         }
 
       }

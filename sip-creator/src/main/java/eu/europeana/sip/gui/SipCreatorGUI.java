@@ -33,7 +33,22 @@ import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.UserNotifier;
 import org.apache.log4j.Logger;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
@@ -41,7 +56,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
@@ -133,7 +147,7 @@ public class SipCreatorGUI extends JFrame {
         getContentPane().add(north, BorderLayout.NORTH);
         getContentPane().add(main, BorderLayout.CENTER);
         main.add(createList(), BorderLayout.CENTER);
-        main.add(createEast(), BorderLayout.EAST);
+        main.add(dataSetActions.getPanel(), BorderLayout.EAST);
         setSize(SIZE);
         setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - SIZE.width) / 2, (Toolkit.getDefaultToolkit().getScreenSize().height - SIZE.height) / 2);
         SwingUtilities.invokeLater(new Runnable() {
@@ -144,7 +158,6 @@ public class SipCreatorGUI extends JFrame {
                 }
             }
         });
-        dataSetActions.setEntry(null);
     }
 
     private File getFileStoreDirectory() throws FileStoreException {
@@ -168,25 +181,6 @@ public class SipCreatorGUI extends JFrame {
             }
         }
         return fileStoreDirectory;
-    }
-
-    private JPanel createEast() {
-        JPanel local = new JPanel(new GridLayout(0, 1, 5, 5));
-        local.setBorder(BorderFactory.createTitledBorder("Local Actions"));
-        for (Action action : dataSetActions.getLocalActions()) {
-            local.add(new JButton(action));
-        }
-        JPanel remote = new JPanel(new GridLayout(0, 1, 5, 5));
-        remote.setBorder(BorderFactory.createTitledBorder("Remote Actions"));
-        for (Action action : dataSetActions.getRemoteActions()) {
-            remote.add(new JButton(action));
-        }
-        JPanel p = new JPanel();
-        p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
-        p.add(local);
-        p.add(remote);
-        p.add(Box.createVerticalGlue());
-        return p;
     }
 
     private JComponent createList() {
@@ -220,25 +214,8 @@ public class SipCreatorGUI extends JFrame {
             }
         }));
         bar.add(createRepositoryMenu());
-        bar.add(createLocalActionMenu());
-        bar.add(createRemoteActionMenu());
+        bar.add(dataSetActions.createPrefixActivationMenu());
         return bar;
-    }
-
-    private JMenu createLocalActionMenu() {
-        JMenu actions = new JMenu("Local Actions");
-        for (Action action : dataSetActions.getLocalActions()) {
-            actions.add(action);
-        }
-        return actions;
-    }
-
-    private JMenu createRemoteActionMenu() {
-        JMenu actions = new JMenu("Remote Actions");
-        for (Action action : dataSetActions.getRemoteActions()) {
-            actions.add(action);
-        }
-        return actions;
     }
 
     private JMenu createRepositoryMenu() {
@@ -325,9 +302,9 @@ public class SipCreatorGUI extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            String serverHostPort = JOptionPane.showInputDialog(SipCreatorGUI.this, "Server network address host:port (eg. delving.eu:8080).", sipModel.getServerHostPort());
+            String serverHostPort = JOptionPane.showInputDialog(SipCreatorGUI.this, "Server network address host:port (eg. delving.eu:8080).", sipModel.getAppConfigModel().getServerHostPort());
             if (serverHostPort != null && !serverHostPort.isEmpty()) {
-                sipModel.setServerHostPort(serverHostPort);
+                sipModel.getAppConfigModel().setServerHostPort(serverHostPort);
             }
         }
     }
@@ -340,11 +317,11 @@ public class SipCreatorGUI extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            JPasswordField passwordField = new JPasswordField(sipModel.getAccessKey());
+            JPasswordField passwordField = new JPasswordField(sipModel.getAppConfigModel().getAccessKey());
             Object[] msg = {"Server Access Key", passwordField};
             int result = JOptionPane.showConfirmDialog(SipCreatorGUI.this, msg, "Permission", JOptionPane.OK_CANCEL_OPTION);
             if (result == JOptionPane.OK_OPTION) {
-                sipModel.setServerAccessKey(new String(passwordField.getPassword()));
+                sipModel.getAppConfigModel().setServerAccessKey(new String(passwordField.getPassword()));
             }
         }
     }
