@@ -248,7 +248,7 @@ public class UserRepoImpl implements UserRepo {
         public List<Search> getSearches() {
             List<Search> searches = new ArrayList<Search>();
             int index = 0;
-            for (Object element : (BasicDBList) object.get(User.SEARCHES)) {
+            for (Object element : list(SEARCHES)) {
                 searches.add(new SearchImpl(this, (DBObject) element, index++));
             }
             return searches;

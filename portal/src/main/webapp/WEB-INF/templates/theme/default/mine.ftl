@@ -82,8 +82,8 @@
                    </div>
                     <div id="fragment-1">
                         <table width="95%" class="tbl-list" summary="list with saved items">
-                            <#if user.savedItems?size &gt; 0>
-                                <#list user.savedItems as item>
+                            <#if user.items?size &gt; 0>
+                                <#list user.items as item>
                                     <tr>
                                         <td valign="top" class="item-img">
                                             <a href="/${portalName}/record/${item.europeanaId.europeanaUri}.html">
@@ -121,8 +121,8 @@
                     </div>
                    <div id="fragment-2">
                         <table width="100%" class="tbl-list" summary="list with saved searches">
-                            <#if user.savedSearches?size &gt; 0>
-                                <#list user.savedSearches as search>
+                            <#if user.searches?size &gt; 0>
+                                <#list user.searches as search>
                                     <tr>
                                         <td width="5"><a href="/${portalName}/brief-doc.html?${search.query}"><span class="ui-icon ui-icon-search"></span></a></td>
                                         <td valign="top" class="item-info">

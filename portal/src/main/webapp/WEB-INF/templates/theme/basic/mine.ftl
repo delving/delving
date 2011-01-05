@@ -100,8 +100,8 @@ td {
             <table class="zebra" summary="list with saved items">
                 <caption><@spring.message '_mine.saved.items'/></caption>
                 <tbody>
-                <#if user.savedItems?size &gt; 0>
-                    <#list user.savedItems as item>
+                <#if user.items?size &gt; 0>
+                     <#list user.items as item>
                         <#assign rowId = "item_row_"+item_index/>
                         <tr id="${rowId}">
                             <td width="60">
@@ -142,8 +142,8 @@ td {
        <div id="tab-2">
             <table class="zebra" summary="list with saved searches">
                 <caption><@spring.message '_mine.saved.searches'/></caption>
-                <#if user.savedSearches?size &gt; 0>
-                    <#list user.savedSearches as search>
+                <#if user.searches?size &gt; 0>
+                    <#list user.searches as search>
                        <#assign rowId = "search_row_"+search_index/>
                         <tr id="${rowId}">
                             <td width="5"><a href="/${portalName}/brief-doc.html?${search.query}"><span class="ui-icon ui-icon-search"></span></a></td>
