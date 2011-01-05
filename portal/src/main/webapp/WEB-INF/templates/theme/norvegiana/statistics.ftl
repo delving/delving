@@ -29,7 +29,7 @@ function scriptPieChart(facetName, drawTarget, height, width, dataArray){
       // Drilll down into the generated iframe and over-ride the margins for better display control
       var topMargin = height/10;
       var margin = "-"+topMargin+"px 0 0 0";
-      $("div#"+drawTarget+" iframe").css("height","300px");
+      $("div#"+drawTarget+" iframe").css("height","380px");
       $("div#"+drawTarget+" iframe").contents().find('body').css("margin",margin);
     }
 
@@ -59,7 +59,7 @@ function scriptPieChart(facetName, drawTarget, height, width, dataArray){
     <hr/>
     <div class="grid_4 alpha">
         <h3 class="header"><@spring.message '_metadata.abm.county'/></h3>
-        <@createStatsRowsAndData "COUNTY" 400 600/>
+        <@createStatsRowsAndData "COUNTY" 500 600/>
     </div>
     <div class="grid_8 omega">
         <div id="chart-div-COUNTY" class="chart-container"></div>
