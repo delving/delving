@@ -960,8 +960,8 @@
 
             <#-- add is about-->
             <tr>
-                <th id="about"><@spring.message '_metadata.is.about'/>:</th>
-                <td></td>
+                <th id="about" style="border:none"><@spring.message '_metadata.is.about'/>:</th>
+                <td  style="border:none"></td>
             <tr>
                 <td colspan="2">
                     <table class="abm-indent">
