@@ -31,6 +31,7 @@ object ImageCacheService {
   val connectionParams = new HttpConnectionManagerParams
   connectionParams setDefaultMaxConnectionsPerHost (10)
   connectionParams setMaxTotalConnections (200)
+  connectionParams setConnectionTimeout (2000)
   val multiThreadedHttpConnectionManager = new MultiThreadedHttpConnectionManager()
   multiThreadedHttpConnectionManager setParams (connectionParams)
 
