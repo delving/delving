@@ -946,19 +946,35 @@
         <#assign doc = result.fullDoc/>
         <tbody>
             <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_title", ["dc_title"])/>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_date", ["dc_date", "dcterms_created", "dcterms_issued"])/>
             <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_creator", ["dc_creator"])/>
             <@resultFullDataRowConcatenated doc.getConcatenatedArray("searchfield.contributor", ["dc_contributor"])/>
-            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_date", ["dc_date", "dcterms_created", "dcterms_issued"])/>
-            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_type", ["dc_type"])/>
-            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_format", ["dc_format", "dcterms_extent", "dcterms_medium"])/>
-            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_language", ["dc_language"])/>
             <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_description", ["dc_description"])/> <#-- todo add return + trunc -->
-            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_subject", ["dc_subject", "dcterms_temporal", "dcterms_spatial", "dc_coverage"])/>
-            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_identifier", ["dc_identifier"])/>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_language", ["dc_language"])/>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_format", ["dc_format", "dcterms_extent", "dcterms_medium"])/>
             <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_source", ["dc_source"])/>
             <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_rights", ["dc_rights"])/>
             <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_publisher", ["dc_publisher"])/>
-            <@resultFullDataRowConcatenated2 doc.getConcatenatedArray("europeana_provider", ["europeana_provider", "europeana_dataProvider"]) doc.getFieldValue("europeana_country")/>
+            <#--<@resultFullDataRowConcatenated2 doc.getConcatenatedArray("europeana_provider", ["europeana_provider", "europeana_dataProvider"]) doc.getFieldValue("europeana_country")/>-->
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("europeana_provider", ["abm_contentProvider"])/>
+
+            <#-- add is about-->
+
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_subject", ["dc_subject", "dcterms_spatial", "dc_coverage"])/>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("abm_county", ["abm_county"])/>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("abm_municipality", ["abm_municipality"])/>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("abm_namedPlace", ["abm_namedPlace"])/>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dcterms_temporal", ["dcterms_temporal"])/>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("abm_aboutPerson", ["abm_aboutPerson"])/>
+
+            <#-- more -->
+
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dcterms_provenance", ["dcterms_provenance"])/>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_type", ["dc_type"])/>
+            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_identifier", ["dc_identifier"])/>
+
+            <#-- add is part of -->
+
             <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_relation", ["dc_relation", "dcterms_references",
             "dcterms_isReferencedBy", "dcterms_isReplacedBy", "dcterms_isRequiredBy", "dcterms_isPartOf", "dcterms_hasPart",
             "dcterms_replaces", "dcterms_requires", "dcterms_isVersionOf", "dcterms_hasVersion",
