@@ -28,7 +28,7 @@
     <ul id="random-carousel">
     <#list randomItems as item>
         <#if useCache="true">
-            <li><a href="/${portalName}/record/${item.id}.html""><img src="${cacheUrl}id=${item.thumbnail}" width="100"
+            <li><a href="/${portalName}/record/${item.id}.html""><img src="${cacheUrl}id=${item.thumbnail?url('utf-8')}" width="100"
                                                                       height="100"
                                                                       title="<@stringLimiter item.title 50/>"/></a></li>
             <#else>
