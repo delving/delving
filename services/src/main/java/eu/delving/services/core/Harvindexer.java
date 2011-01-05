@@ -179,8 +179,7 @@ public class Harvindexer {
                 }
                 if (thread != null) {
                     log.info("Finished importing " + dataSet);
-//                    dataSet.setRecordsIndexed(??);
-                    dataSet.setState(DataSetState.ENABLED);
+                    dataSet.setState(DataSetState.ENABLED); // funny, but this can enable before the indexed record count has been fully incremented
                 }
                 else {
                     log.info("Aborted importing " + dataSet);

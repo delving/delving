@@ -108,8 +108,12 @@ public class SipCreatorGUI extends JFrame {
             public void setList(List<DataSetInfo> list) {
                 if (list != null) {
                     dataSetListModel.setDataSetInfo(list);
+                    boolean hit = false;
                     for (DataSetInfo dataSetInfo : list) {
-                        dataSetActions.setDataSetInfo(dataSetInfo);
+                        hit |= dataSetActions.setDataSetInfo(dataSetInfo);
+                    }
+                    if (!hit) {
+                        dataSetActions.setDataSetInfo(null);
                     }
                 }
             }
@@ -117,6 +121,7 @@ public class SipCreatorGUI extends JFrame {
             @Override
             public void disconnected() {
                 connectedBox.setSelected(false);
+                sipModel.getUserNotifier().tellUser("Disconnected from Repository");
             }
         });
         dataSetActions = new DataSetActions(this, sipModel, dataSetClient, new Runnable() {

@@ -143,12 +143,18 @@ public class DataSetActions {
         }
     }
 
-    public void setDataSetInfo(DataSetInfo dataSetInfo) {
-        if (entry != null && entry.getDataSetInfo() != null && entry.getDataSetInfo().spec.equals(dataSetInfo.spec)) {
-            for (DataSetAction dataSetAction : actions) {
-                dataSetAction.setEntry(entry);
+    public boolean setDataSetInfo(DataSetInfo dataSetInfo) {
+        if (entry != null) {
+            if (dataSetInfo == null) {
+                setEntry(null);
+                return false;
+            }
+            if (entry.getDataSetInfo() != null && entry.getDataSetInfo().spec.equals(dataSetInfo.spec)) {
+                setEntry(entry);
+                return true;
             }
         }
+        return false;
     }
 
     private void buildPanel() {
@@ -561,8 +567,8 @@ public class DataSetActions {
     private JPanel createFinishedPanel(JDialog dialog) {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         Action finishedAction = new FinishedAction(dialog);
-        ((JComponent)dialog.getContentPane()).getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("ESCAPE"), "finished");
-        ((JComponent)dialog.getContentPane()).getActionMap().put("finished", finishedAction);
+        ((JComponent) dialog.getContentPane()).getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("ESCAPE"), "finished");
+        ((JComponent) dialog.getContentPane()).getActionMap().put("finished", finishedAction);
         JButton hide = new JButton(finishedAction);
         panel.add(hide);
         return panel;

@@ -291,6 +291,7 @@ public class DataSetController {
                         case ERROR:
                         case UPLOADED:
                             dataSet.delete();
+                            dataSet.setState(DataSetState.EMPTY);
                             return view(dataSet);
                         default:
                             return view(DataSetResponseCode.STATE_CHANGE_FAILURE);
