@@ -49,9 +49,10 @@ function scriptPieChart(facetName, drawTarget, height, width, dataArray){
 <section role="main" class="grid_12 main">
 
     <h1><@spring.message '_portal.ui.statistics' /></h1>
+    <hr/>
     <div class="grid_4 alpha">
         <h3 class="header"><@spring.message '_metadata.europeana.dataProvider'/></h3>
-        <@createStatsRowsAndData "DATAPROVIDER" 400 600/>
+        <@createStatsRowsAndData "DATAPROVIDER" 500 600/>
     </div>
     <div class="grid_8 omega">
         <div id="chart-div-DATAPROVIDER"></div>
@@ -67,7 +68,7 @@ function scriptPieChart(facetName, drawTarget, height, width, dataArray){
     <hr/>
     <div class="grid_4 alpha">
         <h3 class="header"><@spring.message '_metadata.abm.municipality'/></h3>
-        <@createStatsRowsAndData "MUNICIPALITY" 400 600/>
+        <@createStatsRowsAndData "MUNICIPALITY" 500 600/>
     </div>
     <div class="grid_8 omega">
         <div id="chart-div-MUNICIPALITY" class="chart-container"></div>

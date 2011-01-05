@@ -1042,8 +1042,28 @@ table.zebra tbody tr:nth-child(even) td
 
 /* SQUASH TABLE */
 table.squash {margin: 0;}
-table.squash tbody td {padding:.5em 0 0 0; font-size: .85em}
+table.squash tbody td,
+table.squash tbody th {
+    padding:.5em 0 0 0; font-size: .85em
+}
 
+/* LINED TABLES */
+
+table.lined th, table.lined td {
+    border-bottom: 1px dashed #ddd;
+}
+
+/* INDENTED UNRULED */
+
+#itemMetaData table.abm-indent {
+    margin: 0 0 0 30px;
+}
+
+table.abm-indent th,
+table.abm-indent td {
+    border: none;
+    
+}
 
 /* CODE & WYSIWYG VIEWS **************************/
 #editor-controls
