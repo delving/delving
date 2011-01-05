@@ -1044,6 +1044,11 @@ table.zebra tbody tr:nth-child(even) td
 table.squash {margin: 0;}
 table.squash tbody td {padding:.5em 0 0 0; font-size: .85em}
 
+/* LINED TABLES */
+
+table.lined th, table.lined td {
+    border-bottom: 1px dashed #ddd;
+}
 
 /* CODE & WYSIWYG VIEWS **************************/
 #editor-controls

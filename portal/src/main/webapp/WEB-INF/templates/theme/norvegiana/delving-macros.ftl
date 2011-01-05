@@ -941,7 +941,7 @@
 </#macro>
 
 <#macro resultFullListFormatted>
-    <table summary="This table contains the metadata for the object being viewed" width="100%">
+    <table summary="This table contains the metadata for the object being viewed" width="100%" class="lined">
         <caption>Object metadata</caption>
         <#assign doc = result.fullDoc/>
         <tbody>
