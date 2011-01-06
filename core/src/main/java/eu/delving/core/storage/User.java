@@ -22,6 +22,7 @@
 package eu.delving.core.storage;
 
 import eu.delving.domain.Language;
+import eu.europeana.core.querymodel.query.DocType;
 
 import java.util.Date;
 import java.util.List;
@@ -51,9 +52,11 @@ public interface User {
     void setLastLogin(Date lastLogin);
     Date getLastLogin();
     Date getRegistrationDate();
-    Item addItem(String author, String title, Language language);
+    Item addItem(String author, String title, Language language, String delvingId, String europeanaId, DocType docType, String thumbnail);
+    void removeItem(int index);
     List<Item> getItems();
     Search addSearch(String query, String queryString, Language language);
+    void removeSearch(int index);
     List<Search> getSearches();
     void save();
     void delete();
@@ -70,6 +73,7 @@ public interface User {
     String ITEMS = "items";
     String SEARCHES = "searches";
 
+
     public enum Role {
         ROLE_USER,
         ROLE_RESEARCH_USER,
@@ -82,13 +86,20 @@ public interface User {
         String getAuthor();
         String getTitle();
         Language getLanguage();
-        // todo: identify the actual object (was europeanaId
+        String getDelvingId();
+        String getEuropeanaId();
+        DocType getDocType();
+        String getThumbnail();
         Date getDateSaved();
         void remove();
 
         String AUTHOR = "author";
         String TITLE = "title";
         String LANGUAGE = "lang";
+        String DELVING_ID = "delving_id";
+        String EUROPEANA_ID = "europeana_id";
+        String DOC_TYPE = "doc_type";
+        String THUMBNAIL = "thumb";
         String DATE_SAVED = "date_saved";
     }
 

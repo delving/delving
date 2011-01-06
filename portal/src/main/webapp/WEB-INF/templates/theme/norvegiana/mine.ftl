@@ -78,23 +78,23 @@
                 <tbody>
                 <#if user.items?size &gt; 0>
                     <#list user.items as item>
-                        <#assign rowId = "item_row_"+item_index/>
+                        <#assign rowId = "item_row_"+item.index/>
                         <tr id="${rowId}">
                             <td width="60">
-                                <a href="/${portalName}/record/${item.europeanaId.europeanaUri}.html">
+                                <a href="/${portalName}/record/${item.europeanaId}.html">
                                  <#if useCache="true">
-                                    <img class="thumb" id="img_${item_index}" align="middle" src="${cacheUrl}uri=${item.europeanaObject}&size=BRIEF_DOC" alt="Click for more information" width="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
+                                    <img class="thumb" id="img_${item_index}" align="middle" src="${cacheUrl}uri=${item.thumbnail}&size=BRIEF_DOC" alt="Click for more information" width="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
                                  <#else>
                                     <#if item.docType??>
-                                      <img class="thumb" align="middle" src="${item.europeanaObject}" alt="Click for more information" height="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
+                                      <img class="thumb" align="middle" src="${item.thumbnail}" alt="Click for more information" height="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
                                     <#else>
-                                      <img class="thumb" align="middle" src="${item.europeanaObject}" alt="Click for more information" height="50" style="float:left" onerror="showDefaultSmall(this)"/>
+                                      <img class="thumb" align="middle" src="${item.thumbnail}" alt="Click for more information" height="50" style="float:left" onerror="showDefaultSmall(this)"/>
                                     </#if>
                                  </#if>
                                 </a>
                             </td>
                             <td valign="top" class="item-info">
-                                <a href="/${portalName}/record/${item.europeanaId.europeanaUri}.html">
+                                <a href="/${portalName}/record/${item.europeanaId}.html">
                                     <strong><@stringLimiter "${item.title}" "50"/></strong>
                                 </a>
                                 <br/>
@@ -104,7 +104,7 @@
 
                             </td>
                             <td width="60">
-                                <a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeSavedItem(${item.id?string('0')},'${rowId}');"><span class="ui-icon ui-icon-trash"></span><@spring.message '_mine.delete'/></a>
+                                <a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeSavedItem(${item.index?string('0')},'${rowId}');"><span class="ui-icon ui-icon-trash"></span><@spring.message '_mine.delete'/></a>
                             </td>
                         </tr>
                     </#list>
@@ -127,7 +127,7 @@
                                 <a href="/${portalName}/brief-doc.html?${search.query}">${search.queryString}</a><br/>
                                 <@spring.message '_mine.date.saved'/>: <em>${search.dateSaved?datetime}</em>
                             </td>
-                            <td width="60"><a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeSavedSearch(${search.id?string('0')},'${rowId}');"><span class="ui-icon ui-icon-trash"></span><@spring.message '_mine.delete'/></a></td>
+                            <td width="60"><a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeSavedSearch(${search.index?string('0')},'${rowId}');"><span class="ui-icon ui-icon-trash"></span><@spring.message '_mine.delete'/></a></td>
                         </tr>
                     </#list>
                 <#else>

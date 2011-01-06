@@ -147,7 +147,7 @@ public class RegisterPageController {
 
         public String getUserName() {
             if (userName == null && email != null) {
-                userName = email.substring(0, email.indexOf("@")).toLowerCase();
+                userName = email.substring(0, email.indexOf("@")).toLowerCase().replaceAll("[^a-z_0-9]","");
             }
             return userName;
         }
