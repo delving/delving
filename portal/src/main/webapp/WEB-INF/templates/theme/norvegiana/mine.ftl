@@ -110,7 +110,7 @@
                     </#list>
 
                 <#else>
-                    <tr><td><@spring.message '_mine.nosaved.items'/></td></tr>
+                    <tr><td><@spring.message '_mine.nosaveditems'/></td></tr>
                 </#if>
                 </tbody>
             </table>
