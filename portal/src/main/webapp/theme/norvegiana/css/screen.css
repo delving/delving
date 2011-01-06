@@ -369,6 +369,7 @@ section#main,
 .main
 {
 	margin-top:2em;
+    min-height: 350px;
 }
 
 section[role="main"],section[role="complementary"]
