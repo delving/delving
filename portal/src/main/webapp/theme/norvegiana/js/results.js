@@ -146,7 +146,7 @@ $(document).ready(function(){
 
     if($("div.facets_container").length > 0){
         //Hide (Collapse) the toggle containers on load
-        $("div.facets_container").hide();
+        $("div.facets_container").show();
 
         //Switch the "Open" and "Close" state per click then slide up/down (depending on open/close state)
         $("h4.trigger").click(function(){

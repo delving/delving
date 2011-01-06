@@ -404,6 +404,7 @@
                              src="${cacheUrl}id=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}"
                              alt="<@spring.message '_action.alt.more.info' />"
                              height="50"
+                             onerror="showDefaultSmall(this,'${cell.type}')"
                           />
                     <#else>
                         <img class="thumb"
@@ -618,7 +619,7 @@
         <#if !result.matchDoc??>
             <#list breadcrumbs as crumb>
                 <#if !crumb.last>
-                    <a href="?${crumb.href}">${crumb.display?html}</a>
+                    <a href="?${crumb.href}">${crumb.display?html}</a> &#160;>&#160;
                 <#else>
                     <strong>${crumb.display?html}</strong>
                 </#if>
@@ -1131,13 +1132,6 @@
 <div id="viewselect">
     <#if queryStringForPresentation?exists>
         <#assign viewChangeUrl>${queryParamList.getListFilteredFormatted(false,['view'])?trim}</#assign>
-        <#--<#if view="table">-->
-            <#--<a href="?${queryStringForPresentation?html}&amp;view=table&amp;${defaultParams}" title="<@spring.message '_action.alt.table.view' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-hi.gif" alt="<@spring.message '_action.alt.table.view' />" /></a>-->
-            <#--<a href="?${queryStringForPresentation?html}&amp;view=list&amp;${defaultParams}" title="<@spring.message '_action.alt.list.view' />" >&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-lo.gif" alt="<@spring.message '_action.alt.list.view' />" /></a>-->
-        <#--<#else>-->
-            <#--<a href="?${queryStringForPresentation?html}&amp;view=table&amp;${defaultParams}" title="<@spring.message '_action.alt.table.view' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-lo.gif" alt="<@spring.message '_action.alt.table.view' />" hspace="5"/></a>-->
-            <#--<a href="?${queryStringForPresentation?html}&amp;view=list&amp;${defaultParams}" title="<@spring.message '_action.alt.list.view' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-hi.gif" alt="<@spring.message '_action.alt.list.view' />" hspace="5"/></a>-->
-        <#--</#if>-->
         <#if view="table">
             <a href="?${viewChangeUrl}&view-table" title="<@spring.message '_action.alt.table.view' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-hi.gif" alt="<@spring.message '_action.alt.table.view' />" /></a>
             <a href="?${viewChangeUrl}&view=list&amp;${defaultParams}" title="<@spring.message '_action.alt.list.view' />" >&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-lo.gif" alt="<@spring.message '_action.alt.list.view' />" /></a>
@@ -1164,12 +1158,23 @@
 <#--<option value="COLLECTION"><@spring.message '_search.field.collection' /></option>-->
 </select>
 <form action="" method="GET" id="form-sort" style="display:none;">
-    <input type="hidden" name="query" value="${justTheQuery}"/>
-    <#-- commented out 'start': re-ordering result should start at p.1 -->
+    <#--<input type="hidden" name="query" value="${justTheQuery}"/>-->
+     <#--&lt;#&ndash;commented out 'start': re-ordering result should start at p.1 &ndash;&gt;-->
     <#--<input type="hidden" name="start" value="${start}"/>-->
-    <input type="hidden" name="view" value="${view}"/>
-    <input type="hidden" name="tab" value="${tab}"/>
+    <#--<input type="hidden" name="view" value="${view}"/>-->
+    <#--<input type="hidden" name="tab" value="${tab}"/>-->
     <input type="hidden" name="sortBy" id="sortBy" value=""/>
+    <@formIncludeHidden ['query','start','view','tab','qf']/>
 </form>
+</#macro>
+
+<#macro formIncludeHidden includeList>
+    <#if includeList??>
+        <#list queryParamList.getListFiltered(true, includeList) as qp>
+            <#list qp.getValues() as value>
+                <input type="hidden" name="${qp.key()}" value="${value}"/>
+            </#list>
+        </#list>
+    </#if>
 </#macro>
 
