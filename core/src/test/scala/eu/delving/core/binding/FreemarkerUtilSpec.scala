@@ -40,6 +40,11 @@ class FreemarkerUtilSpec extends Spec with ShouldMatchers {
           val sp = qpl.getSearchParams
           qpl.formatAsUrl(sp) should equal ("query=sjoerd&qf=date:1980&qf=type:text")
         }
+        it("should give back only queryfilters that of a certain search field") {
+          qpl.getQfFiltered(false, "type").format should equal ("qf=date:1980")
+          qpl.getQfFiltered(true, "type").format should equal ("qf=type:text")
+          qpl.getQfFiltered(true, "language").format should equal ("")
+        }
   
       }
       
