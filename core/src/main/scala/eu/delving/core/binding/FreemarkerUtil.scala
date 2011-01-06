@@ -35,6 +35,10 @@ case class QueryParamList(params: Map[String, Array[String]]) {
     asJavaList(params.filterKeys(qp => fields.contains(qp) == include).toList.map(qp => QueryParam(qp._1, qp._2)))
   }
 
+  def getQfFiltered(include: Boolean, field: String) : QueryParam = {
+    QueryParam("qf", params.get("qf").getOrElse(Array[String]()).filter(qfField => qfField.startsWith(field) == include))
+  }
+
   def getListFilteredFormatted(include: Boolean, fields: Array[String]) : String = formatAsUrl(getListFiltered(include, fields))
 
   def getDefaultParams : JList[QueryParam] = getListFiltered(true, defaultParams.toArray[String])
