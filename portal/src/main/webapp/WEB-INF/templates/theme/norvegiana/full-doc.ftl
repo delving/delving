@@ -88,7 +88,7 @@
     </div>
 
     <div class="ui-widget ui-widget-content ui-corner-all ui-helper-clearfix">
-        
+
         <nav class="pagination" role="navigation">
             <div class="inner1">
             <@resultFullPagination/>

@@ -941,7 +941,7 @@
 </#macro>
 
 <#macro resultFullListFormatted>
-    <table summary="This table contains the metadata for the object being viewed" width="100%">
+    <table summary="This table contains the metadata for the object being viewed" width="100%" class="lined">
         <caption>Object metadata</caption>
         <#assign doc = result.fullDoc/>
         <tbody>
@@ -959,13 +959,22 @@
             <@resultFullDataRowConcatenated doc.getConcatenatedArray("europeana_provider", ["abm_contentProvider"])/>
 
             <#-- add is about-->
+            <tr>
+                <th id="about" style="border:none"><@spring.message '_metadata.is.about'/>:</th>
+                <td  style="border:none"></td>
+            <tr>
+                <td colspan="2">
+                    <table class="abm-indent">
+                        <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_subject", ["dc_subject", "dcterms_spatial", "dc_coverage"])/>
+                        <@resultFullDataRowConcatenated doc.getConcatenatedArray("abm_county", ["abm_county"]) />
+                        <@resultFullDataRowConcatenated doc.getConcatenatedArray("abm_municipality", ["abm_municipality"]) />
+                        <@resultFullDataRowConcatenated doc.getConcatenatedArray("abm_namedPlace", ["abm_namedPlace"]) />
+                        <@resultFullDataRowConcatenated doc.getConcatenatedArray("dcterms_temporal", ["dcterms_temporal"])/>
+                        <@resultFullDataRowConcatenated doc.getConcatenatedArray("abm_aboutPerson", ["abm_aboutPerson"]) />
+                    </table>
+                </td>
+            </tr>
 
-            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dc_subject", ["dc_subject", "dcterms_spatial", "dc_coverage"])/>
-            <@resultFullDataRowConcatenated doc.getConcatenatedArray("abm_county", ["abm_county"])/>
-            <@resultFullDataRowConcatenated doc.getConcatenatedArray("abm_municipality", ["abm_municipality"])/>
-            <@resultFullDataRowConcatenated doc.getConcatenatedArray("abm_namedPlace", ["abm_namedPlace"])/>
-            <@resultFullDataRowConcatenated doc.getConcatenatedArray("dcterms_temporal", ["dcterms_temporal"])/>
-            <@resultFullDataRowConcatenated doc.getConcatenatedArray("abm_aboutPerson", ["abm_aboutPerson"])/>
 
             <#-- more -->
 
@@ -985,7 +994,7 @@
 </#macro>
 
 
-<#macro resultFullDataRowConcatenated fieldFormatted>
+<#macro resultFullDataRowConcatenated fieldFormatted >
     <#if fieldFormatted.isNotEmpty()>
         <tr>
             <th scope="row"><@spring.messageText '${fieldFormatted.getKeyAsMessageKey()}', '${fieldFormatted.getKey()}' />:</th>
