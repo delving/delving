@@ -77,6 +77,7 @@ public class TokenRepoImpl implements TokenRepo {
         token.setDate(prmt.getDate());
         token.setTokenValue(prmt.getTokenValue());
         token.save();
+        log.debug("created authorization token to "+prmt.getTokenValue());
     }
 
     @Override
@@ -90,6 +91,7 @@ public class TokenRepoImpl implements TokenRepo {
             token.setTokenValue(tokenValue);
             token.setDate(lastUsed);
             token.save();
+            log.debug("updated authorization token to "+tokenValue);
         }
     }
 
@@ -97,10 +99,11 @@ public class TokenRepoImpl implements TokenRepo {
     public PersistentRememberMeToken getTokenForSeries(String series) {
         DBObject object = auth().findOne(new BasicDBObject(AuthenticationToken.SERIES, series));
         if (object == null) {
-            log.warn("unable to get token " + series);
+            log.warn("unable to get token for series " + series);
             return null;
         }
         else {
+            log.info("fetched token for series " + series);
             AuthenticationToken token = new AuthTokenImpl(object);
             return new PersistentRememberMeToken(
                     token.getEmail(),
@@ -113,6 +116,7 @@ public class TokenRepoImpl implements TokenRepo {
 
     @Override
     public void removeUserTokens(String email) {
+        log.info("removing token  for" + email);
         auth().remove(new BasicDBObject(AuthenticationToken.EMAIL, email));
     }
 

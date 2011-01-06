@@ -23,6 +23,7 @@ package eu.delving.core.storage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
@@ -47,7 +48,7 @@ public class SpringUserService implements UserDetailsService {
     }
 
     @Override
-    public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         try {
             User user = userRepo.byEmail(email);
             if (user == null) {
@@ -55,19 +56,19 @@ public class SpringUserService implements UserDetailsService {
             }
             user.setLastLogin(new Date());
             user.save();
-            return new UserDetails(user);
+            return new Details(user);
         }
         catch (Exception e) {
             throw new UsernameNotFoundException("Persistence problem", e);
         }
     }
 
-    private static class UserDetails implements org.springframework.security.core.userdetails.UserDetails, UserHolder {
+    private static class Details implements UserDetails, UserHolder {
         private static final long serialVersionUID = 1581860745489819018L;
         private User user;
         private List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 
-        private UserDetails(User user) {
+        private Details(User user) {
             this.user = user;
             switch (user.getRole()) {
                 case ROLE_GOD:
