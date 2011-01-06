@@ -320,7 +320,7 @@
             <div class="brief-thumb-container">
                 <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}${defaultParams}&amp;pageId=brd">
                 <#--<a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}${defaultParams}&amp;pageId=brd">-->
-                    <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&start=${start}&startPage=${pagination.start?c}&pageId=brd&${queryParamList.getDefaultParamsFormatted()}">
+                    <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&start=${cell.index()?c}&startPage=${pagination.start?c}&pageId=brd&${queryParamList.getDefaultParamsFormatted()}">
                     <#if useCache="true">
                          <img
                                  class="thumb"
@@ -422,7 +422,7 @@
         <td class="${cell.type} ">
                 <h6>
                   <#--<a class="fg-gray" href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}${defaultParams}&amp;pageId=brd">-->
-                  <a class="fg-gray" href="${cell.fullDocUrl()}?${queryStringForPresentation}&start=${start}&startPage=${pagination.start?c}&pageId=brd&${queryParamList.getDefaultParamsFormatted()}">
+                  <a class="fg-gray" href="${cell.fullDocUrl()}?${queryStringForPresentation}&start=${cell.index()?c}&startPage=${pagination.start?c}&pageId=brd&${queryParamList.getDefaultParamsFormatted()}">
                         <@stringLimiter "${cell.title}" "100"/></a>
                 </h6>
                 <p>
@@ -702,7 +702,7 @@
             </dt>
             <dd>
                 <#if user??>
-                    <a id="saveQuery" href="#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message '_action.save.this.search'/></a>
+                    <a id="saveQuery" href="#" onclick="saveQuery('${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message '_action.save.this.search'/></a>
                 <#else>
                     <a href="#" onclick="highLight('a#login, a#register'); showMessage('error','<@spring.message '_mine.user.notification.login.required'/>'); return false" class="disabled"><@spring.message '_action.save.this.search'/></a>
                 </#if>
@@ -718,7 +718,7 @@
             <#if !query?starts_with("europeana_uri:")>
                 <#list pagination.breadcrumbs as crumb>
                     <#if !crumb.last>
-                        <a href="${portalName}/brief-doc.html?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;
+                        <a href="/${portalName}/brief-doc.html?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;
                     <#else>
                         <strong>${crumb.display?html}</strong>
                     </#if>
@@ -746,7 +746,7 @@
 <#macro resultsFullQueryBreadcrumbsList>
     <#if pagination??>
         <dl>
-            <dt><@spring.message '_portal.ui.navigation.matchesfor' />:</dt>
+            <dt> <@spring.message '_portal.ui.navigation.matchesfor' />:</dt>
             <#if !query?starts_with("europeana_uri:")>
                 <#list pagination.breadcrumbs as crumb>
                     <#if !crumb.last>

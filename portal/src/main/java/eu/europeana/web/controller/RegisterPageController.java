@@ -25,6 +25,7 @@ import eu.delving.core.storage.TokenRepo;
 import eu.delving.core.storage.User;
 import eu.delving.core.storage.UserRepo;
 import eu.europeana.core.querymodel.query.EuropeanaQueryException;
+import eu.europeana.core.querymodel.query.QueryProblem;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.EmailSender;
 import org.apache.log4j.Logger;
@@ -81,7 +82,7 @@ public class RegisterPageController {
         log.info("Received get request, putting token into registration form model attribute");
         TokenRepo.RegistrationToken token = tokenRepo.getRegistrationToken(tokenKey);
         if (token == null) {
-            throw new EuropeanaQueryException("Registration must be retried, no token for "+tokenKey);  // todo: query exception??
+            throw new EuropeanaQueryException(QueryProblem.TOKEN_EXPIRED.toString());  // todo: query exception?? "Registration must be retried, no token for "+tokenKey
         }
         regForm.setToken(token.getId());
         regForm.setEmail(token.getEmail());
@@ -146,7 +147,7 @@ public class RegisterPageController {
 
         public String getUserName() {
             if (userName == null && email != null) {
-                userName = email.substring(0, email.indexOf("@")).toLowerCase();
+                userName = email.substring(0, email.indexOf("@")).toLowerCase().replaceAll("[^a-z_0-9]","");
             }
             return userName;
         }

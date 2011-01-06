@@ -1,12 +1,12 @@
 /* ________________BRIEF DOC_______________________*/
 
-function saveQuery(className, queryToSave, queryString){
+function saveQuery(queryToSave, queryString){
     var sr = $("#msg-save-search");
     sr.css("display","block");
     $.ajax({
        type: "POST",
-       url: "/portal/save-saved-search.ajax",
-       data: "className="+className+"&query="+queryToSave+"&queryString="+queryString,
+       url: "/portal/save-search.ajax",
+       data: "query="+queryToSave+"&queryString="+queryString,
        success: function(msg){
            
            showMessage("success",msgSearchSaveSuccess);
@@ -100,13 +100,13 @@ function addTag(className,tagText,fullDocId,thumbnailId,objTitle,objType){
     }
     return false;
 }
-function saveItem(className,postTitle,postAuthor,objUri,thumbnail,type){
+function saveItem(postTitle,postAuthor,delvingId,europeanaId,thumbnail,type){
     var sr = document.getElementById("msg-save-item");
     sr.style.display = 'block';
     $.ajax({
        type: "POST",
-       url: "/portal/save-saved-item.ajax",
-       data: "className="+className+"&title="+postTitle+"&author="+postAuthor+"&europeanaUri="+objUri+"&europeanaObject="+thumbnail+"&docType="+type,
+       url: "/portal/save-item.ajax",
+       data: "title="+postTitle+"&author="+postAuthor+"&delvingId="+delvingId+"&europeanaId="+europeanaId+"&thumbnail="+thumbnail+"&docType="+type,
        success: function(msg){
            showMessage("success",msgItemSaveSuccess);
            var ss = document.getElementById("savedItemsCount");
