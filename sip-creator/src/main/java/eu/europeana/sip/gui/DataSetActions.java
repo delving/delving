@@ -89,8 +89,6 @@ public class DataSetActions {
         this.recordStatisticsDialog = new RecordStatisticsDialog(sipModel);
         this.analysisFactsDialog = new AnalysisFactsDialog(sipModel);
         this.mappingDialog = new MappingDialog(sipModel);
-        actions.addAll(localActions);
-        actions.addAll(remoteActions);
         setEntry(null);
     }
 
@@ -126,14 +124,6 @@ public class DataSetActions {
         return menu;
     }
 
-    public List<Action> getLocalActions() {
-        return new ArrayList<Action>(localActions);
-    }
-
-    public List<Action> getRemoteActions() {
-        return new ArrayList<Action>(remoteActions);
-    }
-
     public void setEntry(DataSetListModel.Entry entry) {
         this.entry = entry;
         for (DataSetAction dataSetAction : actions) {
@@ -158,6 +148,9 @@ public class DataSetActions {
     private void buildPanel() {
         createLocalActions(sipModel);
         createRemoteActions();
+        actions.clear();
+        actions.addAll(localActions);
+        actions.addAll(remoteActions);
         JPanel local = createLocalPanel();
         JPanel remote = createRemotePanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
