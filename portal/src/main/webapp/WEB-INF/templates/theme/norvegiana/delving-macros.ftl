@@ -404,6 +404,7 @@
                              src="${cacheUrl}id=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}"
                              alt="<@spring.message '_action.alt.more.info' />"
                              height="50"
+                             onerror="showDefaultSmall(this,'${cell.type}')"
                           />
                     <#else>
                         <img class="thumb"
