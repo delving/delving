@@ -6,6 +6,8 @@ import _root_.org.scalatest.matchers.ShouldMatchers
 import _root_.org.scalatest.junit.JUnitRunner
 import _root_.org.springframework.mock.web.MockHttpServletRequest
 import org.scalatest.{BeforeAndAfterAll, PrivateMethodTester, Spec}
+import eu.delving.metadata.MetadataModelImpl
+import scala.collection.JavaConversions.asJavaList
 
 /**
  *
@@ -177,7 +179,10 @@ class DocIdWindowPagerSpec extends Spec with BeforeAndAfterAll with ShouldMatche
     val uri = createEuropeanaUri(start, testCollId)
     val query = SolrQueryUtil.createFromQueryParams(request.getParameterMap, qa)
     request.addParameter("uri", uri)
-    val pager: DocIdWindowPager = windowPagerFactory.getPager(request.getParameterMap, query, solrSever)
+    val metadataModel = new MetadataModelImpl()
+    metadataModel setDefaultPrefix ("abm")
+    metadataModel setRecordDefinitionResources (asJavaList(List[String]("/ese-record-definition.xml", "/abm-record-definition.xml")))
+    val pager: DocIdWindowPager = windowPagerFactory.getPager(request.getParameterMap, query, solrSever, metadataModel)
     (pager, uri)
   }
 
