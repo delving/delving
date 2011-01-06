@@ -619,7 +619,7 @@
         <#if !result.matchDoc??>
             <#list breadcrumbs as crumb>
                 <#if !crumb.last>
-                    <a href="?${crumb.href}">${crumb.display?html}</a>
+                    <a href="?${crumb.href}">${crumb.display?html}</a> &#160;>&#160;
                 <#else>
                     <strong>${crumb.display?html}</strong>
                 </#if>
