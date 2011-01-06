@@ -89,8 +89,6 @@ public class DataSetActions {
         this.recordStatisticsDialog = new RecordStatisticsDialog(sipModel);
         this.analysisFactsDialog = new AnalysisFactsDialog(sipModel);
         this.mappingDialog = new MappingDialog(sipModel);
-        createLocalActions(sipModel);
-        createRemoteActions();
         actions.addAll(localActions);
         actions.addAll(remoteActions);
         setEntry(null);
@@ -158,6 +156,8 @@ public class DataSetActions {
     }
 
     private void buildPanel() {
+        createLocalActions(sipModel);
+        createRemoteActions();
         JPanel local = createLocalPanel();
         JPanel remote = createRemotePanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
