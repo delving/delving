@@ -41,18 +41,18 @@
               <td><@spring.message '_mine.email.address'/>:</td>
               <td>${user.email}</td>
             </tr>
-            <#if user.firstName??>
-            <tr>
-              <td><@spring.message '_mine.firstname'/>:</td>
-              <td>${user.firstName}</td>
-            </tr>
-            </#if>
-            <#if user.lastName??>
-            <tr>
-              <td><@spring.message '_mine.last.name'/>:</td>
-              <td>${user.lastName}</td>
-            </tr>
-            </#if>
+            <#--<#if user.firstName??>-->
+            <#--<tr>-->
+              <#--<td><@spring.message '_mine.firstname'/>:</td>-->
+              <#--<td>${user.firstName}</td>-->
+            <#--</tr>-->
+            <#--</#if>-->
+            <#--<#if user.lastName??>-->
+            <#--<tr>-->
+              <#--<td><@spring.message '_mine.last.name'/>:</td>-->
+              <#--<td>${user.lastName}</td>-->
+            <#--</tr>-->
+            <#--</#if>-->
             <#if user.registrationDate??>
             <tr>
               <td><@spring.message '_mine.user.registration.date'/>:</td>
