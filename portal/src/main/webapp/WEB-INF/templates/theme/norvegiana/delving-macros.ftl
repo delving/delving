@@ -320,7 +320,7 @@
             <div class="brief-thumb-container">
                 <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}${defaultParams}&amp;pageId=brd">
                 <#--<a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}${defaultParams}&amp;pageId=brd">-->
-                    <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&start=${start}&startPage=${pagination.start?c}&pageId=brd&${queryParamList.getDefaultParamsFormatted()}">
+                    <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&start=${cell.index()?c}&startPage=${pagination.start?c}&pageId=brd&${queryParamList.getDefaultParamsFormatted()}">
                     <#if useCache="true">
                          <img
                                  class="thumb"
@@ -421,7 +421,7 @@
         <td class="${cell.type} ">
                 <h6>
                   <#--<a class="fg-gray" href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}${defaultParams}&amp;pageId=brd">-->
-                  <a class="fg-gray" href="${cell.fullDocUrl()}?${queryStringForPresentation}&start=${start}&startPage=${pagination.start?c}&pageId=brd&${queryParamList.getDefaultParamsFormatted()}">
+                  <a class="fg-gray" href="${cell.fullDocUrl()}?${queryStringForPresentation}&start=${cell.index()?c}&startPage=${pagination.start?c}&pageId=brd&${queryParamList.getDefaultParamsFormatted()}">
                         <@stringLimiter "${cell.title}" "100"/></a>
                 </h6>
                 <p>
