@@ -50,6 +50,8 @@ public interface FullDoc {
     // Europeana elements
     String getId(); // this is europeanaId
 
+    String getDelvingId(); // this is pmhId
+
     String[] getThumbnails();  // this is europeanaObject
 
     String[] getEuropeanaIsShownAt();

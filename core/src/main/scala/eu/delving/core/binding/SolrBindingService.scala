@@ -280,6 +280,7 @@ case class BriefDocItem(solrDocument : SolrDocument) extends BriefDoc {
     def getFieldValueList : JList[FieldValue] = solrDocument.getFieldValueList
 
     def getId : String = assign("europeana_uri")
+    def getDelvingId : String = assign("delving_pmhId")
     def getTitle : String = assign("title")
     def getThumbnail : String = assign("europeana_object")
     def getCreator : String = assign("creator")
@@ -313,6 +314,8 @@ case class FullDocItem(solrDocument : SolrDocument) extends FullDoc {
     override def getFieldValuesFiltered(include: Boolean, fields: Array[String]) : JList[FieldValue] = solrDocument.getFieldValuesFiltered(include, fields.toList)
 
     override def getConcatenatedArray(key: String, fields: Array[String]) : FieldFormatted = solrDocument.getConcatenatedArray(key, fields.toList)
+
+    override def getDelvingId : String = assignFirst("delving_pmhId")
 
     // Europeana elements
     override def getId : String = assignFirst("europeana_uri")
