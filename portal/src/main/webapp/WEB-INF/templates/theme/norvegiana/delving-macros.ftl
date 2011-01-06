@@ -694,7 +694,7 @@
             <#if !query?starts_with("europeana_uri:")>
                 <#list pagination.breadcrumbs as crumb>
                     <#if !crumb.last>
-                        <a href="${portalName}/brief-doc.html?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;
+                        <a href="/${portalName}/brief-doc.html?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;
                     <#else>
                         <strong>${crumb.display?html}</strong>
                     </#if>
@@ -722,7 +722,7 @@
 <#macro resultsFullQueryBreadcrumbsList>
     <#if pagination??>
         <dl>
-            <dt><@spring.message '_portal.ui.navigation.matchesfor' />:</dt>
+            <dt> <@spring.message '_portal.ui.navigation.matchesfor' />:</dt>
             <#if !query?starts_with("europeana_uri:")>
                 <#list pagination.breadcrumbs as crumb>
                     <#if !crumb.last>

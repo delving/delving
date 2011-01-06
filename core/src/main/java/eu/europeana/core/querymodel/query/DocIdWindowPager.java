@@ -1,5 +1,6 @@
 package eu.europeana.core.querymodel.query;
 
+import eu.delving.metadata.MetadataModel;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -52,7 +53,7 @@ public interface DocIdWindowPager {
 
     void setPortalName(String portalName);
 
-    void initialize(Map<String, String[]> httpParameters, SolrQuery originalBriefSolrQuery, SolrServer solrServer) throws SolrServerException, EuropeanaQueryException;
+    void initialize(Map<String, String[]> httpParameters, SolrQuery originalBriefSolrQuery, SolrServer solrServer, MetadataModel metadataModel) throws SolrServerException, EuropeanaQueryException;
 
     String getSortBy();
 }
