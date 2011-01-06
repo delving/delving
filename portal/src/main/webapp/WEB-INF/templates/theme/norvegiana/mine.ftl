@@ -53,12 +53,12 @@
               <td>${user.lastName}</td>
             </tr>
             </#if>
-            <#--<#if user.registrationDate??>-->
-            <#--<tr>-->
-              <#--<td><@spring.message '_mine.user.registration.date'/>:</td>-->
-              <#--<td>${user.registrationDate}</td>-->
-            <#--</tr>-->
-            <#--</#if>-->
+            <#if user.registrationDate??>
+            <tr>
+              <td><@spring.message '_mine.user.registration.date'/>:</td>
+              <td>${user.registrationDate?date}</td>
+            </tr>
+            </#if>
             <#if user.lastLogin??>
             <tr>
               <td><@spring.message '_mine.user.last.login.date'/>:</td>
