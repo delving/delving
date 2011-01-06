@@ -349,7 +349,7 @@
             <h6>
                 <#--<a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}${defaultParams}&amp;pageId=brd">-->
                 <#--<a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}${defaultParams}&amp;pageId=brd">-->
-                 <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&start=${start}&startPage=${pagination.start?c}&pageId=brd&${queryParamList.getDefaultParamsFormatted()}">
+                 <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&start=${cell.index()?c}&startPage=${pagination.start?c}&pageId=brd&${queryParamList.getDefaultParamsFormatted()}">
                     <@stringLimiter "${cell.title}" "40"/>
                 </a>
             </h6>
@@ -396,7 +396,7 @@
         <td valign="top" width="80">
             <div class="brief-thumb-container-listview">
                 <#--<a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}${defaultParams}&amp;pageId=brd">-->
-                <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&start=${start}&startPage=${pagination.start?c}&pageId=brd&${queryParamList.getDefaultParamsFormatted()}">
+                <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&start=${cell.index()?c}&startPage=${pagination.start?c}&pageId=brd&${queryParamList.getDefaultParamsFormatted()}">
                     <#if useCache="true">
                         <img class="thumb"
                              id="thumb_${cell.index()}"
