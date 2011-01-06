@@ -21,10 +21,13 @@
         <td><input type='password' id="j_password" name='j_password' maxlength="50"/></td>
     </tr>
     <tr>
+        <td></td>
+        <td><input type="checkbox" checked="checked" name="_spring_security_remember_me" id="_spring_security_remember_me" value="true"/>&#160;<label for="_spring_security_remember_me">Remember me</label> </td>
+    </tr>
+    <tr>
         <td>
             <a href="/${portalName}/forgot-password.html"><@spring.message '_mine.forgotpassword' /></a>
         </td>
-        <#--<input id="_spring_security_remember_me" name="_spring_security_remember_me" checked="checked" type="checkbox"/> -->
         <td align="right"><input name="submit_login" class="button" type="submit" value="<@spring.message '_mine.login' />"/></td>
     </tr>
 </table>
