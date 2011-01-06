@@ -23,6 +23,7 @@ package eu.europeana.web.controller;
 
 import eu.delving.core.storage.User;
 import eu.delving.core.storage.UserRepo;
+import eu.europeana.core.querymodel.query.DocType;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.log4j.Logger;
@@ -89,48 +90,48 @@ public class UserAjaxController {
         return complete(user != null);
     }
 
-    @RequestMapping("/remove-saved-item.ajax")
+    @RequestMapping("/remove-item.ajax")
     public ModelAndView removeSavedItem(
             HttpServletRequest request,
-            @RequestParam Long id
+            @RequestParam int index
     ) throws Exception {
-        ControllerUtil.getUser().getItems();
-        // todo: find the item and remove it
+        User user = ControllerUtil.getUser();
+        user.removeItem(index);
+        user.save();
         clickStreamLogger.logUserAction(request, UserAction.REMOVE_SAVED_ITEM);
         return complete(true);
     }
 
-
-    @RequestMapping("/remove-saved-search.ajax")
+    @RequestMapping("/remove-search.ajax")
     public ModelAndView removeSavedSearch(
             HttpServletRequest request,
-            @RequestParam Long id
+            @RequestParam int index
     ) throws Exception {
-        ControllerUtil.getUser().getSearches();
-        // todo: find the search and remove it.
+        User user = ControllerUtil.getUser();
+        user.removeSearch(index);
+        user.save();
         clickStreamLogger.logUserAction(request, UserAction.REMOVE_SAVED_SEARCH);
         return complete(true);
     }
 
-    @RequestMapping("/save-saved-item.ajax")
+    @RequestMapping("/save-item.ajax")
     public ModelAndView saveSavedItem(
             HttpServletRequest request,
             @RequestParam String title,
             @RequestParam String author,
-            @RequestParam String docType,
-            @RequestParam String europeanaObject,
-            @RequestParam String europeanaUri
+            @RequestParam String europeanaId,
+            @RequestParam String delvingId,
+            @RequestParam("docType") String docTypeString,
+            @RequestParam String thumbnail
     ) throws Exception {
-//        savedItem.setDocType(DocType.valueOf(docType));
-//        savedItem.setEuropeanaObject(europeanaObject);
         User user = ControllerUtil.getUser();
-        user.addItem(author, title, ControllerUtil.getLocale(request));
+        user.addItem(author, title, ControllerUtil.getLocale(request), delvingId, europeanaId, DocType.valueOf(docTypeString), thumbnail);
         user.save();
         clickStreamLogger.logUserAction(request, UserAction.SAVE_ITEM);
         return complete(true);
     }
 
-    @RequestMapping("/save-saved-search.ajax")
+    @RequestMapping("/save-search.ajax")
     public ModelAndView saveSavedSearch(
             HttpServletRequest request,
             @RequestParam String query,

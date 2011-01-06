@@ -701,7 +701,7 @@
             </dt>
             <dd>
                 <#if user??>
-                    <a id="saveQuery" href="#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message '_action.save.this.search'/></a>
+                    <a id="saveQuery" href="#" onclick="saveQuery('${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message '_action.save.this.search'/></a>
                 <#else>
                     <a href="#" onclick="highLight('a#login, a#register'); showMessage('error','<@spring.message '_mine.user.notification.login.required'/>'); return false" class="disabled"><@spring.message '_action.save.this.search'/></a>
                 </#if>

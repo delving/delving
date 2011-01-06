@@ -24,6 +24,7 @@ package eu.delving.core.storage;
 import com.mongodb.Mongo;
 import eu.delving.core.storage.impl.UserRepoImpl;
 import eu.delving.domain.Language;
+import eu.europeana.core.querymodel.query.DocType;
 import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
@@ -86,7 +87,7 @@ public class TestUserRepo {
     @Test
     public void addRemoveItem() {
         User dude = userRepo.byEmail(EMAIL);
-        dude.addItem("Author", "Title", Language.NO);
+        dude.addItem("Author", "Title", Language.NO, "delvingId", "europeanaId", DocType.IMAGE, "thumbnail");
         dude.save();
         dude = userRepo.byEmail(EMAIL);
         List<User.Item> items = dude.getItems();

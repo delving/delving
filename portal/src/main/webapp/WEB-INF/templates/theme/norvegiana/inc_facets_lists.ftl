@@ -106,7 +106,7 @@
         <div class="related-links">
             <p class="linetop">
                 <#if user??>
-                    <a id="saveQuery" href="inc_facets_lists.ftl#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message '_action.save.this.search'/></a>
+                    <a id="saveQuery" href="inc_facets_lists.ftl#" onclick="saveQuery('${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message '_action.save.this.search'/></a>
                 <#else>
                     <a href="inc_facets_lists.ftl#" onclick="highLight('mustlogin'); return false" class="disabled"><@spring.message '_action.save.this.search'/></a>
                 </#if>

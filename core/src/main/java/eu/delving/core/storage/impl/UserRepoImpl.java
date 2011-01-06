@@ -29,6 +29,7 @@ import com.mongodb.Mongo;
 import eu.delving.core.storage.User;
 import eu.delving.core.storage.UserRepo;
 import eu.delving.domain.Language;
+import eu.europeana.core.querymodel.query.DocType;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder;
@@ -107,9 +108,7 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public User byEmail(String email) {
         users().ensureIndex(new BasicDBObject(User.EMAIL, 1));
-        DBObject query = new BasicDBObject();
-        query.put(User.EMAIL, email);
-        DBObject personObject = users().findOne(query);
+        DBObject personObject = users().findOne(new BasicDBObject(User.EMAIL, email));
         return personObject != null ? new UserImpl(personObject) : null;
     }
 
@@ -215,13 +214,22 @@ public class UserRepoImpl implements UserRepo {
         }
 
         @Override
-        public Item addItem(String author, String title, Language language) {
+        public Item addItem(String author, String title, Language language, String delvingId, String europeanaId, DocType docType, String thumbnail) {
             ItemImpl item = new ItemImpl(this, list(ITEMS).size());
             item.setAuthor(author);
             item.setTitle(title);
             item.setLanguage(language);
+            item.setDelvingId(delvingId);
+            item.setEuropeanaId(europeanaId);
+            item.setDocType(docType);
+            item.setThumbnail(thumbnail);
             list(ITEMS).add(item.getObject());
             return item;
+        }
+
+        @Override
+        public void removeItem(int index) {
+            list(ITEMS).remove(index);
         }
 
         @Override
@@ -242,6 +250,11 @@ public class UserRepoImpl implements UserRepo {
             search.setLanguage(language);
             list(SEARCHES).add(search.getObject());
             return search;
+        }
+
+        @Override
+        public void removeSearch(int index) {
+            list(SEARCHES).remove(index);
         }
 
         @Override
@@ -320,7 +333,41 @@ public class UserRepoImpl implements UserRepo {
             return Language.valueOf((String) object.get(LANGUAGE));
         }
 
-        // todo: identify the actual object (was europeanaId)
+        public void setDelvingId(String id) {
+            object.put(DELVING_ID, id);
+        }
+
+        @Override
+        public String getDelvingId() {
+            return string(object.get(DELVING_ID));
+        }
+
+        public void setEuropeanaId(String id) {
+            object.put(EUROPEANA_ID, id);
+        }
+
+        @Override
+        public String getEuropeanaId() {
+            return string(object.get(EUROPEANA_ID));
+        }
+
+        public void setDocType(DocType docType) {
+            object.put(DOC_TYPE, docType.toString());
+        }
+
+        @Override
+        public DocType getDocType() {
+            return DocType.valueOf(string(object.get(DOC_TYPE)));
+        }
+
+        public void setThumbnail(String thumbnail) {
+            object.put(THUMBNAIL, thumbnail);
+        }
+
+        @Override
+        public String getThumbnail() {
+            return string(object.get(THUMBNAIL));
+        }
 
         @Override
         public Date getDateSaved() {
