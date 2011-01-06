@@ -33,8 +33,8 @@ import java.util.Date;
 
 public interface TokenRepo extends PersistentTokenRepository {
 
-    String REGISTRATION_COLLECTION = "registration-token";
-    String AUTHENTICATION_COLLECTION = "authentication-token";
+    String REGISTRATION_COLLECTION = "registration";
+    String AUTHENTICATION_COLLECTION = "authentication";
 
     RegistrationToken createRegistrationToken(String email);
 

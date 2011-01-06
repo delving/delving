@@ -22,16 +22,11 @@
 <beans:beans
         xmlns:beans="http://www.springframework.org/schema/beans"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:util="http://www.springframework.org/schema/util"
         xmlns="http://www.springframework.org/schema/security"
-        xsi:schemaLocation="
-        http://www.springframework.org/schema/beans
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-        http://www.springframework.org/schema/util
-        http://www.springframework.org/schema/util/spring-util-3.0.xsd
         http://www.springframework.org/schema/security
-        http://www.springframework.org/schema/security/spring-security-3.0.xsd
-        ">
+        http://www.springframework.org/schema/security/spring-security-3.0.xsd">
 
     <beans:import resource="classpath:/core-application-context.xml"/>
 
@@ -55,7 +50,7 @@
         <beans:property name="defaultHandler" ref="defaultAuthenticationFailureHandler"/>
     </beans:bean>
 
-    <http auto-config="true" create-session="never">
+    <http auto-config="true" create-session="always">
         <intercept-url pattern="/secure/*.html" access="ROLE_USER"/>
         <intercept-url pattern="/mine.html" access="ROLE_USER"/>
         <intercept-url pattern="/administration.html" access="ROLE_ADMINISTRATOR"/>
@@ -66,7 +61,6 @@
                 authentication-failure-handler-ref="authenticationFailureHandler"
                 />
         <logout logout-url="/logout.html" invalidate-session="true" logout-success-url="/logout-success.html"/>
-        <remember-me token-repository-ref="tokenRepo" />
         <remember-me services-ref="rememberMeServices" key="delve-this"/>
     </http>
 

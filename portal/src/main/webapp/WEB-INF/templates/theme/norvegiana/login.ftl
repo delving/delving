@@ -24,6 +24,7 @@
         <td>
             <a href="/${portalName}/forgot-password.html"><@spring.message '_mine.forgotpassword' /></a>
         </td>
+        <#--<input id="_spring_security_remember_me" name="_spring_security_remember_me" checked="checked" type="checkbox"/> -->
         <td align="right"><input name="submit_login" class="button" type="submit" value="<@spring.message '_mine.login' />"/></td>
     </tr>
 </table>
