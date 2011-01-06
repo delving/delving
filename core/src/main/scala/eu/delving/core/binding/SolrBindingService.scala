@@ -315,7 +315,7 @@ case class FullDocItem(solrDocument : SolrDocument) extends FullDoc {
 
     override def getConcatenatedArray(key: String, fields: Array[String]) : FieldFormatted = solrDocument.getConcatenatedArray(key, fields.toList)
 
-    override def getDelvingId : String = assign("delving_pmhId")
+    override def getDelvingId : String = assignFirst("delving_pmhId")
 
     // Europeana elements
     override def getId : String = assignFirst("europeana_uri")
