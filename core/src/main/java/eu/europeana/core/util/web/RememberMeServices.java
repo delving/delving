@@ -33,5 +33,6 @@ public class RememberMeServices extends PersistentTokenBasedRememberMeServices {
         cookie.setPath("/");
         cookie.setSecure(false);
         response.addCookie(cookie);
+        logger.debug("setting cookie "+cookieValue);
     }
 }
