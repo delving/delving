@@ -69,7 +69,7 @@
                         <#if user.registrationDate??>
                         <tr>
                           <td><h4>Registratiedatum:</h4></td>
-                          <td>${user.registrationDate}</td>
+                          <td>${user.registrationDate?string("yyyy-MM-dd HH:mm:ss")}</td>
                         </tr>
                         </#if>
                         <#if user.lastLogin??>

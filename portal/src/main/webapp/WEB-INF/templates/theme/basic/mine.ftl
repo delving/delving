@@ -81,7 +81,7 @@ td {
             <#if user.registrationDate??>
             <tr>
               <td><@spring.message '_mine.user.registration.date'/>:</td>
-              <td>${user.registrationDate}</td>
+              <td>${user.registrationDate?string("yyyy-MM-dd HH:mm:ss")}</td>
             </tr>
             </#if>
             <#if user.lastLogin??>
