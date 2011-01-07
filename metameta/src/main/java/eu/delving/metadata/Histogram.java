@@ -23,10 +23,13 @@ package eu.delving.metadata;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * Use some adjacent primes to check for uniqueness of strings based on hashCode
@@ -36,10 +39,13 @@ import java.util.TreeMap;
 
 public class Histogram implements Serializable {
     private static final DecimalFormat PERCENT = new DecimalFormat("#0.00%");
+    private static final double OVERSAMPLING = 1.2;
     private int maxStorageSize, maxSize;
     private int total;
     private int storageSize;
-    private Map<String, Counter> counterMap = new TreeMap<String, Counter>();
+    private Map<String, Counter> counterMap = new HashMap<String, Counter>();
+    private List<Counter> counters = new ArrayList<Counter>();
+    private boolean trimmed;
 
     public Histogram(int maxStorageSize, int maxSize) {
         this.maxStorageSize = maxStorageSize;
@@ -51,6 +57,7 @@ public class Histogram implements Serializable {
         if (counter == null) {
             counterMap.put(value, counter = new Counter(value));
             storageSize += value.length();
+            counters = null;
         }
         counter.count++;
         total++;
@@ -65,15 +72,43 @@ public class Histogram implements Serializable {
     }
 
     public Set<String> getValues() {
+        if (trimmed) {
+            throw new RuntimeException("Should not be using values if the histogram is trimmed");
+        }
         return counterMap.keySet();
     }
 
-    public Collection<Counter> getCounters() {
-        return counterMap.values();
+    public boolean isTrimmed() {
+        return trimmed;
+    }
+
+    public Collection<Counter> getCounters(boolean trim) {
+        if (counters == null) {
+            counters = new ArrayList<Counter>(counterMap.values());
+            Collections.sort(counters);
+        }
+        if (trimmed && trim) {
+            trim(); // the last values will be too recently sampled
+            return getCounters(false);
+        }
+        else {
+            return counters;
+        }
     }
 
     public boolean isStorageOverflow() {
-        return storageSize > maxStorageSize || counterMap.size() > maxSize;
+        return storageSize > maxStorageSize || counterMap.size() > (int)(maxSize * OVERSAMPLING);
+    }
+
+    public void trim() {
+        int size = getCounters(false).size();
+        for (int walk = maxSize; walk < size; walk++) {
+            Counter c = counters.get(walk);
+            storageSize -= c.getValue().length();
+            counterMap.remove(c.getValue());
+        }
+        counters = null;
+        trimmed = true;
     }
 
     public class Counter implements Comparable<Counter>, Serializable {

@@ -217,6 +217,9 @@ public class SipModel {
                                 setStatisticsList(statistics);
                                 variableListModel.clear();
                                 AnalysisTree.setUniqueElement(analysisTreeModel, getUniqueElement());
+                                for (UpdateListener updateListener : updateListeners) {
+                                    updateListener.updatedDataSetStore(dataSetStore);
+                                }
                             }
                         });
                     }
@@ -226,8 +229,10 @@ public class SipModel {
                 }
             });
         }
-        for (UpdateListener updateListener : updateListeners) {
-            updateListener.updatedDataSetStore(this.dataSetStore);
+        else {
+            for (UpdateListener updateListener : updateListeners) {
+                updateListener.updatedDataSetStore(this.dataSetStore);
+            }
         }
     }
 
