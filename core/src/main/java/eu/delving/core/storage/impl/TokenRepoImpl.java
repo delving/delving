@@ -21,15 +21,12 @@
 
 package eu.delving.core.storage.impl;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import com.mongodb.*;
 import eu.delving.core.storage.TokenRepo;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 
 import java.util.Date;
@@ -42,8 +39,10 @@ import java.util.Date;
 
 public class TokenRepoImpl implements TokenRepo {
     private Logger log = Logger.getLogger(getClass());
-    private String databaseName = "tokens";
     private DB mongoDatabase;
+
+    @Value("#{launchProperties['portal.mongo.dbName ']}")
+    private String databaseName;
 
     @Autowired
     private Mongo mongo;

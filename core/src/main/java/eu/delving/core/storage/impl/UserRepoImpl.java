@@ -32,6 +32,7 @@ import eu.delving.domain.Language;
 import eu.europeana.core.querymodel.query.DocType;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder;
 
 import java.util.ArrayList;
@@ -43,7 +44,9 @@ import java.util.List;
  */
 
 public class UserRepoImpl implements UserRepo {
-    private String databaseName = "users";
+
+    @Value("#{launchProperties['portal.mongo.dbName']}")
+    private String databaseName;
 
     @Autowired
     private Mongo mongo;
