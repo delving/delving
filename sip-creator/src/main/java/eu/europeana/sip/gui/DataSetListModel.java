@@ -39,7 +39,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Generate a description in HTML of a Data Set
@@ -67,9 +69,20 @@ public class DataSetListModel extends AbstractListModel {
         for (DataSetInfo info : list) {
             map.put(info.spec, info);
         }
+        Set<String> touched = new TreeSet<String>();
         for (Entry entry : entries) {
             DataSetInfo freshInfo = map.get(entry.getSpec());
             entry.setDataSetInfo(freshInfo);
+            touched.add(entry.getSpec());
+        }
+        Set<String> untouchedSet = new TreeSet<String>(map.keySet());
+        untouchedSet.removeAll(touched);
+        if (!untouchedSet.isEmpty()) {
+            for (Entry entry : entries) {
+                if (untouchedSet.contains(entry.spec)) {
+                    entry.setDataSetInfo(null);
+                }
+            }
         }
     }
 
@@ -175,9 +188,9 @@ public class DataSetListModel extends AbstractListModel {
                     case DISABLED:
                         html.append(String.format("<p>Data Set is disabled, but it has %d records and it can be indexed.</p>", dataSetInfo.recordCount));
                         break;
-                    case EMPTY:
+                    case INCOMPLETE:
                         html.append(String.format(
-                                "<p>Data Set is being uploaded.  So far %d records.</p>",
+                                "<p>Data Set is incomplete.  So far %d records.</p>",
                                 dataSetInfo.recordCount
                         ));
                         break;

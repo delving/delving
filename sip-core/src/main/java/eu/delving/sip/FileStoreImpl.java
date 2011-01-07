@@ -322,11 +322,8 @@ public class FileStoreImpl implements FileStore {
                     return fieldStatisticsList;
                 }
                 catch (Exception e) {
-                    if (statisticsFile.delete()) {
+                    if (!statisticsFile.delete()) {
                         throw new FileStoreException("Unable to read statistics file. Deleted it.", e);
-                    }
-                    else {
-                        throw new FileStoreException("Unable to read statistics file, or delete it.", e);
                     }
                 }
             }

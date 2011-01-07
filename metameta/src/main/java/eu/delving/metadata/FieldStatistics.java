@@ -22,9 +22,6 @@
 package eu.delving.metadata;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -67,7 +64,7 @@ public class FieldStatistics implements Comparable<FieldStatistics>, Serializabl
     }
 
     public Set<String> getHistogramValues() {
-        if (valueStats == null || valueStats.histogram == null) return null;
+        if (valueStats == null || valueStats.histogram == null || valueStats.histogram.isTrimmed()) return null;
         return valueStats.histogram.getValues();
     }
 
@@ -113,7 +110,7 @@ public class FieldStatistics implements Comparable<FieldStatistics>, Serializabl
             if (histogram != null) {
                 histogram.recordValue(value);
                 if (histogram.isStorageOverflow()) {
-                    histogram = null;
+                    histogram.trim();
                 }
             }
             if (uniqueness != null) {
@@ -131,9 +128,6 @@ public class FieldStatistics implements Comparable<FieldStatistics>, Serializabl
                     histogram = null;
                 }
             }
-            if (histogram != null) {
-                randomSample = null;
-            }
         }
 
         public String toHtml() {
@@ -147,29 +141,37 @@ public class FieldStatistics implements Comparable<FieldStatistics>, Serializabl
                     }
                     html.append("</ul>");
                 }
-                else if (histogram != null) {
+                else if (!histogram.isTrimmed()) {
                     if (histogram.getSize() == 1) {
-                        Histogram.Counter counter = histogram.getCounters().iterator().next();
+                        Histogram.Counter counter = histogram.getCounters(true).iterator().next();
                         html.append(String.format("<p>There is a single value '<strong>%s</strong>' apppearing <strong>%d</strong> times.</p>", counter.getValue(), counter.getCount()));
                     }
                     else {
-                        html.append(String.format("<p>There are <strong>%d</strong> different values, in descending order of frequency.</p>", histogram.getSize()));
-                        List<Histogram.Counter> counterList = new ArrayList<Histogram.Counter>(histogram.getCounters());
-                        Collections.sort(counterList);
+                        html.append(String.format("<p>There were too many different values to store, so here is a sample of <strong>%d</strong> of them in descending order of frequency.</p>", histogram.getSize()));
                         html.append("<table<tr><td width=20px></td><td><table cellpadding=3px>");
-                        for (Histogram.Counter counter : counterList) {
-                            html.append(String.format("<tr></td><td>%d</td><td>%s</td><td><strong>%s</strong></tr>", counter.getCount(), counter.getPercentage(), counter.getValue()));
+                        html.append("<tr><th>Count</th><th>Percentage</th><th>Value</th></tr>");
+                        for (Histogram.Counter counter : histogram.getCounters(true)) {
+                            html.append(String.format("<tr><td>%d</td><td>%s</td><td><strong>%s</strong></td></tr>", counter.getCount(), counter.getPercentage(), counter.getValue()));
                         }
+                        html.append("<tr><td colspan=3>incomplete</td></tr>");
                         html.append("</table></td></tr></table>");
                     }
                 }
                 else {
-                    html.append(String.format("There are more than <p><strong>%d</strong> different values, too large a list to mantain, so here are some random samples:</p>", total));
+                    html.append(String.format("<p>There are more than <p><strong>%d</strong> different values, too large a list to mantain, so here are some random samples and a partial histogram:</p>", total));
                     html.append("<ul>");
                     for (String value : randomSample.getValues()) {
                         html.append(String.format("<li>'<strong>%s</strong>'</li>", value));
                     }
                     html.append("</ul>");
+                    html.append("</br>");
+                    html.append(String.format("<p>Here is a sample of <strong>%d</strong> of them in descending order of frequency.</p>", histogram.getSize()));
+                    html.append("<table<tr><td width=20px></td><td><table cellpadding=3px>");
+                    html.append("<tr><th>Count</th><th>Percentage</th><th>Value</th></tr>");
+                    for (Histogram.Counter counter : histogram.getCounters(true)) {
+                        html.append(String.format("<tr><<td>%d</td><td>%s</td><td><strong>%s</strong></td></tr>", counter.getCount(), counter.getPercentage(), counter.getValue()));
+                    }
+                    html.append("</table></td></tr></table>");
                 }
                 html.append("</html>");
                 lazyHtml = html.toString();

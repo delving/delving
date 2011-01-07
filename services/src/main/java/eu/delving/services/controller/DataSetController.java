@@ -265,7 +265,6 @@ public class DataSetController {
                     }
                 case INDEX:
                     switch (dataSet.getState()) {
-                        case EMPTY: // todo: make sure the data set goes to upload
                         case DISABLED:
                         case UPLOADED:
                             dataSet.setState(DataSetState.QUEUED);
@@ -286,12 +285,12 @@ public class DataSetController {
                     }
                 case DELETE:
                     switch (dataSet.getState()) {
-                        case EMPTY:
+                        case INCOMPLETE:
                         case DISABLED:
                         case ERROR:
                         case UPLOADED:
                             dataSet.delete();
-                            dataSet.setState(DataSetState.EMPTY);
+                            dataSet.setState(DataSetState.INCOMPLETE);
                             return view(dataSet);
                         default:
                             return view(DataSetResponseCode.STATE_CHANGE_FAILURE);
