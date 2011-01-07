@@ -19,7 +19,7 @@ public class DataSetResponse {
     private String responseCode;
 
     @XStreamAlias("data-set-list")
-    private List<DataSetInfo> dataSetList;
+    private List<DataSetInfo> dataSetList = new ArrayList<DataSetInfo>();
 
     public DataSetResponse(DataSetResponseCode responseCode) {
         this.responseCode = responseCode.toString();
@@ -39,9 +39,6 @@ public class DataSetResponse {
     }
 
     public void addDataSetInfo(DataSetInfo dataSetInfo) {
-        if (dataSetList == null) {
-            dataSetList = new ArrayList<DataSetInfo>();
-        }
         dataSetList.add(dataSetInfo);
     }
 

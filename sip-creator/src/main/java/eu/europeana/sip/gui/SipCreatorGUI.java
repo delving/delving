@@ -108,13 +108,12 @@ public class SipCreatorGUI extends JFrame {
             public void setList(List<DataSetInfo> list) {
                 if (list != null) {
                     dataSetListModel.setDataSetInfo(list);
-                    boolean hit = false;
                     for (DataSetInfo dataSetInfo : list) {
-                        hit |= dataSetActions.setDataSetInfo(dataSetInfo);
+                        dataSetActions.setDataSetInfo(dataSetInfo);
                     }
-                    if (!hit) {
-                        dataSetActions.setDataSetInfo(null);
-                    }
+                }
+                else {
+                    log.warn("recieved empty list from the server");
                 }
             }
 

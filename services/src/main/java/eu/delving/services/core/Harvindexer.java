@@ -183,7 +183,7 @@ public class Harvindexer {
                 }
                 else {
                     log.info("Aborted importing " + dataSet);
-                    dataSet.setState(DataSetState.EMPTY);
+                    dataSet.setState(DataSetState.INCOMPLETE);
                 }
                 dataSet.save();
             }
