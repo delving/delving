@@ -45,11 +45,12 @@ import java.util.Map;
 
 public class MetadataRecord {
     private GroovyNode rootNode;
-    private int recordNumber;
+    private int recordNumber, recordCount;
 
-    private MetadataRecord(GroovyNode rootNode, int recordNumber) {
+    private MetadataRecord(GroovyNode rootNode, int recordNumber, int recordCount) {
         this.rootNode = rootNode;
         this.recordNumber = recordNumber;
+        this.recordCount = recordCount;
     }
 
     public GroovyNode getRootNode() {
@@ -58,6 +59,10 @@ public class MetadataRecord {
 
     public int getRecordNumber() {
         return recordNumber;
+    }
+
+    public int getRecordCount() {
+        return recordCount;
     }
 
     public List<MetadataVariable> getVariables() {
@@ -127,8 +132,8 @@ public class MetadataRecord {
             inputFactory.configureForSpeed();
         }
 
-        public MetadataRecord fromGroovyNode(GroovyNode rootNode, int recordNumber) {
-            return new MetadataRecord(rootNode, recordNumber);
+        public MetadataRecord fromGroovyNode(GroovyNode rootNode, int recordNumber, int recordCount) {
+            return new MetadataRecord(rootNode, recordNumber, recordCount);
         }
 
         public MetadataRecord fromXml(String recordContents) throws XMLStreamException {
@@ -181,7 +186,7 @@ public class MetadataRecord {
                     }
                     input.next();
                 }
-                return new MetadataRecord(rootNode, -1);
+                return new MetadataRecord(rootNode, -1, -1);
             }
             catch (WstxParsingException e) {
                 throw new XMLStreamException("Problem parsing record:\n" + recordString, e);
