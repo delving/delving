@@ -11,6 +11,7 @@
 
 <form name='f1' id="loginForm" action='j_spring_security_check' method='POST' accept-charset="UTF-8">
 <#if contentOnly = "true"><input type="hidden" name="ajax" value="true"/></#if>    
+<input type="hidden" name="_spring_security_remember_me" id="_spring_security_remember_me" value="true"/>
 <table>
     <tr>
         <td><label for="j_username"><@spring.message '_mine.email.address' /></label></td>
@@ -19,10 +20,6 @@
     <tr>
         <td><label for="j_password"><@spring.message "_mine.user.register.password" /></label></td>
         <td><input type='password' id="j_password" name='j_password' maxlength="50"/></td>
-    </tr>
-    <tr>
-        <td></td>
-        <td><input type="checkbox" checked="checked" name="_spring_security_remember_me" id="_spring_security_remember_me" value="true"/>&#160;<label for="_spring_security_remember_me">Remember me</label> </td>
     </tr>
     <tr>
         <td>

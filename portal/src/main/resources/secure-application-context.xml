@@ -50,7 +50,7 @@
         <beans:property name="defaultHandler" ref="defaultAuthenticationFailureHandler"/>
     </beans:bean>
 
-    <http auto-config="true" create-session="always">
+    <http auto-config="false" create-session="never">
         <intercept-url pattern="/secure/*.html" access="ROLE_USER"/>
         <intercept-url pattern="/mine.html" access="ROLE_USER"/>
         <intercept-url pattern="/administration.html" access="ROLE_ADMINISTRATOR"/>
