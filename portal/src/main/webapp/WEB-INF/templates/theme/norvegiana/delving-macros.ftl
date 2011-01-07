@@ -449,9 +449,9 @@
     <#assign facet = facetMap.getFacet(key)>
     <#if !facet.type?starts_with("unknown")>
         <h4 class="trigger <#if facet.selected>active</#if>"><a href="#"><@spring.message '${facetLanguageTag}' /></a></h4>
-        <div class="facets_container">
         <#if facet.links?size &gt; 0>
-            <table summary="A list of facets to help refine your search">
+        <div class="facets_container">
+        <table summary="A list of facets to help refine your search">
                 <#list facet.links?chunk(columnSize?int) as row>
                     <tr>
                         <#list row as link>
@@ -472,8 +472,10 @@
                     </tr>
                 </#list>
             </table>
-        </#if>
         </div>
+        <#else>
+        <div class="clear"></div>
+        </#if>
     </#if>
 </#macro>
 <#--
@@ -671,7 +673,10 @@
 </#macro>
 
 <#macro resultBriefTypeTabs>
-    <#assign tabURL = queryParamList.getListFilteredFormatted(false,['tab','qf','start'])/>
+    <#assign tabURL>
+        <#-- a url without tab, start, we also need to remove the qf for 'TYPE' since the tabs will want to override that -->
+        ${queryParamList.getListFilteredFormatted(false,['tab','start','qf'])}&${queryParamList.getQfFiltered(false,'TYPE').format()}
+    </#assign>
     <div class="ui-tabs" style="padding:0 0 0 1em;">
         <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget" id="type-tabs">
             <li class="ui-state-default ui-corner-top <#if tab = 'all'>ui-state-active</#if>">
@@ -1158,11 +1163,6 @@
 <#--<option value="COLLECTION"><@spring.message '_search.field.collection' /></option>-->
 </select>
 <form action="" method="GET" id="form-sort" style="display:none;">
-    <#--<input type="hidden" name="query" value="${justTheQuery}"/>-->
-     <#--&lt;#&ndash;commented out 'start': re-ordering result should start at p.1 &ndash;&gt;-->
-    <#--<input type="hidden" name="start" value="${start}"/>-->
-    <#--<input type="hidden" name="view" value="${view}"/>-->
-    <#--<input type="hidden" name="tab" value="${tab}"/>-->
     <input type="hidden" name="sortBy" id="sortBy" value=""/>
     <@formIncludeHidden ['query','start','view','tab','qf']/>
 </form>
