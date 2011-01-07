@@ -150,14 +150,14 @@ $(document).ready(function(){
 
         //Switch the "Open" and "Close" state per click then slide up/down (depending on open/close state)
         $("h4.trigger").click(function(){
-            $(this).toggleClass("active").next().slideToggle("slow");
+            $(this).toggleClass("closed").next().slideToggle("slow");
             return false; //Prevent the browser jump to the link anchor
         });
 
         //Check to see if there are any active facets that need to be toggled to open
         var toggles = $(document).find("h4.trigger");
         $.each(toggles, function(){
-            if($(this).hasClass("active")){
+            if($(this).hasClass("closed")){
                 $(this).next().css("display","block");
             }
         })
