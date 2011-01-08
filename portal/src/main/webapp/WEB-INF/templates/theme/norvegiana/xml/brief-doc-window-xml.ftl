@@ -19,7 +19,7 @@
             <dc:contributor>${doc.contributor}</dc:contributor>
             <europeana:year>${doc.year?string}</europeana:year>
             <europeana:language>${doc.language.code}</europeana:language>
-            <europeana:object>${cacheUrl}${doc.thumbnail}</europeana:object>
+            <europeana:object>${cacheUrl}id=${doc.thumbnail}</europeana:object>
             <europeana:type>${doc.type}</europeana:type>
     </record>
   </#list>

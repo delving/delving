@@ -83,7 +83,7 @@
                             <td width="60">
                                 <a href="/${portalName}/record/${item.europeanaId}.html">
                                  <#if useCache="true">
-                                    <img class="thumb" id="img_${item_index}" align="middle" src="${cacheUrl}uri=${item.thumbnail}&size=BRIEF_DOC" alt="Click for more information" width="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
+                                    <img class="thumb" id="img_${item_index}" align="middle" src="${cacheUrl}id=${item.thumbnail}&size=BRIEF_DOC" alt="Click for more information" width="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
                                  <#else>
                                     <#if item.docType??>
                                       <img class="thumb" align="middle" src="${item.thumbnail}" alt="Click for more information" height="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
