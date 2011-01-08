@@ -5,11 +5,10 @@
 
 <section role="main" class="grid_4 prefix_4">
 
-<h2><@spring.message '_mine.user.register.register' /></h2>
-
-<form id="registrationForm" name='registrationForm' action='register-request.html' method='POST' accept-charset="UTF-8">
+<form id="registrationForm" name='registrationForm' action='register-request.html' method='POST' accept-charset="UTF-8" >
     <input type="hidden" name="formType" id="formType" value="Register"/>
-
+    <fieldset class="ui-widget ui-widget-content ui-corner-all">
+        <legend><@spring.message '_mine.user.register.register' /></legend>
     <table>
         <tr>
             <td width="100"><label for="email"><@spring.message '_mine.email.address' /></label></td>
@@ -22,11 +21,12 @@
             </td>
         </tr>
     </table>
+   </fieldset>
 </form>
 
 <#if state == "success">
     <script type="text/javascript">
-          showMessage("success","<@spring.message '_mine.user.register.email.has.been.sent' />: {email}"+"\n<@spring.message '_mine.user.register.please.follow.link' />")
+          showMessage("success","<@spring.message '_mine.user.register.email.has.been.sent' />: <strong>${email}</strong>. "+"<br/><@spring.message '_mine.user.register.please.follow.link' />")
     </script>
     <noscript>
         <p id="success" class="success">

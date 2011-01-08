@@ -28,6 +28,21 @@ body.ninesixty .container_12
 	position:relative;
 }
 
+form fieldset {
+    border: 1px solid #ddd;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+    border-radius: 5px;
+}
+
+form legend {
+    color: #777;
+    font-weight: bold;
+    font-size: 1.25em;
+    margin: 0 .25em;
+    padding: 0 .25em;
+}
+
 /* HYPERLINKS *******************************/
 
 a:link
@@ -285,6 +300,9 @@ li.jcarousel-item {
 }
 
 /* SEARCH ************************************/
+#search fieldset{
+    border: none;
+}
 #search
 {
 	-moz-border-radius:8px 8px 0 0;
@@ -362,6 +380,18 @@ li.jcarousel-item {
 
 input.in-small {
     width: 50px;
+}
+
+#search-advanced fieldset {
+    border: 1px solid #ccc;
+    padding: 1em;
+}
+#search-advanced legend {
+    font-size: 1.25em;
+    font-weight:bold;
+    margin: 0 .5em;
+    padding: 0 .25em;
+
 }
 
 /* MAIN SECTION  ******************************/
