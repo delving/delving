@@ -21,6 +21,7 @@
 
 package eu.europeana.core.querymodel.query;
 
+import eu.delving.core.binding.FieldFormatted;
 import eu.delving.core.binding.FieldValue;
 
 import java.util.List;
@@ -44,8 +45,12 @@ public interface FullDoc {
 
     List<FieldValue> getFieldValuesFiltered(boolean include, String[] fields);
 
+    FieldFormatted getConcatenatedArray(String key, String[] fields);
+
     // Europeana elements
     String getId(); // this is europeanaId
+
+    String getDelvingId(); // this is pmhId
 
     String[] getThumbnails();  // this is europeanaObject
 

@@ -299,7 +299,7 @@ public class ResultController {
 
     @RequestMapping("/error.html")
     public ModelAndView errorPageHandler(HttpServletRequest request) {
-//        clickStreamLogger.logCustomUserAction(request, "error");
+        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.ERROR);
         return ControllerUtil.createModelAndViewPage("error");
     }
 }

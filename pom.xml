@@ -53,6 +53,23 @@
     </developers>
 
     <repositories>
+        <!-- to be removed when delving artifactory is up and running. -->
+        <repository>
+            <id>releases</id>
+            <url>http://europeanalabs.eu/artifactory/repo</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>snapshots</id>
+            <url>http://europeanalabs.eu/artifactory/repo</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+
+        <!-- default repositories   -->
         <repository>
             <id>repo1</id>
             <url>http://repo1.maven.org/maven2</url>
@@ -229,6 +246,11 @@
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>1.4</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>1.0.0.GA</version>
             </dependency>
 
             <!-- containers -->

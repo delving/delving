@@ -21,6 +21,9 @@
 
 package eu.delving.metadata;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.BitSet;
 
 /**
@@ -35,16 +38,23 @@ public class Uniqueness {
             4105091, 4105093, 4105103, 4105111,
             4105151, 4105169, 4105181, 4105183,
     };
+    private MessageDigest messageDigest;
     private BitSet[] bitSet = new BitSet[PRIMES.length];
 
     public Uniqueness() {
+        try {
+            this.messageDigest = MessageDigest.getInstance("MD5");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("MD5 not available??");
+        }
         for (int walk = 0; walk < bitSet.length; walk++) {
             bitSet[walk] = new BitSet(PRIMES[walk]);
         }
     }
 
     public boolean isRepeated(String text) {
-        int hashCode = text.hashCode();
+        BigInteger hashCode =  hash(text);
         boolean setEverywhere = true;
         for (int walk = 0; walk < bitSet.length && setEverywhere; walk++) {
             if (!getBit(hashCode, walk)) {
@@ -60,15 +70,23 @@ public class Uniqueness {
         return false;
     }
 
-    private boolean getBit(int hashCode, int bitSetIndex) {
-        int offset = PRIMES[(bitSetIndex + 1) % PRIMES.length];
-        int bitNumber = Math.abs((hashCode + offset) % bitSet[bitSetIndex].size());
-        return bitSet[bitSetIndex].get(bitNumber);
+    private boolean getBit(BigInteger hashCode, int bitSetIndex) {
+        BigInteger bitNumber = hashCode.mod(BigInteger.valueOf(bitSet[bitSetIndex].size()));
+        return bitSet[bitSetIndex].get(bitNumber.intValue());
     }
 
-    private void setBit(int hashCode, int bitSetIndex) {
-        int offset = PRIMES[(bitSetIndex + 1) % PRIMES.length];
-        int bitNumber = Math.abs((hashCode + offset) % bitSet[bitSetIndex].size());
-        bitSet[bitSetIndex].set(bitNumber);
+    private void setBit(BigInteger hashCode, int bitSetIndex) {
+        BigInteger bitNumber = hashCode.mod(BigInteger.valueOf(bitSet[bitSetIndex].size()));
+        bitSet[bitSetIndex].set(bitNumber.intValue());
+    }
+
+    public BigInteger hash(String string) {
+        try {
+            messageDigest.reset();
+            return new BigInteger(messageDigest.digest(string.getBytes("UTF-8")));
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

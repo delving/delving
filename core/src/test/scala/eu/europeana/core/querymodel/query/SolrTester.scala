@@ -15,7 +15,7 @@ import org.apache.solr.client.solrj. {SolrQuery, SolrServer}
 
 trait SolrTester {
 
-  System.setProperty("solr.solr.home", "./core/src/test/solr/home")
+  System.setProperty("solr.solr.home", "./core/src/test/solr/single-core")
   System.setProperty("solr.data.dir", "/tmp/solr-test/")
   val initializer: CoreContainer.Initializer  = new CoreContainer.Initializer();
   val coreContainer: CoreContainer = initializer.initialize();

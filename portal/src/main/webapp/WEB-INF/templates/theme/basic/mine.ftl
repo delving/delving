@@ -81,7 +81,7 @@ td {
             <#if user.registrationDate??>
             <tr>
               <td><@spring.message '_mine.user.registration.date'/>:</td>
-              <td>${user.registrationDate}</td>
+              <td>${user.registrationDate?string("yyyy-MM-dd HH:mm:ss")}</td>
             </tr>
             </#if>
             <#if user.lastLogin??>
@@ -100,14 +100,14 @@ td {
             <table class="zebra" summary="list with saved items">
                 <caption><@spring.message '_mine.saved.items'/></caption>
                 <tbody>
-                <#if user.savedItems?size &gt; 0>
-                    <#list user.savedItems as item>
+                <#if user.items?size &gt; 0>
+                     <#list user.items as item>
                         <#assign rowId = "item_row_"+item_index/>
                         <tr id="${rowId}">
                             <td width="60">
                                 <a href="/${portalName}/record/${item.europeanaId.europeanaUri}.html">
                                  <#if useCache="true">
-                                    <img class="thumb" id="img_${item_index}" align="middle" src="${cacheUrl}uri=${item.europeanaObject}&size=BRIEF_DOC" alt="Click for more information" width="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
+                                    <img class="thumb" id="img_${item_index}" align="middle" src="${cacheUrl}id=${item.europeanaObject}&size=BRIEF_DOC" alt="Click for more information" width="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
                                  <#else>
                                     <#if item.docType??>
                                       <img class="thumb" align="middle" src="${item.europeanaObject}" alt="Click for more information" height="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
@@ -142,8 +142,8 @@ td {
        <div id="tab-2">
             <table class="zebra" summary="list with saved searches">
                 <caption><@spring.message '_mine.saved.searches'/></caption>
-                <#if user.savedSearches?size &gt; 0>
-                    <#list user.savedSearches as search>
+                <#if user.searches?size &gt; 0>
+                    <#list user.searches as search>
                        <#assign rowId = "search_row_"+search_index/>
                         <tr id="${rowId}">
                             <td width="5"><a href="/${portalName}/brief-doc.html?${search.query}"><span class="ui-icon ui-icon-search"></span></a></td>

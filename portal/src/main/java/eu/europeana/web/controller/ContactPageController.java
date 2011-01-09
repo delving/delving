@@ -22,6 +22,7 @@
 package eu.europeana.web.controller;
 
 import eu.delving.core.storage.User;
+import eu.delving.core.util.SimpleMessageCodesResolver;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import eu.europeana.core.util.web.EmailSender;
@@ -39,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -67,6 +69,7 @@ public class ContactPageController {
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.setValidator(new ContactFormValidator());
+        binder.setMessageCodesResolver(new SimpleMessageCodesResolver());
     }
 
     @ModelAttribute("command")
@@ -85,7 +88,7 @@ public class ContactPageController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    protected String handlePost(@ModelAttribute ContactForm command, BindingResult result, HttpServletRequest request) throws Exception {
+    protected String handlePost(@Valid @ModelAttribute ContactForm command, BindingResult result, HttpServletRequest request) throws Exception {
         if (result.hasErrors()) {
             clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.FEEDBACK_SEND_FAILURE);
         }

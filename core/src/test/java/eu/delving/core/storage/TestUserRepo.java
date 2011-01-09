@@ -24,6 +24,7 @@ package eu.delving.core.storage;
 import com.mongodb.Mongo;
 import eu.delving.core.storage.impl.UserRepoImpl;
 import eu.delving.domain.Language;
+import eu.europeana.core.querymodel.query.DocType;
 import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
@@ -53,6 +54,7 @@ public class TestUserRepo {
         mongo.dropDatabase(TEST_DB_NAME);
         User user = userRepo.createUser(EMAIL);
         user.setEnabled(true);
+        user.setUserName("gumby");
         user.setFirstName("Joe");
         user.setPassword("gumby");
         user.setLastName("Dude");
@@ -85,7 +87,7 @@ public class TestUserRepo {
     @Test
     public void addRemoveItem() {
         User dude = userRepo.byEmail(EMAIL);
-        dude.addItem("Author", "Title", Language.NO);
+        dude.addItem("Author", "Title", Language.NO, "delvingId", "europeanaId", DocType.IMAGE, "thumbnail");
         dude.save();
         dude = userRepo.byEmail(EMAIL);
         List<User.Item> items = dude.getItems();
@@ -116,5 +118,17 @@ public class TestUserRepo {
         dude.save();
         dude = userRepo.byEmail(EMAIL);
         Assert.assertEquals("Should be empty", 0, dude.getSearches().size());
+    }
+
+    @Test
+    public void userName() {
+        Assert.assertTrue("Should exist", userRepo.isExistingUserName("gumby"));
+        Assert.assertFalse("Shouldn't exist", userRepo.isExistingUserName("pokey"));
+        Assert.assertTrue("improper", userRepo.isProperUserName("1dude"));
+        Assert.assertTrue("improper", userRepo.isProperUserName("_babe"));
+        Assert.assertTrue("improper", userRepo.isProperUserName("monkey_5"));
+        Assert.assertFalse("improper", userRepo.isProperUserName("who me"));
+        Assert.assertFalse("improper", userRepo.isProperUserName("who__me"));
+        Assert.assertFalse("improper", userRepo.isProperUserName("Caps"));
     }
 }

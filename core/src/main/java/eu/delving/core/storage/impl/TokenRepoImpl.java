@@ -21,15 +21,12 @@
 
 package eu.delving.core.storage.impl;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import com.mongodb.*;
 import eu.delving.core.storage.TokenRepo;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 
 import java.util.Date;
@@ -42,8 +39,10 @@ import java.util.Date;
 
 public class TokenRepoImpl implements TokenRepo {
     private Logger log = Logger.getLogger(getClass());
-    private String databaseName = "tokens";
     private DB mongoDatabase;
+
+    @Value("#{launchProperties['portal.mongo.dbName']}")
+    private String databaseName;
 
     @Autowired
     private Mongo mongo;
@@ -77,6 +76,7 @@ public class TokenRepoImpl implements TokenRepo {
         token.setDate(prmt.getDate());
         token.setTokenValue(prmt.getTokenValue());
         token.save();
+        log.debug("created authorization token to "+prmt.getTokenValue());
     }
 
     @Override
@@ -90,6 +90,7 @@ public class TokenRepoImpl implements TokenRepo {
             token.setTokenValue(tokenValue);
             token.setDate(lastUsed);
             token.save();
+            log.debug("updated authorization token to "+tokenValue);
         }
     }
 
@@ -97,10 +98,11 @@ public class TokenRepoImpl implements TokenRepo {
     public PersistentRememberMeToken getTokenForSeries(String series) {
         DBObject object = auth().findOne(new BasicDBObject(AuthenticationToken.SERIES, series));
         if (object == null) {
-            log.warn("unable to get token " + series);
+            log.warn("unable to get token for series " + series);
             return null;
         }
         else {
+            log.info("fetched token for series " + series);
             AuthenticationToken token = new AuthTokenImpl(object);
             return new PersistentRememberMeToken(
                     token.getEmail(),
@@ -113,6 +115,7 @@ public class TokenRepoImpl implements TokenRepo {
 
     @Override
     public void removeUserTokens(String email) {
+        log.info("removing token  for" + email);
         auth().remove(new BasicDBObject(AuthenticationToken.EMAIL, email));
     }
 

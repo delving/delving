@@ -176,6 +176,7 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
         String utma = "";
         String utmb = "";
         String utmc = "";
+        String languageCookie = "";
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equalsIgnoreCase("__utma")) {
@@ -186,6 +187,9 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
                 }
                 else if (cookie.getName().equalsIgnoreCase("__utmc")) {
                     utmc = cookie.getValue();
+                }
+                else if (cookie.getName().equalsIgnoreCase("org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE")) {
+                    languageCookie = cookie.getValue();
                 }
             }
         }
@@ -200,8 +204,9 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
         }
         return MessageFormat.format(
                 "userId={0}, lang={1}, req={4}, date={2}, ip={3}, user-agent={5}, referer={6}, utma={8}, " +
-                        "utmb={9}, utmc={10}, v={7}, duration={11}",
-                userId, language, now, ip, reqUrl, userAgent, referer, VERSION, utma, utmb, utmc, timeElapsed);
+                        "utmb={9}, utmc={10}, v={7}, duration={11}, langCookie={12}",
+                userId, language, now, ip, reqUrl, userAgent, referer, VERSION, utma, utmb, utmc,
+                timeElapsed, languageCookie);
     }
 
     private static String getRequestUrl(HttpServletRequest request) {

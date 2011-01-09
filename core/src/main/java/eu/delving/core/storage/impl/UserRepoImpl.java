@@ -29,11 +29,12 @@ import com.mongodb.Mongo;
 import eu.delving.core.storage.User;
 import eu.delving.core.storage.UserRepo;
 import eu.delving.domain.Language;
+import eu.europeana.core.querymodel.query.DocType;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,7 +45,8 @@ import java.util.List;
 
 public class UserRepoImpl implements UserRepo {
 
-    private String databaseName = "users";
+    @Value("#{launchProperties['portal.mongo.dbName']}")
+    private String databaseName;
 
     @Autowired
     private Mongo mongo;
@@ -57,8 +59,8 @@ public class UserRepoImpl implements UserRepo {
         this.databaseName = databaseName;
     }
 
-    private DBCollection persons() {
-        return mongo.getDB(databaseName).getCollection(databaseName);
+    private DBCollection users() {
+        return mongo.getDB(databaseName).getCollection(USERS_COLLECTION);
     }
 
     @Override
@@ -68,24 +70,46 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
+    public void removeUser(String id) {
+        users().remove(new BasicDBObject(User.ID, new ObjectId(id)));
+    }
+
+    @Override
     public User authenticate(String email, String password) {
-        persons().ensureIndex(new BasicDBObject(User.EMAIL, 1));
+        users().ensureIndex(new BasicDBObject(User.EMAIL, 1));
         DBObject query = new BasicDBObject();
         query.put(User.EMAIL, email);
         query.put(User.PASSWORD, hashPassword(password));
-        DBObject personObject = persons().findOne(query);
-        return personObject != null ? new UserImpl(personObject) : null;
+        DBObject userObject = users().findOne(query);
+        return userObject != null ? new UserImpl(userObject) : null;
+    }
+
+    @Override
+    public boolean isExistingUserName(String userName) {
+        return users().findOne(new BasicDBObject(User.USER_NAME, userName)) != null;
+    }
+
+    @Override
+    public boolean isProperUserName(String userName) {
+        return userName != null && userName.matches("[a-z_0-9]{2,24}") && !userName.contains("__");
     }
 
     @Override
     public List<User> getUsers(String pattern) {
-        return null;
+        List<User> users = new ArrayList<User>();
+        for (DBObject personObject : users().find()) {
+            User user = new UserImpl(personObject);
+            if (user.getEmail().contains(pattern) || user.getUserName().contains(pattern)) {
+                users.add(user);
+            }
+        }
+        return users;
     }
 
     @Override
     public List<User> getUsers() {
         List<User> users = new ArrayList<User>();
-        for (DBObject personObject : persons().find()) {
+        for (DBObject personObject : users().find()) {
             users.add(new UserImpl(personObject));
         }
         return users;
@@ -93,10 +117,8 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public User byEmail(String email) {
-        persons().ensureIndex(new BasicDBObject(User.EMAIL, 1));
-        DBObject query = new BasicDBObject();
-        query.put(User.EMAIL, email);
-        DBObject personObject = persons().findOne(query);
+        users().ensureIndex(new BasicDBObject(User.EMAIL, 1));
+        DBObject personObject = users().findOne(new BasicDBObject(User.EMAIL, email));
         return personObject != null ? new UserImpl(personObject) : null;
     }
 
@@ -108,13 +130,18 @@ public class UserRepoImpl implements UserRepo {
         }
 
         @Override
+        public String getId() {
+            return string(object.get(ID));
+        }
+
+        @Override
         public void setEmail(String email) {
             object.put(EMAIL, email);
         }
 
         @Override
         public String getEmail() {
-            return (String) object.get(EMAIL);
+            return string(object.get(EMAIL));
         }
 
         @Override
@@ -124,7 +151,7 @@ public class UserRepoImpl implements UserRepo {
 
         @Override
         public String getHashedPassword() {
-            return (String) object.get(PASSWORD);
+            return string(object.get(PASSWORD));
         }
 
         @Override
@@ -148,13 +175,26 @@ public class UserRepoImpl implements UserRepo {
         }
 
         @Override
+        public void setUserName(String userName) {
+            if (!isProperUserName(userName)) {
+                throw new RuntimeException("Must check if userName is proper first, this isn't: " + userName);
+            }
+            object.put(USER_NAME, userName);
+        }
+
+        @Override
+        public String getUserName() {
+            return string(object.get(USER_NAME));
+        }
+
+        @Override
         public void setFirstName(String firstName) {
             object.put(FIRST_NAME, firstName);
         }
 
         @Override
         public String getFirstName() {
-            return (String) object.get(FIRST_NAME);
+            return string(object.get(FIRST_NAME));
         }
 
         @Override
@@ -164,7 +204,7 @@ public class UserRepoImpl implements UserRepo {
 
         @Override
         public String getLastName() {
-            return (String) object.get(LAST_NAME);
+            return string(object.get(LAST_NAME));
         }
 
         @Override
@@ -178,13 +218,28 @@ public class UserRepoImpl implements UserRepo {
         }
 
         @Override
-        public Item addItem(String author, String title, Language language) {
+        public Date getRegistrationDate() {
+            ObjectId id = (ObjectId) object.get(ID);
+            return new Date(id == null ? 0 : id.getTime());
+        }
+
+        @Override
+        public Item addItem(String author, String title, Language language, String delvingId, String europeanaId, DocType docType, String thumbnail) {
             ItemImpl item = new ItemImpl(this, list(ITEMS).size());
             item.setAuthor(author);
             item.setTitle(title);
             item.setLanguage(language);
+            item.setDelvingId(delvingId);
+            item.setEuropeanaId(europeanaId);
+            item.setDocType(docType);
+            item.setThumbnail(thumbnail);
             list(ITEMS).add(item.getObject());
             return item;
+        }
+
+        @Override
+        public void removeItem(int index) {
+            list(ITEMS).remove(index);
         }
 
         @Override
@@ -208,10 +263,15 @@ public class UserRepoImpl implements UserRepo {
         }
 
         @Override
+        public void removeSearch(int index) {
+            list(SEARCHES).remove(index);
+        }
+
+        @Override
         public List<Search> getSearches() {
             List<Search> searches = new ArrayList<Search>();
             int index = 0;
-            for (Object element : (BasicDBList) object.get(User.SEARCHES)) {
+            for (Object element : list(SEARCHES)) {
                 searches.add(new SearchImpl(this, (DBObject) element, index++));
             }
             return searches;
@@ -219,12 +279,12 @@ public class UserRepoImpl implements UserRepo {
 
         @Override
         public void save() {
-            persons().save(object);
+            users().save(object);
         }
 
         @Override
         public void delete() {
-            persons().remove(object);
+            users().remove(object);
         }
 
         public BasicDBList list(String name) {
@@ -262,7 +322,7 @@ public class UserRepoImpl implements UserRepo {
 
         @Override
         public String getAuthor() {
-            return (String) object.get(AUTHOR);
+            return string(object.get(AUTHOR));
         }
 
         public void setTitle(String title) {
@@ -271,7 +331,7 @@ public class UserRepoImpl implements UserRepo {
 
         @Override
         public String getTitle() {
-            return (String) object.get(TITLE);
+            return string(object.get(TITLE));
         }
 
         public void setLanguage(Language language) {
@@ -283,7 +343,41 @@ public class UserRepoImpl implements UserRepo {
             return Language.valueOf((String) object.get(LANGUAGE));
         }
 
-        // todo: identify the actual object (was europeanaId)
+        public void setDelvingId(String id) {
+            object.put(DELVING_ID, id);
+        }
+
+        @Override
+        public String getDelvingId() {
+            return string(object.get(DELVING_ID));
+        }
+
+        public void setEuropeanaId(String id) {
+            object.put(EUROPEANA_ID, id);
+        }
+
+        @Override
+        public String getEuropeanaId() {
+            return string(object.get(EUROPEANA_ID));
+        }
+
+        public void setDocType(DocType docType) {
+            object.put(DOC_TYPE, docType.toString());
+        }
+
+        @Override
+        public DocType getDocType() {
+            return DocType.valueOf(string(object.get(DOC_TYPE)));
+        }
+
+        public void setThumbnail(String thumbnail) {
+            object.put(THUMBNAIL, thumbnail);
+        }
+
+        @Override
+        public String getThumbnail() {
+            return string(object.get(THUMBNAIL));
+        }
 
         @Override
         public Date getDateSaved() {
@@ -326,7 +420,7 @@ public class UserRepoImpl implements UserRepo {
 
         @Override
         public String getQuery() {
-            return (String) object.get(QUERY);
+            return string(object.get(QUERY));
         }
 
         public void setQueryString(String queryString) {
@@ -335,7 +429,7 @@ public class UserRepoImpl implements UserRepo {
 
         @Override
         public String getQueryString() {
-            return (String) object.get(QUERY_STRING);
+            return string(object.get(QUERY_STRING));
         }
 
         public void setLanguage(Language language) {
@@ -362,43 +456,13 @@ public class UserRepoImpl implements UserRepo {
         }
     }
 
+    private static String string(Object object) {
+        return object == null ? "" : object.toString();
+    }
+
     private static String hashPassword(String password) {
-        MessageDigest messageDigest = getMessageDigest();
-        byte[] digest;
-        try {
-            digest = messageDigest.digest(password.getBytes("UTF-8"));
-        }
-        catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException("UTF-8 not supported!");
-        }
-        return new String(encode(messageDigest.digest(digest)));
+        return encoder.encodePassword(password, null);
     }
 
-    private static MessageDigest getMessageDigest() throws IllegalArgumentException {
-        try {
-            return MessageDigest.getInstance("SHA-1");
-        }
-        catch (NoSuchAlgorithmException e) {
-            throw new IllegalArgumentException("No such algorithm [SHA-1]");
-        }
-    }
-
-    private static final char[] HEX = {
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
-    };
-
-    private static char[] encode(byte[] bytes) {
-        final int nBytes = bytes.length;
-        char[] result = new char[2*nBytes];
-        int j = 0;
-        for (int i=0; i < nBytes; i++) {
-            // Char for top 4 bits
-            result[j++] = HEX[(0xF0 & bytes[i]) >>> 4 ];
-            // Bottom 4
-            result[j++] = HEX[(0x0F & bytes[i])];
-        }
-        return result;
-    }
-
-
+    private static MessageDigestPasswordEncoder encoder = new MessageDigestPasswordEncoder("SHA-1");
 }

@@ -265,7 +265,6 @@ public class DataSetController {
                     }
                 case INDEX:
                     switch (dataSet.getState()) {
-                        case EMPTY: // todo: make sure the data set goes to upload
                         case DISABLED:
                         case UPLOADED:
                             dataSet.setState(DataSetState.QUEUED);
@@ -286,11 +285,12 @@ public class DataSetController {
                     }
                 case DELETE:
                     switch (dataSet.getState()) {
-                        case EMPTY:
+                        case INCOMPLETE:
                         case DISABLED:
                         case ERROR:
                         case UPLOADED:
                             dataSet.delete();
+                            dataSet.setState(DataSetState.INCOMPLETE);
                             return view(dataSet);
                         default:
                             return view(DataSetResponseCode.STATE_CHANGE_FAILURE);
@@ -306,6 +306,7 @@ public class DataSetController {
 
     private void deleteFromSolr(MetaRepo.DataSet dataSet) throws SolrServerException, IOException {
         solrServer.deleteByQuery("europeana_collectionName:" + dataSet.getSpec());
+        solrServer.commit();
     }
 
     private ModelAndView view(DataSetResponseCode responseCode) {

@@ -112,11 +112,15 @@ public class SipCreatorGUI extends JFrame {
                         dataSetActions.setDataSetInfo(dataSetInfo);
                     }
                 }
+                else {
+                    log.warn("recieved empty list from the server");
+                }
             }
 
             @Override
             public void disconnected() {
                 connectedBox.setSelected(false);
+                sipModel.getUserNotifier().tellUser("Disconnected from Repository");
             }
         });
         dataSetActions = new DataSetActions(this, sipModel, dataSetClient, new Runnable() {

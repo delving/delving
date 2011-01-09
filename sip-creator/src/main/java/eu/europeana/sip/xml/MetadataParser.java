@@ -68,6 +68,10 @@ public class MetadataParser {
         this.input = (XMLStreamReader2) xmlif.createXMLStreamReader("Normalization", inputStream);
     }
 
+    public void setProgressListener(ProgressListener progressListener) {
+        this.progressListener = progressListener;
+    }
+
     @SuppressWarnings("unchecked")
     public synchronized MetadataRecord nextRecord() throws XMLStreamException, IOException, AbortException {
         MetadataRecord metadataRecord = null;
@@ -116,7 +120,7 @@ public class MetadataParser {
                             if (node.parent() != null) {
                                 throw new RuntimeException("Expected to be at root node");
                             }
-                            metadataRecord = factory.fromGroovyNode(node, ++recordIndex);
+                            metadataRecord = factory.fromGroovyNode(node, ++recordIndex, recordCount);
                             if (progressListener != null) {
                                 if (!progressListener.setProgress(recordIndex)) {
                                     throw new AbortException();

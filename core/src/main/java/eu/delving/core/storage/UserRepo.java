@@ -29,8 +29,13 @@ import java.util.List;
 
 public interface UserRepo {
 
+    final String USERS_COLLECTION = "users";
+
     User createUser(String email);
+    void removeUser(String id);
     User authenticate(String email, String password);
+    boolean isExistingUserName(String userName);
+    boolean isProperUserName(String userName);
     List<User> getUsers(String pattern);
     List<User> getUsers();
     User byEmail(String email);

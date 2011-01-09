@@ -24,6 +24,7 @@ package eu.europeana.web.controller;
 import eu.delving.core.storage.TokenRepo;
 import eu.delving.core.storage.User;
 import eu.delving.core.storage.UserRepo;
+import eu.delving.core.util.SimpleMessageCodesResolver;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.EmailSender;
 import org.apache.log4j.Logger;
@@ -42,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -72,6 +74,7 @@ public class ChangePasswordController {
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.setValidator(new ChangePasswordFormValidator());
+        binder.setMessageCodesResolver(new SimpleMessageCodesResolver());
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -90,7 +93,7 @@ public class ChangePasswordController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    protected String post(@ModelAttribute ChangePasswordForm command,
+    protected String post(@Valid @ModelAttribute ChangePasswordForm command,
                           BindingResult result,
                           HttpServletRequest request) throws Exception {
         if (result.hasErrors()) {

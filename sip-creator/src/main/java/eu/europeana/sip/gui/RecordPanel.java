@@ -21,6 +21,8 @@
 
 package eu.europeana.sip.gui;
 
+import eu.delving.sip.ProgressListener;
+import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.model.CompileModel;
 import eu.europeana.sip.model.SipModel;
 
@@ -30,6 +32,8 @@ import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.ProgressMonitor;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -47,8 +51,12 @@ import java.awt.event.ActionListener;
 
 public class RecordPanel extends JPanel {
     private SipModel sipModel;
-    private JButton rewindButton = new JButton("Rewind");
+    private JButton seekButton = new JButton("Seek Record #");
+    private JTextField seekField = new JTextField(15);
+    private JTextField countField = new JTextField(15);
     private JButton nextButton = new JButton("Next");
+    private MetadataRecord currentMetadataRecord;
+    private int recordCount = -1;
 
     public RecordPanel(SipModel sipModel, CompileModel compileModel) {
         super(new BorderLayout(5, 5));
@@ -76,10 +84,25 @@ public class RecordPanel extends JPanel {
             public void changedUpdate(DocumentEvent documentEvent) {
             }
         });
+        sipModel.addParseListener(new SipModel.ParseListener() {
+            @Override
+            public void updatedRecord(MetadataRecord metadataRecord) {
+                currentMetadataRecord = metadataRecord;
+                if (metadataRecord != null) {
+                    seekField.setText(String.valueOf(metadataRecord.getRecordNumber()));
+                    if (metadataRecord.getRecordCount() != recordCount) {
+                        countField.setText(String.valueOf(recordCount = metadataRecord.getRecordCount()));
+                    }
+                }
+            }
+        });
         recordView.setEditable(false);
         JPanel grid = new JPanel(new GridLayout(1, 0, 5, 5));
+        grid.add(seekButton);
+        grid.add(seekField);
+        countField.setEditable(false);
+        grid.add(countField);
         grid.add(nextButton);
-        grid.add(rewindButton);
         add(scroll(recordView), BorderLayout.CENTER);
         add(grid, BorderLayout.SOUTH);
         setPreferredSize(new Dimension(240, 500));
@@ -95,12 +118,8 @@ public class RecordPanel extends JPanel {
     }
 
     private void wireUp() {
-        rewindButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sipModel.firstRecord();
-            }
-        });
+        seekButton.addActionListener(seek);
+        seekField.addActionListener(seek);
         nextButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -108,4 +127,35 @@ public class RecordPanel extends JPanel {
             }
         });
     }
+
+    private ActionListener seek = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent event) {
+            int recordNumber;
+            try {
+                recordNumber = Integer.parseInt(seekField.getText());
+                if (recordNumber <= 0) {
+                    recordNumber = 1;
+                }
+            }
+            catch (NumberFormatException e) {
+                recordNumber = 1;
+            }
+            if (currentMetadataRecord == null || recordNumber != currentMetadataRecord.getRecordNumber()) {
+                seekButton.setEnabled(false);
+                final ProgressMonitor progressMonitor = new ProgressMonitor(
+                        SwingUtilities.getRoot(RecordPanel.this),
+                        "<html><h2>Scanning</h2>",
+                        "Input Records",
+                        0,100
+                );
+                sipModel.seekRecord(recordNumber, new ProgressListener.Adapter(progressMonitor) {
+                    @Override
+                    public void swingFinished(boolean success) {
+                        seekButton.setEnabled(true);
+                    }
+                });
+            }
+        }
+    };
 }

@@ -10,27 +10,19 @@ First the basics:
         last login   : ${user.lastLogin}
 
 Saved Searches:
-<#list user.savedSearches as search>
+<#list user.searches as search>
     -------------------
     query : ${search.query}
     saved : ${search.dateSaved}
 </#list>
 
 Saved Items:
-<#list user.savedItems as doc>
+<#list user.items as doc>
     -------------------
     title            : ${doc.title}
     author           : ${doc.author}
     saved            : ${doc.dateSaved}
     europeana uri    : ${doc.europeanaId.europeanaUri}
     europeana object : ${doc.europeanaObject}
-</#list>
-
-Social Tags:
-<#list user.socialTags as tag>
-    -------------------
-    tag    : ${tag.tag}
-    doc id : ${tag.europeanaId.europeanaUri}
-    saved  : ${tag.dateSaved}
 </#list>
 

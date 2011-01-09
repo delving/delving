@@ -49,6 +49,7 @@ import java.util.concurrent.Executors;
 
 public class Harvindexer {
     private SolrServer solrServer;
+    private SolrServer solrStreamingServer;
     private XMLInputFactory inputFactory = new WstxInputFactory();
     private Executor executor = Executors.newSingleThreadExecutor();
     private Logger log = Logger.getLogger(getClass());
@@ -79,6 +80,11 @@ public class Harvindexer {
         this.solrServer = solrServer;
     }
 
+    @Autowired
+    public void setSolrStreamingServer(@Qualifier("solrStreamingUpdateServer") SolrServer solrStreamingServer) {
+        this.solrStreamingServer = solrStreamingServer;
+    }
+
     public void setChunkSize(int chunkSize) {
         this.chunkSize = chunkSize;
     }
@@ -103,7 +109,7 @@ public class Harvindexer {
     }
 
     public void commitSolr() throws IOException, SolrServerException {
-        solrServer.commit();
+        solrStreamingServer.commit();
     }
 
     public class Processor implements Runnable {
@@ -150,14 +156,17 @@ public class Harvindexer {
             try {
                 DateTime now = new DateTime(DateTimeZone.UTC);
                 DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-                importPmh(dataSet);
                 while (retries < nrOfRetries) {
                     try {
-                        importPmh(dataSet);
-                        solrServer.deleteByQuery("europeana_collectionName:" + dataSet.getSpec() + " AND timestamp:[* TO " + fmt.print(now) + "]");
+                        if (retries == 0){
+                            importPmh(dataSet);
+                        }
+                        solrStreamingServer.deleteByQuery("europeana_collectionName:" + dataSet.getSpec() + " AND timestamp:[* TO " + fmt.print(now) + "]");
+                        solrStreamingServer.commit(); // todo maybe add manual commit
                         log.info("deleting orphaned entries from the SolrIndex for collection" + dataSet.getSpec());
                         break;
-                    } catch (SolrServerException e) {
+                    }
+                    catch (SolrServerException e) {
                         if (retries < nrOfRetries) {
                             retries += 1;
                             log.info("unable to delete orphans. Retrying...");
@@ -166,7 +175,8 @@ public class Harvindexer {
                             throw new SolrServerException(e);
                         }
 
-                    } catch (IOException e) {
+                    }
+                    catch (IOException e) {
                         if (retries < nrOfRetries) {
                             retries += 1;
                             log.info("unable to delete orphans. Retrying...");
@@ -178,14 +188,13 @@ public class Harvindexer {
                 }
                 if (thread != null) {
                     log.info("Finished importing " + dataSet);
-//                    dataSet.setRecordsIndexed(??);
-                    dataSet.setState(DataSetState.ENABLED);
+                    dataSet.setState(DataSetState.ENABLED); // funny, but this can enable before the indexed record count has been fully incremented
                 }
                 else {
                     log.info("Aborted importing " + dataSet);
-                    dataSet.setState(DataSetState.EMPTY);
+                    dataSet.setState(DataSetState.INCOMPLETE);
                 }
-                enableDataSet();
+                dataSet.save();
             }
             catch (HarvindexingException e) {
                 recordProblem(e);
@@ -197,11 +206,6 @@ public class Harvindexer {
                 processors.remove(this);
                 thread = null;
             }
-        }
-
-        private void enableDataSet() {
-            dataSet.setState(DataSetState.ENABLED);
-            dataSet.save();
         }
 
         private void recordProblem(Exception ex) {
@@ -299,7 +303,7 @@ public class Harvindexer {
                                 }
                             }
                             if (text.length() > 10000) {
-                                log.warn("Truncated value from "+text.length());
+                                log.warn("Truncated value from " + text.length());
                                 text = text.substring(0, 9999);
                             }
                             // language being ignored if (language != null) {...}
@@ -327,7 +331,8 @@ public class Harvindexer {
                             if (!solrInputDocument.containsKey("europeana_collectionName")) {
                                 solrInputDocument.addField("europeana_collectionName", dataSet.getSpec()); // todo: can't just use a string field name here
                             }
-                            indexer.add(solrInputDocument);
+//                            indexer.add(solrInputDocument); // this is the old way
+                            solrStreamingServer.add(solrInputDocument);
 //                            record.save(); todo: or something like it, to replace consoleDao.saveEuropeanaId(europeanaId);
                             solrInputDocument = null;
                             path.pop();
@@ -343,6 +348,7 @@ public class Harvindexer {
 
                     case XMLStreamConstants.END_DOCUMENT:
                         log.info(String.format("Document ended, fetched %d records", recordCount));
+                        dataSet.incrementRecordsIndexed(recordCount); // todo double check if this is the right place
                         break;
                 }
                 if (!xml.hasNext()) {

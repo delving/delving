@@ -335,7 +335,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         private DocIdWindowPager createDocIdPager(Map<String, String[]> params) throws SolrServerException, EuropeanaQueryException {
             DocIdWindowPager idWindowPager = null;
             if (params.containsKey("query")) {
-                idWindowPager = docIdWindowPagerFactory.getPager(params, createFromQueryParams(params), solrServer);
+                idWindowPager = docIdWindowPagerFactory.getPager(params, createFromQueryParams(params), solrServer, metadataModel);
             }
             return idWindowPager;
         }

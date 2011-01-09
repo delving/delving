@@ -89,10 +89,6 @@ public class DataSetActions {
         this.recordStatisticsDialog = new RecordStatisticsDialog(sipModel);
         this.analysisFactsDialog = new AnalysisFactsDialog(sipModel);
         this.mappingDialog = new MappingDialog(sipModel);
-        createLocalActions(sipModel);
-        createRemoteActions();
-        actions.addAll(localActions);
-        actions.addAll(remoteActions);
         setEntry(null);
     }
 
@@ -128,14 +124,6 @@ public class DataSetActions {
         return menu;
     }
 
-    public List<Action> getLocalActions() {
-        return new ArrayList<Action>(localActions);
-    }
-
-    public List<Action> getRemoteActions() {
-        return new ArrayList<Action>(remoteActions);
-    }
-
     public void setEntry(DataSetListModel.Entry entry) {
         this.entry = entry;
         for (DataSetAction dataSetAction : actions) {
@@ -144,14 +132,22 @@ public class DataSetActions {
     }
 
     public void setDataSetInfo(DataSetInfo dataSetInfo) {
-        if (entry != null && entry.getDataSetInfo() != null && entry.getDataSetInfo().spec.equals(dataSetInfo.spec)) {
-            for (DataSetAction dataSetAction : actions) {
-                dataSetAction.setEntry(entry);
+        if (entry != null) {
+            if (dataSetInfo == null) {
+                setEntry(null);
+            }
+            else if (entry.getDataSetInfo() != null && entry.getDataSetInfo().spec.equals(dataSetInfo.spec)) {
+                setEntry(entry);
             }
         }
     }
 
     private void buildPanel() {
+        createLocalActions(sipModel);
+        createRemoteActions();
+        actions.clear();
+        actions.addAll(localActions);
+        actions.addAll(remoteActions);
         JPanel local = createLocalPanel();
         JPanel remote = createRemotePanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
@@ -417,7 +413,7 @@ public class DataSetActions {
                     return false;
                 }
                 else switch (DataSetState.valueOf(info.state)) {
-                    case EMPTY:
+                    case INCOMPLETE:
                         switch (command) {
                             case DELETE:
                                 return true;
@@ -561,8 +557,8 @@ public class DataSetActions {
     private JPanel createFinishedPanel(JDialog dialog) {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         Action finishedAction = new FinishedAction(dialog);
-        ((JComponent)dialog.getContentPane()).getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("ESCAPE"), "finished");
-        ((JComponent)dialog.getContentPane()).getActionMap().put("finished", finishedAction);
+        ((JComponent) dialog.getContentPane()).getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("ESCAPE"), "finished");
+        ((JComponent) dialog.getContentPane()).getActionMap().put("finished", finishedAction);
         JButton hide = new JButton(finishedAction);
         panel.add(hide);
         return panel;

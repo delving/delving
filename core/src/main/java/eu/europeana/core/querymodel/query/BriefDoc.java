@@ -32,6 +32,7 @@ public interface BriefDoc { // if multiple-> show first
     int getIndex();
     String getFullDocUrl();
     String getId();
+    String getDelvingId(); // this is the OAI-PMH id
     String getTitle();
     String getThumbnail();
     String getCreator();
