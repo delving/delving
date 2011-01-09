@@ -14,8 +14,6 @@ $(document).ready(function(){
             $(xml).find('user').each(function(){
                 var _email = $(this).attr('email');
                 var _role = $(this).attr('role');
-//                var _firstName = $(this).attr('firstName');
-//                var _lastName = $(this).attr('lastName');
                 var _userName = $(this).attr('userName');
                 var _regDate = $(this).attr('registrationDate');
                 var _lastLoginDate = $(this).attr('lastLoginDate');
@@ -27,7 +25,7 @@ $(document).ready(function(){
             styleUIButtons();
             $('td.searchParam, a.searchParam').click(function(){
                 $('input#searchPattern').val($(this).text());
-                $('form#search-form"').submit();
+                $('form#search-form').submit();
                 return false;
             })
         },
