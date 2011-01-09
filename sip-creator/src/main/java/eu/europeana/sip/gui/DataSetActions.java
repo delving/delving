@@ -131,18 +131,15 @@ public class DataSetActions {
         }
     }
 
-    public boolean setDataSetInfo(DataSetInfo dataSetInfo) {
+    public void setDataSetInfo(DataSetInfo dataSetInfo) {
         if (entry != null) {
             if (dataSetInfo == null) {
                 setEntry(null);
-                return false;
             }
-            if (entry.getDataSetInfo() != null && entry.getDataSetInfo().spec.equals(dataSetInfo.spec)) {
+            else if (entry.getDataSetInfo() != null && entry.getDataSetInfo().spec.equals(dataSetInfo.spec)) {
                 setEntry(entry);
-                return true;
             }
         }
-        return false;
     }
 
     private void buildPanel() {
@@ -416,7 +413,7 @@ public class DataSetActions {
                     return false;
                 }
                 else switch (DataSetState.valueOf(info.state)) {
-                    case EMPTY:
+                    case INCOMPLETE:
                         switch (command) {
                             case DELETE:
                                 return true;

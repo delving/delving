@@ -89,7 +89,7 @@ public class MetaRepoImpl implements MetaRepo {
     public DataSet createDataSet(String spec) {
         DBObject object = new BasicDBObject();
         object.put(DataSet.SPEC, spec);
-        object.put(DataSet.DATA_SET_STATE, DataSetState.EMPTY.toString());
+        object.put(DataSet.DATA_SET_STATE, DataSetState.INCOMPLETE.toString());
 
         DataSet dataSet = factory().createDataSet(object);
         dataSet.save();

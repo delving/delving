@@ -28,8 +28,8 @@ package eu.delving.sip;
  */
 
 public enum DataSetState {
-    
-    EMPTY,
+
+    INCOMPLETE,
     DISABLED,
     UPLOADED,
     QUEUED,
