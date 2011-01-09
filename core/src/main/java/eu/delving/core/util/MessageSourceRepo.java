@@ -9,7 +9,6 @@ import com.mongodb.Mongo;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.support.AbstractMessageSource;
 
 import java.text.MessageFormat;
@@ -106,7 +105,7 @@ public class MessageSourceRepo extends AbstractMessageSource {
         public String getContent(Locale locale) {
             String content = (String) object.get(objectKey(locale));
             if (content == null) {
-                content = getParentMessageSource().getMessage(new Resolvable(getKey()), locale);
+                content = getParentMessageSource().getMessage(getKey(), null, locale);
                 if (content.equals(getKey())) {
                     return getKey();
                 }
@@ -128,30 +127,6 @@ public class MessageSourceRepo extends AbstractMessageSource {
 
         public void save() {
             messages().save(object);
-        }
-    }
-
-    private class Resolvable implements MessageSourceResolvable {
-
-        private String key;
-
-        private Resolvable(String key) {
-            this.key = key;
-        }
-
-        @Override
-        public String[] getCodes() {
-            return new String[] {key};
-        }
-
-        @Override
-        public Object[] getArguments() {
-            return new Object[0];
-        }
-
-        @Override
-        public String getDefaultMessage() {
-            return String.format("Missing(%s)", key);
         }
     }
 

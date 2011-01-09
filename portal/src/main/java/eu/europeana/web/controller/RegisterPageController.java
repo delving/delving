@@ -24,6 +24,7 @@ package eu.europeana.web.controller;
 import eu.delving.core.storage.TokenRepo;
 import eu.delving.core.storage.User;
 import eu.delving.core.storage.UserRepo;
+import eu.delving.core.util.SimpleMessageCodesResolver;
 import eu.europeana.core.querymodel.query.EuropeanaQueryException;
 import eu.europeana.core.querymodel.query.QueryProblem;
 import eu.europeana.core.util.web.ClickStreamLogger;
@@ -76,6 +77,7 @@ public class RegisterPageController {
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.setValidator(new RegistrationFormValidator());
+        binder.setMessageCodesResolver(new SimpleMessageCodesResolver());
     }
 
     @RequestMapping(method = RequestMethod.GET)
