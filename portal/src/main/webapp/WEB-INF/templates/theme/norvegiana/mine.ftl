@@ -83,24 +83,24 @@
                             <td width="60">
                                 <a href="/${portalName}/record/${item.europeanaId}.html">
                                  <#if useCache="true">
-                                    <img class="thumb" id="img_${item_index}" align="middle" src="${cacheUrl}uri=${item.thumbnail}&size=BRIEF_DOC" alt="Click for more information" width="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
+                                    <img class="thumb" id="img_${item_index}" align="middle" src="${cacheUrl}uri=${item.thumbnail}&size=BRIEF_DOC" alt="Click for more information" width="50" onerror="showDefaultSmall(this,'${item.getDocType()}')"/>
                                  <#else>
                                     <#if item.docType??>
-                                      <img class="thumb" align="middle" src="${item.thumbnail}" alt="Click for more information" height="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
+                                      <img class="thumb" align="middle" src="${item.thumbnail}" alt="Click for more information" width="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
                                     <#else>
-                                      <img class="thumb" align="middle" src="${item.thumbnail}" alt="Click for more information" height="50" style="float:left" onerror="showDefaultSmall(this)"/>
+                                      <img class="thumb" align="middle" src="${item.thumbnail}" alt="Click for more information" width="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
                                     </#if>
                                  </#if>
                                 </a>
                             </td>
                             <td valign="top" class="item-info">
                                 <a href="/${portalName}/record/${item.europeanaId}.html">
-                                    <strong><@stringLimiter "${item.title}" "50"/></strong>
+                                    <strong><@stringLimiter "${item.getTitle()}" "50"/></strong>
                                 </a>
                                 <br/>
-                                <@spring.message '_search.field.creator'/>: <em>${item.author}</em>
+                                <@spring.message '_search.field.creator'/>: <em>${item.getAuthor()}</em>
                                 <br/>
-                                <@spring.message '_mine.date.saved'/>: <em>${item.dateSaved?datetime}</em>
+                                <@spring.message '_mine.date.saved'/>: <em>${item.getDateSaved()?datetime}</em>
 
                             </td>
                             <td width="60">
