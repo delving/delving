@@ -10,17 +10,20 @@
 
         <h1><@spring.message '_cms.administration.users' /></h1>
 
-        <div class="grid_6 alpha">
+        <div class="grid_4 alpha">
 
 
-         <h4><@spring.message '_cms.user.find' /></h4>
-            <form method="post" action="administration.html" id="search-form">
+
+            <form method="post" action="administration.html" id="search-form" name="search-form">
+                <fieldset>
+                    <legend><@spring.message '_cms.user.find' /></legend>
                 <table>
                     <tr>
                         <td width="150"><input type="text" id="searchPattern" name="searchPattern"/></td>
                         <td><input type="submit" class="btn-strong" value="<@spring.message '_cms.find' />"/> </td>
                     </tr>
                 </table>
+                </fieldset>
             </form>
            <#if userList?? && userList?size=0>
                <h6>Geen gebruiker(s) gevonden</h6>
