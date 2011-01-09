@@ -1109,7 +1109,7 @@
     </li>
     <#if user.items??>
     <li>
-        <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });">
+        <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1, path: '${portalName}' });">
             <@spring.message '_mine.saved.items' />
         </a>
         (<span id="savedItemsCount">${user.items?size}</span>)
@@ -1117,7 +1117,7 @@
     </#if>
     <#if user.searches??>
     <li>
-        <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });">
+        <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1, path: '${portalName}' });">
             <@spring.message '_mine.saved.searches' />
         </a>
         (<span id="savedSearchesCount">${user.searches?size}</span>)
