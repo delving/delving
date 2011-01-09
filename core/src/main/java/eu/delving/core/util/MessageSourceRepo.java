@@ -9,6 +9,7 @@ import com.mongodb.Mongo;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.support.AbstractMessageSource;
 
 import java.text.MessageFormat;
@@ -57,20 +58,20 @@ public class MessageSourceRepo extends AbstractMessageSource {
     }
 
     public Map<String, Map<String, String>> getMessageFileMaps() {
-        Map<String, Map<String, String>> fileMap = new TreeMap<String,Map<String,String>>();
+        Map<String, Map<String, String>> fileMap = new TreeMap<String, Map<String, String>>();
         DBCursor cursor = messages().find();
         while (cursor.hasNext()) {
             DBObject object = cursor.next();
             String messsageKey = (String) object.get(KEY);
             for (String contentKey : object.keySet()) {
                 if (contentKey.startsWith(CONTENT)) {
-                    String fileName = String.format("messages%s.properties",contentKey.substring(CONTENT.length()));
+                    String fileName = String.format("messages%s.properties", contentKey.substring(CONTENT.length()));
                     Map<String, String> map = fileMap.get(fileName);
                     if (map == null) {
                         map = new TreeMap<String, String>();
                         fileMap.put(fileName, map);
                     }
-                    map.put(messsageKey, (String)object.get(contentKey));
+                    map.put(messsageKey, (String) object.get(contentKey));
                 }
             }
         }
@@ -105,7 +106,10 @@ public class MessageSourceRepo extends AbstractMessageSource {
         public String getContent(Locale locale) {
             String content = (String) object.get(objectKey(locale));
             if (content == null) {
-                content = getParentMessageSource().getMessage(getKey(), null, locale);
+                content = getParentMessageSource().getMessage(new Resolvable(getKey()), locale);
+                if (content.equals(getKey())) {
+                    return getKey();
+                }
             }
             return content;
         }
@@ -124,6 +128,30 @@ public class MessageSourceRepo extends AbstractMessageSource {
 
         public void save() {
             messages().save(object);
+        }
+    }
+
+    private class Resolvable implements MessageSourceResolvable {
+
+        private String key;
+
+        private Resolvable(String key) {
+            this.key = key;
+        }
+
+        @Override
+        public String[] getCodes() {
+            return new String[] {key};
+        }
+
+        @Override
+        public Object[] getArguments() {
+            return new Object[0];
+        }
+
+        @Override
+        public String getDefaultMessage() {
+            return String.format("Missing(%s)", key);
         }
     }
 
