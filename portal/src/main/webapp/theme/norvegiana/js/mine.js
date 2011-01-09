@@ -1,5 +1,9 @@
 $(document).ready(function() {
-    $("#savedItems").tabs({selected: $.cookie('ui-tabs-3')});
+    if ($.cookie('ui-tabs-3')){
+        $("#savedItems").tabs({selected: $.cookie('ui-tabs-3')});
+    } else {
+        $("#savedItems").tabs({selected: 0});
+    }
     $("#savedItems").tabs({ cookie: { expires: 30 } });
     $("#rem-acc").click(function(){
         removeUser($(this).attr("name"));
