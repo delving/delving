@@ -42,6 +42,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -90,7 +91,7 @@ public class ChangePasswordController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    protected String post(@ModelAttribute ChangePasswordForm command,
+    protected String post(@Valid @ModelAttribute ChangePasswordForm command,
                           BindingResult result,
                           HttpServletRequest request) throws Exception {
         if (result.hasErrors()) {

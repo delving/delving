@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -85,7 +86,7 @@ public class ContactPageController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    protected String handlePost(@ModelAttribute ContactForm command, BindingResult result, HttpServletRequest request) throws Exception {
+    protected String handlePost(@Valid @ModelAttribute ContactForm command, BindingResult result, HttpServletRequest request) throws Exception {
         if (result.hasErrors()) {
             clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.FEEDBACK_SEND_FAILURE);
         }
