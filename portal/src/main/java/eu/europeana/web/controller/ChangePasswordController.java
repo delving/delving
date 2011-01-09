@@ -24,6 +24,7 @@ package eu.europeana.web.controller;
 import eu.delving.core.storage.TokenRepo;
 import eu.delving.core.storage.User;
 import eu.delving.core.storage.UserRepo;
+import eu.delving.core.util.SimpleMessageCodesResolver;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.EmailSender;
 import org.apache.log4j.Logger;
@@ -73,6 +74,7 @@ public class ChangePasswordController {
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.setValidator(new ChangePasswordFormValidator());
+        binder.setMessageCodesResolver(new SimpleMessageCodesResolver());
     }
 
     @RequestMapping(method = RequestMethod.GET)

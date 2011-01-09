@@ -22,6 +22,7 @@
 package eu.europeana.web.controller;
 
 import eu.delving.core.storage.User;
+import eu.delving.core.util.SimpleMessageCodesResolver;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import eu.europeana.core.util.web.EmailSender;
@@ -68,6 +69,7 @@ public class ContactPageController {
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.setValidator(new ContactFormValidator());
+        binder.setMessageCodesResolver(new SimpleMessageCodesResolver());
     }
 
     @ModelAttribute("command")
