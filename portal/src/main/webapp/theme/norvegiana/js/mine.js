@@ -1,10 +1,11 @@
 $(document).ready(function() {
-    if ($.cookie('ui-tabs-3')){
-        $("#savedItems").tabs({selected: $.cookie('ui-tabs-3')});
+    if ($.cookie('mine-tabs')){
+        $("#savedItems").tabs({selected: $.cookie('mine-tabs')});
     } else {
         $("#savedItems").tabs({selected: 0});
     }
-    $("#savedItems").tabs({ cookie: { expires: 30 } });
+    //$("#savedItems").tabs({ cookie: { expires: 30, name: 'mine-tabs', path: portalName  } });
+    //$.cookie('mine-tabs', null);
     $("#rem-acc").click(function(){
         removeUser($(this).attr("name"));
 

@@ -12,9 +12,9 @@
 
     <div id="savedItems">
         <ul>
-            <li><a href="#tab-0" onclick="$.cookie('ui-tabs-3', '0', { expires: 1 });" title="<@spring.message '_mine.user.information' />"><span><@spring.message '_mine.user.information' /></span></a></li>
-            <li><a href="#tab-1" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });" title="<@spring.message '_mine.saved.items'/>"><span><@spring.message '_mine.saved.items'/></span></a></li>
-            <li><a href="#tab-2" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });" title="<@spring.message '_mine.saved.searches'/>"><span><@spring.message '_mine.saved.searches'/></span></a></li>
+            <li><a href="#tab-0" onclick="$.cookie('mine-tabs', '0', { expires: 1, path: '/${portalName}' });" title="<@spring.message '_mine.user.information' />"><span><@spring.message '_mine.user.information' /></span></a></li>
+            <li><a href="#tab-1" onclick="$.cookie('mine-tabs', '1', { expires: 1, path: '/${portalName}' });" title="<@spring.message '_mine.saved.items'/>"><span><@spring.message '_mine.saved.items'/></span></a></li>
+            <li><a href="#tab-2" onclick="$.cookie('mine-tabs', '2', { expires: 1, path: '/${portalName}' });" title="<@spring.message '_mine.saved.searches'/>"><span><@spring.message '_mine.saved.searches'/></span></a></li>
         </ul>
        <div id="tab-0">
           <table summary="table with user information" id="tbl-user" >
