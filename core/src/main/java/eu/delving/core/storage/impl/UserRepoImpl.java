@@ -60,7 +60,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     private DBCollection users() {
-        return mongo.getDB(databaseName).getCollection(databaseName);
+        return mongo.getDB(databaseName).getCollection(USERS_COLLECTION);
     }
 
     @Override

@@ -7,6 +7,19 @@
  */
 
 $(document).ready(function() {
+  
+    $('#provider-list :checkbox').each(function(){
+        if(this.checked) {
+            $("#provider-list").show();
+        }
+    });
+
+    $('#county-list :checkbox').each(function(){
+        if(this.checked) {
+            $("#county-list").show();
+        }
+    });
+
     $("#sel-counties").change(function() {
         if ($("#sel-counties :selected").val() == "false") {
             $("#county-list").show("slow");

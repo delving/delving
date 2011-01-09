@@ -1,21 +1,21 @@
-function mycarousel_initCallback(carousel)
-{
-    // Disable autoscrolling if the user clicks the prev or next button.
-    carousel.buttonNext.bind('click', function() {
-        carousel.startAuto(0);
-    });
-
-    carousel.buttonPrev.bind('click', function() {
-        carousel.startAuto(0);
-    });
-
-    // Pause autoscrolling if the user moves with the cursor over the clip.
-    carousel.clip.hover(function() {
-        carousel.stopAuto();
-    }, function() {
-        carousel.startAuto();
-    });
-}
+//function mycarousel_initCallback(carousel)
+//{
+//    // Disable autoscrolling if the user clicks the prev or next button.
+//    carousel.buttonNext.bind('click', function() {
+//        carousel.startAuto(0);
+//    });
+//
+//    carousel.buttonPrev.bind('click', function() {
+//        carousel.startAuto(0);
+//    });
+//
+//    // Pause autoscrolling if the user moves with the cursor over the clip.
+//    carousel.clip.hover(function() {
+//        carousel.stopAuto();
+//    }, function() {
+//        carousel.startAuto();
+//    });
+//}
 
 $(document).ready(function() {
     // check if coming from login or logout, if so redirect to last visited page before login or logout
@@ -28,7 +28,7 @@ $(document).ready(function() {
         // random background images for the header
         var images = ['bg-houses.jpg', 'bg-cows.jpg','bg-statues-close.jpg','bg-lion.jpg'];
         $('div#header.home').css({'background-image': 'url('+baseThemePath+'/images/' + images[Math.floor(Math.random() * images.length)] + ')'});
-
+        // image carousel with tooltip rollovers
         $("ul#random-carousel li img[title]").tooltip({
             position: "top center",
             opacity: 1,
@@ -42,6 +42,8 @@ $(document).ready(function() {
             visible: 5,
             wrap: "last"
         });
+
+
     }else{
         // REDIRECT
         var gotoPage = $.cookie('takeMeBack');

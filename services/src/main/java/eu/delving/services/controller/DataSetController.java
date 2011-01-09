@@ -306,6 +306,7 @@ public class DataSetController {
 
     private void deleteFromSolr(MetaRepo.DataSet dataSet) throws SolrServerException, IOException {
         solrServer.deleteByQuery("europeana_collectionName:" + dataSet.getSpec());
+        solrServer.commit();
     }
 
     private ModelAndView view(DataSetResponseCode responseCode) {

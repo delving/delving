@@ -241,10 +241,10 @@
 	 when adding documents. http://wiki.apache.org/solr/UpdateXmlMessages
 	 -->
 
-    <autoCommit>
-      <maxDocs>10000</maxDocs>
-      <maxTime>10000</maxTime>
-    </autoCommit>
+    <!--<autoCommit>-->
+      <!--<maxDocs>10000</maxDocs>-->
+      <!--<maxTime>60000</maxTime>-->
+    <!--</autoCommit>-->
 
 
     <!-- The RunExecutableListener executes an external command from a

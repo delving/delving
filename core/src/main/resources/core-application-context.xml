@@ -120,6 +120,18 @@
         <property name="maxRetries" value="#{launchProperties['solr.retries']}"/>
     </bean>
 
+    <bean id="solrStreamingUpdateServer" class="org.apache.solr.client.solrj.impl.StreamingUpdateSolrServer">
+        <constructor-arg value="#{launchProperties['solr.updateUrl']}" index="0" type="java.lang.String"/>
+        <constructor-arg value="5000" index="1" type="int"/>
+        <constructor-arg value="30" index="2" type="int"/>
+        <property name="soTimeout" value="#{launchProperties['solr.timeout']}"/>
+        <property name="connectionTimeout" value="#{launchProperties['solr.timeout']}"/>
+        <property name="defaultMaxConnectionsPerHost" value="64"/>
+        <property name="maxTotalConnections" value="125"/>
+        <property name="followRedirects" value="false"/>
+        <property name="maxRetries" value="#{launchProperties['solr.retries']}"/>
+    </bean>
+
     <bean id="metadataModel" class="eu.delving.metadata.MetadataModelImpl">
         <property name="recordDefinitionResources">
             <list>

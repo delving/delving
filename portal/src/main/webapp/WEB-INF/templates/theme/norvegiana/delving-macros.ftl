@@ -192,7 +192,7 @@
 
 
         <script type="text/javascript">
-            delvingPageCall("#footer-dynamic-content", portalName+"/footer.dml?embedded=true"," "," "," ");
+//            delvingPageCall("#footer-dynamic-content", portalName+"/footer.dml?embedded=true"," "," "," ");
         </script>
  
         <#if trackingCode??>

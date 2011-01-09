@@ -41,7 +41,7 @@ public class TokenRepoImpl implements TokenRepo {
     private Logger log = Logger.getLogger(getClass());
     private DB mongoDatabase;
 
-    @Value("#{launchProperties['portal.mongo.dbName ']}")
+    @Value("#{launchProperties['portal.mongo.dbName']}")
     private String databaseName;
 
     @Autowired

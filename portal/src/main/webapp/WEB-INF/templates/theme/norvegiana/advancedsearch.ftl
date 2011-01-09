@@ -2,14 +2,14 @@
 <#include "includeMarcos.ftl">
 <#assign title><@spring.message '_action.advanced.search'/></#assign>
 <@addHeader "${portalDisplayName} - ${title}", "",["advanced-search.js"],[]/>
-<section id="search_advanced" class="grid_10 prefix_2 main"  role="search">
-    <div class="inner">
-       <h1><@spring.message '_action.advanced.search'/></h1>
+
+<section id="search-advanced" class="grid_10 prefix_1 main"  role="search">
+
        <form method="POST" action="advancedsearch.html" accept-charset="UTF-8">
         <input type="hidden" name="start" value="1" />
         <input type="hidden" name="view" value="${view}" />
-
-
+        <fieldset>
+            <legend><@spring.message '_action.advanced.search'/></legend>
 
         <table>
 
@@ -48,7 +48,7 @@
                        <option value="true"><@spring.message '_metadata.type.all'/></option>
                        <option value="false"><@spring.message '_search.select'/></option>
                    </select>
-                   <div id="provider-list" style="display:none">
+                   <div id="provider-list" style="display:none;">
                        <table class="squash">
                         <#list dataProviders?chunk(4) as row>
                            <tr>
@@ -138,8 +138,8 @@
             </tr>
 
          </table>
+        </fieldset>
         </form>
-</div>
 </section><!-- end search -->
 
 <@addFooter/>
