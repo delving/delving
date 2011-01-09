@@ -96,7 +96,14 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public List<User> getUsers(String pattern) {
-        return null;
+        List<User> users = new ArrayList<User>();
+        for (DBObject personObject : users().find()) {
+            User user = new UserImpl(personObject);
+            if (user.getEmail().contains(pattern) || user.getUserName().contains(pattern)) {
+                users.add(user);
+            }
+        }
+        return users;
     }
 
     @Override
