@@ -47,18 +47,18 @@
               <td>${user.registrationDate?date}</td>
             </tr>
             </#if>
-            <#if user.lastLogin??>
-            <tr>
-              <td><@spring.message '_mine.user.last.login.date'/>:</td>
-              <td>${user.lastLogin?datetime}</td>
-            </tr>
-            </#if>
+            <#--<#if user.lastLogin??>-->
+            <#--<tr>-->
+              <#--<td><@spring.message '_mine.user.last.login.date'/>:</td>-->
+              <#--<td>${user.lastLogin?datetime}</td>-->
+            <#--</tr>-->
+            <#--</#if>-->
             <#--<tr>-->
                 <#--<td></td>-->
                 <#--<td><button class="delete" id="rem-acc" name="${user.email}">Remove my account</button></td>-->
             <#--</tr>-->
         </table>
-
+         <#assign test = "Jan 6, 1999"/>
        </div>
         <div id="tab-1">
             <table class="zebra" summary="list with saved items">
