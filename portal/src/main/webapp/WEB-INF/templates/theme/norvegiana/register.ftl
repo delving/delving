@@ -63,12 +63,16 @@
                         <label for="password"><@spring.message '_mine.user.register.password' /></label>
                         <@spring.formPasswordInput "command.password"/>
                         <@spring.bind "command.password" />
-                        <#list spring.status.errorMessages as error> <i>${error}</i> <br> </#list>
+                        <#if spring.status.error>
+                            <#list spring.status.errorMessages as error> <i>${error?html}</i> <br> </#list>
+                        </#if>
 
                         <label for="password2"><@spring.message '_mine.user.register.repeat.password' /></label>
                         <@spring.formPasswordInput "command.password2"/>
                         <@spring.bind "command.password2" />
-                        <#list spring.status.errorMessages as error> <i>${error}</i> <br> </#list>
+                        <#if spring.status.error>
+                            <#list spring.status.errorMessages as error> <i>${error?html}</i> <br> </#list>
+                        </#if>
 
                     </fieldset>
                     </div>
