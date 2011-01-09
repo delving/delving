@@ -40,7 +40,7 @@
                 <@resultBriefFacets "COUNTY",  "_metadata.abm.county", 1/>
                 <@resultBriefFacets "MUNICIPALITY",  "_metadata.abm.municipality", 1/>
                 <@resultBriefFacets "TYPE",  "_metadata.dc.type", 1/>
-                <@resultBriefFacets "HASDIGITALOBJECT",  "Has digital object", 1/>
+                <@resultBriefFacets "HASDIGITALOBJECT",  "_facet.has.digital.object", 1/>
                 </dd>
             </dl>
 
