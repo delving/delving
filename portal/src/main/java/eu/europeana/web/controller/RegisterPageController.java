@@ -44,6 +44,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -91,7 +92,7 @@ public class RegisterPageController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    protected String formSubmit(@ModelAttribute("command") RegistrationForm form, BindingResult result, HttpServletRequest request) throws EuropeanaQueryException { // todo: query exception??
+    protected String formSubmit(@Valid @ModelAttribute("command") RegistrationForm form, BindingResult result, HttpServletRequest request) throws EuropeanaQueryException { // todo: query exception??
         if (result.hasErrors()) {
             log.info("The registration form has errors");
             clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.REGISTER_FAILURE);
