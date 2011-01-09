@@ -13,7 +13,7 @@
             <dd>nr. of digital objects: <strong>${facetMap.getFacetValueCount("true", "HASDIGITALOBJECT")?c}</strong></dd>
         </#if>
         <#if facetMap.facetExists("DATAPROVIDER")>
-            <dd><@spring.message 'dataproviders'/>: <strong>${facetMap.getFacetCount("DATAPROVIDER")}</strong></dd>
+            <dd><@spring.message '_metadata.searchfield.dataprovider'/>: <strong>${facetMap.getFacetCount("DATAPROVIDER")}</strong></dd>
         </#if>
     </dl>
 
