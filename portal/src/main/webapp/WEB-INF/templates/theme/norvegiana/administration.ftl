@@ -26,7 +26,7 @@
                 </fieldset>
             </form>
            <#if userList?? && userList?size=0>
-               <h6>Geen gebruiker(s) gevonden</h6>
+               <h6><@spring.message '_cms.user.not.found'/></h6>
            </#if>
         </div>
 
