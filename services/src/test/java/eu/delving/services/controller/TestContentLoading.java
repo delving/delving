@@ -43,7 +43,7 @@ public class TestContentLoading {
         try {
             LOG.info("Starting mongo daemon");
             String root = StarterUtil.getEuropeanaPath();
-            System.setProperty("solr.solr.home", root + "/core/src/test/solr/home");
+            System.setProperty("solr.solr.home", root + "/core/src/test/solr/single-core");
             if (System.getProperty("solr.data.dir") == null) {
                 System.setProperty("solr.data.dir", root + "/core/target/solrdata");
             }

@@ -35,7 +35,8 @@ public class ServicesStarter {
 
     public static void main(String... args) throws Exception {
         String root = StarterUtil.getEuropeanaPath();
-        System.setProperty("solr.solr.home", root + "/core/src/test/solr/home");
+        System.setProperty("solr.solr.home", root + "/core/src/test/solr/single-core");
+//        System.setProperty("solr.solr.home", root + "/core/src/test/solr/multi-core");
         if (System.getProperty("solr.data.dir") == null) {
             System.setProperty("solr.data.dir", root + "/core/target/solrdata");
         }

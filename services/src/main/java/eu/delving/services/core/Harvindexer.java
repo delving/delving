@@ -109,7 +109,7 @@ public class Harvindexer {
     }
 
     public void commitSolr() throws IOException, SolrServerException {
-        solrServer.commit();
+        solrStreamingServer.commit();
     }
 
     public class Processor implements Runnable {

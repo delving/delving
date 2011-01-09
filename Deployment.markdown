@@ -243,7 +243,7 @@ Copy the configuration templates to the deployment directory
 
 Copy the Solr Home directory to the deploment directory.
 
-	cp -R core/src/test/solr/home ~/deploy/delving/solr/
+	cp -R core/src/test/solr/single-core ~/deploy/delving/solr/home
 
 Go to the deploy directory
 
