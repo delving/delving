@@ -25,6 +25,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
+import java.util.List;
+
 /**
  * An XStream approach for replacing the annotated beans.
  *
@@ -156,10 +158,24 @@ public class FieldDefinition implements Comparable<FieldDefinition> {
         @XStreamAsAttribute
         public boolean required;
 
+        public List<String> options;
+
+        public Converter converter;
+
         @XStreamOmitField
         public FactDefinition factDefinition;
 
-        public Converter converter;
+        public List<String> getOptions() {
+            if (options != null) {
+                return options;
+            }
+            else if (factDefinition != null) {
+                return factDefinition.options;
+            }
+            else {
+                return null;
+            }
+        }
 
         private Object readResolve() {
             multivalued = true;

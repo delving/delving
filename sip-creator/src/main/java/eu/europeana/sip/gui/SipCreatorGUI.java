@@ -250,6 +250,7 @@ public class SipCreatorGUI extends JFrame {
             MetadataModelImpl metadataModel = new MetadataModelImpl();
             metadataModel.setRecordDefinitionResources(Arrays.asList(
                     "/ese-record-definition.xml",
+                    "/icn-record-definition.xml",
                     "/abm-record-definition.xml"
             ));
             metadataModel.setDefaultPrefix("ese");
