@@ -18,14 +18,18 @@ public class MappingCategory {
 
   static Object multiply(GroovyList list, Closure closure) { // operator *
     for (Object child: list) {
-      closure.call(child);
+      String string = child.toString()
+      if (string) {
+        closure.call(string)
+      }
     }
     return null;
   }
 
   static Object multiply(GroovyNode node, Closure closure) { // operator *
-    for (Object child: node.children()) {
-      closure.call(child);
+    String string = node.toString();
+    if (string) {
+      closure.call(string);
     }
     return null;
   }

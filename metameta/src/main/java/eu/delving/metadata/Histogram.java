@@ -67,6 +67,10 @@ public class Histogram implements Serializable {
         return total;
     }
 
+    public int getMaxSize() {
+        return maxSize;
+    }
+
     public int getSize() {
         return counterMap.size();
     }
