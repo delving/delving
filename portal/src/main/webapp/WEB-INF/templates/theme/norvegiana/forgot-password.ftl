@@ -5,13 +5,11 @@
 
 <@addHeader "${portalDisplayName}", "",[],[]/>
 
-<section role="main" class="grid_5 prefix_4">
-
-<h2>
-    <@spring.message '_mine.forgotpassword' />
-</h2>
+<section role="main" class="grid_4 prefix_4">
 
 <form action="forgot-password.html" method="POST" accept-charset="UTF-8">
+    <fieldset>
+        <legend> <@spring.message '_mine.forgotpassword' /></legend>
     <table>
         <tr>
             <td><label for="email"><@spring.message '_mine.email.address' /></label></td>
@@ -22,6 +20,7 @@
             <td><input id="submit_forgot" name="submit_login" type="submit" value="<@spring.message '_action.form.submit' />"/></td>
         </tr>
     </table>
+    </fieldset>
 </form>
 
 <#if state == "success">
