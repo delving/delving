@@ -80,12 +80,13 @@ public class VariableListModel extends AbstractListModel {
         return withCounts;
     }
 
-    public class WithCounts extends AbstractListModel implements ListDataListener {
+    public class WithCounts extends AbstractListModel implements ListDataListener, MappingModel.Listener {
         private MappingModel mappingModel;
         private List<SourceVariable> sourceVariables = new ArrayList<SourceVariable>();
 
         public WithCounts(MappingModel mappingModel) {
             this.mappingModel = mappingModel;
+            this.mappingModel.addListener(this);
         }
 
         @Override
@@ -130,6 +131,11 @@ public class VariableListModel extends AbstractListModel {
 
         @Override
         public void contentsChanged(ListDataEvent listDataEvent) {
+            refresh();
+        }
+
+        @Override
+        public void mappingChanged(RecordMapping recordMapping) {
             refresh();
         }
     }
