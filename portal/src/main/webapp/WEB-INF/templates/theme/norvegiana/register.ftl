@@ -13,7 +13,7 @@
 <#include "includeMarcos.ftl">
 
 <@addHeader "${portalDisplayName}", "",[],["login-register.css"]/>
-
+<script type="text/javascript">var errMsg = "";</script>
 <div role="main" class="grid_12 login-register main">
 
 
@@ -48,7 +48,9 @@
                         <label for="userName"><@spring.message '_mine.username'/></label>
                         <@spring.formInput "command.userName"/>
                         <@spring.bind "command.userName" />
-                        <#list spring.status.errorMessages as error> <i>${error}</i> <br> </#list>
+                        <#if spring.status.error>
+                            <p class="error"><#list spring.status.errorMessages as error>${error}<br/></#list></p>
+                        </#if>
 
                     </fieldset>
                     </div>
@@ -64,14 +66,13 @@
                         <@spring.formPasswordInput "command.password"/>
                         <@spring.bind "command.password" />
                         <#if spring.status.error>
-                            <#list spring.status.errorMessages as error> <i>${error?html}</i> <br> </#list>
+                            <p class="error"><#list spring.status.errorMessages as error>${error}<br/></#list></p>
                         </#if>
-
                         <label for="password2"><@spring.message '_mine.user.register.repeat.password' /></label>
                         <@spring.formPasswordInput "command.password2"/>
                         <@spring.bind "command.password2" />
                         <#if spring.status.error>
-                            <#list spring.status.errorMessages as error> <i>${error?html}</i> <br> </#list>
+                            <p class="error"><#list spring.status.errorMessages as error>${error}<br/></#list></p>
                         </#if>
 
                     </fieldset>
@@ -87,7 +88,9 @@
                         <p>
                         <@formCheckbox "command.disclaimer"/>
                         <br />
-                        <#list spring.status.errorMessages as error> <i>${error}</i> <br> </#list>
+                        <#if spring.status.error>
+                            <div class="error"><#list spring.status.errorMessages as error>${error}<br/></#list></p>
+                        </#if>
 
                         <input id="submit_registration" type="submit" name="submit_registration" tabindex="6" value="<@spring.message '_mine.user.register.finishregistration' /> &raquo;" class="button"/>
                         </p>
@@ -95,7 +98,6 @@
                     </div>
                     
                 </form>
-
 </div>
 
 	    <@addFooter/>

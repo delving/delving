@@ -194,9 +194,9 @@ public class RegisterPageController {
         @Override
         public void validate(Object o, Errors errors) {
             RegistrationForm form = (RegistrationForm) o;
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "userName", "username.required", "Username is required");
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "password.required", "Password is required");
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password2", "password2.required", "Repeat Password is required");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "userName", "_mine.user.register.requiredfield", "Username is required");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "_mine.user.register.requiredfield", "Password is required");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password2", "_mine.user.register.requiredfield", "Repeat Password is required");
 
             if (!userRepo.isProperUserName(form.getUserName())) {
                 errors.rejectValue("userName", "_mine.user.validation.username.invalid", "User name invalid");

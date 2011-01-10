@@ -123,6 +123,14 @@ a.fg-button.ui-state-active
     background:#336699;
 }
 
+/* OTHER NOTIFICATIONS *****************************/
+
+p.error, div.error, span.error {
+    background: #c00;
+    color: #fff;
+    padding: .25em;
+}
+
 /* HEADER/BRANDING *********************************/
 h1#branding
 {
