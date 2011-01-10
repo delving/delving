@@ -34,7 +34,6 @@ public class FieldStatistics implements Comparable<FieldStatistics>, Serializabl
     private Path path;
     private int total;
     private ValueStats valueStats;
-    private transient String lazyHtml;
 
     public FieldStatistics(Path path) {
         this.path = path;
@@ -59,6 +58,28 @@ public class FieldStatistics implements Comparable<FieldStatistics>, Serializabl
         return total;
     }
 
+    public Histogram getHistogram() {
+        return valueStats != null ? valueStats.histogram : null;
+    }
+
+    public RandomSample getRandomSample() {
+        return valueStats != null ? valueStats.randomSample : null;
+    }
+
+    public String getSummary() {
+        if (valueStats == null) {
+            if (total == 1) {
+                return String.format("Element appears just once.");
+            }
+            else {
+                return String.format("Element appears %d times.", total);
+            }
+        }
+        else {
+            return valueStats.getSummary();
+        }
+    }
+
     public boolean hasValues() {
         return valueStats != null;
     }
@@ -81,20 +102,6 @@ public class FieldStatistics implements Comparable<FieldStatistics>, Serializabl
     @Override
     public int compareTo(FieldStatistics fieldStatistics) {
         return path.compareTo(fieldStatistics.path);
-    }
-
-    public String toHtml() {
-        if (valueStats == null) {
-            if (total == 1) {
-                return String.format("<html><html><h3>Path: %s</h3><p>Element appears once.</p>", path);
-            }
-            else {
-                return String.format("<html><html><h3>Path: %s</h3><p>Element appears %d times.</p>", path, total);
-            }
-        }
-        else {
-            return valueStats.toHtml();
-        }
     }
 
     private class ValueStats implements Serializable {
@@ -130,53 +137,22 @@ public class FieldStatistics implements Comparable<FieldStatistics>, Serializabl
             }
         }
 
-        public String toHtml() {
-            if (lazyHtml == null) {
-                StringBuilder html = new StringBuilder(String.format("<html><h3>Path: %s</h3>", path));
-                if (uniqueValues) {
-                    html.append(String.format("<p>All values are unique, and there are <strong>%d</strong>, so here are some random samples:</p>", total));
-                    html.append("<ul>");
-                    for (String value : randomSample.getValues()) {
-                        html.append(String.format("<li>'<strong>%s</strong>'</li>", value));
-                    }
-                    html.append("</ul>");
-                }
-                else if (!histogram.isTrimmed()) {
-                    if (histogram.getSize() == 1) {
-                        Histogram.Counter counter = histogram.getCounters(true).iterator().next();
-                        html.append(String.format("<p>There is a single value '<strong>%s</strong>' apppearing <strong>%d</strong> times.</p>", counter.getValue(), counter.getCount()));
-                    }
-                    else {
-                        html.append(String.format("<p>There were <strong>%d</strong> different values.</p>", histogram.getSize()));
-                        html.append("<table<tr><td width=20px></td><td><table cellpadding=3px>");
-                        html.append("<tr><th>Count</th><th>Percentage</th><th>Value</th></tr>");
-                        for (Histogram.Counter counter : histogram.getCounters(true)) {
-                            html.append(String.format("<tr><td>%d</td><td>%s</td><td><strong>%s</strong></td></tr>", counter.getCount(), counter.getPercentage(), counter.getValue()));
-                        }
-                        html.append("</table></td></tr></table>");
-                    }
+        public String getSummary() {
+            if (uniqueValues) {
+                return String.format("All %d values are completely unique", total);
+            }
+            else if (!histogram.isTrimmed()) {
+                if (histogram.getSize() == 1) {
+                    Histogram.Counter counter = histogram.getCounters(true).iterator().next();
+                    return String.format("The single value '%s' appears %d times.", counter.getValue(), counter.getCount());
                 }
                 else {
-                    html.append(String.format("<p>There are more than <strong>%d</strong> different values, too large a list to mantain, so here are some random samples and a partial histogram:</p>", histogram.getMaxSize()));
-                    html.append("<ul>");
-                    for (String value : randomSample.getValues()) {
-                        html.append(String.format("<li>'<strong>%s</strong>'</li>", value));
-                    }
-                    html.append("</ul>");
-                    html.append("</br>");
-                    html.append(String.format("<p>Here is a sample of <strong>%d</strong> of them in descending order of frequency.</p>", histogram.getSize()));
-                    html.append("<table<tr><td width=20px></td><td><table cellpadding=3px>");
-                    html.append("<tr><th>Count</th><th>Percentage</th><th>Value</th></tr>");
-                    for (Histogram.Counter counter : histogram.getCounters(true)) {
-                        html.append(String.format("<tr><<td>%d</td><td>%s</td><td><strong>%s</strong></td></tr>", counter.getCount(), counter.getPercentage(), counter.getValue()));
-                    }
-                    html.append("<tr><td colspan=3>incomplete</td></tr>");
-                    html.append("</table></td></tr></table>");
+                    return String.format("There were %d different values, not all unique.", histogram.getSize());
                 }
-                html.append("</html>");
-                lazyHtml = html.toString();
             }
-            return lazyHtml;
+            else {
+                return String.format("More than %d different values, so histogram is incomplete.", histogram.getMaxSize());
+            }
         }
     }
 }

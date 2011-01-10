@@ -22,14 +22,20 @@
 package eu.europeana.sip.gui;
 
 import eu.delving.metadata.FieldStatistics;
+import eu.delving.metadata.Histogram;
+import eu.delving.metadata.RandomSample;
 
+import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
-import javax.swing.JEditorPane;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
+import javax.swing.JTabbedPane;
 import java.awt.BorderLayout;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Show statistics in an html panel, with special tricks for separately threading the html generation
@@ -38,30 +44,50 @@ import java.awt.BorderLayout;
  */
 
 public class FieldStatisticsPanel extends JPanel {
-    private JEditorPane statisticsView = new JEditorPane();
+    private JLabel summaryLabel = new JLabel("Summary", JLabel.CENTER);
+    private HistogramModel histogramModel = new HistogramModel();
+    private RandomSampleModel randomSampleModel = new RandomSampleModel();
 
     public FieldStatisticsPanel() {
         super(new BorderLayout(5, 5));
-        setBorder(BorderFactory.createTitledBorder("Statistics"));
-        statisticsView.setEditable(false);
-        statisticsView.setContentType("text/html");
-        add(scroll(statisticsView), BorderLayout.CENTER);
+        setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createTitledBorder("Statistics"),
+                        BorderFactory.createEmptyBorder(0, 0, 8, 0)
+                )
+        );
+        add(createTabs(), BorderLayout.CENTER);
+        add(summaryLabel, BorderLayout.SOUTH);
     }
 
     public void setStatistics(final FieldStatistics fieldStatistics) {
         if (fieldStatistics == null) {
-            statisticsView.setText("<html><h3>No Statistics</h3>");
+            summaryLabel.setText("No statistics.");
+            histogramModel.setHistogram(null);
+            randomSampleModel.setRandomSample(null);
         }
         else {
-            statisticsView.setText("<html><h3>Loading...</h3>");
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    statisticsView.setText(fieldStatistics.toHtml());
-                    statisticsView.setCaretPosition(0);
-                }
-            });
+            summaryLabel.setText(fieldStatistics.getSummary());
+            histogramModel.setHistogram(fieldStatistics.getHistogram());
+            randomSampleModel.setRandomSample(fieldStatistics.getRandomSample());
         }
+    }
+
+    private JComponent createTabs() {
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.add("Random Sample", createRandomSamplePanel());
+        tabbedPane.add("Histogram", createHistogramPanel());
+        return tabbedPane;
+    }
+
+    private JComponent createRandomSamplePanel() {
+        JList list = new JList(randomSampleModel);
+        return scroll(list);
+    }
+
+    private JComponent createHistogramPanel() {
+        JList list = new JList(histogramModel);
+        return scroll(list);
     }
 
     private JScrollPane scroll(JComponent content) {
@@ -69,5 +95,56 @@ public class FieldStatisticsPanel extends JPanel {
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         return scroll;
+    }
+
+    private class HistogramModel extends AbstractListModel {
+
+        private List<Histogram.Counter> list = new ArrayList<Histogram.Counter>();
+
+        public void setHistogram(Histogram histogram) {
+            int size = getSize();
+            list.clear();
+            fireIntervalRemoved(this, 0, size);
+            if (histogram != null) {
+                list.addAll(histogram.getCounters(true));
+                fireIntervalAdded(this, 0, getSize());
+            }
+        }
+
+        @Override
+        public int getSize() {
+            return list.size();
+        }
+
+        @Override
+        public Object getElementAt(int i) {
+            Histogram.Counter counter = list.get(i);
+            return String.format("   %d (%s) : '%s'", counter.getCount(), counter.getPercentage(), counter.getValue());
+        }
+    }
+
+    private class RandomSampleModel extends AbstractListModel {
+
+        private List<String> list = new ArrayList<String>();
+
+        public void setRandomSample(RandomSample randomSample) {
+            int size = getSize();
+            list.clear();
+            fireIntervalRemoved(this, 0, size);
+            if (randomSample != null) {
+                list.addAll(randomSample.getValues());
+                fireIntervalAdded(this, 0, getSize());
+            }
+        }
+
+        @Override
+        public int getSize() {
+            return list.size();
+        }
+
+        @Override
+        public Object getElementAt(int i) {
+            return "   " + list.get(i);
+        }
     }
 }
