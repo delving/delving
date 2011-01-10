@@ -34,7 +34,7 @@ public class FieldStatistics implements Comparable<FieldStatistics>, Serializabl
     private Path path;
     private int total;
     private ValueStats valueStats;
-    private String lazyHtml;
+    private transient String lazyHtml;
 
     public FieldStatistics(Path path) {
         this.path = path;
@@ -99,7 +99,7 @@ public class FieldStatistics implements Comparable<FieldStatistics>, Serializabl
 
     private class ValueStats implements Serializable {
         RandomSample randomSample = new RandomSample(200);
-        Histogram histogram = new Histogram(100000, 1000);
+        Histogram histogram = new Histogram(100000, 500);
         Uniqueness uniqueness = new Uniqueness();
         boolean uniqueValues;
 
@@ -147,13 +147,12 @@ public class FieldStatistics implements Comparable<FieldStatistics>, Serializabl
                         html.append(String.format("<p>There is a single value '<strong>%s</strong>' apppearing <strong>%d</strong> times.</p>", counter.getValue(), counter.getCount()));
                     }
                     else {
-                        html.append(String.format("<p>There were too many different values to store, so here is a sample of <strong>%d</strong> of them in descending order of frequency.</p>", histogram.getSize()));
+                        html.append(String.format("<p>There were <strong>%d</strong> different values.</p>", histogram.getSize()));
                         html.append("<table<tr><td width=20px></td><td><table cellpadding=3px>");
                         html.append("<tr><th>Count</th><th>Percentage</th><th>Value</th></tr>");
                         for (Histogram.Counter counter : histogram.getCounters(true)) {
                             html.append(String.format("<tr><td>%d</td><td>%s</td><td><strong>%s</strong></td></tr>", counter.getCount(), counter.getPercentage(), counter.getValue()));
                         }
-                        html.append("<tr><td colspan=3>incomplete</td></tr>");
                         html.append("</table></td></tr></table>");
                     }
                 }
@@ -171,6 +170,7 @@ public class FieldStatistics implements Comparable<FieldStatistics>, Serializabl
                     for (Histogram.Counter counter : histogram.getCounters(true)) {
                         html.append(String.format("<tr><<td>%d</td><td>%s</td><td><strong>%s</strong></td></tr>", counter.getCount(), counter.getPercentage(), counter.getValue()));
                     }
+                    html.append("<tr><td colspan=3>incomplete</td></tr>");
                     html.append("</table></td></tr></table>");
                 }
                 html.append("</html>");
