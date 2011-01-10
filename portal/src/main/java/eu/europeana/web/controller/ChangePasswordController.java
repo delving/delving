@@ -79,15 +79,15 @@ public class ChangePasswordController {
 
     @RequestMapping(method = RequestMethod.GET)
     protected String getMethod(@RequestParam("token") String tokenKey,
-                               @ModelAttribute("command") ChangePasswordForm form,
+                               @ModelAttribute("command") ChangePasswordForm command,
                                HttpServletRequest request) throws Exception {
         TokenRepo.RegistrationToken token = tokenRepo.getRegistrationToken(tokenKey);
         if (token == null) {
             clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.ERROR_TOKEN_EXPIRED);
             return "token-expired";
         }
-        form.setToken(token.getId());
-        form.setEmail(token.getEmail());
+        command.setToken(token.getId());
+        command.setEmail(token.getEmail());
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.CHANGE_PASSWORD_SUCCES);
         return "change-password";
     }
