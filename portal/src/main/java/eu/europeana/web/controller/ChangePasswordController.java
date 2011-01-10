@@ -175,8 +175,8 @@ public class ChangePasswordController {
         @Override
         public void validate(Object o, Errors errors) {
             ChangePasswordForm form = (ChangePasswordForm) o;
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "password.required", "Password is required");
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password2", "password2.required", "Repeat Password is required");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "_mine.user.register.requiredfield", "Password is required");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password2", "_mine.user.register.requiredfield", "Repeat Password is required");
 
             if (!form.getPassword().equals(form.getPassword2())) {
                 errors.rejectValue("password", "_mine.user.validation.password.mismatch", "Passwords do not match");
