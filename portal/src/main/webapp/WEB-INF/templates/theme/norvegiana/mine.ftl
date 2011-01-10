@@ -27,13 +27,17 @@
             </tr>
             <tr>
               <td><@spring.message '_mine.email.address'/>:</td>
-              <td>${user.email}</td>
+              <td>${user.email}<input type="hidden" name="umail" id="umail" value="${user.email}"/> </td>
             </tr>
             <#if user.registrationDate??>
             <tr>
               <td><@spring.message '_mine.user.registration.date'/>:</td>
               <td>${user.registrationDate?date}</td>
             </tr>
+                <tr>
+                    <td></td>
+                    <td><button id="rem-user" class="btn-strong delete"><@spring.message '_cms.delete' /></button> </td>
+                </tr>
             </#if>
         </table>
          <#assign test = "Jan 6, 1999"/>
@@ -103,7 +107,11 @@
         </div>
     </div>
 </section>
-
+<script type="text/javascript">
+    $('button#rem-user').click(function() {
+        showConfirm("notification", "<@spring.message '_cms.user.remove.confirm'/>", "removeUser('" + $("input#umail").val() + "')")
+    });
+</script>
 
     <@addFooter/>
 

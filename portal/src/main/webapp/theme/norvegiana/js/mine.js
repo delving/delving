@@ -4,12 +4,6 @@ $(document).ready(function() {
     } else {
         $("#savedItems").tabs({selected: 0});
     }
-    //$("#savedItems").tabs({ cookie: { expires: 30, name: 'mine-tabs', path: portalName  } });
-    //$.cookie('mine-tabs', null);
-    $("#rem-acc").click(function(){
-        removeUser($(this).attr("name"));
-
-    })
 });
 
 function removeRequest(className, id, type) {
@@ -26,21 +20,19 @@ function removeRequest(className, id, type) {
     });
 }
 
-function removeUser(uemail){
-    alert(uemail);
-    $.ajax({
-        type: "POST",
-        url: "/portal/remove-user.ajax",
-        data: "email=" + uemail,
-        success: function(msg) {
-            $(rowRemove).css("display","none");
-            showMessage("success","User was successfully removed!")
-            //window.location.reload();
-        },
-        error: function(xhr) {
-            showMessage("fail","An error occured. The user could not be removed <br \/> error:"+xhr.status);
-        }
-    });
+function removeUser(email){
+        $.ajax({
+          type: 'POST',
+          url: portalName+'/remove-user.ajax',
+          data: "email="+email,
+          success: function(data){
+              //showMessage("success","User: "+toRemove+ " has been successfully removed");
+              document.location.href=portalName+"/logout.html";
+          },
+          error: function(xhr, ajaxOptions, thrownError){
+            showMessage("error","An error has occured: "+xhr.status);
+          }
+        });
 }
 
 function removeSavedItem(index, rowId){

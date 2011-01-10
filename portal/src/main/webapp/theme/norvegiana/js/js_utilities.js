@@ -93,14 +93,23 @@ function delvingPageCall(targetId,pageName,msgHead,msgBody,msgLink){
 function showMessage(messageClass, messageString){
     var top = $(document).scrollTop()+"px";
     $("#messages .message").html(messageString);
-//    $("#messages").css("top",top);
-//        $("#messages").css("position","fixed");
     $("#messages").addClass(messageClass).slideDown("slow").delay(5000).slideUp("slow");
     $("#messages").click(function(){
         $(this).stop(true, true).css("display","none");
     });
-    
+}
 
+function showConfirm(messageClass, messageString, callback){
+    var top = $(document).scrollTop()+"px";
+    $("div#confirmation .message").html(messageString);
+    $("div#confirmation").addClass(messageClass).slideDown("slow");
+    $("div#confirmation button#cancel").click(function(){
+        $("#confirmation").slideUp("slow");
+        return false;
+    });
+    $("#confirmation button#ok").click(function(){
+         eval(callback);
+    });
 }
 
 function styleUIButtons(){
@@ -183,7 +192,6 @@ $(document).ready(function() {
     });
 
    styleUIButtons();
-
     //onclick for login href to take user back to last visited page before logging in
     var pathname = window.location.pathname;
     if(!(pathname == portalName+"/register-request.html" || pathname==portalName+"/forgot-password.html"||pathname==portalName+"/change-password-success.html")){

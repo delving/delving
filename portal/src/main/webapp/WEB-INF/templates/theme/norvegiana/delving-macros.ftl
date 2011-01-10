@@ -132,6 +132,7 @@
 
             <div class="grid_5 prefix_3">
                 <@showMessages/>
+                <@showConfirmation/>
             </div>      
 
             <div id="header" <#if (thisPage?? && thisPage=="index.html")>class="home"</#if>>
@@ -174,6 +175,17 @@
         <div class="inner">
             <div class="message"></div>
             <div class="actions"><a href="#!" onclick="javascript:$('#messages').slideUp('slow');">Close</a></div>
+        </div>
+    </div>
+</#macro>
+<#macro showConfirmation>
+    <div id="confirmation">
+        <div class="inner">
+            <div class="message"></div>
+            <div class="actions">
+                <button class="button" id="ok">OK</button>
+                <button class="button" id="cancel"><@spring.message '_cms.cancel'/></button>
+            </div>
         </div>
     </div>
 </#macro>

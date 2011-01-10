@@ -77,7 +77,9 @@ a.fg-button.ui-state-active
 	text-decoration:none;
 }
 /* MESSAGES *********************************/
-#messages
+
+#messages,
+#confirmation
 {
 	-moz-border-radius:0 0 10px 10px;
 	-webkit-border-radius:0 0 10px 10px;
@@ -89,15 +91,12 @@ a.fg-button.ui-state-active
 	top:0;
 	width:460px;
 	z-index:1000;
+    color: #555;
 }
 
-#messages .actions
-{
-	text-align:right;
-	width:100%;
-}
 
-#messages .inner
+#messages .inner,
+#confirmation .inner
 {
 	-moz-border-radius:0 0 5px 5px;
 	-webkit-border-radius:0 0 5px 5px;
@@ -108,19 +107,30 @@ a.fg-button.ui-state-active
 	text-align:left;
 }
 
-#messages.success
+#messages .actions,
+#confirmation .actions
+{
+    margin-top: 1em;
+}
+
+#messages.success,
+#confirmation.success
 {
 	background:#693;
     color: #555
 }
 
-#messages.fail,#messages.error
+#messages.fail,
+#messages.error,
+#confirmation.error,
+#confirmation.fail
 {
 	background:#c00;
     color: #555
 }
 
-#message.notification
+#message.notification,
+#confirmation.notification
 {
     background:#336699;
     color: #555
