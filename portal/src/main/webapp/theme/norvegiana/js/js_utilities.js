@@ -108,6 +108,7 @@ function showConfirm(messageClass, messageString, callback){
         return false;
     });
     $("#confirmation button#ok").click(function(){
+        $("div#confirmation").slideUp("slow");
          eval(callback);
     });
 }
