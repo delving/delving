@@ -35,7 +35,6 @@ import eu.europeana.sip.model.SipModel;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JEditorPane;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -76,14 +75,15 @@ public class MappingPanel extends JPanel {
     private JButton createObviousMappingButton = new JButton("Create obvious mappings");
     private JButton removeMappingsButton = new JButton("Remove selected mappings");
     private JList variablesList, mappingList, fieldList;
-    private JEditorPane statisticsView = new JEditorPane();
+    private FieldStatisticsPanel fieldStatisticsPanel = new FieldStatisticsPanel();
 
     public MappingPanel(SipModel sipModel) {
         super(new GridLayout(2, 2, 5, 5));
         this.sipModel = sipModel;
         add(createInputPanel());
         add(createFieldsPanel());
-        add(createStatisticsPanel());
+        fieldStatisticsPanel.setPreferredSize(PREFERRED_SIZE);
+        add(fieldStatisticsPanel);
         add(createFieldMappingListPanel());
         wireUp();
     }
@@ -117,16 +117,6 @@ public class MappingPanel extends JPanel {
         fieldList.setCellRenderer(new FieldListModel.CellRenderer());
         fieldList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         p.add(scroll(fieldList));
-        return p;
-    }
-
-    private JPanel createStatisticsPanel() {
-        JPanel p = new JPanel(new BorderLayout(5, 5));
-        p.setPreferredSize(PREFERRED_SIZE);
-        p.setBorder(BorderFactory.createTitledBorder("Statistics"));
-        statisticsView.setEditable(false);
-        statisticsView.setContentType("text/html");
-        p.add(scroll(statisticsView), BorderLayout.CENTER);
         return p;
     }
 
@@ -172,13 +162,7 @@ public class MappingPanel extends JPanel {
 
             @Override
             public void updatedStatistics(final FieldStatistics fieldStatistics) {
-                if (fieldStatistics == null) {
-                    statisticsView.setText("<html><h3>No Statistics</h3>");
-                }
-                else {
-                    statisticsView.setText(fieldStatistics.toHtml());
-                    statisticsView.setCaretPosition(0);
-                }
+                fieldStatisticsPanel.setStatistics(fieldStatistics);
             }
 
             @Override
@@ -217,7 +201,7 @@ public class MappingPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 for (Object value : mappingList.getSelectedValues()) {
-                    FieldMapping fieldMapping = (FieldMapping)value;
+                    FieldMapping fieldMapping = (FieldMapping) value;
                     if (fieldMapping != null) {
                         sipModel.removeFieldMapping(fieldMapping);
                     }
@@ -252,13 +236,8 @@ public class MappingPanel extends JPanel {
                 if (e.getValueIsAdjusting()) return;
                 final SourceVariable sourceVariable = (SourceVariable) variablesList.getSelectedValue();
                 if (sourceVariable != null && sourceVariable.hasStatistics()) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            sipModel.setStatistics(sourceVariable.getStatistics());
-                            constantField.setText("?");
-                        }
-                    });
+                    sipModel.setStatistics(sourceVariable.getStatistics());
+                    constantField.setText("?");
                 }
             }
         });
