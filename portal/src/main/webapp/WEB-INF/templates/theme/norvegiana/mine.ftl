@@ -29,34 +29,12 @@
               <td><@spring.message '_mine.email.address'/>:</td>
               <td>${user.email}</td>
             </tr>
-            <#--<#if user.firstName??>-->
-            <#--<tr>-->
-              <#--<td><@spring.message '_mine.firstname'/>:</td>-->
-              <#--<td>${user.firstName}</td>-->
-            <#--</tr>-->
-            <#--</#if>-->
-            <#--<#if user.lastName??>-->
-            <#--<tr>-->
-              <#--<td><@spring.message '_mine.last.name'/>:</td>-->
-              <#--<td>${user.lastName}</td>-->
-            <#--</tr>-->
-            <#--</#if>-->
             <#if user.registrationDate??>
             <tr>
               <td><@spring.message '_mine.user.registration.date'/>:</td>
               <td>${user.registrationDate?date}</td>
             </tr>
             </#if>
-            <#--<#if user.lastLogin??>-->
-            <#--<tr>-->
-              <#--<td><@spring.message '_mine.user.last.login.date'/>:</td>-->
-              <#--<td>${user.lastLogin?datetime}</td>-->
-            <#--</tr>-->
-            <#--</#if>-->
-            <#--<tr>-->
-                <#--<td></td>-->
-                <#--<td><button class="delete" id="rem-acc" name="${user.email}">Remove my account</button></td>-->
-            <#--</tr>-->
         </table>
          <#assign test = "Jan 6, 1999"/>
        </div>
