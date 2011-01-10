@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<record-definition prefix="abm">
+<record-definition prefix="icn">
     <namespaces>
         <namespace prefix="dc" uri="http://purl.org/dc/elements/1.1/" schema="http://dublincore.org/schemas/xmls/qdc/dc.xsd"/>
         <namespace prefix="dcterms" uri="http://purl.org/dc/terms/" schema="http://dublincore.org/schemas/xmls/qdc/dcterms.xsd"/>
@@ -27,11 +27,22 @@
          <!-- Category ICN-->
         <field prefix="icn" localName="creatorYearOfBirth">
             <validation>
-                <converter>extractYear(%s)</converter>
+                <converter multipleOutput="true" call=".extractYear()"/>
             </validation>
         </field>
         <field prefix="icn" localName="technique">
-            <validation valueMapped="true" enumClass="Technique"/>
+            <validation>
+                <options>
+                    <string>Schilderkunst</string>
+                    <string>Prentkunst</string>
+                    <string>Fotografie</string>
+                    <string>Tekeningen</string>
+                    <string>Beeldhouwkunst</string>
+                    <string>Textiel</string>
+                    <string>Film/Video/DVD</string>
+                    <string>Anders</string>
+                </options>
+            </validation>
         </field>
         <field prefix="icn" localName="material"/>
         <field prefix="icn" localName="location"/>
@@ -39,10 +50,27 @@
         <field prefix="icn" localName="collectionPart"/>
         <!-- Category ICN_RESEARCH -->
         <field prefix="icn" localName="acquisitionMeans">
-            <validation valueMapped="true" enumClass="AcquisitionType"/>
+            <validation>
+                <options>
+                    <string>aankoop</string>
+                    <string>schenking</string>
+                    <string>bruikleen</string>
+                    <string>ruil</string>
+                    <string>opdracht</string>
+                    <string>legaat</string>
+                    <string>overdracht</string>
+                    <string>successieregeling</string>
+                </options>
+            </validation>
         </field>
         <field prefix="icn" localName="collectionType">
-            <validation valueMapped="true" enumClass="CollectionDisplayType" multivalued="false"/>
+            <validation>
+                <options>
+                    <string>all</string>
+                    <string>portal</string>
+                    <string>mm</string>
+                </options>
+            </validation>
         </field>
         <field prefix="icn" localName="acquisitionYear"/>
         <field prefix="icn" localName="purchasePrice"/>
@@ -124,14 +152,14 @@
         </field>
         <field prefix="europeana" localName="uri" briefdoc="true">
             <validation id="true" multivalued="false" requiredGroup="URI">
-                <converter>createEuropeanaURI(%s, spec)</converter>
+                <converter call=".toId(spec)"/>
             </validation>
         </field>
         <field prefix="europeana" localName="userTag" searchField="usertags"/>
         <field prefix="europeana" localName="hasDigitalObject" systemField="true"/>
         <field prefix="europeana" localName="year" fulldoc="false" fieldType="string" facetPrefix="year">
             <validation>
-                <converter multipleOutput="true">extractYear(%s)</converter>
+                <converter multipleOutput="true" call=".extractYear()"/>
             </validation>
         </field>
     </root>

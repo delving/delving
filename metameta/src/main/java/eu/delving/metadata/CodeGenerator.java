@@ -35,13 +35,11 @@ public class CodeGenerator {
 
     public static boolean isDictionaryPossible(FieldDefinition fieldDefinition, AnalysisTree.Node node) {
         return fieldDefinition.validation != null &&
-                fieldDefinition.validation.factDefinition != null &&
-                fieldDefinition.validation.factDefinition.options != null &&
+                fieldDefinition.validation.getOptions() != null &&
                 node.getStatistics().getHistogramValues() != null;
     }
 
     public List<FieldMapping> createObviousMappings(List<FieldDefinition> unmappedFieldDefinitions, List<SourceVariable> variables) {
-        System.out.println("Field definitions: "+unmappedFieldDefinitions.size()); // todo: remove
         List<FieldMapping> fieldMappings = new ArrayList<FieldMapping>();
         FieldMapping uniqueMapping = createUniqueMapping(unmappedFieldDefinitions, variables);
         if (uniqueMapping != null) {

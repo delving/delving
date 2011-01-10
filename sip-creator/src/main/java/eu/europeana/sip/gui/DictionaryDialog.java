@@ -200,7 +200,7 @@ public class DictionaryDialog extends JDialog {
 
     private class EditorModel extends AbstractListModel implements ComboBoxModel {
         private static final String COPY_VERBATIM = "";
-        private List<String> values = new ArrayList<String>(fieldMapping.getDefinition().validation.factDefinition.options);
+        private List<String> values = new ArrayList<String>(fieldMapping.getDefinition().validation.getOptions());
         private Object selectedItem = COPY_VERBATIM;
 
         @Override
