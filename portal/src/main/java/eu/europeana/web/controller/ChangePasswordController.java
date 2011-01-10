@@ -93,7 +93,7 @@ public class ChangePasswordController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    protected String post(@Valid @ModelAttribute ChangePasswordForm command,
+    protected String post(@Valid @ModelAttribute("command") ChangePasswordForm command,
                           BindingResult result,
                           HttpServletRequest request) throws Exception {
         if (result.hasErrors()) {
