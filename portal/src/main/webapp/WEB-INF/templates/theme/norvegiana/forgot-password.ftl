@@ -24,16 +24,35 @@
 </form>
 
 <#if state == "success">
-<p id="forgotSuccess" class="success">
-<@spring.message '_mine.user.register.email.has.been.sent' />: <span>${email}</span>.
-<@spring.message '_mine.user.register.please.follow.link' />.  <!-- TODO change message -->
-</p>
+    <script type="text/javascript">
+        scsString = "<@spring.message '_mine.user.register.email.has.been.sent' />: <strong>${email}</strong>";
+        scsString += "\n\n<@spring.message '_mine.user.register.please.follow.link' />"
+        showMessage("success", scsString);
+    </script>
+    <noscript>
+        <p id="forgotSuccess" class="success">
+        <@spring.message '_mine.user.register.email.has.been.sent' />: <span>${email}</span>.
+        <@spring.message '_mine.user.register.please.follow.link' />.  <!-- TODO change message -->
+        </p>
+    </noscript>
 </#if>
 <#if state == "formatFailure">
-<@spring.message '_portal.ui.notification.error' />!<br/><@spring.message '_mine.user.notification.emailformaterror' />.
+    <script type="text/javascript">
+        failString = "<@spring.message '_mine.user.notification.emailformaterror' />.";
+        showMessage("error", failString);
+    </script>
+    <noscript>
+        <@spring.message '_portal.ui.notification.error' />!<br/><@spring.message '_mine.user.notification.emailformaterror' />.
+    </noscript>
 </#if>
 <#if state == "nonexistentFailure">
-<@spring.message '_portal.ui.notification.error' />!<br/>EmailDoesntExist_t <!-- TODO add message -->
+    <script type="text/javascript">
+        failString = "<@spring.message '_portal.ui.notification.error' />!<br/><@spring.message '_mine.user.notification.emailnotregistered' />."
+        showMessage("error", failString);
+    </script>
+    <noscript>
+        <@spring.message '_portal.ui.notification.error' />!<br/><@spring.message '_mine.user.notification.emailnotregistered' />. <!-- TODO add message -->
+    </noscript>
 </#if>
 
 </section>

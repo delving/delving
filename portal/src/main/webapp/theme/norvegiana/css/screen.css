@@ -111,16 +111,19 @@ a.fg-button.ui-state-active
 #messages.success
 {
 	background:#693;
+    color: #555
 }
 
 #messages.fail,#messages.error
 {
 	background:#c00;
+    color: #555
 }
 
 #message.notification
 {
     background:#336699;
+    color: #555
 }
 
 /* OTHER NOTIFICATIONS *****************************/
