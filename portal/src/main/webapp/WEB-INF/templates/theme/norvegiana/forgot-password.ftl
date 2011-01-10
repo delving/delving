@@ -25,7 +25,7 @@
 
 <#if state == "success">
 <p id="forgotSuccess" class="success">
-<@spring.message '_mine.user.register.email.has.been.sent' />: <span class="fg-gold">${email}</span>.
+<@spring.message '_mine.user.register.email.has.been.sent' />: <span>${email}</span>.
 <@spring.message '_mine.user.register.please.follow.link' />.  <!-- TODO change message -->
 </p>
 </#if>

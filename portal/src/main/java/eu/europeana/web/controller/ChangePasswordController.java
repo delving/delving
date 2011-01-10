@@ -112,7 +112,7 @@ public class ChangePasswordController {
         token.delete();
         sendNotificationEmail(user);
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.REGISTER_SUCCESS);
-        return "register-success"; // todo: strange to go here, isn't it?
+        return "change-password-success"; // todo: strange to go here, isn't it?
     }
 
     private void sendNotificationEmail(User user) {

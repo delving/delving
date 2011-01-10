@@ -185,10 +185,14 @@ $(document).ready(function() {
    styleUIButtons();
 
     //onclick for login href to take user back to last visited page before logging in
-    if($("a#login, a#logout")){
-        $("a#login, a#logout").click(function(){
-            takeMeBack();
-        })
+    var pathname = window.location.pathname;
+    if(!(pathname == portalName+"/register-request.html" || pathname==portalName+"/forgot-password.html"||pathname==portalName+"/change-password-success.html")){
+
+       if($("a#login, a#logout")){
+            $("a#login, a#logout").click(function(){
+                takeMeBack();
+            })
+        }
     }
 
 });
