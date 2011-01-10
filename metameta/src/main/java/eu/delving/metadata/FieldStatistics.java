@@ -99,7 +99,7 @@ public class FieldStatistics implements Comparable<FieldStatistics>, Serializabl
 
     private class ValueStats implements Serializable {
         RandomSample randomSample = new RandomSample(200);
-        Histogram histogram = new Histogram(600000, 500);
+        Histogram histogram = new Histogram(100000, 1000);
         Uniqueness uniqueness = new Uniqueness();
         boolean uniqueValues;
 
@@ -158,7 +158,7 @@ public class FieldStatistics implements Comparable<FieldStatistics>, Serializabl
                     }
                 }
                 else {
-                    html.append(String.format("<p>There are more than <p><strong>%d</strong> different values, too large a list to mantain, so here are some random samples and a partial histogram:</p>", total));
+                    html.append(String.format("<p>There are more than <strong>%d</strong> different values, too large a list to mantain, so here are some random samples and a partial histogram:</p>", histogram.getMaxSize()));
                     html.append("<ul>");
                     for (String value : randomSample.getValues()) {
                         html.append(String.format("<li>'<strong>%s</strong>'</li>", value));

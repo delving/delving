@@ -53,11 +53,11 @@ public enum MetadataNamespace {
             "http://www.europeana.eu/schemas/ese/",
             "http://www.europeana.eu/schemas/ese/ESE-V3.3.xsd"
     ),
-//    ICN(
-//            "icn",
-//            "http://www.icn.nl/",
-//            "http://www.icn.nl/schemas/ICN-V3.2.xsd"
-//    ),
+    ICN(
+            "icn",
+            "http://www.icn.nl/",
+            "http://www.icn.nl/schemas/ICN-V3.2.xsd"
+    ),
     ABM(
             "abm",
             "http://abmu.org/abm",
