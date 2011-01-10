@@ -13,7 +13,7 @@
 <#include "includeMarcos.ftl">
 
 <@addHeader "${portalDisplayName}", "",[],["login-register.css"]/>
-<script type="text/javascript">var errMsg = "";</script>
+<script type="text/javascript">$.cookie('takeMeBack', null, { path: portalName });</script>
 <div role="main" class="grid_12 login-register main">
 
 
