@@ -140,12 +140,7 @@ public class DataSetListModel extends AbstractListModel {
         }
 
         public String toHtml() throws FileStoreException {
-            StringBuilder html = new StringBuilder(
-                    String.format(
-                            "<html><table><tr><td width=220><h2>%s</h2></td><td>",
-                            spec
-                    )
-            );
+            StringBuilder html = new StringBuilder(String.format("<html><table><tr><td width=250><b>%s</b></td><td>", spec));
             if (dataSetStore != null && dataSetInfo != null) {
                 html.append("<p>Data Set is present in the repository as well as in the local file store.</p>");
             }
