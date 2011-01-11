@@ -294,7 +294,7 @@ public class DataSetActions {
     }
 
     private boolean canUpload(FileType fileType, File file, DataSetListModel.Entry entry) {
-        if (!dataSetClient.isConnected() || file == null) {
+        if (!dataSetClient.isConnected() || file == null || !file.exists()) {
             return false;
         }
         if (entry.getDataSetInfo() == null) {
