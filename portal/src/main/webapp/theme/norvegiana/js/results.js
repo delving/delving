@@ -130,8 +130,8 @@ function checkSize(obj,type,w){
         }
     }
     else {
-        if (w > 270) {
-            $("#"+obj).css("width","270px");
+        if (w > 230) {
+            $("#"+obj).css("width","230px");
         }
     }
 }
@@ -144,24 +144,24 @@ $(document).ready(function(){
         })
     }
 
-    if($("div.facets_container").length > 0){
-        //Hide (Collapse) the toggle containers on load
-        $("div.facets_container").show();
-
-        //Switch the "Open" and "Close" state per click then slide up/down (depending on open/close state)
-        $("h4.trigger").click(function(){
-            $(this).toggleClass("closed").next().slideToggle("slow");
-            return false; //Prevent the browser jump to the link anchor
-        });
-
-        //Check to see if there are any active facets that need to be toggled to open
-        var toggles = $(document).find("h4.trigger");
-        $.each(toggles, function(){
-            if($(this).hasClass("closed")){
-                $(this).next().css("display","block");
-            }
-        })
-    }
+//    if($("div.facets_container").length > 0){
+//        //Hide (Collapse) the toggle containers on load
+//        $("div.facets_container").show();
+//
+//        //Switch the "Open" and "Close" state per click then slide up/down (depending on open/close state)
+//        $("h4.trigger").click(function(){
+//            $(this).toggleClass("closed").next().slideToggle("slow");
+//            return false; //Prevent the browser jump to the link anchor
+//        });
+//
+//        //Check to see if there are any active facets that need to be toggled to open
+//        var toggles = $(document).find("h4.trigger");
+//        $.each(toggles, function(){
+//            if($(this).hasClass("closed")){
+//                $(this).next().css("display","block");
+//            }
+//        })
+//    }
 
 
 });

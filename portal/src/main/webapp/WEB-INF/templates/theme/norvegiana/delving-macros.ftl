@@ -118,7 +118,7 @@
             <!--[if lte IE 9]>
             <script src="/${portalName}/${portalTheme}/js/html5.js" type="text/javascript"></script>
             <![endif]-->
-            <@addJavascript ["jquery-1.4.2.min.js","jquery.validate.pack.js","jquery-ui-1.8.5.custom.min.js","jquery.cookie.js", "js_utilities.js"]/>
+            <@addJavascript ["jquery-1.4.2.min.js","jquery.validate.pack.js","jquery-ui-1.8.5.custom.min.js","jquery.cookie.js","js_utilities.js"]/>
             <#if (pageJsFiles?size &gt; 0)>
                 <@addJavascript pageJsFiles/>
             </#if>
@@ -133,6 +133,7 @@
             <div class="grid_5 prefix_3">
                 <@showMessages/>
                 <@showConfirmation/>
+                <div id="dmessages"></div>
             </div>      
 
             <div id="header" <#if (thisPage?? && thisPage=="index.html")>class="home"</#if>>
@@ -204,11 +205,11 @@
 
 
         <script type="text/javascript">
-//            delvingPageCall("#footer-dynamic-content", portalName+"/footer.dml?embedded=true"," "," "," ");
+            delvingPageCall("#footer-dynamic-content", portalName+"/footer.dml?embedded=true"," "," "," ");
         </script>
  
         <#if trackingCode??>
-            <script type="text/javascript">
+           <script type="text/javascript">
 
           var _gaq = _gaq || [];
           _gaq.push(['_setAccount', '${trackingCode}']);
@@ -460,8 +461,9 @@
     <#assign facetMap = result.getFacetMap()>
     <#assign facet = facetMap.getFacet(key)>
     <#if !facet.type?starts_with("unknown")>
-        <h4 class="trigger <#if facet.selected>active</#if>"><a href="#"><@spring.message '${facetLanguageTag}' /></a></h4>
+        <#--<h4 class="trigger <#if facet.selected>active</#if>"><a href="#"><@spring.message '${facetLanguageTag}' /></a></h4>-->
         <#if facet.links?size &gt; 0>
+        <h4 class="trigger"><@spring.message '${facetLanguageTag}' /></h4>
         <div class="facets_container">
         <table summary="A list of facets to help refine your search">
                 <#list facet.links?chunk(columnSize?int) as row>
@@ -870,8 +872,7 @@
         <#assign overlayActive = false/>
     </#if>
 
-
-    <#--overlayURL: ${overlayUrl}<br/>-->
+       <#--overlayURL: ${overlayUrl}<br/>-->
     <#--originalContextUrl: ${originalContextUrl}-->
    <#--<a href="/${portalName}/redirect.html?shownBy=${isShownAt.getFirst()}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"-->
       <#--target="_blank"-->
@@ -982,7 +983,7 @@
 </#macro>
 
 <#macro resultFullListFormatted>
-    <table summary="This table contains the metadata for the object being viewed" width="100%" class="lined">
+    <table summary="This table contains the metadata for the object being viewed" width="100%" class="squash">
         <caption>Object metadata</caption>
         <#assign doc = result.fullDoc/>
         <tbody>
@@ -1116,8 +1117,9 @@
     </#if>
     <#if user??>
     <li>
-        <@spring.message '_mine.loggedinas' />: <strong>${user.userName?html}</strong> |
-            <a id="logout" href="/${portalName}/logout.html"><@spring.message '_mine.logout' /></a>
+        <@spring.message '_mine.loggedinas' />:
+            <a href="/${portalName}/mine.html" onclick="$.cookie('mine-tabs', '0', { expires: 1, path: '/${portalName}' });"><strong>${user.userName?html}</strong></a> |
+        <a id="logout" href="/${portalName}/logout.html"><@spring.message '_mine.logout' /></a>
     </li>
     <#if user.items??>
     <li>
