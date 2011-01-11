@@ -297,6 +297,7 @@ public class SipModel {
         }
         else {
             try {
+                template.apply(getRecordDefinition());
                 mappingModel.applyTemplate(template);
                 seekRecord(1, null);
             }
