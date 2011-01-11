@@ -78,6 +78,7 @@ a.fg-button.ui-state-active
 }
 /* MESSAGES *********************************/
 
+#dmessages,
 #messages,
 #confirmation
 {
@@ -94,7 +95,9 @@ a.fg-button.ui-state-active
     color: #555;
 }
 
+/*#dmessages {display: block;}*/
 
+#dmessages .inner,
 #messages .inner,
 #confirmation .inner
 {
@@ -107,12 +110,14 @@ a.fg-button.ui-state-active
 	text-align:left;
 }
 
+#dmessages .actions,
 #messages .actions,
 #confirmation .actions
 {
     margin-top: 1em;
 }
 
+#dmessages.success,
 #messages.success,
 #confirmation.success
 {
@@ -120,6 +125,8 @@ a.fg-button.ui-state-active
     color: #555
 }
 
+#dmessages.fail,
+#dmessages.error,
 #messages.fail,
 #messages.error,
 #confirmation.error,
@@ -129,6 +136,7 @@ a.fg-button.ui-state-active
     color: #555
 }
 
+#dmessages.notification,
 #message.notification,
 #confirmation.notification
 {
@@ -569,40 +577,41 @@ nav#facetList
 /* FACETS TOGGLER *******************************/
 h4.trigger
 {
-	background:url(../images/toggleroh.gif) no-repeat 5px 8px;
+	/*background:url(../images/toggleroh.gif) no-repeat 5px 8px;*/
 	border-bottom:1px solid #ccc;
 	font-size:1em;
 	margin:0;
-	padding:5px 0 5px 25px;
+	/*padding:5px 0 5px 25px;*/
+	padding:5px 0 5px 5px;
 }
 
-h4.trigger .ui-icon
-{
-	float:left;
-	margin-right:.25em;
-}
+/*h4.trigger .ui-icon*/
+/*{*/
+	/*float:left;*/
+	/*margin-right:.25em;*/
+/*}*/
 
-h4.trigger:hover
-{
-	background:url(../images/togglero.gif) no-repeat 5px 8px;
-	color:#ccc;
-}
+/*h4.trigger:hover*/
+/*{*/
+	/*background:url(../images/togglero.gif) no-repeat 5px 8px;*/
+	/*color:#ccc;*/
+/*}*/
 
-h4.trigger a
-{
-	display:block;
-	text-decoration:none;
-}
+/*h4.trigger a*/
+/*{*/
+	/*display:block;*/
+	/*text-decoration:none;*/
+/*}*/
 
-h4.closed
-{
-	background:url(../images/togglerch.gif) no-repeat 5px 8px;
-}
+/*h4.closed*/
+/*{*/
+	/*background:url(../images/togglerch.gif) no-repeat 5px 8px;*/
+/*}*/
 
-h4.closed:hover
-{
-	background:url(../images/togglerc.gif) no-repeat 5px 8px;
-}
+/*h4.closed:hover*/
+/*{*/
+	/*background:url(../images/togglerc.gif) no-repeat 5px 8px;*/
+/*}*/
 
 .facets_container
 {
@@ -1084,7 +1093,7 @@ table.zebra thead tr th
 
 table.zebra tbody tr:nth-child(odd) td
 {
-	background-color:#eee;
+	background-color:#efefef;
 }
 
 table.zebra tbody tr:nth-child(even) td
@@ -1096,7 +1105,8 @@ table.zebra tbody tr:nth-child(even) td
 table.squash {margin: 0;}
 table.squash tbody td,
 table.squash tbody th {
-    padding:.5em 0 0 0; font-size: .85em
+    font-size: .925em;
+    padding:.5em .5em 0 0;
 }
 
 /* LINED TABLES */
