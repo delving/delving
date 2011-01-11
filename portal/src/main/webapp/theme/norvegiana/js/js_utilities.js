@@ -195,7 +195,11 @@ $(document).ready(function() {
    styleUIButtons();
     //onclick for login href to take user back to last visited page before logging in
     var pathname = window.location.pathname;
-    if(!(pathname == portalName+"/register-request.html" || pathname==portalName+"/forgot-password.html"||pathname==portalName+"/change-password-success.html")){
+    if(!(pathname == portalName+"/register-request.html"
+            || pathname==portalName+"/register-success.html"
+            || pathname==portalName+"/forgot-password.html"
+            || pathname==portalName+"/change-password-success.html"
+            || pathname==portalName+"/login.html")){
 
        if($("a#login, a#logout")){
             $("a#login, a#logout").click(function(){
@@ -204,6 +208,10 @@ $(document).ready(function() {
         }
     }
 
+//    $("#dmessages").notify({
+//        nType: "success",
+//        message: "Delving jQuery Notification!"
+//    });
 });
 
 
