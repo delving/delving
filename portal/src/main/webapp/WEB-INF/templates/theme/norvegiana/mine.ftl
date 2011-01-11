@@ -35,8 +35,8 @@
               <td>${user.registrationDate?date}</td>
             </tr>
                 <tr>
+                    <td><a href="#" rel="nofollow" id="rem-user">Remove my account</a></td>
                     <td></td>
-                    <td><button id="rem-user" class="btn-strong delete"><@spring.message '_cms.delete' /></button> </td>
                 </tr>
             </#if>
         </table>
@@ -52,11 +52,11 @@
                         <tr id="${rowId}">
                             <td width="60">
                                 <a href="/${portalName}/record/${item.europeanaId}.html">
-                                 <#if useCache="true">
-                                    <#--<img class="thumb" id="img_${item_index}" align="middle" src="${cacheUrl}id=${item.thumbnail}&size=BRIEF_DOC" alt="Click for more information" width="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>-->
+                                    <#if useCache="true">
+                                        <#--<img class="thumb" id="img_${item_index}" align="middle" src="${cacheUrl}id=${item.getThumbnail()?url('utf-8')}&amp;identifier=${item.getEuropeanaId()?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${item.getDocType()?url('utf-8')}" alt="Click for more information" width="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>-->
                                  <#else>
                                     <#if item.docType??>
-                                      <img class="thumb" align="middle" src="${item.thumbnail}" alt="Click for more information" width="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
+                                        <img class="thumb" align="middle" src="${item.thumbnail}" alt="Click for more information" width="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
                                     <#else>
                                       <img class="thumb" align="middle" src="${item.thumbnail}" alt="Click for more information" width="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
                                     </#if>
@@ -108,8 +108,9 @@
     </div>
 </section>
 <script type="text/javascript">
-    $('button#rem-user').click(function() {
-        showConfirm("notification", "<@spring.message '_cms.user.remove.confirm'/>", "removeUser('" + $("input#umail").val() + "')")
+    $('a#rem-user').click(function() {
+        var targetMail = $("input#umail").val();
+        showConfirm("notification", "<strong>"+targetMail+"</strong><br/><@spring.message '_cms.user.remove.confirm'/>", "removeUser('" + $("input#umail").val() + "')")
     });
 </script>
 
