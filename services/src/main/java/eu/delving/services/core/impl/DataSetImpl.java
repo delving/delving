@@ -153,6 +153,7 @@ class DataSetImpl implements MetaRepo.DataSet {
         mapping.put(MetaRepo.Mapping.RECORD_MAPPING, xml);
         mappings.put(mappedNamespace.getPrefix(), mapping);
         save();
+        implFactory.removeHarvestSteps(this, recordMapping.getPrefix());
     }
 
     @Override

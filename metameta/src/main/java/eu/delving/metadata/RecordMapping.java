@@ -121,13 +121,17 @@ public class RecordMapping {
     }
 
     public void apply(RecordDefinition recordDefinition) throws MetadataException {
+        Set<String> notFound = new TreeSet<String>();
         for (Map.Entry<String, FieldMapping> entry : fieldMappings.entrySet()) {
             Path path = new Path(entry.getKey());
             FieldDefinition fieldDefinition = recordDefinition.getFieldDefinition(path);
             if (fieldDefinition == null) {
-                throw new MetadataException("Field definition not found for " + path);
+                notFound.add(entry.getKey());
             }
             entry.getValue().fieldDefinition = fieldDefinition;
+        }
+        for (String key : notFound) {
+            fieldMappings.remove(key);
         }
     }
 
