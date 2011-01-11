@@ -28,6 +28,7 @@ $(document).ready(function() {
             $("#county-list").hide("slow");
         }
     });
+
     $("#sel-dataproviders").change(function() {
         if ($("#sel-dataproviders :selected").val() == "false") {
             $("#provider-list").show("slow");
@@ -36,6 +37,7 @@ $(document).ready(function() {
             $("#provider-list").hide("slow");
         }
     });
+
     if($("#sel-collections")){
         $("#sel-collections").change(function() {
         if ($("#sel-collections :selected").val() == "false") {
@@ -46,5 +48,11 @@ $(document).ready(function() {
         }
         });
      }
+
+//    $("input:[name=countyList][type=checkbox]").click(function(){
+//            var theCounty = $(this).val();
+//
+//
+//    });
 
 });

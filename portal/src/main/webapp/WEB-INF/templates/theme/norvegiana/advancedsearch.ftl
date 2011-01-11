@@ -112,6 +112,30 @@
                 </td>
             </tr>
             </#if>
+            <#--<#if municipality??>-->
+            <#--<tr>-->
+                <#--<td align="right"><@spring.message '_metadata.abm.municipality'/>:</td>-->
+                <#--<td>-->
+                    <#--<select name="allCounties" id="sel-municipalities">-->
+                       <#--<option value="true"><@spring.message '_metadata.type.all'/></option>-->
+                       <#--<option value="false"><@spring.message '_search.select'/></option>-->
+                     <#--</select>-->
+                        <#--<div id="municipality-list">-->
+                        <#--<table class="squash"-->
+                        <#--<#list municipality?chunk(4) as row>-->
+                            <#--<tr>-->
+                                <#--<#list row as muni>-->
+                                    <#--<td><input type="checkbox" name="municipalityList" value="${muni.name?url('utf-8')}"/>${muni.name} (${muni.count})</td>-->
+                                <#--</#list>-->
+                            <#--</tr>-->
+
+                        <#--</#list>-->
+                        <#--</table>-->
+                        <#--</div>-->
+
+                <#--</td>-->
+            <#--</tr>-->
+            <#--</#if>-->
             <tr>
                 <td align="right">Digital content only:</td>
                 <td><input type="checkbox" value="true" name="onlyDigitalObjects"/> </td>
