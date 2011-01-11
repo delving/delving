@@ -1,0 +1,338 @@
+12:15:38 INFO  Processing hmr, creating file /Users/fluxe/delving/delving/tools/oai-harvester/../oai_xml/00201_M_NL_hmr
+12:15:38 INFO  Starting request series for hmr
+12:15:51 INFO  Records created: 100, total is 100
+12:16:46 INFO  Resuming hmr, hit number 1 with token 100
+12:17:04 INFO  Records created: 100, total is 200
+12:17:13 INFO  Resuming hmr, hit number 2 with token 200
+12:17:19 INFO  Records created: 100, total is 300
+12:17:19 INFO  Resuming hmr, hit number 3 with token 300
+12:17:27 INFO  Records created: 100, total is 400
+12:17:27 INFO  Resuming hmr, hit number 4 with token 400
+12:17:34 INFO  Records created: 100, total is 500
+12:17:34 INFO  Resuming hmr, hit number 5 with token 500
+12:17:42 INFO  Records created: 100, total is 600
+12:17:42 INFO  Resuming hmr, hit number 6 with token 600
+12:17:49 INFO  Records created: 100, total is 700
+12:17:49 INFO  Resuming hmr, hit number 7 with token 700
+12:17:57 INFO  Records created: 100, total is 800
+12:17:57 INFO  Resuming hmr, hit number 8 with token 800
+12:18:04 INFO  Records created: 100, total is 900
+12:18:04 INFO  Resuming hmr, hit number 9 with token 900
+12:18:11 INFO  Records created: 100, total is 1000
+12:18:11 INFO  Resuming hmr, hit number 10 with token 1000
+12:18:18 INFO  Records created: 100, total is 1100
+12:18:18 INFO  Resuming hmr, hit number 11 with token 1100
+12:18:25 INFO  Records created: 100, total is 1200
+12:18:25 INFO  Resuming hmr, hit number 12 with token 1200
+12:18:33 INFO  Records created: 100, total is 1300
+12:18:33 INFO  Resuming hmr, hit number 13 with token 1300
+12:18:39 INFO  Records created: 100, total is 1400
+12:18:39 INFO  Resuming hmr, hit number 14 with token 1400
+12:18:46 INFO  Records created: 100, total is 1500
+12:18:46 INFO  Resuming hmr, hit number 15 with token 1500
+12:18:53 INFO  Records created: 100, total is 1600
+12:18:53 INFO  Resuming hmr, hit number 16 with token 1600
+12:19:02 INFO  Records created: 100, total is 1700
+12:19:02 INFO  Resuming hmr, hit number 17 with token 1700
+12:19:10 INFO  Records created: 100, total is 1800
+12:19:10 INFO  Resuming hmr, hit number 18 with token 1800
+12:19:17 INFO  Records created: 100, total is 1900
+12:19:17 INFO  Resuming hmr, hit number 19 with token 1900
+12:19:24 INFO  Records created: 100, total is 2000
+12:19:24 INFO  Resuming hmr, hit number 20 with token 2000
+12:19:31 INFO  Records created: 100, total is 2100
+12:19:31 INFO  Resuming hmr, hit number 21 with token 2100
+12:19:38 INFO  Records created: 100, total is 2200
+12:19:38 INFO  Resuming hmr, hit number 22 with token 2200
+12:19:44 INFO  Records created: 100, total is 2300
+12:19:44 INFO  Resuming hmr, hit number 23 with token 2300
+12:19:52 INFO  Records created: 100, total is 2400
+12:19:52 INFO  Resuming hmr, hit number 24 with token 2400
+12:19:59 INFO  Records created: 100, total is 2500
+12:19:59 INFO  Resuming hmr, hit number 25 with token 2500
+12:20:06 INFO  Records created: 100, total is 2600
+12:20:06 INFO  Resuming hmr, hit number 26 with token 2600
+12:20:13 INFO  Records created: 100, total is 2700
+12:20:13 INFO  Resuming hmr, hit number 27 with token 2700
+12:20:20 INFO  Records created: 100, total is 2800
+12:20:20 INFO  Resuming hmr, hit number 28 with token 2800
+12:20:27 INFO  Records created: 100, total is 2900
+12:20:27 INFO  Resuming hmr, hit number 29 with token 2900
+12:20:34 INFO  Records created: 100, total is 3000
+12:20:34 INFO  Resuming hmr, hit number 30 with token 3000
+12:20:41 INFO  Records created: 100, total is 3100
+12:20:41 INFO  Resuming hmr, hit number 31 with token 3100
+12:20:48 INFO  Records created: 100, total is 3200
+12:20:48 INFO  Resuming hmr, hit number 32 with token 3200
+12:20:55 INFO  Records created: 100, total is 3300
+12:20:55 INFO  Resuming hmr, hit number 33 with token 3300
+12:21:03 INFO  Records created: 100, total is 3400
+12:21:03 INFO  Resuming hmr, hit number 34 with token 3400
+12:21:10 INFO  Records created: 100, total is 3500
+12:21:10 INFO  Resuming hmr, hit number 35 with token 3500
+12:21:18 INFO  Records created: 100, total is 3600
+12:21:18 INFO  Resuming hmr, hit number 36 with token 3600
+12:21:25 INFO  Records created: 100, total is 3700
+12:21:25 INFO  Resuming hmr, hit number 37 with token 3700
+12:21:32 INFO  Records created: 100, total is 3800
+12:21:32 INFO  Resuming hmr, hit number 38 with token 3800
+12:21:39 INFO  Records created: 100, total is 3900
+12:21:39 INFO  Resuming hmr, hit number 39 with token 3900
+12:21:47 INFO  Records created: 100, total is 4000
+12:21:47 INFO  Resuming hmr, hit number 40 with token 4000
+12:21:53 INFO  Records created: 100, total is 4100
+12:21:53 INFO  Resuming hmr, hit number 41 with token 4100
+12:22:01 INFO  Records created: 100, total is 4200
+12:22:01 INFO  Resuming hmr, hit number 42 with token 4200
+12:22:09 INFO  Records created: 100, total is 4300
+12:22:09 INFO  Resuming hmr, hit number 43 with token 4300
+12:22:16 INFO  Records created: 100, total is 4400
+12:22:16 INFO  Resuming hmr, hit number 44 with token 4400
+12:22:23 INFO  Records created: 100, total is 4500
+12:22:23 INFO  Resuming hmr, hit number 45 with token 4500
+12:22:30 INFO  Records created: 100, total is 4600
+12:22:30 INFO  Resuming hmr, hit number 46 with token 4600
+12:22:37 INFO  Records created: 100, total is 4700
+12:22:37 INFO  Resuming hmr, hit number 47 with token 4700
+12:22:45 INFO  Records created: 100, total is 4800
+12:22:45 INFO  Resuming hmr, hit number 48 with token 4800
+12:22:52 INFO  Records created: 100, total is 4900
+12:22:52 INFO  Resuming hmr, hit number 49 with token 4900
+12:22:59 INFO  Records created: 100, total is 5000
+12:22:59 INFO  Resuming hmr, hit number 50 with token 5000
+12:23:07 INFO  Records created: 100, total is 5100
+12:23:07 INFO  Resuming hmr, hit number 51 with token 5100
+12:23:14 INFO  Records created: 100, total is 5200
+12:23:14 INFO  Resuming hmr, hit number 52 with token 5200
+12:23:21 INFO  Records created: 100, total is 5300
+12:23:21 INFO  Resuming hmr, hit number 53 with token 5300
+12:23:28 INFO  Records created: 100, total is 5400
+12:23:28 INFO  Resuming hmr, hit number 54 with token 5400
+12:23:35 INFO  Records created: 100, total is 5500
+12:23:35 INFO  Resuming hmr, hit number 55 with token 5500
+12:23:42 INFO  Records created: 100, total is 5600
+12:23:42 INFO  Resuming hmr, hit number 56 with token 5600
+12:23:49 INFO  Records created: 100, total is 5700
+12:23:49 INFO  Resuming hmr, hit number 57 with token 5700
+12:23:56 INFO  Records created: 100, total is 5800
+12:23:56 INFO  Resuming hmr, hit number 58 with token 5800
+12:24:03 INFO  Records created: 100, total is 5900
+12:24:03 INFO  Resuming hmr, hit number 59 with token 5900
+12:24:10 INFO  Records created: 100, total is 6000
+12:24:10 INFO  Resuming hmr, hit number 60 with token 6000
+12:24:17 INFO  Records created: 100, total is 6100
+12:24:17 INFO  Resuming hmr, hit number 61 with token 6100
+12:24:24 INFO  Records created: 100, total is 6200
+12:24:24 INFO  Resuming hmr, hit number 62 with token 6200
+12:24:31 INFO  Records created: 100, total is 6300
+12:24:31 INFO  Resuming hmr, hit number 63 with token 6300
+12:24:37 INFO  Records created: 100, total is 6400
+12:24:37 INFO  Resuming hmr, hit number 64 with token 6400
+12:24:45 INFO  Records created: 100, total is 6500
+12:24:45 INFO  Resuming hmr, hit number 65 with token 6500
+12:24:52 INFO  Records created: 100, total is 6600
+12:24:52 INFO  Resuming hmr, hit number 66 with token 6600
+12:24:59 INFO  Records created: 100, total is 6700
+12:24:59 INFO  Resuming hmr, hit number 67 with token 6700
+12:25:07 INFO  Records created: 100, total is 6800
+12:25:07 INFO  Resuming hmr, hit number 68 with token 6800
+12:25:13 INFO  Records created: 100, total is 6900
+12:25:13 INFO  Resuming hmr, hit number 69 with token 6900
+12:25:21 INFO  Records created: 100, total is 7000
+12:25:21 INFO  Resuming hmr, hit number 70 with token 7000
+12:25:28 INFO  Records created: 100, total is 7100
+12:25:28 INFO  Resuming hmr, hit number 71 with token 7100
+12:25:35 INFO  Records created: 100, total is 7200
+12:25:35 INFO  Resuming hmr, hit number 72 with token 7200
+12:25:42 INFO  Records created: 100, total is 7300
+12:25:42 INFO  Resuming hmr, hit number 73 with token 7300
+12:25:49 INFO  Records created: 100, total is 7400
+12:25:49 INFO  Resuming hmr, hit number 74 with token 7400
+12:25:56 INFO  Records created: 100, total is 7500
+12:25:56 INFO  Resuming hmr, hit number 75 with token 7500
+12:26:03 INFO  Records created: 100, total is 7600
+12:26:03 INFO  Resuming hmr, hit number 76 with token 7600
+12:26:10 INFO  Records created: 100, total is 7700
+12:26:10 INFO  Resuming hmr, hit number 77 with token 7700
+12:26:17 INFO  Records created: 100, total is 7800
+12:26:17 INFO  Resuming hmr, hit number 78 with token 7800
+12:26:24 INFO  Records created: 100, total is 7900
+12:26:24 INFO  Resuming hmr, hit number 79 with token 7900
+12:26:31 INFO  Records created: 100, total is 8000
+12:26:31 INFO  Resuming hmr, hit number 80 with token 8000
+12:26:38 INFO  Records created: 100, total is 8100
+12:26:38 INFO  Resuming hmr, hit number 81 with token 8100
+12:26:45 INFO  Records created: 100, total is 8200
+12:26:45 INFO  Resuming hmr, hit number 82 with token 8200
+12:26:52 INFO  Records created: 100, total is 8300
+12:26:52 INFO  Resuming hmr, hit number 83 with token 8300
+12:27:00 INFO  Records created: 100, total is 8400
+12:27:00 INFO  Resuming hmr, hit number 84 with token 8400
+12:27:07 INFO  Records created: 100, total is 8500
+12:27:07 INFO  Resuming hmr, hit number 85 with token 8500
+12:27:13 INFO  Records created: 100, total is 8600
+12:27:13 INFO  Resuming hmr, hit number 86 with token 8600
+12:27:21 INFO  Records created: 100, total is 8700
+12:27:21 INFO  Resuming hmr, hit number 87 with token 8700
+12:27:28 INFO  Records created: 100, total is 8800
+12:27:28 INFO  Resuming hmr, hit number 88 with token 8800
+12:27:35 INFO  Records created: 100, total is 8900
+12:27:35 INFO  Resuming hmr, hit number 89 with token 8900
+12:27:43 INFO  Records created: 100, total is 9000
+12:27:43 INFO  Resuming hmr, hit number 90 with token 9000
+12:27:50 INFO  Records created: 100, total is 9100
+12:27:50 INFO  Resuming hmr, hit number 91 with token 9100
+12:27:57 INFO  Records created: 100, total is 9200
+12:27:57 INFO  Resuming hmr, hit number 92 with token 9200
+12:28:04 INFO  Records created: 100, total is 9300
+12:28:04 INFO  Resuming hmr, hit number 93 with token 9300
+12:28:11 INFO  Records created: 100, total is 9400
+12:28:11 INFO  Resuming hmr, hit number 94 with token 9400
+12:28:19 INFO  Records created: 100, total is 9500
+12:28:19 INFO  Resuming hmr, hit number 95 with token 9500
+12:28:26 INFO  Records created: 100, total is 9600
+12:28:26 INFO  Resuming hmr, hit number 96 with token 9600
+12:28:34 INFO  Records created: 100, total is 9700
+12:28:34 INFO  Resuming hmr, hit number 97 with token 9700
+12:28:41 INFO  Records created: 100, total is 9800
+12:28:41 INFO  Resuming hmr, hit number 98 with token 9800
+12:28:48 INFO  Records created: 100, total is 9900
+12:28:48 INFO  Resuming hmr, hit number 99 with token 9900
+12:28:55 INFO  Records created: 100, total is 10000
+12:28:55 INFO  Resuming hmr, hit number 100 with token 10000
+12:29:04 INFO  Records created: 100, total is 10100
+12:29:04 INFO  Resuming hmr, hit number 101 with token 10100
+12:29:11 INFO  Records created: 100, total is 10200
+12:29:11 INFO  Resuming hmr, hit number 102 with token 10200
+12:29:18 INFO  Records created: 100, total is 10300
+12:29:18 INFO  Resuming hmr, hit number 103 with token 10300
+12:29:25 INFO  Records created: 100, total is 10400
+12:29:25 INFO  Resuming hmr, hit number 104 with token 10400
+12:29:32 INFO  Records created: 100, total is 10500
+12:29:32 INFO  Resuming hmr, hit number 105 with token 10500
+12:29:39 INFO  Records created: 100, total is 10600
+12:29:39 INFO  Resuming hmr, hit number 106 with token 10600
+12:29:46 INFO  Records created: 100, total is 10700
+12:29:46 INFO  Resuming hmr, hit number 107 with token 10700
+12:29:53 INFO  Records created: 100, total is 10800
+12:29:53 INFO  Resuming hmr, hit number 108 with token 10800
+12:30:01 INFO  Records created: 100, total is 10900
+12:30:01 INFO  Resuming hmr, hit number 109 with token 10900
+12:30:08 INFO  Records created: 100, total is 11000
+12:30:08 INFO  Resuming hmr, hit number 110 with token 11000
+12:30:15 INFO  Records created: 100, total is 11100
+12:30:15 INFO  Resuming hmr, hit number 111 with token 11100
+12:30:22 INFO  Records created: 100, total is 11200
+12:30:22 INFO  Resuming hmr, hit number 112 with token 11200
+12:30:29 INFO  Records created: 100, total is 11300
+12:30:29 INFO  Resuming hmr, hit number 113 with token 11300
+12:30:36 INFO  Records created: 100, total is 11400
+12:30:36 INFO  Resuming hmr, hit number 114 with token 11400
+12:30:43 INFO  Records created: 100, total is 11500
+12:30:43 INFO  Resuming hmr, hit number 115 with token 11500
+12:30:50 INFO  Records created: 100, total is 11600
+12:30:50 INFO  Resuming hmr, hit number 116 with token 11600
+12:30:57 INFO  Records created: 100, total is 11700
+12:30:57 INFO  Resuming hmr, hit number 117 with token 11700
+12:31:10 INFO  Records created: 100, total is 11800
+12:31:10 INFO  Resuming hmr, hit number 118 with token 11800
+12:31:18 INFO  Records created: 100, total is 11900
+12:31:18 INFO  Resuming hmr, hit number 119 with token 11900
+12:31:24 INFO  Records created: 100, total is 12000
+12:31:24 INFO  Resuming hmr, hit number 120 with token 12000
+12:31:31 INFO  Records created: 100, total is 12100
+12:31:31 INFO  Resuming hmr, hit number 121 with token 12100
+12:31:38 INFO  Records created: 100, total is 12200
+12:31:38 INFO  Resuming hmr, hit number 122 with token 12200
+12:31:46 INFO  Records created: 100, total is 12300
+12:31:46 INFO  Resuming hmr, hit number 123 with token 12300
+12:31:53 INFO  Records created: 100, total is 12400
+12:31:53 INFO  Resuming hmr, hit number 124 with token 12400
+12:32:02 INFO  Records created: 100, total is 12500
+12:32:02 INFO  Resuming hmr, hit number 125 with token 12500
+12:32:09 INFO  Records created: 100, total is 12600
+12:32:09 INFO  Resuming hmr, hit number 126 with token 12600
+12:32:16 INFO  Records created: 100, total is 12700
+12:32:16 INFO  Resuming hmr, hit number 127 with token 12700
+12:32:23 INFO  Records created: 100, total is 12800
+12:32:23 INFO  Resuming hmr, hit number 128 with token 12800
+12:32:30 INFO  Records created: 100, total is 12900
+12:32:30 INFO  Resuming hmr, hit number 129 with token 12900
+12:32:37 INFO  Records created: 100, total is 13000
+12:32:37 INFO  Resuming hmr, hit number 130 with token 13000
+12:32:44 INFO  Records created: 100, total is 13100
+12:32:44 INFO  Resuming hmr, hit number 131 with token 13100
+12:32:51 INFO  Records created: 100, total is 13200
+12:32:51 INFO  Resuming hmr, hit number 132 with token 13200
+12:32:58 INFO  Records created: 100, total is 13300
+12:32:58 INFO  Resuming hmr, hit number 133 with token 13300
+12:33:06 INFO  Records created: 100, total is 13400
+12:33:06 INFO  Resuming hmr, hit number 134 with token 13400
+12:33:13 INFO  Records created: 100, total is 13500
+12:33:13 INFO  Resuming hmr, hit number 135 with token 13500
+12:33:19 INFO  Records created: 100, total is 13600
+12:33:19 INFO  Resuming hmr, hit number 136 with token 13600
+12:33:26 INFO  Records created: 100, total is 13700
+12:33:26 INFO  Resuming hmr, hit number 137 with token 13700
+12:33:33 INFO  Records created: 100, total is 13800
+12:33:33 INFO  Resuming hmr, hit number 138 with token 13800
+12:33:40 INFO  Records created: 100, total is 13900
+12:33:40 INFO  Resuming hmr, hit number 139 with token 13900
+12:33:47 INFO  Records created: 100, total is 14000
+12:33:47 INFO  Resuming hmr, hit number 140 with token 14000
+12:33:55 INFO  Records created: 100, total is 14100
+12:33:55 INFO  Resuming hmr, hit number 141 with token 14100
+12:34:02 INFO  Records created: 100, total is 14200
+12:34:02 INFO  Resuming hmr, hit number 142 with token 14200
+12:34:09 INFO  Records created: 100, total is 14300
+12:34:09 INFO  Resuming hmr, hit number 143 with token 14300
+12:34:16 INFO  Records created: 100, total is 14400
+12:34:16 INFO  Resuming hmr, hit number 144 with token 14400
+12:34:24 INFO  Records created: 100, total is 14500
+12:34:24 INFO  Resuming hmr, hit number 145 with token 14500
+12:34:31 INFO  Records created: 100, total is 14600
+12:34:31 INFO  Resuming hmr, hit number 146 with token 14600
+12:34:38 INFO  Records created: 100, total is 14700
+12:34:38 INFO  Resuming hmr, hit number 147 with token 14700
+12:34:45 INFO  Records created: 100, total is 14800
+12:34:45 INFO  Resuming hmr, hit number 148 with token 14800
+12:34:53 INFO  Records created: 100, total is 14900
+12:34:53 INFO  Resuming hmr, hit number 149 with token 14900
+12:35:00 INFO  Records created: 100, total is 15000
+12:35:00 INFO  Resuming hmr, hit number 150 with token 15000
+12:35:07 INFO  Records created: 100, total is 15100
+12:35:07 INFO  Resuming hmr, hit number 151 with token 15100
+12:35:14 INFO  Records created: 100, total is 15200
+12:35:14 INFO  Resuming hmr, hit number 152 with token 15200
+12:35:21 INFO  Records created: 100, total is 15300
+12:35:21 INFO  Resuming hmr, hit number 153 with token 15300
+12:35:28 INFO  Records created: 100, total is 15400
+12:35:28 INFO  Resuming hmr, hit number 154 with token 15400
+12:35:36 INFO  Records created: 100, total is 15500
+12:35:36 INFO  Resuming hmr, hit number 155 with token 15500
+12:35:43 INFO  Records created: 100, total is 15600
+12:35:43 INFO  Resuming hmr, hit number 156 with token 15600
+12:35:50 INFO  Records created: 100, total is 15700
+12:35:50 INFO  Resuming hmr, hit number 157 with token 15700
+12:35:57 INFO  Records created: 100, total is 15800
+12:35:57 INFO  Resuming hmr, hit number 158 with token 15800
+12:36:06 INFO  Records created: 100, total is 15900
+12:36:06 INFO  Resuming hmr, hit number 159 with token 15900
+12:36:13 INFO  Records created: 100, total is 16000
+12:36:13 INFO  Resuming hmr, hit number 160 with token 16000
+12:36:20 INFO  Records created: 100, total is 16100
+12:36:20 INFO  Resuming hmr, hit number 161 with token 16100
+12:36:27 INFO  Records created: 100, total is 16200
+12:36:27 INFO  Resuming hmr, hit number 162 with token 16200
+12:36:34 INFO  Records created: 100, total is 16300
+12:36:34 INFO  Resuming hmr, hit number 163 with token 16300
+12:36:41 INFO  Records created: 100, total is 16400
+12:36:41 INFO  Resuming hmr, hit number 164 with token 16400
+12:36:48 INFO  Records created: 100, total is 16500
+12:36:48 INFO  Resuming hmr, hit number 165 with token 16500
+12:36:55 INFO  Records created: 100, total is 16600
+12:36:55 INFO  Resuming hmr, hit number 166 with token 16600
+12:37:02 INFO  Records created: 100, total is 16700
+12:37:02 INFO  Resuming hmr, hit number 167 with token 16700
+12:37:09 INFO  Records created: 42, total is 16742
+12:37:10 INFO  Successfully finished hmr

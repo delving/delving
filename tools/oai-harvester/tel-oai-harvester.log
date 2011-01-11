@@ -12160,3 +12160,784 @@ d: Brief Nationaal Comité Verzetsherdenkingskruis aan dhr. J. Woltman, betr. pos
 2010-09-23 16:19:52,099  INFO http://services.kb.nl/mdo/oai:182 - Terminating Geheugen, removing file - INACTIVATED / The file remains because Italian OAI is stupid - /Users/fluxe/delving/delving/tools/oai-harvester/../oai_xml/GVN.xml
 2010-09-23 16:19:52,099  INFO http://services.kb.nl/mdo/oai:190 - Finished http://services.kb.nl/mdo/oai
 2010-09-23 16:19:52,111  INFO org.oclc.oai.harvester.app.Harvester:131 - Saved config
+2011-01-10 10:33:00,784  INFO org.oclc.oai.harvester.app.Harvester:46 - preparing for harvest: shutdown hook, and config file saver daemon
+2011-01-10 10:33:00,834  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:47 - Starting worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx with 1 tasks to perform.
+2011-01-10 10:33:00,835  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:62 - Worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx starting task 1
+2011-01-10 10:33:00,840  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:78 - Processing hmr, creating file /Users/fluxe/delving/delving/tools/oai-harvester/../oai_xml/00201_M_NL_hmr
+2011-01-10 10:33:00,840  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:82 - Starting request series for hmr
+2011-01-10 10:33:00,951  INFO org.oclc.oai.harvester.verb.HarvesterVerb:147 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 10:33:09,735  INFO org.oclc.oai.harvester.verb.HarvesterVerb:159 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 10:33:10,198  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:182 - Successfully finished hmr
+2011-01-10 10:33:10,198  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:194 - Finished http://collectie.hmr.rotterdam.nl/oai/oai.aspx
+2011-01-10 10:33:10,358  INFO org.oclc.oai.harvester.app.Harvester:131 - Saved config
+2011-01-10 10:34:23,670  INFO org.oclc.oai.harvester.app.Harvester:49 - Program terminated
+2011-01-10 10:41:12,034  INFO org.oclc.oai.harvester.app.Harvester:46 - preparing for harvest: shutdown hook, and config file saver daemon
+2011-01-10 10:41:12,104  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:47 - Starting worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx with 1 tasks to perform.
+2011-01-10 10:41:12,105  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:62 - Worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx starting task 1
+2011-01-10 10:41:12,116  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:78 - Processing hmr, creating file /Users/fluxe/delving/delving/tools/oai-harvester/../oai_xml/00201_M_NL_hmr
+2011-01-10 10:41:12,122  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:82 - Starting request series for hmr
+2011-01-10 10:41:12,182  INFO org.oclc.oai.harvester.verb.HarvesterVerb:147 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 10:41:18,668  INFO org.oclc.oai.harvester.verb.HarvesterVerb:159 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 10:43:17,436  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:182 - Successfully finished hmr
+2011-01-10 10:43:17,437  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:194 - Finished http://collectie.hmr.rotterdam.nl/oai/oai.aspx
+2011-01-10 10:43:17,975  INFO org.oclc.oai.harvester.app.Harvester:131 - Saved config
+2011-01-10 10:45:49,754  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:47 - Starting worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx with 1 tasks to perform.
+2011-01-10 10:45:49,798  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:62 - Worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx starting task 1
+2011-01-10 10:45:49,799  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:78 - Processing hmr, creating file /Users/fluxe/delving/delving/tools/oai-harvester/../oai_xml/00201_M_NL_hmr
+2011-01-10 10:45:49,799  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:82 - Starting request series for hmr
+2011-01-10 10:45:49,801  INFO org.oclc.oai.harvester.verb.HarvesterVerb:147 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 10:45:56,988  INFO org.oclc.oai.harvester.verb.HarvesterVerb:159 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 10:46:52,991  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:182 - Successfully finished hmr
+2011-01-10 10:46:53,051  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:194 - Finished http://collectie.hmr.rotterdam.nl/oai/oai.aspx
+2011-01-10 10:46:53,501  INFO org.oclc.oai.harvester.app.Harvester:131 - Saved config
+2011-01-10 10:48:52,703  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:47 - Starting worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx with 1 tasks to perform.
+2011-01-10 10:48:52,704  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:62 - Worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx starting task 1
+2011-01-10 10:48:52,706  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:78 - Processing hmr, creating file /Users/fluxe/delving/delving/tools/oai-harvester/../oai_xml/00201_M_NL_hmr
+2011-01-10 10:48:52,706  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:82 - Starting request series for hmr
+2011-01-10 10:48:52,709  INFO org.oclc.oai.harvester.verb.HarvesterVerb:147 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 10:48:59,948  INFO org.oclc.oai.harvester.verb.HarvesterVerb:159 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 10:51:11,228  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:182 - Successfully finished hmr
+2011-01-10 10:51:11,228  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:194 - Finished http://collectie.hmr.rotterdam.nl/oai/oai.aspx
+2011-01-10 10:51:11,736  INFO org.oclc.oai.harvester.app.Harvester:131 - Saved config
+2011-01-10 10:51:18,147  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:47 - Starting worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx with 1 tasks to perform.
+2011-01-10 10:51:18,148  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:62 - Worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx starting task 1
+2011-01-10 10:51:18,149  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:78 - Processing hmr, creating file /Users/fluxe/delving/delving/tools/oai-harvester/../oai_xml/00201_M_NL_hmr
+2011-01-10 10:51:18,149  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:82 - Starting request series for hmr
+2011-01-10 10:51:27,293  INFO org.oclc.oai.harvester.verb.HarvesterVerb:147 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 10:51:35,528  INFO org.oclc.oai.harvester.verb.HarvesterVerb:159 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 11:10:38,887  INFO org.oclc.oai.harvester.app.Harvester:46 - preparing for harvest: shutdown hook, and config file saver daemon
+2011-01-10 11:10:38,938  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:47 - Starting worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx with 1 tasks to perform.
+2011-01-10 11:10:38,939  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:62 - Worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx starting task 1
+2011-01-10 11:10:38,942  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:78 - Processing hmr, creating file /Users/fluxe/delving/delving/tools/oai-harvester/../oai_xml/00201_M_NL_hmr
+2011-01-10 11:10:38,942  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:82 - Starting request series for hmr
+2011-01-10 11:10:50,390  INFO org.oclc.oai.harvester.verb.HarvesterVerb:147 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 11:10:57,753  INFO org.oclc.oai.harvester.verb.HarvesterVerb:159 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 11:11:09,498  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 100
+2011-01-10 11:11:32,579 ERROR http://collectie.hmr.rotterdam.nl/oai/oai.aspx:190 - Problem harvesting http://collectie.hmr.rotterdam.nl/oai/oai.aspx
+java.lang.NullPointerException
+	at org.oclc.oai.harvester.app.HarvestWorker.run(HarvestWorker.java:136)
+	at java.lang.Thread.run(Thread.java:680)
+2011-01-10 11:14:26,740  INFO org.oclc.oai.harvester.app.Harvester:46 - preparing for harvest: shutdown hook, and config file saver daemon
+2011-01-10 11:14:26,751  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:47 - Starting worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx with 1 tasks to perform.
+2011-01-10 11:14:26,757  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:62 - Worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx starting task 1
+2011-01-10 11:14:26,759  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:78 - Processing hmr, creating file /Users/fluxe/delving/delving/tools/oai-harvester/../oai_xml/00201_M_NL_hmr
+2011-01-10 11:14:26,760  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:82 - Starting request series for hmr
+2011-01-10 11:14:31,342  INFO org.oclc.oai.harvester.verb.HarvesterVerb:147 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 11:14:41,693  INFO org.oclc.oai.harvester.verb.HarvesterVerb:159 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 11:14:42,320  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 100
+2011-01-10 11:14:42,322  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:175 - Successfully finished hmr
+2011-01-10 11:14:42,323  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:187 - Finished http://collectie.hmr.rotterdam.nl/oai/oai.aspx
+2011-01-10 11:14:42,819  INFO org.oclc.oai.harvester.app.Harvester:131 - Saved config
+2011-01-10 11:43:56,713  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:47 - Starting worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx with 1 tasks to perform.
+2011-01-10 11:43:56,841  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:62 - Worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx starting task 1
+2011-01-10 11:43:57,114  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:78 - Processing hmr, creating file /Users/fluxe/delving/delving/tools/oai-harvester/../oai_xml/00201_M_NL_hmr
+2011-01-10 11:43:57,181  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:82 - Starting request series for hmr
+2011-01-10 11:43:57,470  INFO org.oclc.oai.harvester.verb.HarvesterVerb:147 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 11:44:04,721  INFO org.oclc.oai.harvester.verb.HarvesterVerb:159 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 11:44:05,363  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 100
+2011-01-10 11:58:34,377  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:175 - Successfully finished hmr
+2011-01-10 11:58:34,391  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:187 - Finished http://collectie.hmr.rotterdam.nl/oai/oai.aspx
+2011-01-10 11:58:34,935  INFO org.oclc.oai.harvester.app.Harvester:131 - Saved config
+2011-01-10 12:03:16,408  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:47 - Starting worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx with 1 tasks to perform.
+2011-01-10 12:03:16,411  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:62 - Worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx starting task 1
+2011-01-10 12:03:16,412  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:78 - Processing hmr, creating file /Users/fluxe/delving/delving/tools/oai-harvester/../oai_xml/00201_M_NL_hmr
+2011-01-10 12:03:16,413  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:82 - Starting request series for hmr
+2011-01-10 12:03:16,426  INFO org.oclc.oai.harvester.verb.HarvesterVerb:147 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 12:03:23,430  INFO org.oclc.oai.harvester.verb.HarvesterVerb:159 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 12:03:23,764  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 100
+2011-01-10 12:06:24,762  INFO org.oclc.oai.harvester.app.Harvester:46 - preparing for harvest: shutdown hook, and config file saver daemon
+2011-01-10 12:06:24,776  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:47 - Starting worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx with 1 tasks to perform.
+2011-01-10 12:06:24,777  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:62 - Worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx starting task 1
+2011-01-10 12:06:24,780  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:78 - Processing hmr, creating file /Users/fluxe/delving/delving/tools/oai-harvester/../oai_xml/00201_M_NL_hmr
+2011-01-10 12:06:24,781  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:82 - Starting request series for hmr
+2011-01-10 12:06:24,841  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 12:06:31,413  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 12:06:31,983  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 100
+2011-01-10 12:09:35,341  INFO org.oclc.oai.harvester.app.Harvester:46 - preparing for harvest: shutdown hook, and config file saver daemon
+2011-01-10 12:09:35,355  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:47 - Starting worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx with 1 tasks to perform.
+2011-01-10 12:09:35,356  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:62 - Worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx starting task 1
+2011-01-10 12:09:35,359  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:78 - Processing hmr, creating file /Users/fluxe/delving/delving/tools/oai-harvester/../oai_xml/00201_M_NL_hmr
+2011-01-10 12:09:35,360  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:82 - Starting request series for hmr
+2011-01-10 12:09:35,427  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 12:09:46,770  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 12:10:21,214  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 100
+2011-01-10 12:15:38,774  INFO org.oclc.oai.harvester.app.Harvester:46 - preparing for harvest: shutdown hook, and config file saver daemon
+2011-01-10 12:15:38,788  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:47 - Starting worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx with 1 tasks to perform.
+2011-01-10 12:15:38,789  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:62 - Worker for http://collectie.hmr.rotterdam.nl/oai/oai.aspx starting task 1
+2011-01-10 12:15:38,791  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:78 - Processing hmr, creating file /Users/fluxe/delving/delving/tools/oai-harvester/../oai_xml/00201_M_NL_hmr
+2011-01-10 12:15:38,791  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:82 - Starting request series for hmr
+2011-01-10 12:15:38,859  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 12:15:46,032  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&metadataPrefix=oai_dc
+2011-01-10 12:15:51,766  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 100
+2011-01-10 12:16:46,053  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 1 with token 100
+2011-01-10 12:16:46,056  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=100
+2011-01-10 12:16:59,994  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=100
+2011-01-10 12:17:04,744  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 200
+2011-01-10 12:17:13,174  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 2 with token 200
+2011-01-10 12:17:13,176  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=200
+2011-01-10 12:17:19,458  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=200
+2011-01-10 12:17:19,786  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 300
+2011-01-10 12:17:19,814  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 3 with token 300
+2011-01-10 12:17:19,816  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=300
+2011-01-10 12:17:26,936  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=300
+2011-01-10 12:17:27,206  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 400
+2011-01-10 12:17:27,239  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 4 with token 400
+2011-01-10 12:17:27,241  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=400
+2011-01-10 12:17:33,902  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=400
+2011-01-10 12:17:34,209  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 500
+2011-01-10 12:17:34,214  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 5 with token 500
+2011-01-10 12:17:34,215  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=500
+2011-01-10 12:17:42,097  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=500
+2011-01-10 12:17:42,408  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 600
+2011-01-10 12:17:42,414  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 6 with token 600
+2011-01-10 12:17:42,416  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=600
+2011-01-10 12:17:49,678  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=600
+2011-01-10 12:17:49,948  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 700
+2011-01-10 12:17:49,952  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 7 with token 700
+2011-01-10 12:17:49,954  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=700
+2011-01-10 12:17:57,054  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=700
+2011-01-10 12:17:57,386  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 800
+2011-01-10 12:17:57,393  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 8 with token 800
+2011-01-10 12:17:57,395  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=800
+2011-01-10 12:18:04,429  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=800
+2011-01-10 12:18:04,718  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 900
+2011-01-10 12:18:04,755  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 9 with token 900
+2011-01-10 12:18:04,756  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=900
+2011-01-10 12:18:11,498  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=900
+2011-01-10 12:18:11,780  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 1000
+2011-01-10 12:18:11,796  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 10 with token 1000
+2011-01-10 12:18:11,797  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=1000
+2011-01-10 12:18:18,464  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=1000
+2011-01-10 12:18:18,765  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 1100
+2011-01-10 12:18:18,768  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 11 with token 1100
+2011-01-10 12:18:18,770  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=1100
+2011-01-10 12:18:25,635  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=1100
+2011-01-10 12:18:25,944  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 1200
+2011-01-10 12:18:25,948  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 12 with token 1200
+2011-01-10 12:18:25,950  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=1200
+2011-01-10 12:18:32,703  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=1200
+2011-01-10 12:18:33,024  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 1300
+2011-01-10 12:18:33,027  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 13 with token 1300
+2011-01-10 12:18:33,029  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=1300
+2011-01-10 12:18:39,567  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=1300
+2011-01-10 12:18:39,889  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 1400
+2011-01-10 12:18:39,893  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 14 with token 1400
+2011-01-10 12:18:39,915  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=1400
+2011-01-10 12:18:46,533  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=1400
+2011-01-10 12:18:46,899  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 1500
+2011-01-10 12:18:46,903  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 15 with token 1500
+2011-01-10 12:18:46,908  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=1500
+2011-01-10 12:18:53,499  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=1500
+2011-01-10 12:18:53,862  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 1600
+2011-01-10 12:18:53,865  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 16 with token 1600
+2011-01-10 12:18:53,867  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=1600
+2011-01-10 12:19:02,085  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=1600
+2011-01-10 12:19:02,421  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 1700
+2011-01-10 12:19:02,429  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 17 with token 1700
+2011-01-10 12:19:02,431  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=1700
+2011-01-10 12:19:09,787  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=1700
+2011-01-10 12:19:10,204  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 1800
+2011-01-10 12:19:10,209  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 18 with token 1800
+2011-01-10 12:19:10,210  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=1800
+2011-01-10 12:19:16,753  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=1800
+2011-01-10 12:19:17,073  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 1900
+2011-01-10 12:19:17,077  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 19 with token 1900
+2011-01-10 12:19:17,078  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=1900
+2011-01-10 12:19:23,822  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=1900
+2011-01-10 12:19:24,114  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 2000
+2011-01-10 12:19:24,117  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 20 with token 2000
+2011-01-10 12:19:24,119  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=2000
+2011-01-10 12:19:31,379  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=2000
+2011-01-10 12:19:31,690  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 2100
+2011-01-10 12:19:31,694  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 21 with token 2100
+2011-01-10 12:19:31,696  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=2100
+2011-01-10 12:19:38,266  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=2100
+2011-01-10 12:19:38,573  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 2200
+2011-01-10 12:19:38,578  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 22 with token 2200
+2011-01-10 12:19:38,579  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=2200
+2011-01-10 12:19:44,498  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=2200
+2011-01-10 12:19:44,759  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 2300
+2011-01-10 12:19:44,763  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 23 with token 2300
+2011-01-10 12:19:44,764  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=2300
+2011-01-10 12:19:51,977  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=2300
+2011-01-10 12:19:52,241  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 2400
+2011-01-10 12:19:52,245  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 24 with token 2400
+2011-01-10 12:19:52,248  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=2400
+2011-01-10 12:19:59,646  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=2400
+2011-01-10 12:19:59,940  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 2500
+2011-01-10 12:19:59,943  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 25 with token 2500
+2011-01-10 12:19:59,945  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=2500
+2011-01-10 12:20:06,626  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=2500
+2011-01-10 12:20:06,946  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 2600
+2011-01-10 12:20:06,950  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 26 with token 2600
+2011-01-10 12:20:06,951  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=2600
+2011-01-10 12:20:13,375  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=2600
+2011-01-10 12:20:13,663  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 2700
+2011-01-10 12:20:13,666  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 27 with token 2700
+2011-01-10 12:20:13,667  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=2700
+2011-01-10 12:20:20,353  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=2700
+2011-01-10 12:20:20,616  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 2800
+2011-01-10 12:20:20,631  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 28 with token 2800
+2011-01-10 12:20:20,632  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=2800
+2011-01-10 12:20:27,216  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=2800
+2011-01-10 12:20:27,459  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 2900
+2011-01-10 12:20:27,463  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 29 with token 2900
+2011-01-10 12:20:27,466  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=2900
+2011-01-10 12:20:34,080  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=2900
+2011-01-10 12:20:34,342  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 3000
+2011-01-10 12:20:34,346  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 30 with token 3000
+2011-01-10 12:20:34,347  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=3000
+2011-01-10 12:20:41,251  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=3000
+2011-01-10 12:20:41,595  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 3100
+2011-01-10 12:20:41,598  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 31 with token 3100
+2011-01-10 12:20:41,599  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=3100
+2011-01-10 12:20:48,115  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=3100
+2011-01-10 12:20:48,421  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 3200
+2011-01-10 12:20:48,425  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 32 with token 3200
+2011-01-10 12:20:48,426  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=3200
+2011-01-10 12:20:55,388  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=3200
+2011-01-10 12:20:55,651  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 3300
+2011-01-10 12:20:55,654  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 33 with token 3300
+2011-01-10 12:20:55,655  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=3300
+2011-01-10 12:21:03,174  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=3300
+2011-01-10 12:21:03,483  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 3400
+2011-01-10 12:21:03,487  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 34 with token 3400
+2011-01-10 12:21:03,488  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=3400
+2011-01-10 12:21:10,140  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=3400
+2011-01-10 12:21:10,389  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 3500
+2011-01-10 12:21:10,394  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 35 with token 3500
+2011-01-10 12:21:10,397  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=3500
+2011-01-10 12:21:18,233  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=3500
+2011-01-10 12:21:18,479  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 3600
+2011-01-10 12:21:18,483  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 36 with token 3600
+2011-01-10 12:21:18,484  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=3600
+2011-01-10 12:21:25,301  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=3600
+2011-01-10 12:21:25,588  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 3700
+2011-01-10 12:21:25,591  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 37 with token 3700
+2011-01-10 12:21:25,593  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=3700
+2011-01-10 12:21:32,384  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=3700
+2011-01-10 12:21:32,665  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 3800
+2011-01-10 12:21:32,669  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 38 with token 3800
+2011-01-10 12:21:32,670  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=3800
+2011-01-10 12:21:39,438  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=3800
+2011-01-10 12:21:39,702  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 3900
+2011-01-10 12:21:39,706  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 39 with token 3900
+2011-01-10 12:21:39,707  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=3900
+2011-01-10 12:21:46,712  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=3900
+2011-01-10 12:21:47,014  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 4000
+2011-01-10 12:21:47,017  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 40 with token 4000
+2011-01-10 12:21:47,018  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=4000
+2011-01-10 12:21:53,385  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=4000
+2011-01-10 12:21:53,668  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 4100
+2011-01-10 12:21:53,672  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 41 with token 4100
+2011-01-10 12:21:53,677  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=4100
+2011-01-10 12:22:01,566  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=4100
+2011-01-10 12:22:01,848  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 4200
+2011-01-10 12:22:01,852  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 42 with token 4200
+2011-01-10 12:22:01,853  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=4200
+2011-01-10 12:22:08,839  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=4200
+2011-01-10 12:22:09,090  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 4300
+2011-01-10 12:22:09,093  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 43 with token 4300
+2011-01-10 12:22:09,095  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=4300
+2011-01-10 12:22:16,057  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=4300
+2011-01-10 12:22:16,378  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 4400
+2011-01-10 12:22:16,381  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 44 with token 4400
+2011-01-10 12:22:16,382  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=4400
+2011-01-10 12:22:23,184  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=4400
+2011-01-10 12:22:23,452  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 4500
+2011-01-10 12:22:23,455  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 45 with token 4500
+2011-01-10 12:22:23,457  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=4500
+2011-01-10 12:22:30,356  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=4500
+2011-01-10 12:22:30,625  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 4600
+2011-01-10 12:22:30,629  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 46 with token 4600
+2011-01-10 12:22:30,631  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=4600
+2011-01-10 12:22:37,221  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=4600
+2011-01-10 12:22:37,487  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 4700
+2011-01-10 12:22:37,491  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 47 with token 4700
+2011-01-10 12:22:37,492  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=4700
+2011-01-10 12:22:45,308  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=4700
+2011-01-10 12:22:45,564  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 4800
+2011-01-10 12:22:45,569  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 48 with token 4800
+2011-01-10 12:22:45,570  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=4800
+2011-01-10 12:22:51,865  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=4800
+2011-01-10 12:22:52,097  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 4900
+2011-01-10 12:22:52,101  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 49 with token 4900
+2011-01-10 12:22:52,102  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=4900
+2011-01-10 12:22:59,548  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=4900
+2011-01-10 12:22:59,795  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 5000
+2011-01-10 12:22:59,800  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 50 with token 5000
+2011-01-10 12:22:59,810  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=5000
+2011-01-10 12:23:06,821  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=5000
+2011-01-10 12:23:07,071  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 5100
+2011-01-10 12:23:07,075  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 51 with token 5100
+2011-01-10 12:23:07,077  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=5100
+2011-01-10 12:23:13,787  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=5100
+2011-01-10 12:23:14,068  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 5200
+2011-01-10 12:23:14,071  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 52 with token 5200
+2011-01-10 12:23:14,072  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=5200
+2011-01-10 12:23:20,958  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=5200
+2011-01-10 12:23:21,238  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 5300
+2011-01-10 12:23:21,242  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 53 with token 5300
+2011-01-10 12:23:21,243  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=5300
+2011-01-10 12:23:27,822  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=5300
+2011-01-10 12:23:28,117  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 5400
+2011-01-10 12:23:28,122  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 54 with token 5400
+2011-01-10 12:23:28,123  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=5400
+2011-01-10 12:23:34,686  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=5400
+2011-01-10 12:23:35,003  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 5500
+2011-01-10 12:23:35,007  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 55 with token 5500
+2011-01-10 12:23:35,008  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=5500
+2011-01-10 12:23:41,754  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=5500
+2011-01-10 12:23:42,025  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 5600
+2011-01-10 12:23:42,029  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 56 with token 5600
+2011-01-10 12:23:42,030  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=5600
+2011-01-10 12:23:48,721  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=5600
+2011-01-10 12:23:49,030  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 5700
+2011-01-10 12:23:49,034  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 57 with token 5700
+2011-01-10 12:23:49,035  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=5700
+2011-01-10 12:23:55,995  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=5700
+2011-01-10 12:23:56,260  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 5800
+2011-01-10 12:23:56,263  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 58 with token 5800
+2011-01-10 12:23:56,268  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=5800
+2011-01-10 12:24:03,232  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=5800
+2011-01-10 12:24:03,556  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 5900
+2011-01-10 12:24:03,561  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 59 with token 5900
+2011-01-10 12:24:03,562  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=5900
+2011-01-10 12:24:10,066  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=5900
+2011-01-10 12:24:10,337  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 6000
+2011-01-10 12:24:10,341  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 60 with token 6000
+2011-01-10 12:24:10,342  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=6000
+2011-01-10 12:24:16,785  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=6000
+2011-01-10 12:24:17,051  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 6100
+2011-01-10 12:24:17,055  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 61 with token 6100
+2011-01-10 12:24:17,056  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=6100
+2011-01-10 12:24:23,755  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=6100
+2011-01-10 12:24:24,023  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 6200
+2011-01-10 12:24:24,027  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 62 with token 6200
+2011-01-10 12:24:24,028  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=6200
+2011-01-10 12:24:30,824  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=6200
+2011-01-10 12:24:31,064  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 6300
+2011-01-10 12:24:31,067  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 63 with token 6300
+2011-01-10 12:24:31,068  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=6300
+2011-01-10 12:24:37,649  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=6300
+2011-01-10 12:24:37,906  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 6400
+2011-01-10 12:24:37,909  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 64 with token 6400
+2011-01-10 12:24:37,910  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=6400
+2011-01-10 12:24:45,064  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=6400
+2011-01-10 12:24:45,328  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 6500
+2011-01-10 12:24:45,345  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 65 with token 6500
+2011-01-10 12:24:45,346  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=6500
+2011-01-10 12:24:52,030  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=6500
+2011-01-10 12:24:52,344  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 6600
+2011-01-10 12:24:52,347  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 66 with token 6600
+2011-01-10 12:24:52,349  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=6600
+2011-01-10 12:24:59,405  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=6600
+2011-01-10 12:24:59,668  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 6700
+2011-01-10 12:24:59,672  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 67 with token 6700
+2011-01-10 12:24:59,673  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=6700
+2011-01-10 12:25:06,884  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=6700
+2011-01-10 12:25:07,174  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 6800
+2011-01-10 12:25:07,177  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 68 with token 6800
+2011-01-10 12:25:07,178  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=6800
+2011-01-10 12:25:13,646  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=6800
+2011-01-10 12:25:13,915  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 6900
+2011-01-10 12:25:13,919  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 69 with token 6900
+2011-01-10 12:25:13,920  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=6900
+2011-01-10 12:25:20,816  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=6900
+2011-01-10 12:25:21,135  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 7000
+2011-01-10 12:25:21,139  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 70 with token 7000
+2011-01-10 12:25:21,140  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=7000
+2011-01-10 12:25:28,089  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=7000
+2011-01-10 12:25:28,369  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 7100
+2011-01-10 12:25:28,372  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 71 with token 7100
+2011-01-10 12:25:28,373  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=7100
+2011-01-10 12:25:34,953  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=7100
+2011-01-10 12:25:35,217  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 7200
+2011-01-10 12:25:35,221  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 72 with token 7200
+2011-01-10 12:25:35,222  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=7200
+2011-01-10 12:25:41,919  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=7200
+2011-01-10 12:25:42,176  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 7300
+2011-01-10 12:25:42,179  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 73 with token 7300
+2011-01-10 12:25:42,180  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=7300
+2011-01-10 12:25:48,885  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=7300
+2011-01-10 12:25:49,321  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 7400
+2011-01-10 12:25:49,325  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 74 with token 7400
+2011-01-10 12:25:49,326  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=7400
+2011-01-10 12:25:56,038  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=7400
+2011-01-10 12:25:56,326  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 7500
+2011-01-10 12:25:56,418  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 75 with token 7500
+2011-01-10 12:25:56,421  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=7500
+2011-01-10 12:26:03,637  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=7500
+2011-01-10 12:26:03,899  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 7600
+2011-01-10 12:26:03,902  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 76 with token 7600
+2011-01-10 12:26:03,903  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=7600
+2011-01-10 12:26:10,193  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=7600
+2011-01-10 12:26:10,431  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 7700
+2011-01-10 12:26:10,434  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 77 with token 7700
+2011-01-10 12:26:10,435  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=7700
+2011-01-10 12:26:17,568  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=7700
+2011-01-10 12:26:17,807  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 7800
+2011-01-10 12:26:17,810  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 78 with token 7800
+2011-01-10 12:26:17,811  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=7800
+2011-01-10 12:26:24,637  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=7800
+2011-01-10 12:26:24,925  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 7900
+2011-01-10 12:26:24,928  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 79 with token 7900
+2011-01-10 12:26:24,931  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=7900
+2011-01-10 12:26:31,603  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=7900
+2011-01-10 12:26:31,876  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 8000
+2011-01-10 12:26:31,879  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 80 with token 8000
+2011-01-10 12:26:31,880  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=8000
+2011-01-10 12:26:38,364  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=8000
+2011-01-10 12:26:38,689  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 8100
+2011-01-10 12:26:38,693  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 81 with token 8100
+2011-01-10 12:26:38,694  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=8100
+2011-01-10 12:26:45,228  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=8100
+2011-01-10 12:26:45,513  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 8200
+2011-01-10 12:26:45,516  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 82 with token 8200
+2011-01-10 12:26:45,517  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=8200
+2011-01-10 12:26:52,194  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=8200
+2011-01-10 12:26:52,420  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 8300
+2011-01-10 12:26:52,423  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 83 with token 8300
+2011-01-10 12:26:52,424  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=8300
+2011-01-10 12:26:59,980  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=8300
+2011-01-10 12:27:00,226  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 8400
+2011-01-10 12:27:00,229  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 84 with token 8400
+2011-01-10 12:27:00,230  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=8400
+2011-01-10 12:27:06,843  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=8400
+2011-01-10 12:27:07,100  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 8500
+2011-01-10 12:27:07,103  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 85 with token 8500
+2011-01-10 12:27:07,104  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=8500
+2011-01-10 12:27:13,604  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=8500
+2011-01-10 12:27:13,868  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 8600
+2011-01-10 12:27:13,872  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 86 with token 8600
+2011-01-10 12:27:13,873  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=8600
+2011-01-10 12:27:20,776  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=8600
+2011-01-10 12:27:21,542  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 8700
+2011-01-10 12:27:21,549  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 87 with token 8700
+2011-01-10 12:27:21,568  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=8700
+2011-01-10 12:27:28,254  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=8700
+2011-01-10 12:27:28,517  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 8800
+2011-01-10 12:27:28,536  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 88 with token 8800
+2011-01-10 12:27:28,537  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=8800
+2011-01-10 12:27:35,322  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=8800
+2011-01-10 12:27:35,591  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 8900
+2011-01-10 12:27:35,594  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 89 with token 8900
+2011-01-10 12:27:35,596  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=8900
+2011-01-10 12:27:42,903  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=8900
+2011-01-10 12:27:43,151  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 9000
+2011-01-10 12:27:43,154  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 90 with token 9000
+2011-01-10 12:27:43,156  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=9000
+2011-01-10 12:27:49,971  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=9000
+2011-01-10 12:27:50,251  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 9100
+2011-01-10 12:27:50,254  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 91 with token 9100
+2011-01-10 12:27:50,255  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=9100
+2011-01-10 12:27:57,552  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=9100
+2011-01-10 12:27:57,799  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 9200
+2011-01-10 12:27:57,803  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 92 with token 9200
+2011-01-10 12:27:57,805  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=9200
+2011-01-10 12:28:04,723  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=9200
+2011-01-10 12:28:04,974  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 9300
+2011-01-10 12:28:04,986  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 93 with token 9300
+2011-01-10 12:28:04,987  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=9300
+2011-01-10 12:28:11,279  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=9300
+2011-01-10 12:28:11,522  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 9400
+2011-01-10 12:28:11,525  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 94 with token 9400
+2011-01-10 12:28:11,526  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=9400
+2011-01-10 12:28:18,962  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=9400
+2011-01-10 12:28:19,237  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 9500
+2011-01-10 12:28:19,240  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 95 with token 9500
+2011-01-10 12:28:19,241  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=9500
+2011-01-10 12:28:26,031  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=9500
+2011-01-10 12:28:26,312  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 9600
+2011-01-10 12:28:26,314  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 96 with token 9600
+2011-01-10 12:28:26,316  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=9600
+2011-01-10 12:28:34,636  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=9600
+2011-01-10 12:28:34,914  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 9700
+2011-01-10 12:28:34,917  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 97 with token 9700
+2011-01-10 12:28:34,918  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=9700
+2011-01-10 12:28:41,479  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=9700
+2011-01-10 12:28:41,723  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 9800
+2011-01-10 12:28:41,726  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 98 with token 9800
+2011-01-10 12:28:41,727  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=9800
+2011-01-10 12:28:48,569  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=9800
+2011-01-10 12:28:48,823  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 9900
+2011-01-10 12:28:48,826  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 99 with token 9900
+2011-01-10 12:28:48,827  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=9900
+2011-01-10 12:28:55,534  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=9900
+2011-01-10 12:28:55,800  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 10000
+2011-01-10 12:28:55,803  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 100 with token 10000
+2011-01-10 12:28:55,804  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=10000
+2011-01-10 12:29:03,935  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=10000
+2011-01-10 12:29:04,185  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 10100
+2011-01-10 12:29:04,189  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 101 with token 10100
+2011-01-10 12:29:04,190  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=10100
+2011-01-10 12:29:11,208  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=10100
+2011-01-10 12:29:11,495  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 10200
+2011-01-10 12:29:11,499  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 102 with token 10200
+2011-01-10 12:29:11,500  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=10200
+2011-01-10 12:29:18,379  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=10200
+2011-01-10 12:29:18,625  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 10300
+2011-01-10 12:29:18,627  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 103 with token 10300
+2011-01-10 12:29:18,629  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=10300
+2011-01-10 12:29:25,273  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=10300
+2011-01-10 12:29:25,579  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 10400
+2011-01-10 12:29:25,582  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 104 with token 10400
+2011-01-10 12:29:25,583  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=10400
+2011-01-10 12:29:32,312  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=10400
+2011-01-10 12:29:32,570  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 10500
+2011-01-10 12:29:32,573  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 105 with token 10500
+2011-01-10 12:29:32,574  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=10500
+2011-01-10 12:29:39,482  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=10500
+2011-01-10 12:29:39,727  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 10600
+2011-01-10 12:29:39,730  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 106 with token 10600
+2011-01-10 12:29:39,731  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=10600
+2011-01-10 12:29:46,448  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=10600
+2011-01-10 12:29:46,690  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 10700
+2011-01-10 12:29:46,693  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 107 with token 10700
+2011-01-10 12:29:46,695  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=10700
+2011-01-10 12:29:53,516  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=10700
+2011-01-10 12:29:53,768  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 10800
+2011-01-10 12:29:53,771  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 108 with token 10800
+2011-01-10 12:29:53,772  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=10800
+2011-01-10 12:30:00,995  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=10800
+2011-01-10 12:30:01,281  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 10900
+2011-01-10 12:30:01,284  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 109 with token 10900
+2011-01-10 12:30:01,286  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=10900
+2011-01-10 12:30:08,063  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=10900
+2011-01-10 12:30:08,333  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 11000
+2011-01-10 12:30:08,336  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 110 with token 11000
+2011-01-10 12:30:08,337  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=11000
+2011-01-10 12:30:15,132  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=11000
+2011-01-10 12:30:15,429  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 11100
+2011-01-10 12:30:15,432  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 111 with token 11100
+2011-01-10 12:30:15,433  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=11100
+2011-01-10 12:30:21,995  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=11100
+2011-01-10 12:30:22,280  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 11200
+2011-01-10 12:30:22,283  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 112 with token 11200
+2011-01-10 12:30:22,284  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=11200
+2011-01-10 12:30:29,166  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=11200
+2011-01-10 12:30:29,398  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 11300
+2011-01-10 12:30:29,401  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 113 with token 11300
+2011-01-10 12:30:29,402  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=11300
+2011-01-10 12:30:36,132  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=11300
+2011-01-10 12:30:36,372  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 11400
+2011-01-10 12:30:36,379  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 114 with token 11400
+2011-01-10 12:30:36,380  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=11400
+2011-01-10 12:30:43,202  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=11400
+2011-01-10 12:30:43,455  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 11500
+2011-01-10 12:30:43,458  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 115 with token 11500
+2011-01-10 12:30:43,459  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=11500
+2011-01-10 12:30:49,962  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=11500
+2011-01-10 12:30:50,217  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 11600
+2011-01-10 12:30:50,221  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 116 with token 11600
+2011-01-10 12:30:50,222  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=11600
+2011-01-10 12:30:57,338  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=11600
+2011-01-10 12:30:57,602  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 11700
+2011-01-10 12:30:57,606  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 117 with token 11700
+2011-01-10 12:30:57,608  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=11700
+2011-01-10 12:31:10,450  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=11700
+2011-01-10 12:31:10,709  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 11800
+2011-01-10 12:31:10,712  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 118 with token 11800
+2011-01-10 12:31:10,713  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=11800
+2011-01-10 12:31:17,724  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=11800
+2011-01-10 12:31:18,030  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 11900
+2011-01-10 12:31:18,034  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 119 with token 11900
+2011-01-10 12:31:18,035  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=11900
+2011-01-10 12:31:24,587  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=11900
+2011-01-10 12:31:24,890  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 12000
+2011-01-10 12:31:24,893  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 120 with token 12000
+2011-01-10 12:31:24,894  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=12000
+2011-01-10 12:31:31,656  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=12000
+2011-01-10 12:31:31,930  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 12100
+2011-01-10 12:31:31,932  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 121 with token 12100
+2011-01-10 12:31:31,933  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=12100
+2011-01-10 12:31:38,519  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=12100
+2011-01-10 12:31:38,823  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 12200
+2011-01-10 12:31:38,826  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 122 with token 12200
+2011-01-10 12:31:38,827  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=12200
+2011-01-10 12:31:45,895  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=12200
+2011-01-10 12:31:46,150  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 12300
+2011-01-10 12:31:46,153  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 123 with token 12300
+2011-01-10 12:31:46,154  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=12300
+2011-01-10 12:31:52,964  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=12300
+2011-01-10 12:31:53,232  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 12400
+2011-01-10 12:31:53,235  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 124 with token 12400
+2011-01-10 12:31:53,236  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=12400
+2011-01-10 12:32:01,876  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=12400
+2011-01-10 12:32:02,179  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 12500
+2011-01-10 12:32:02,182  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 125 with token 12500
+2011-01-10 12:32:02,184  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=12500
+2011-01-10 12:32:08,945  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=12500
+2011-01-10 12:32:09,229  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 12600
+2011-01-10 12:32:09,232  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 126 with token 12600
+2011-01-10 12:32:09,233  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=12600
+2011-01-10 12:32:16,322  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=12600
+2011-01-10 12:32:16,595  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 12700
+2011-01-10 12:32:16,598  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 127 with token 12700
+2011-01-10 12:32:16,599  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=12700
+2011-01-10 12:32:23,184  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=12700
+2011-01-10 12:32:23,472  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 12800
+2011-01-10 12:32:23,475  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 128 with token 12800
+2011-01-10 12:32:23,486  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=12800
+2011-01-10 12:32:30,048  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=12800
+2011-01-10 12:32:30,357  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 12900
+2011-01-10 12:32:30,361  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 129 with token 12900
+2011-01-10 12:32:30,362  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=12900
+2011-01-10 12:32:37,014  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=12900
+2011-01-10 12:32:37,327  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 13000
+2011-01-10 12:32:37,330  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 130 with token 13000
+2011-01-10 12:32:37,331  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=13000
+2011-01-10 12:32:44,389  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=13000
+2011-01-10 12:32:44,706  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 13100
+2011-01-10 12:32:44,708  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 131 with token 13100
+2011-01-10 12:32:44,710  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=13100
+2011-01-10 12:32:51,458  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=13100
+2011-01-10 12:32:51,728  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 13200
+2011-01-10 12:32:51,731  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 132 with token 13200
+2011-01-10 12:32:51,732  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=13200
+2011-01-10 12:32:58,527  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=13200
+2011-01-10 12:32:58,807  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 13300
+2011-01-10 12:32:58,810  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 133 with token 13300
+2011-01-10 12:32:58,811  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=13300
+2011-01-10 12:33:05,902  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=13300
+2011-01-10 12:33:06,160  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 13400
+2011-01-10 12:33:06,164  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 134 with token 13400
+2011-01-10 12:33:06,165  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=13400
+2011-01-10 12:33:12,868  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=13400
+2011-01-10 12:33:13,122  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 13500
+2011-01-10 12:33:13,125  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 135 with token 13500
+2011-01-10 12:33:13,126  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=13500
+2011-01-10 12:33:19,630  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=13500
+2011-01-10 12:33:19,894  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 13600
+2011-01-10 12:33:19,897  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 136 with token 13600
+2011-01-10 12:33:19,898  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=13600
+2011-01-10 12:33:26,631  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=13600
+2011-01-10 12:33:26,946  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 13700
+2011-01-10 12:33:26,959  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 137 with token 13700
+2011-01-10 12:33:26,960  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=13700
+2011-01-10 12:33:33,357  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=13700
+2011-01-10 12:33:33,632  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 13800
+2011-01-10 12:33:33,635  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 138 with token 13800
+2011-01-10 12:33:33,636  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=13800
+2011-01-10 12:33:40,528  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=13800
+2011-01-10 12:33:40,784  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 13900
+2011-01-10 12:33:40,787  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 139 with token 13900
+2011-01-10 12:33:40,788  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=13900
+2011-01-10 12:33:47,596  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=13900
+2011-01-10 12:33:47,860  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 14000
+2011-01-10 12:33:47,863  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 140 with token 14000
+2011-01-10 12:33:47,864  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=14000
+2011-01-10 12:33:55,074  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=14000
+2011-01-10 12:33:55,346  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 14100
+2011-01-10 12:33:55,349  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 141 with token 14100
+2011-01-10 12:33:55,350  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=14100
+2011-01-10 12:34:02,450  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=14100
+2011-01-10 12:34:02,767  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 14200
+2011-01-10 12:34:02,770  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 142 with token 14200
+2011-01-10 12:34:02,771  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=14200
+2011-01-10 12:34:09,724  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=14200
+2011-01-10 12:34:09,974  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 14300
+2011-01-10 12:34:09,977  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 143 with token 14300
+2011-01-10 12:34:09,978  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=14300
+2011-01-10 12:34:16,485  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=14300
+2011-01-10 12:34:16,807  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 14400
+2011-01-10 12:34:16,810  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 144 with token 14400
+2011-01-10 12:34:16,811  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=14400
+2011-01-10 12:34:24,065  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=14400
+2011-01-10 12:34:24,310  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 14500
+2011-01-10 12:34:24,313  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 145 with token 14500
+2011-01-10 12:34:24,314  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=14500
+2011-01-10 12:34:31,008  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=14500
+2011-01-10 12:34:31,286  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 14600
+2011-01-10 12:34:31,289  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 146 with token 14600
+2011-01-10 12:34:31,290  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=14600
+2011-01-10 12:34:38,330  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=14600
+2011-01-10 12:34:38,599  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 14700
+2011-01-10 12:34:38,602  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 147 with token 14700
+2011-01-10 12:34:38,603  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=14700
+2011-01-10 12:34:45,333  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=14700
+2011-01-10 12:34:45,580  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 14800
+2011-01-10 12:34:45,582  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 148 with token 14800
+2011-01-10 12:34:45,584  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=14800
+2011-01-10 12:34:53,159  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=14800
+2011-01-10 12:34:53,425  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 14900
+2011-01-10 12:34:53,430  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 149 with token 14900
+2011-01-10 12:34:53,431  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=14900
+2011-01-10 12:34:59,818  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=14900
+2011-01-10 12:35:00,064  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 15000
+2011-01-10 12:35:00,083  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 150 with token 15000
+2011-01-10 12:35:00,084  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=15000
+2011-01-10 12:35:07,557  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=15000
+2011-01-10 12:35:07,808  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 15100
+2011-01-10 12:35:07,810  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 151 with token 15100
+2011-01-10 12:35:07,812  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=15100
+2011-01-10 12:35:14,569  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=15100
+2011-01-10 12:35:14,850  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 15200
+2011-01-10 12:35:14,853  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 152 with token 15200
+2011-01-10 12:35:14,855  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=15200
+2011-01-10 12:35:21,053  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=15200
+2011-01-10 12:35:21,336  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 15300
+2011-01-10 12:35:21,339  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 153 with token 15300
+2011-01-10 12:35:21,340  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=15300
+2011-01-10 12:35:28,666  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=15300
+2011-01-10 12:35:28,979  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 15400
+2011-01-10 12:35:28,981  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 154 with token 15400
+2011-01-10 12:35:28,983  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=15400
+2011-01-10 12:35:35,980  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=15400
+2011-01-10 12:35:36,244  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 15500
+2011-01-10 12:35:36,247  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 155 with token 15500
+2011-01-10 12:35:36,249  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=15500
+2011-01-10 12:35:43,253  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=15500
+2011-01-10 12:35:43,577  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 15600
+2011-01-10 12:35:43,580  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 156 with token 15600
+2011-01-10 12:35:43,581  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=15600
+2011-01-10 12:35:50,527  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=15600
+2011-01-10 12:35:50,808  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 15700
+2011-01-10 12:35:50,811  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 157 with token 15700
+2011-01-10 12:35:50,813  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=15700
+2011-01-10 12:35:57,595  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=15700
+2011-01-10 12:35:57,856  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 15800
+2011-01-10 12:35:57,859  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 158 with token 15800
+2011-01-10 12:35:57,860  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=15800
+2011-01-10 12:36:05,995  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=15800
+2011-01-10 12:36:06,309  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 15900
+2011-01-10 12:36:06,312  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 159 with token 15900
+2011-01-10 12:36:06,314  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=15900
+2011-01-10 12:36:13,166  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=15900
+2011-01-10 12:36:13,410  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 16000
+2011-01-10 12:36:13,413  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 160 with token 16000
+2011-01-10 12:36:13,414  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=16000
+2011-01-10 12:36:20,070  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=16000
+2011-01-10 12:36:20,302  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 16100
+2011-01-10 12:36:20,305  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 161 with token 16100
+2011-01-10 12:36:20,306  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=16100
+2011-01-10 12:36:27,508  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=16100
+2011-01-10 12:36:27,777  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 16200
+2011-01-10 12:36:27,780  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 162 with token 16200
+2011-01-10 12:36:27,781  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=16200
+2011-01-10 12:36:34,230  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=16200
+2011-01-10 12:36:34,516  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 16300
+2011-01-10 12:36:34,529  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 163 with token 16300
+2011-01-10 12:36:34,530  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=16300
+2011-01-10 12:36:41,322  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=16300
+2011-01-10 12:36:41,594  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 16400
+2011-01-10 12:36:41,597  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 164 with token 16400
+2011-01-10 12:36:41,598  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=16400
+2011-01-10 12:36:48,201  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=16400
+2011-01-10 12:36:48,469  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 16500
+2011-01-10 12:36:48,472  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 165 with token 16500
+2011-01-10 12:36:48,474  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=16500
+2011-01-10 12:36:55,167  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=16500
+2011-01-10 12:36:55,438  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 16600
+2011-01-10 12:36:55,442  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 166 with token 16600
+2011-01-10 12:36:55,444  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=16600
+2011-01-10 12:37:02,543  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=16600
+2011-01-10 12:37:02,814  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 100, total is 16700
+2011-01-10 12:37:02,820  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:149 - Resuming hmr, hit number 167 with token 16700
+2011-01-10 12:37:02,821  INFO org.oclc.oai.harvester.verb.HarvesterVerb:148 - requesting:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=16700
+2011-01-10 12:37:09,817  INFO org.oclc.oai.harvester.verb.HarvesterVerb:160 - received OK for:http://collectie.hmr.rotterdam.nl/oai/oai.aspx?verb=ListRecords&resumptionToken=16700
+2011-01-10 12:37:09,999  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:128 - Records created: 42, total is 16742
+2011-01-10 12:37:10,002  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:175 - Successfully finished hmr
+2011-01-10 12:37:10,002  INFO http://collectie.hmr.rotterdam.nl/oai/oai.aspx:187 - Finished http://collectie.hmr.rotterdam.nl/oai/oai.aspx
+2011-01-10 12:37:10,039  INFO org.oclc.oai.harvester.app.Harvester:131 - Saved config
+2011-01-10 13:15:01,192  INFO org.oclc.oai.harvester.app.Harvester:49 - Program terminated
