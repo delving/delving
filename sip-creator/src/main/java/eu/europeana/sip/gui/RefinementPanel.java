@@ -36,6 +36,8 @@ import javax.jnlp.BasicService;
 import javax.jnlp.ServiceManager;
 import javax.jnlp.UnavailableServiceException;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -129,12 +131,13 @@ public class RefinementPanel extends JPanel {
         groovyCodeArea.setToolTipText(Utility.GROOVY_TOOL_TIP);
         JScrollPane scroll = new JScrollPane(groovyCodeArea);
         p.add(scroll, BorderLayout.CENTER);
-        p.add(createGroovySouth(), BorderLayout.SOUTH);
+        p.add(createGroovySouth(), BorderLayout.EAST);
         return p;
     }
 
     private JPanel createGroovySouth() {
         JPanel p = new JPanel();
+        p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
         p.setBorder(BorderFactory.createTitledBorder("Dictionary"));
         dictionaryCreate.setEnabled(false);
         dictionaryEdit.setEnabled(false);
@@ -142,6 +145,7 @@ public class RefinementPanel extends JPanel {
         p.add(dictionaryCreate);
         p.add(dictionaryEdit);
         p.add(dictionaryDelete);
+        p.add(Box.createVerticalGlue());
         return p;
     }
 
