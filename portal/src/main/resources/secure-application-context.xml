@@ -55,20 +55,22 @@
         <intercept-url pattern="/mine.html" access="ROLE_USER"/>
         <intercept-url pattern="/administration.html" access="ROLE_ADMINISTRATOR"/>
         <intercept-url pattern="/_.dml" access="ROLE_ADMINISTRATOR"/>
+        <intercept-url pattern="/_.img" access="ROLE_ADMINISTRATOR"/>
         <intercept-url pattern="/*.ajax" access="ROLE_USER"/>
         <form-login
                 login-page="/login.html"
                 authentication-failure-handler-ref="authenticationFailureHandler"
                 />
         <logout logout-url="/logout.html" invalidate-session="true" logout-success-url="/logout-success.html"/>
-        <remember-me services-ref="rememberMeServices" key="delve-this"/>
+        <remember-me/>
+        <!--services-ref="rememberMeServices" -->
     </http>
 
-    <beans:bean id="rememberMeServices" class="eu.europeana.core.util.web.RememberMeServices">
-        <beans:property name="userDetailsService" ref="userDetailsService"/>
-        <beans:property name="tokenRepository" ref="tokenRepo" />
-        <beans:property name="key" value="delve-this"/>
-    </beans:bean>
+    <!--<beans:bean id="rememberMeServices" class="eu.europeana.core.util.web.RememberMeServices">-->
+        <!--<beans:property name="userDetailsService" ref="userDetailsService"/>-->
+        <!--<beans:property name="tokenRepository" ref="tokenRepo" />-->
+        <!--<beans:property name="key" value="delve-this"/>-->
+    <!--</beans:bean>-->
 
     <beans:bean id="staticPageRepo" class="eu.delving.core.storage.impl.StaticRepoImpl"/>
 
