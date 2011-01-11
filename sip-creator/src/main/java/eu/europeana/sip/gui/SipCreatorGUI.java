@@ -31,6 +31,7 @@ import eu.europeana.sip.core.GroovyCodeResource;
 import eu.europeana.sip.core.RecordValidationException;
 import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.UserNotifier;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import javax.swing.AbstractAction;
@@ -60,9 +61,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -165,26 +164,32 @@ public class SipCreatorGUI extends JFrame {
     }
 
     private File getFileStoreDirectory() throws FileStoreException {
-        File fileStoreDirectory = new File(System.getProperty("user.home"), "/sip-creator-file-store");
-        if (fileStoreDirectory.isFile()) {
+        File fileStore = new File(System.getProperty("user.home"), "/sip-creator-file-store");
+        if (fileStore.isFile()) {
             try {
-                BufferedReader br = new BufferedReader(new FileReader(fileStoreDirectory));
-                String line;
-                while ((line = br.readLine()) != null) {
-                    line = line.trim();
-                    if (!line.isEmpty()) {
-                        fileStoreDirectory = new File(line);
-                        log.info(String.format("Using %s as file store directory", fileStoreDirectory.getAbsolutePath()));
-                        break;
-                    }
+                List<String> lines = FileUtils.readLines(fileStore);
+                String directory;
+                if (lines.size() == 1) {
+                    directory = lines.get(0);
                 }
-                br.close();
+                else {
+                    directory = (String) JOptionPane.showInputDialog(null,
+                            "Please choose file store", "Launch SIP-Creator", JOptionPane.PLAIN_MESSAGE, null,
+                            lines.toArray(), "");
+                }
+                if (directory == null) {
+                    System.exit(0);
+                }
+                fileStore = new File(directory);
+                if (fileStore.exists() && !fileStore.isDirectory()) {
+                    throw new FileStoreException(String.format("%s is not a directory", fileStore.getAbsolutePath()));
+                }
             }
             catch (IOException e) {
-                throw new FileStoreException("Unable to read the file " + fileStoreDirectory.getAbsolutePath());
+                throw new FileStoreException("Unable to read the file " + fileStore.getAbsolutePath());
             }
         }
-        return fileStoreDirectory;
+        return fileStore;
     }
 
     private JComponent createList() {
