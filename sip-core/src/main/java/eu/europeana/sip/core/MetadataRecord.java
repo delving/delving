@@ -102,12 +102,11 @@ public class MetadataRecord {
     }
 
     public String toHtml() {
-        StringBuilder out = new StringBuilder("<html><table border=1 width=100%>");
-        out.append(String.format("<tr><th colspan=2>Record %d</th></tr>\n", recordNumber));
+        StringBuilder out = new StringBuilder(String.format("<html><strong>Record Number %d</strong><dl>", recordNumber));
         for (MetadataVariable variable : getVariables()) {
-            out.append(String.format("<tr><td width=40%%>%s</td><td width=60%%><strong>%s</strong></td></tr>\n", variable.getName(), variable.getValue()));
+            out.append(String.format("<dt>%s</dt><dd><strong>%s</strong></dd>", variable.getName(), variable.getValue()));
         }
-        out.append("</table><html>");
+        out.append("</dl><html>");
         return out.toString();
     }
 

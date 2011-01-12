@@ -328,9 +328,11 @@ public class Harvindexer {
                             else {
                                 solrInputDocument.addField("europeana_hasDigitalObject", false);
                             }
-                            if (!solrInputDocument.containsKey("europeana_collectionName")) {
-                                solrInputDocument.addField("europeana_collectionName", dataSet.getSpec()); // todo: can't just use a string field name here
+                            if (solrInputDocument.containsKey("europeana_collectionName")) {
+                                log.warn("Mapping should not contain europeana_collectionName because we want to set it to spec");
+                                solrInputDocument.remove("europeana_collectionName");
                             }
+                            solrInputDocument.addField("europeana_collectionName", dataSet.getSpec()); // todo: can't just use a string field name here
 //                            indexer.add(solrInputDocument); // this is the old way
                             solrStreamingServer.add(solrInputDocument);
 //                            record.save(); todo: or something like it, to replace consoleDao.saveEuropeanaId(europeanaId);

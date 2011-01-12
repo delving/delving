@@ -21,6 +21,7 @@
 
 package eu.delving.services.core.impl;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -97,6 +98,13 @@ public class ImplFactory {
 
     public AccessKey getAccessKey() {
         return accessKey;
+    }
+
+    public void removeHarvestSteps(MetaRepo.DataSet dataSet, String metadataPrefix) {
+        DBObject query = new BasicDBObject();
+        query.put(MetaRepo.HarvestStep.PMH_REQUEST + "." + MetaRepo.PmhRequest.SET, dataSet.getSpec());
+        query.put(MetaRepo.HarvestStep.PMH_REQUEST + "." + MetaRepo.PmhRequest.PREFIX, metadataPrefix);
+        harvestSteps().remove(query);
     }
 
     public MetaRepo.DataSet createDataSet(DBObject object) {
