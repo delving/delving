@@ -65,7 +65,7 @@ public class DataSetClient {
                 executor.execute(new ListFetcher());
             }
         });
-        periodicListFetchTimer.setRepeats(true);
+        periodicListFetchTimer.setRepeats(false);
     }
 
     public void setListFetchingEnabled(boolean enable) {
@@ -105,6 +105,7 @@ public class DataSetClient {
                         @Override
                         public void run() {
                             listener.setList(response.getDataSetList());
+                            periodicListFetchTimer.restart();
                         }
                     });
                 }

@@ -123,15 +123,15 @@ public class ImplFactory {
                 if (step.getErrorMessage() != null) {
                     throw new RuntimeException(step.getErrorMessage());
                 }
-                executor.execute(step.createRecordSaver());
+                step.save();
             }
         }
         else { // the step has not yet been stored
             harvestSteps().save(step.getObject());
             step.createRecordFetcher(getDataSet(step), key).run();
-            step.createRecordSaver().run();
+            step.save(); // it now knows what the first id is
             step.getObject().put(MetaRepo.HarvestStep.FIRST_ID, step.getObject().get(MetaRepo.MONGO_ID));
-            step.createRecordSaver().run();
+            step.save();
         }
         return step;
     }
