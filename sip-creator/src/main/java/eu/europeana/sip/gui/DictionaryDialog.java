@@ -2,15 +2,19 @@ package eu.europeana.sip.gui;
 
 import eu.delving.metadata.FieldMapping;
 
+import javax.swing.AbstractAction;
 import javax.swing.AbstractListModel;
+import javax.swing.Action;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -52,7 +56,7 @@ public class DictionaryDialog extends JDialog {
         JPanel p = new JPanel(new BorderLayout(6, 6));
         p.add(createSelectionSetter(), BorderLayout.NORTH);
         p.add(new JScrollPane(createTable()), BorderLayout.CENTER);
-        p.add(createFinishedPanel(), BorderLayout.SOUTH);
+        p.add(createFinishedPanel(this), BorderLayout.SOUTH);
         getContentPane().add(p);
         setLocation(owner.getLocation());
         setSize(owner.getSize());
@@ -90,18 +94,31 @@ public class DictionaryDialog extends JDialog {
         return table;
     }
 
-    private JPanel createFinishedPanel() {
-        JButton finished = new JButton("Finished");
-        finished.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                DictionaryDialog.this.setVisible(false);
-                finishedRunnable.run();
-            }
-        });
+    private JPanel createFinishedPanel(JDialog dialog) {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        panel.add(finished);
+        Action finishedAction = new FinishedAction(dialog);
+        ((JComponent) dialog.getContentPane()).getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("ESCAPE"), "finished");
+        ((JComponent) dialog.getContentPane()).getActionMap().put("finished", finishedAction);
+        JButton hide = new JButton(finishedAction);
+        panel.add(hide);
         return panel;
+    }
+
+    private class FinishedAction extends AbstractAction {
+
+        private JDialog dialog;
+
+        private FinishedAction(JDialog dialog) {
+            this.dialog = dialog;
+            putValue(NAME, "Finished (ESCAPE)");
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ESC"));
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            dialog.setVisible(false);
+            finishedRunnable.run();
+        }
     }
 
     private TableColumnModel createTableColumnModel() {

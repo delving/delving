@@ -35,8 +35,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -48,6 +50,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -56,6 +59,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -149,6 +153,7 @@ public class SipCreatorGUI extends JFrame {
         north.add(northRight, BorderLayout.EAST);
         getContentPane().add(north, BorderLayout.NORTH);
         getContentPane().add(main, BorderLayout.CENTER);
+        getContentPane().add(createFinishedPanel(), BorderLayout.SOUTH);
         main.add(createList(), BorderLayout.CENTER);
         main.add(dataSetActions.getPanel(), BorderLayout.EAST);
         setSize(SIZE);
@@ -190,6 +195,39 @@ public class SipCreatorGUI extends JFrame {
             }
         }
         return fileStore;
+    }
+
+    private JPanel createFinishedPanel() {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        Action finishedAction = new FinishedAction(this);
+        ((JComponent) getContentPane()).getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("ESCAPE"), "finished");
+        ((JComponent) getContentPane()).getActionMap().put("finished", finishedAction);
+        JButton hide = new JButton(finishedAction);
+        panel.add(hide);
+        return panel;
+    }
+
+    private class FinishedAction extends AbstractAction {
+
+        private JFrame frame;
+
+        private FinishedAction(JFrame frame) {
+            this.frame = frame;
+            putValue(NAME, "Finished (ESCAPE)");
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ESC"));
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            switch (JOptionPane.showConfirmDialog(SipCreatorGUI.this, "Are you sure you want to quit?", "Quit SIP-Creator?", JOptionPane.OK_CANCEL_OPTION)) {
+                case JOptionPane.CANCEL_OPTION:
+                    break;
+                case JOptionPane.OK_OPTION:
+                    frame.setVisible(false);
+                    System.exit(0);
+                    break;
+            }
+        }
     }
 
     private JComponent createList() {

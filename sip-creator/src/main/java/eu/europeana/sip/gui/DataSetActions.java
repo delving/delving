@@ -89,7 +89,6 @@ public class DataSetActions {
         this.recordStatisticsDialog = new RecordStatisticsDialog(sipModel);
         this.analysisFactsDialog = new AnalysisFactsDialog(sipModel);
         this.mappingDialog = new MappingDialog(sipModel);
-        setEntry(null);
     }
 
     public JPanel getPanel() {
@@ -155,6 +154,7 @@ public class DataSetActions {
         panel.add(Box.createVerticalGlue());
         panel.add(remote);
         panel.add(Box.createVerticalGlue());
+        setEntry(entry);
     }
 
     private JPanel createRemotePanel() {
