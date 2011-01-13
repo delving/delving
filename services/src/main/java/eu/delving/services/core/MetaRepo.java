@@ -81,7 +81,7 @@ public interface MetaRepo {
         void setFactsHash(String sourceHash);
         DBObject getNamespaces();
 
-        DataSetState getState();
+        DataSetState getState(boolean fresh);
         String getErrorMessage();
         void setState(DataSetState dataSetState);
         void setErrorState(String message);
