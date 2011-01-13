@@ -46,7 +46,6 @@
                 <value>solr.updateUrl</value>
                 <value>solr.timeout</value>
                 <value>solr.retries</value>
-                <value>solr.chunkSize</value>
                 <value>smtp.host</value>
                 <value>smtp.username</value>
                 <value>smtp.password</value>
@@ -135,11 +134,11 @@
     <bean id="metadataModel" class="eu.delving.metadata.MetadataModelImpl">
         <property name="recordDefinitionResources">
             <list>
-                <value>/abm-record-definition.xml</value>
+                <value>/icn-record-definition.xml</value>
                 <value>/ese-record-definition.xml</value>
             </list>
         </property>
-        <property name="defaultPrefix" value="abm"/>
+        <property name="defaultPrefix" value="#{launchProperties['services.harvindexing.prefix']}"/>
     </bean>
 
     <bean id="connectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">

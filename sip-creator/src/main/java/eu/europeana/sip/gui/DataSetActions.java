@@ -59,6 +59,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * All the actions that can be launched when a data set is selected
@@ -138,6 +139,13 @@ public class DataSetActions {
             else if (entry.getDataSetInfo() != null && entry.getDataSetInfo().spec.equals(dataSetInfo.spec)) {
                 setEntry(entry);
             }
+        }
+    }
+
+    public void setUntouched(Set<String> untouched) {
+        if (entry != null && untouched.contains(entry.getSpec())) {
+            entry.setDataSetInfo(null);
+            setEntry(entry);
         }
     }
 

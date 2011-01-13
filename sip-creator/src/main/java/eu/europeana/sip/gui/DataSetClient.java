@@ -45,6 +45,7 @@ public class DataSetClient {
     private Logger log = Logger.getLogger(getClass());
     private Executor executor = Executors.newSingleThreadExecutor();
     private SipModel sipModel;
+    private boolean fetching;
     private Timer periodicListFetchTimer;
     private Listener listener;
 
@@ -69,6 +70,7 @@ public class DataSetClient {
     }
 
     public void setListFetchingEnabled(boolean enable) {
+        fetching = enable;
         if (enable) {
             executor.execute(new ListFetcher());
             periodicListFetchTimer.restart();
@@ -79,7 +81,7 @@ public class DataSetClient {
     }
 
     public boolean isConnected() {
-        return periodicListFetchTimer.isRunning();
+        return fetching;
     }
 
     public void sendCommand(String spec, DataSetCommand command) {
@@ -93,6 +95,7 @@ public class DataSetClient {
     private class ListFetcher implements Runnable {
         @Override
         public void run() {
+            fetching = true;
             String url = String.format(
                     "%s?accessKey=%s",
                     sipModel.getAppConfigModel().getServerUrl(),
@@ -110,6 +113,7 @@ public class DataSetClient {
                     });
                 }
                 else {
+                    fetching = false;
                     periodicListFetchTimer.stop();
                     notifyUser(response.getResponseCode());
                 }

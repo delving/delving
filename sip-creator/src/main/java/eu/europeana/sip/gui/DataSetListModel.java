@@ -64,26 +64,20 @@ public class DataSetListModel extends AbstractListModel {
         return entry;
     }
 
-    public void setDataSetInfo(List<DataSetInfo> list) {
+    public Set<String> setDataSetInfo(List<DataSetInfo> dataSetInfoList) {
         Map<String, DataSetInfo> map = new TreeMap<String, DataSetInfo>();
-        for (DataSetInfo info : list) {
+        for (DataSetInfo info : dataSetInfoList) {
             map.put(info.spec, info);
         }
-        Set<String> touched = new TreeSet<String>();
+        Set<String> untouched = new TreeSet<String>();
         for (Entry entry : entries) {
             DataSetInfo freshInfo = map.get(entry.getSpec());
             entry.setDataSetInfo(freshInfo);
-            touched.add(entry.getSpec());
-        }
-        Set<String> untouchedSet = new TreeSet<String>(map.keySet());
-        untouchedSet.removeAll(touched);
-        if (!untouchedSet.isEmpty()) {
-            for (Entry entry : entries) {
-                if (untouchedSet.contains(entry.spec)) {
-                    entry.setDataSetInfo(null);
-                }
+            if (freshInfo == null) {
+                untouched.add(entry.getSpec());
             }
         }
+        return untouched;
     }
 
     public Entry getEntry(int i) {
