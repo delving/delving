@@ -182,9 +182,8 @@ public class RecordMapping {
 
             @Override
             public void line(String line) {
-                int spaces = indentLevel * 4;
-                while (spaces-- > 0) {
-                    stringBuilder.append(' ');
+                for (int walk = 0; walk < indentLevel; walk++) {
+                    stringBuilder.append('\t');
                 }
                 stringBuilder.append(line).append('\n');
             }
@@ -213,9 +212,9 @@ public class RecordMapping {
                             name
                     ));
                     out.indent(1);
-                    Iterator<Map.Entry<String,String>> walk = fieldMappingEntry.getValue().dictionary.entrySet().iterator();
-                    while(walk.hasNext()) {
-                        Map.Entry<String,String> entry = walk.next();
+                    Iterator<Map.Entry<String, String>> walk = fieldMappingEntry.getValue().dictionary.entrySet().iterator();
+                    while (walk.hasNext()) {
+                        Map.Entry<String, String> entry = walk.next();
                         out.line(String.format(
                                 "'''%s''':'''%s'''%s",
                                 Sanitizer.sanitizeGroovy(entry.getKey()),
@@ -322,14 +321,22 @@ public class RecordMapping {
 
     private static int codeIndent(String line) {
         int indent = 0;
-        for (char c : line.toCharArray()) {
-            switch (c) {
-                case '}':
-                    indent--;
-                    break;
-                case '{':
-                    indent++;
-                    break;
+        if (line.startsWith("case")) {
+            indent++;
+        }
+        else if (line.startsWith("break")) {
+            indent--;
+        }
+        else {
+            for (char c : line.toCharArray()) {
+                switch (c) {
+                    case '}':
+                        indent--;
+                        break;
+                    case '{':
+                        indent++;
+                        break;
+                }
             }
         }
         return indent;

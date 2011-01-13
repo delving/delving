@@ -128,6 +128,7 @@ public class RefinementPanel extends JPanel {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Groovy Code"));
         groovyCodeArea = new JTextArea(sipModel.getFieldCompileModel().getCodeDocument());
+        groovyCodeArea.setTabSize(3);
         groovyCodeArea.setToolTipText(Utility.GROOVY_TOOL_TIP);
         JScrollPane scroll = new JScrollPane(groovyCodeArea);
         p.add(scroll, BorderLayout.CENTER);
