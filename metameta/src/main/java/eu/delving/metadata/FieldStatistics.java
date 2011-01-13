@@ -106,7 +106,7 @@ public class FieldStatistics implements Comparable<FieldStatistics>, Serializabl
 
     private class ValueStats implements Serializable {
         RandomSample randomSample = new RandomSample(200);
-        Histogram histogram = new Histogram(100000, 500);
+        Histogram histogram = new Histogram(100000, 1000);
         Uniqueness uniqueness = new Uniqueness();
         boolean uniqueValues;
 

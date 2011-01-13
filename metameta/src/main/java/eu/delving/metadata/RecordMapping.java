@@ -34,6 +34,7 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -198,7 +199,7 @@ public class RecordMapping {
             out.line("// Facts\n");
             for (Map.Entry<String, String> factEntry : facts.entrySet()) {
                 out.line(String.format(
-                        "def %s = '%s'\n",
+                        "def %s = '''%s'''\n",
                         factEntry.getKey(),
                         Sanitizer.sanitizeGroovy(factEntry.getValue())
                 ));
@@ -212,17 +213,21 @@ public class RecordMapping {
                             name
                     ));
                     out.indent(1);
-                    for (Map.Entry<String, String> entry : fieldMappingEntry.getValue().dictionary.entrySet()) {
+                    Iterator<Map.Entry<String,String>> walk = fieldMappingEntry.getValue().dictionary.entrySet().iterator();
+                    while(walk.hasNext()) {
+                        Map.Entry<String,String> entry = walk.next();
                         out.line(String.format(
-                                "'%s':'%s',",
+                                "'''%s''':'''%s'''%s",
                                 Sanitizer.sanitizeGroovy(entry.getKey()),
-                                Sanitizer.sanitizeGroovy(entry.getValue())
+                                Sanitizer.sanitizeGroovy(entry.getValue()),
+                                walk.hasNext() ? "," : ""
                         ));
                     }
                     out.indent(-1);
                     out.line("]");
+                    out.line("// lookup closure:");
                     out.line(String.format(
-                            "def %s_lookup = { def v = %s_Dictionary[it.sanitize()]; return v ? v : it }\n",
+                            "def %s_lookup = { value -> if (value) { def v = %s_Dictionary[value.sanitize()]; return v ? v : value } else { '' } }\n",
                             name, name
                     ));
                 }
@@ -301,13 +306,15 @@ public class RecordMapping {
         FieldMapping fieldMapping = fieldMappings.get(fieldPath);
         if (fieldMapping != null) {
             usedPaths.add(fieldPath);
-            for (String line : fieldMapping.code) {
-                if (codeIndent(line) < 0) {
-                    out.indent(-1);
-                }
-                out.line(line);
-                if (codeIndent(line) > 0) {
-                    out.indent(1);
+            if (fieldMapping.code != null) {
+                for (String line : fieldMapping.code) {
+                    if (codeIndent(line) < 0) {
+                        out.indent(-1);
+                    }
+                    out.line(line);
+                    if (codeIndent(line) > 0) {
+                        out.indent(1);
+                    }
                 }
             }
         }
