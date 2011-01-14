@@ -321,7 +321,7 @@ public class RecordMapping {
 
     private static int codeIndent(String line) {
         int indent = 0;
-        if (line.startsWith("case")) {
+        if (line.startsWith("case") || line.startsWith("default")) {
             indent++;
         }
         else if (line.startsWith("break")) {
