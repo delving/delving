@@ -226,7 +226,25 @@ public class RecordMapping {
                     out.line("]");
                     out.line("// lookup closure:");
                     out.line(String.format(
-                            "def %s_lookup = { value -> if (value) { def v = %s_Dictionary[value.sanitize()]; return v ? v : value } else { '' } }\n",
+                            "def %s_lookup = { " +
+                                    "value -> " +
+                                    "if (value) { " +
+                                    "    def v = %s_Dictionary[value.sanitize()]; " +
+                                    "    if (v) { " +
+                                    "       if (v.endsWith(':')) { " +
+                                    "           \"${v} ${value}\" "+
+                                    "       }" +
+                                    "       else {" +
+                                    "           v "+
+                                    "       }" +
+                                    "    }" +
+                                    "    else {" +
+                                    "       '' " +
+                                    "    } " +
+                                    "} " +
+                                    "else { " +
+                                    "    '' " +
+                                    "} }\n",
                             name, name
                     ));
                 }

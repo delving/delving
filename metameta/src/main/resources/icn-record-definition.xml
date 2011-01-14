@@ -42,7 +42,7 @@
                     <string>Beeldhouwkunst</string>
                     <string>Textiel</string>
                     <string>Film/Video/DVD</string>
-                    <string>Anders</string>
+                    <string>Anders:</string>
                 </options>
             </validation>
         </field>
@@ -62,6 +62,7 @@
                     <string>legaat</string>
                     <string>overdracht</string>
                     <string>successieregeling</string>
+                    <string>onbekend:</string>
                 </options>
             </validation>
         </field>

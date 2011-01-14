@@ -195,9 +195,15 @@ public class RecordValidator {
     private void validateField(String text, FieldDefinition fieldDefinition, List<String> problems) {
         FieldDefinition.Validation validation = fieldDefinition.validation;
         if (validation != null) {
-            if (validation.getOptions() != null && !validation.getOptions().contains(text)) {
-                String optionsString = getOptionsString(fieldDefinition);
-                problems.add(String.format("Value for [%s] was [%s] which does not belong to [%s]", fieldDefinition.path, text, optionsString));
+            if (validation.getOptions() != null) {
+                int colon = text.indexOf(':');
+                if (colon > 0) {
+                    text = text.substring(0, colon + 1);
+                }
+                if (!validation.getOptions().contains(text)) {
+                    String optionsString = getOptionsString(fieldDefinition);
+                    problems.add(String.format("Value for [%s] was [%s] which does not belong to [%s]", fieldDefinition.path, text, optionsString));
+                }
             }
             if (validation.url) {
                 try {
