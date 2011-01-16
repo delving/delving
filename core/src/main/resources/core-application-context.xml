@@ -134,7 +134,7 @@
     <bean id="metadataModel" class="eu.delving.metadata.MetadataModelImpl">
         <property name="recordDefinitionResources">
             <list>
-                <value>/icn-record-definition.xml</value>
+                <value>/abm-record-definition.xml</value>
                 <value>/ese-record-definition.xml</value>
             </list>
         </property>
