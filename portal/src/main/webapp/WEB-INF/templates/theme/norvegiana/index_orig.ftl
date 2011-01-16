@@ -2,7 +2,7 @@
     <#assign thisPage = "index.html"/>
     <#include "includeMarcos.ftl"/>
 
-<@addHeader "${portalDisplayName}", "",["jcarousel/jquery.jcarousel.min.js","jquery.tools.min.js","index.js"],[]/>
+<@addHeader "${portalDisplayName}", "",["jcarousel/jquery.jcarousel.min.js","tooltip.min.js","index.js"],[]/>
 
 <section class="grid_3 main" role="complimentary">
 
