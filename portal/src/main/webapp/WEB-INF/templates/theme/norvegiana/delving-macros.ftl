@@ -1138,13 +1138,13 @@
 <div id="viewselect">
     <#if queryStringForPresentation?exists>
         <#assign viewChangeUrl>${queryParamList.getListFilteredFormatted(false,['view'])?trim}</#assign>
-        <#if view="table">
-            <a href="?${viewChangeUrl}&view-table" title="<@spring.message '_action.alt.table.view' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-hi.gif" alt="<@spring.message '_action.alt.table.view' />" /></a>
-            <a href="?${viewChangeUrl}&view=list&amp;${defaultParams}" title="<@spring.message '_action.alt.list.view' />" >&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-lo.gif" alt="<@spring.message '_action.alt.list.view' />" /></a>
-        <#else>
-            <a href="?${viewChangeUrl}&view=table" title="<@spring.message '_action.alt.table.view' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-lo.gif" alt="<@spring.message '_action.alt.table.view' />" hspace="5"/></a>
-            <a href="?${viewChangeUrl}&view=list&amp;${defaultParams}" title="<@spring.message '_action.alt.list.view' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-hi.gif" alt="<@spring.message '_action.alt.list.view' />" hspace="5"/></a>
-        </#if>
+            <#if view="table">
+                <a href='?${viewChangeUrl}&view=table' title="<@spring.message '_action.alt.table.view' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-hi.gif" alt="<@spring.message '_action.alt.table.view' />" /></a>
+                <a href='?${viewChangeUrl}&view=list&amp;${defaultParams}' title="<@spring.message '_action.alt.list.view' />" >&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-lo.gif" alt="<@spring.message '_action.alt.list.view' />" /></a>
+            <#else>
+                <a href='?${viewChangeUrl}&view=table' title="<@spring.message '_action.alt.table.view' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-lo.gif" alt="<@spring.message '_action.alt.table.view' />" hspace="5"/></a>
+                <a href='?${viewChangeUrl}&view=list&amp;${defaultParams}' title="<@spring.message '_action.alt.list.view' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-hi.gif" alt="<@spring.message '_action.alt.list.view' />" hspace="5"/></a>
+            </#if>
     </#if>
 </div>
 </#macro>
