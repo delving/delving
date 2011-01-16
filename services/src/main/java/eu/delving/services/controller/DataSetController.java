@@ -248,9 +248,10 @@ public class DataSetController {
                 throw new DataSetNotFoundException(String.format("String %s does not exist", dataSetSpec));
             }
             DataSetCommand command = DataSetCommand.valueOf(commandString);
+            DataSetState state = dataSet.getState(false);
             switch (command) {
                 case DISABLE:
-                    switch (dataSet.getState()) {
+                    switch (state) {
                         case QUEUED:
                         case INDEXING:
                         case ERROR:
@@ -264,7 +265,7 @@ public class DataSetController {
                             return view(DataSetResponseCode.STATE_CHANGE_FAILURE);
                     }
                 case INDEX:
-                    switch (dataSet.getState()) {
+                    switch (state) {
                         case DISABLED:
                         case UPLOADED:
                             dataSet.setState(DataSetState.QUEUED);
@@ -274,7 +275,7 @@ public class DataSetController {
                             return view(DataSetResponseCode.STATE_CHANGE_FAILURE);
                     }
                 case REINDEX:
-                    switch (dataSet.getState()) {
+                    switch (state) {
                         case ENABLED:
                             dataSet.setRecordsIndexed(0);
                             dataSet.setState(DataSetState.QUEUED);
@@ -284,7 +285,7 @@ public class DataSetController {
                             return view(DataSetResponseCode.STATE_CHANGE_FAILURE);
                     }
                 case DELETE:
-                    switch (dataSet.getState()) {
+                    switch (state) {
                         case INCOMPLETE:
                         case DISABLED:
                         case ERROR:
@@ -361,7 +362,7 @@ public class DataSetController {
     private DataSetInfo getInfo(MetaRepo.DataSet dataSet) {
         DataSetInfo info = new DataSetInfo();
         info.spec = dataSet.getSpec();
-        info.state = dataSet.getState().toString();
+        info.state = dataSet.getState(false).toString();
         info.recordCount = dataSet.getRecordCount();
         info.errorMessage = dataSet.getErrorMessage();
         info.recordsIndexed = dataSet.getRecordsIndexed();

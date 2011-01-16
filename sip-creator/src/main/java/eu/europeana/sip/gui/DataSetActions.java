@@ -59,6 +59,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * All the actions that can be launched when a data set is selected
@@ -89,7 +90,6 @@ public class DataSetActions {
         this.recordStatisticsDialog = new RecordStatisticsDialog(sipModel);
         this.analysisFactsDialog = new AnalysisFactsDialog(sipModel);
         this.mappingDialog = new MappingDialog(sipModel);
-        setEntry(null);
     }
 
     public JPanel getPanel() {
@@ -142,6 +142,13 @@ public class DataSetActions {
         }
     }
 
+    public void setUntouched(Set<String> untouched) {
+        if (entry != null && untouched.contains(entry.getSpec())) {
+            entry.setDataSetInfo(null);
+            setEntry(entry);
+        }
+    }
+
     private void buildPanel() {
         createLocalActions(sipModel);
         createRemoteActions();
@@ -155,6 +162,7 @@ public class DataSetActions {
         panel.add(Box.createVerticalGlue());
         panel.add(remote);
         panel.add(Box.createVerticalGlue());
+        setEntry(entry);
     }
 
     private JPanel createRemotePanel() {

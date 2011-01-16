@@ -39,8 +39,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -48,12 +46,9 @@ import java.util.concurrent.Executors;
  */
 
 public class Harvindexer {
-    private SolrServer solrServer;
     private SolrServer solrStreamingServer;
     private XMLInputFactory inputFactory = new WstxInputFactory();
-    private Executor executor = Executors.newSingleThreadExecutor();
     private Logger log = Logger.getLogger(getClass());
-    private int chunkSize = 1000;
     private HttpClient httpClient;
     private List<Processor> processors = new CopyOnWriteArrayList<Processor>();
 
@@ -76,17 +71,8 @@ public class Harvindexer {
     }
 
     @Autowired
-    public void setSolrServer(@Qualifier("solrUpdateServer") SolrServer solrServer) {
-        this.solrServer = solrServer;
-    }
-
-    @Autowired
     public void setSolrStreamingServer(@Qualifier("solrStreamingUpdateServer") SolrServer solrStreamingServer) {
         this.solrStreamingServer = solrStreamingServer;
-    }
-
-    public void setChunkSize(int chunkSize) {
-        this.chunkSize = chunkSize;
     }
 
     public void commenceImport(MetaRepo.DataSet dataSet) {
@@ -135,19 +121,6 @@ public class Harvindexer {
             }
         }
 
-        public void stop() {
-            if (thread != null) {
-                Thread threadToJoin = thread;
-                thread = null;
-                try {
-                    threadToJoin.join();
-                }
-                catch (InterruptedException e) {
-                    log.error("Interrupted!", e);
-                }
-            }
-        }
-
         @Override
         public void run() {
             log.info("Importing " + dataSet);
@@ -192,7 +165,7 @@ public class Harvindexer {
                 }
                 else {
                     log.info("Aborted importing " + dataSet);
-                    dataSet.setState(DataSetState.INCOMPLETE);
+                    dataSet.setState(DataSetState.DISABLED);
                 }
                 dataSet.save();
             }
@@ -225,11 +198,9 @@ public class Harvindexer {
             );
             HttpMethod method = new GetMethod(url);
             httpClient.executeMethod(method);
-            Indexer indexer = new Indexer(dataSet);
             InputStream inputStream = method.getResponseBodyAsStream();
-            String resumptionToken = importXmlInternal(inputStream, indexer);
+            String resumptionToken = importXmlInternal(inputStream);
             while (!resumptionToken.isEmpty()) {
-                log.info(String.format("So far %d records, resumption token %s", indexer.getRecordCount(), resumptionToken));
                 method = new GetMethod(String.format(
                         "%s/oai-pmh?verb=ListRecords&resumptionToken=%s&accessKey=%s",
                         servicesUrl,
@@ -238,23 +209,15 @@ public class Harvindexer {
                 ));
                 httpClient.executeMethod(method);
                 inputStream = method.getResponseBodyAsStream();
-                resumptionToken = importXmlInternal(inputStream, indexer);
-                if (dataSet.getState() != DataSetState.INDEXING) {
+                resumptionToken = importXmlInternal(inputStream);
+                if (dataSet.getState(true) != DataSetState.INDEXING) {
+                    thread = null;
                     break;
                 }
-                if (indexer.isFull()) {
-                    log.info(String.format("Indexer full with %d records", indexer.getRecordCount()));
-                    executor.execute(indexer);
-                    indexer = new Indexer(dataSet);
-                }
-            }
-            if (indexer.hasRecords()) {
-                log.info(String.format("Harvest finished with %d records to index", indexer.getRecordCount()));
-                executor.execute(indexer);
             }
         }
 
-        private String importXmlInternal(InputStream inputStream, Indexer indexer) throws TransformerException, XMLStreamException, IOException, SolrServerException, HarvindexingException {
+        private String importXmlInternal(InputStream inputStream) throws TransformerException, XMLStreamException, IOException, SolrServerException, HarvindexingException {
             Source source = new StreamSource(inputStream, "UTF-8");
             XMLStreamReader xml = inputFactory.createXMLStreamReader(source);
             String pmhId = null;
@@ -403,45 +366,4 @@ public class Harvindexer {
         return out.toString();
     }
 
-    private class Indexer implements Runnable {
-        private MetaRepo.DataSet dataSet;
-        private List<SolrInputDocument> recordList = new ArrayList<SolrInputDocument>();
-
-        private Indexer(MetaRepo.DataSet dataSet) {
-            this.dataSet = dataSet;
-        }
-
-        public void add(SolrInputDocument record) {
-            recordList.add(record);
-        }
-
-        public boolean hasRecords() {
-            return !recordList.isEmpty();
-        }
-
-        public boolean isFull() {
-            return recordList.size() >= chunkSize;
-        }
-
-        @Override
-        public void run() {
-            try {
-                log.info("sending " + recordList.size() + " records to solr");
-                solrServer.add(recordList);
-                dataSet.incrementRecordsIndexed(recordList.size());
-            }
-            catch (SolrServerException e) {
-                log.error("unable to index this batch");
-                log.error(recordList.toString());
-                e.printStackTrace();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        public int getRecordCount() {
-            return recordList.size();
-        }
-    }
 }

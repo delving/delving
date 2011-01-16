@@ -77,7 +77,10 @@ class DataSetImpl implements MetaRepo.DataSet {
     }
 
     @Override
-    public DataSetState getState() {
+    public DataSetState getState(boolean fresh) {
+        if (fresh) {
+            object = implFactory.dataSets().findOne(new BasicDBObject("_id", object.get("_id")));
+        }
         return DataSetState.get((String) object.get(DATA_SET_STATE));
     }
 

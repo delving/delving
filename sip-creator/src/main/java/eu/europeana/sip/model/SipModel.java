@@ -584,6 +584,9 @@ public class SipModel {
         if (getRecordRoot() != null) {
             AnalysisTree.setRecordRoot(analysisTreeModel, getRecordRoot());
         }
+        if (getUniqueElement() != null) {
+            AnalysisTree.setUniqueElement(analysisTreeModel, getUniqueElement());
+        }
         setStatistics(null);
     }
 

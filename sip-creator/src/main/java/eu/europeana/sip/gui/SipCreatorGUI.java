@@ -35,9 +35,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -48,6 +50,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -56,7 +59,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
@@ -65,6 +70,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The main GUI class for the sip creator
@@ -82,7 +88,7 @@ public class SipCreatorGUI extends JFrame {
     private SipModel sipModel;
     private JLabel titleLabel = new JLabel(LOCAL_SETS, JLabel.CENTER);
     private DataSetClient dataSetClient;
-    private JCheckBoxMenuItem connectedBox = new JCheckBoxMenuItem("Connect");
+    private JCheckBox connectedBox = new JCheckBox("Connect to remote repository");
     private DataSetListModel dataSetListModel = new DataSetListModel();
     private JList dataSetList = new JList(dataSetListModel);
     private DataSetActions dataSetActions;
@@ -106,7 +112,10 @@ public class SipCreatorGUI extends JFrame {
             @Override
             public void setList(List<DataSetInfo> list) {
                 if (list != null) {
-                    dataSetListModel.setDataSetInfo(list);
+                    Set<String> untouched = dataSetListModel.setDataSetInfo(list);
+                    if (!untouched.isEmpty()) {
+                        dataSetActions.setUntouched(untouched);
+                    }
                     for (DataSetInfo dataSetInfo : list) {
                         dataSetActions.setDataSetInfo(dataSetInfo);
                     }
@@ -149,6 +158,10 @@ public class SipCreatorGUI extends JFrame {
         north.add(northRight, BorderLayout.EAST);
         getContentPane().add(north, BorderLayout.NORTH);
         getContentPane().add(main, BorderLayout.CENTER);
+        JPanel south = new JPanel(new GridLayout(1, 0));
+        south.add(createConnectPanel());
+        south.add(createFinishedPanel());
+        getContentPane().add(south, BorderLayout.SOUTH);
         main.add(createList(), BorderLayout.CENTER);
         main.add(dataSetActions.getPanel(), BorderLayout.EAST);
         setSize(SIZE);
@@ -192,6 +205,59 @@ public class SipCreatorGUI extends JFrame {
         return fileStore;
     }
 
+    private JPanel createConnectPanel() {
+        connectedBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent itemEvent) {
+                boolean enabled = itemEvent.getStateChange() == ItemEvent.SELECTED;
+                dataSetClient.setListFetchingEnabled(enabled);
+                if (!enabled) {
+                    dataSetListModel.clear();
+                    for (FileStore.DataSetStore dataSetStore : sipModel.getFileStore().getDataSetStores().values()) {
+                        dataSetListModel.setDataSetStore(dataSetStore);
+                    }
+                }
+                titleLabel.setText(enabled ? LOCAL_AND_REMOTE_SETS : LOCAL_SETS);
+            }
+        });
+        JPanel p = new JPanel(new FlowLayout());
+        p.add(connectedBox);
+        return p;
+    }
+
+    private JPanel createFinishedPanel() {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        Action finishedAction = new FinishedAction(this);
+        ((JComponent) getContentPane()).getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("ESCAPE"), "finished");
+        ((JComponent) getContentPane()).getActionMap().put("finished", finishedAction);
+        JButton hide = new JButton(finishedAction);
+        panel.add(hide);
+        return panel;
+    }
+
+    private class FinishedAction extends AbstractAction {
+
+        private JFrame frame;
+
+        private FinishedAction(JFrame frame) {
+            this.frame = frame;
+            putValue(NAME, "Finished (ESCAPE)");
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ESC"));
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            switch (JOptionPane.showConfirmDialog(SipCreatorGUI.this, "Are you sure you want to quit?", "Quit SIP-Creator?", JOptionPane.OK_CANCEL_OPTION)) {
+                case JOptionPane.CANCEL_OPTION:
+                    break;
+                case JOptionPane.OK_OPTION:
+                    frame.setVisible(false);
+                    System.exit(0);
+                    break;
+            }
+        }
+    }
+
     private JComponent createList() {
         dataSetList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         dataSetList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -231,22 +297,6 @@ public class SipCreatorGUI extends JFrame {
         JMenu repository = new JMenu("Repository");
         repository.add(new ServerHostPortAction());
         repository.add(new AccessKeyAction());
-        connectedBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent itemEvent) {
-                boolean enabled = itemEvent.getStateChange() == ItemEvent.SELECTED;
-                dataSetClient.setListFetchingEnabled(enabled);
-                if (!enabled) {
-                    dataSetListModel.clear();
-                    for (FileStore.DataSetStore dataSetStore : sipModel.getFileStore().getDataSetStores().values()) {
-                        dataSetListModel.setDataSetStore(dataSetStore);
-                    }
-                }
-                titleLabel.setText(enabled ? LOCAL_AND_REMOTE_SETS : LOCAL_SETS);
-                dataSetList.clearSelection();
-            }
-        });
-        repository.add(connectedBox);
         return repository;
     }
 

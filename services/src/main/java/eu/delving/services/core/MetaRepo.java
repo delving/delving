@@ -81,7 +81,7 @@ public interface MetaRepo {
         void setFactsHash(String sourceHash);
         DBObject getNamespaces();
 
-        DataSetState getState();
+        DataSetState getState(boolean fresh);
         String getErrorMessage();
         void setState(DataSetState dataSetState);
         void setErrorState(String message);
@@ -130,7 +130,6 @@ public interface MetaRepo {
         void setUniqueElement(Path path);
         MetadataFormat getMetadataFormat();
 
-
         String NAME = "name";
         String PROVIDER_NAME = "provider_name";
         String DESCRIPTION = "description";
@@ -146,7 +145,6 @@ public interface MetaRepo {
         Date getExpiration();
         int getListSize();
         Runnable createRecordFetcher(DataSet dataSet, String key);
-        Runnable createRecordSaver();
         int getCursor();
         int getRecordCount();
         List<? extends Record> getRecords();
@@ -157,13 +155,13 @@ public interface MetaRepo {
         ObjectId getAfterId();
         ObjectId getNextId();
         String getErrorMessage();
+        void save();
         void delete();
 
         String FIRST_ID = "firstId";
         String EXPIRATION = "exp";
         String LIST_SIZE = "listSize";
         String CURSOR = "cursor";
-        String RECORDS = "records";
         String PMH_REQUEST = "pmhRequest";
         String NAMESPACES = "namespaces";
         String ERROR_MESSAGE = "error";

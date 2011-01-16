@@ -34,10 +34,6 @@ solr.selectUrl = http://localhost:8983/solr
 
 solr.updateUrl = http://localhost:8983/solr
 
-# Number of records that will be send to Solr as indexing batch. Default 1000 is good in most situations
-
-solr.chunkSize = 1000
-
 # The timeout for SolrJ connectionPool
 
 solr.timeout = 60000

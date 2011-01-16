@@ -34,6 +34,7 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -181,9 +182,8 @@ public class RecordMapping {
 
             @Override
             public void line(String line) {
-                int spaces = indentLevel * 4;
-                while (spaces-- > 0) {
-                    stringBuilder.append(' ');
+                for (int walk = 0; walk < indentLevel; walk++) {
+                    stringBuilder.append('\t');
                 }
                 stringBuilder.append(line).append('\n');
             }
@@ -198,7 +198,7 @@ public class RecordMapping {
             out.line("// Facts\n");
             for (Map.Entry<String, String> factEntry : facts.entrySet()) {
                 out.line(String.format(
-                        "def %s = '%s'\n",
+                        "def %s = '''%s'''\n",
                         factEntry.getKey(),
                         Sanitizer.sanitizeGroovy(factEntry.getValue())
                 ));
@@ -212,17 +212,39 @@ public class RecordMapping {
                             name
                     ));
                     out.indent(1);
-                    for (Map.Entry<String, String> entry : fieldMappingEntry.getValue().dictionary.entrySet()) {
+                    Iterator<Map.Entry<String, String>> walk = fieldMappingEntry.getValue().dictionary.entrySet().iterator();
+                    while (walk.hasNext()) {
+                        Map.Entry<String, String> entry = walk.next();
                         out.line(String.format(
-                                "'%s':'%s',",
+                                "'''%s''':'''%s'''%s",
                                 Sanitizer.sanitizeGroovy(entry.getKey()),
-                                Sanitizer.sanitizeGroovy(entry.getValue())
+                                Sanitizer.sanitizeGroovy(entry.getValue()),
+                                walk.hasNext() ? "," : ""
                         ));
                     }
                     out.indent(-1);
                     out.line("]");
+                    out.line("// lookup closure:");
                     out.line(String.format(
-                            "def %s_lookup = { def v = %s_Dictionary[it.sanitize()]; return v ? v : it }\n",
+                            "def %s_lookup = { " +
+                                    "value -> " +
+                                    "if (value) { " +
+                                    "    def v = %s_Dictionary[value.sanitize()]; " +
+                                    "    if (v) { " +
+                                    "       if (v.endsWith(':')) { " +
+                                    "           \"${v} ${value}\" "+
+                                    "       }" +
+                                    "       else {" +
+                                    "           v "+
+                                    "       }" +
+                                    "    }" +
+                                    "    else {" +
+                                    "       '' " +
+                                    "    } " +
+                                    "} " +
+                                    "else { " +
+                                    "    '' " +
+                                    "} }\n",
                             name, name
                     ));
                 }
@@ -301,13 +323,15 @@ public class RecordMapping {
         FieldMapping fieldMapping = fieldMappings.get(fieldPath);
         if (fieldMapping != null) {
             usedPaths.add(fieldPath);
-            for (String line : fieldMapping.code) {
-                if (codeIndent(line) < 0) {
-                    out.indent(-1);
-                }
-                out.line(line);
-                if (codeIndent(line) > 0) {
-                    out.indent(1);
+            if (fieldMapping.code != null) {
+                for (String line : fieldMapping.code) {
+                    if (codeIndent(line) < 0) {
+                        out.indent(-1);
+                    }
+                    out.line(line);
+                    if (codeIndent(line) > 0) {
+                        out.indent(1);
+                    }
                 }
             }
         }
@@ -315,14 +339,22 @@ public class RecordMapping {
 
     private static int codeIndent(String line) {
         int indent = 0;
-        for (char c : line.toCharArray()) {
-            switch (c) {
-                case '}':
-                    indent--;
-                    break;
-                case '{':
-                    indent++;
-                    break;
+        if (line.startsWith("case") || line.startsWith("default")) {
+            indent++;
+        }
+        else if (line.startsWith("break")) {
+            indent--;
+        }
+        else {
+            for (char c : line.toCharArray()) {
+                switch (c) {
+                    case '}':
+                        indent--;
+                        break;
+                    case '{':
+                        indent++;
+                        break;
+                }
             }
         }
         return indent;

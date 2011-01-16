@@ -128,6 +128,7 @@ public class RefinementPanel extends JPanel {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Groovy Code"));
         groovyCodeArea = new JTextArea(sipModel.getFieldCompileModel().getCodeDocument());
+        groovyCodeArea.setTabSize(3);
         groovyCodeArea.setToolTipText(Utility.GROOVY_TOOL_TIP);
         JScrollPane scroll = new JScrollPane(groovyCodeArea);
         p.add(scroll, BorderLayout.CENTER);
@@ -211,6 +212,9 @@ public class RefinementPanel extends JPanel {
             public void actionPerformed(ActionEvent actionEvent) {
                 FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
                 if (fieldMapping != null) {
+                    if (fieldMapping.dictionary == null) {
+                        throw new RuntimeException("No dictionary to delete!");
+                    }
                     int nonemptyEntries = 0;
                     for (String value : fieldMapping.dictionary.values()) {
                         if (!value.trim().isEmpty()) {
@@ -234,7 +238,9 @@ public class RefinementPanel extends JPanel {
                     fieldMapping.dictionary = null;
                     CodeGenerator codeGenerator = new CodeGenerator();
                     SourceVariable sourceVariable = getSourceVariable(fieldMapping);
-                    codeGenerator.generateCodeFor(fieldMapping, sourceVariable, false);
+                    if (sourceVariable != null) {
+                        codeGenerator.generateCodeFor(fieldMapping, sourceVariable, false);
+                    }
                     setFieldMapping(fieldMapping);
                 }
             }
@@ -329,7 +335,7 @@ public class RefinementPanel extends JPanel {
             String variableName = variableNames.get(0);
             for (SourceVariable sourceVariable : sipModel.getVariables()) {
                 if (sourceVariable.getVariableName().equals(variableName)) {
-                    found = sourceVariable;
+                    return sourceVariable;
                 }
             }
         }
