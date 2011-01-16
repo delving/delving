@@ -623,6 +623,7 @@ h4.trigger
 	overflow-x:hidden;
 	overflow-y:auto;
 	padding:5px 0;
+    font-size: .9em;
 }
 
 .facets_container table td
