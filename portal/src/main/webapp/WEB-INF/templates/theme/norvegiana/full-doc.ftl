@@ -48,7 +48,7 @@
         </#if>
         <#if user??>
             <dd>
-                <#--<a href="#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.getFieldValue("europeana_object").getFirst()?js_string}','${result.fullDoc.europeanaType}');"><@spring.message '_action.save.to.mine' /></a>-->
+                <#--<a href="#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.getFieldValue("europeana_object").getFirst()?url("utf-8")}','${result.fullDoc.europeanaType}');"><@spring.message '_action.save.to.mine' /></a>-->
                 <a href="#" onclick="saveItem('${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.delvingId?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.getFieldValue("europeana_object").getFirst()?js_string}','${result.fullDoc.europeanaType}');"><@spring.message '_action.save.to.mine' /></a>
             </dd>
             <#if result.fullDoc.europeanaType == "IMAGE">
