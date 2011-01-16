@@ -14,8 +14,10 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.SolrInputField;
 import org.joda.time.DateTime;
@@ -137,6 +139,9 @@ public class Harvindexer {
                         solrStreamingServer.deleteByQuery("europeana_collectionName:" + dataSet.getSpec() + " AND timestamp:[* TO " + fmt.print(now) + "]");
                         solrStreamingServer.commit(); // todo maybe add manual commit
                         log.info("deleting orphaned entries from the SolrIndex for collection" + dataSet.getSpec());
+                        final QueryResponse response = solrStreamingServer.query(new SolrQuery("europeana_collectionName:" + dataSet.getSpec()));
+                        final long numFound = response.getResults().getNumFound();
+                        dataSet.setRecordsIndexed((int) numFound);
                         break;
                     }
                     catch (SolrServerException e) {
@@ -166,6 +171,7 @@ public class Harvindexer {
                 else {
                     log.info("Aborted importing " + dataSet);
                     dataSet.setState(DataSetState.DISABLED);
+                    solrStreamingServer.rollback();
                 }
                 dataSet.save();
             }
@@ -185,6 +191,13 @@ public class Harvindexer {
             log.warn("Problem importing " + dataSet + ", to ERROR state.", ex);
             dataSet.setErrorState(ex.getMessage());
             dataSet.save();
+            try {
+                solrStreamingServer.rollback();
+            } catch (SolrServerException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         private void importPmh(MetaRepo.DataSet dataSet) throws HarvindexingException, IOException, TransformerException, XMLStreamException, SolrServerException {
