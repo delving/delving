@@ -15,9 +15,9 @@
             <#if doc_index &gt; (max-1)><#break/></#if>
             <dd>
                 <#if useCache="true">
-                    <img src="${cacheUrl}id=${doc.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" onerror="showDefaultSmall(this,'${doc.type}')" alt="Click here to view related item" width="32" height="32"/>
+                    <img src="${cacheUrl}id=${doc.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" onerror="showDefaultImage(this,'${doc.type}')" alt="Click here to view related item" width="32" height="32"/>
                     <#else>
-                        <img src="${doc.thumbnail}" alt="Click here to view related item" onerror="showDefaultSmall(this,'${doc.type}')"  width="32" height="32"/>
+                        <img src="${doc.thumbnail}" alt="Click here to view related item" onerror="showDefaultImage(this,'${doc.type}')"  width="32" height="32"/>
                 </#if>
                 <#if queryStringForPaging??>
                     <a href='${doc.fullDocUrl()}?query=europeana_uri:"${doc.id?url('utf-8')}"&amp;start=${doc.index()?c}&amp;startPage=1&amp;pageId=brd'><@stringLimiter "${doc.title}" "40"/></a>

@@ -341,7 +341,7 @@
                                  align="middle"
                                  src="${cacheUrl}id=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}" alt="<@spring.message '_action.alt.more.info' />"
                                  onload="checkSize(this.id,'brief',this.width);"
-                                 onerror="showDefaultSmall(this,'${cell.type}')"
+                                 onerror="showDefaultImage(this,'${cell.type}')"
                                  height="110"
                           />
                     <#else>
@@ -353,7 +353,7 @@
                                 alt="Click for more information"
                                 height="110"
                                 onload="checkSize(this.id,'brief',this.width);"
-                                onerror="showDefaultSmall(this,'${cell.type}')"
+                                onerror="showDefaultImage(this,'${cell.type}')"
                          />
                     </#if>
                 </a>
@@ -417,7 +417,7 @@
                              src="${cacheUrl}id=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}"
                              alt="<@spring.message '_action.alt.more.info' />"
                              height="50"
-                             onerror="showDefaultSmall(this,'${cell.type}')"
+                             onerror="showDefaultImage(this,'${cell.type}')"
                           />
                     <#else>
                         <img class="thumb"
@@ -426,7 +426,7 @@
                              src="${cell.thumbnail}"
                              alt="Click for more information"
                              height="50"
-                             onerror="showDefaultSmall(this,'${cell.type}')"
+                             onerror="showDefaultImage(this,'${cell.type}')"
                          />
                     </#if>
                 </a>
@@ -839,6 +839,7 @@
 
 <#macro resultFullImage>
 
+
     <#assign thumbnail = result.fullDoc.getFieldValue("europeana_object")/>
     <#if !thumbnail.isNotEmpty()>
         <#assign thumbnail = "noImageFound"/>
@@ -858,6 +859,8 @@
     <#assign overlayActive = false/>
     <#assign overlayUrl = result.fullDoc.getFieldValue("europeana_isShownBy").getFirst()/>
     <#assign originalContextUrl = result.fullDoc.getFieldValue("europeana_isShownAt").getFirst()/>
+
+    <#--${overlayUrl}-->
 
     <#if !overlayUrl?matches(" ")>
         <#assign overlayUrl = overlayUrl/>
@@ -880,50 +883,32 @@
       <#--<#if overlayActive = true>-->
       <#--class="overlay"-->
       <#--</#if>-->
-    <#-->-->
-    <#--<a class="<#if overlayActive>overlay</#if>"-->
-       <#--href="/${portalName}/redirect.html?shownBy=${overlayUrl?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"-->
-       <#--target="_blank"-->
-       <#--alt="<@spring.message '_action.view.in.original.context' /> <@spring.message '_action.OpenInNewWindow'/>"-->
-    <#-->-->
+
+    <a class="<#if overlayActive>overlay</#if>"
+       href="/${portalName}/redirect.html?shownBy=${overlayUrl?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}.jpg"
+       target="_blank"
+       alt="<@spring.message '_action.view.in.original.context' /> <@spring.message '_action.OpenInNewWindow'/>"
+    >
     <#if useCache="true">
         <img src="${cacheUrl}id=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
              class="full"
              alt="${result.fullDoc.getAsString("dc_title")}"
              id="imgview"
              onload="checkSize(this.id,'full',this.width);"
-             onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"
+             onerror="showDefaultImage(this,'${result.fullDoc.europeanaType}',this.src,'large')"
         />
     <#else>
         <img
+            src="${thumbnail}"
             alt="${result.fullDoc.getAsString("dc_title")}
             id="imgview"
-            src="${thumbnail}"
             onload="checkSize(this.id,'full',this.width);"
-            onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"
+            onerror="showDefaultImage(this,'${result.fullDoc.europeanaType}',this.src,'large')"
             alt="<@spring.message '_action.view.in.original.context' /> <@spring.message '_action.OpenInNewWindow'/>"
         />
     </#if>
-    <#--<#if useCache="true">-->
-        <#--<img src="${cacheUrl}id=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"-->
-             <#--class="full"-->
-             <#--alt="${result.fullDoc.dcTitle[0]}"-->
-             <#--id="imgview"-->
-             <#--onload="checkSize(this.id,'full',this.width);"-->
-             <#--onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"-->
-         <#--/>-->
-    <#--<#else>-->
-        <#--<img-->
-             <#--alt="${result.fullDoc.dcTitle[0]}"-->
-             <#--id="imgview"-->
-             <#--class="full"-->
-             <#--src="${thumbnail}"-->
-             <#--onload="checkSize(this.id,'full',this.width);"-->
-             <#--onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"-->
-         <#--/>-->
-    <#--</#if>-->
 
-    <#--</a>-->
+    </a>
     <#-- originalContextUrl assigned top of page -->
     <#if !originalContextUrl?matches(" ")>
     <nav style="padding: 1em;">
@@ -932,12 +917,13 @@
             target="_blank"
             alt="<@spring.message '_action.view.in.original.context' /> - <@spring.message '_action.OpenInNewWindow'/>"
             title="<@spring.message '_action.view.in.original.context' /> - <@spring.message '_action.OpenInNewWindow'/>"
-            class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
-            style="float: none;;"
+                      class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
             >
-        <span class="ui-icon ui-icon-newwin"></span><@spring.message '_action.view.in.original.context' />
+             <span class="ui-icon ui-icon-newwin"></span><@spring.message '_action.view.in.original.context' />
     </a>
     </nav>
+
+
 
     </#if>
 </#macro>

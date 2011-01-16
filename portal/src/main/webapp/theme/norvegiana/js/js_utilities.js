@@ -175,6 +175,30 @@ function styleUIMessages(){
         }
 }
 
+function showDefaultImage(obj, iType, size) {
+    var defImgSize = size || "small";
+    if(obj && iType){
+        switch (iType)
+                {
+            case "IMAGE":
+                obj.src = (defImgSize=="small") ? baseThemePath+"/images/item-image.gif" : baseThemePath+"/images/item-image-large.gif";
+                break;
+            case "TEXT":
+                obj.src = (defImgSize=="small") ? baseThemePath+"/images/item-page.gif" : baseThemePath+"/images/item-page-large.gif";
+                break;
+            case "VIDEO":
+                obj.src = (defImgSize=="small") ? baseThemePath+"/images/item-video.gif" : baseThemePath+"/images/item-video-large.gif";
+                break;
+            case "SOUND":
+                obj.src = (defImgSize=="small") ? baseThemePath+"/images/item-sound.gif" : baseThemePath+"/images/item-sound-large.gif";
+                break;
+            default:
+                obj.src = (defImgSize=="small") ? baseThemePath+"/images/item-image.gif" : baseThemePath+"/images/item-image-large.gif";
+        }
+    }
+
+}
+
 
 $(document).ready(function() {
    $("#formSimpleSearch").validate({
