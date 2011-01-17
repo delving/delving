@@ -170,6 +170,40 @@ public class ResultController {
         return viewName;
     }
 
+
+    @RequestMapping("/getFacets.html")
+    public ModelAndView getFacetsJson(
+            HttpServletRequest request
+    ) throws EuropeanaQueryException, UnsupportedEncodingException {
+
+        ModelAndView page = ControllerUtil.createModelAndViewPage("json/getFacets");
+
+        Map<String, String[]> parameterMap = (Map<String, String[]>) request.getParameterMap();
+        if (parameterMap.isEmpty()) {
+            parameterMap = new HashMap<String, String[]>();
+            parameterMap.put("query", new String[]{"*:*"});
+        } else if (!parameterMap.containsKey("query")) {
+            parameterMap = new HashMap<String, String[]>(parameterMap);
+            parameterMap.put("query", new String[]{"*:*"});
+        }
+
+        SolrQuery solrQuery = beanQueryModelFactory.createFromQueryParams(parameterMap);
+        solrQuery.setFacet(true);
+        solrQuery.setFacetMinCount(1);
+        solrQuery.setFacetLimit(300);
+//        solrQuery.addFacetField("MUNICIPALITY", "PROVIDER", "DATAPROVIDER", "COUNTY");
+        solrQuery.addFacetField("MUNICIPALITY");
+        solrQuery.setRows(0);
+
+        // Create ModelAndView
+        final QueryResponse solrResponse = beanQueryModelFactory.getSolrResponse(solrQuery);
+        final List<FacetField> facetFields = solrResponse.getFacetFields();
+        final FacetStatisticsMap facetStatistics = SolrBindingService.createFacetStatistics(facetFields);
+
+        page.addObject("facetMap", facetStatistics);
+        return page;
+    }
+
     @RequestMapping("/brief-doc.html")
     public ModelAndView briefDocHtml(
             @RequestParam(value = "query", required = false) String query,
