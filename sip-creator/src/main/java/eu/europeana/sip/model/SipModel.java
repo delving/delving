@@ -117,7 +117,8 @@ public class SipModel {
 
     public SipModel(FileStore fileStore, MetadataModel metadataModel, GroovyCodeResource groovyCodeResource, UserNotifier userNotifier) throws FileStoreException {
         this.fileStore = fileStore;
-        this.appConfigModel = new AppConfigModel(fileStore.getAppConfig(), new AppConfigModel.Listener() {
+        this.appConfigModel = new AppConfigModel(fileStore.getAppConfig());
+        this.appConfigModel.addListener(new AppConfigModel.Listener() {
             @Override
             public void appConfigUpdated(AppConfig appConfig) {
                 executor.execute(new AppConfigSetter(appConfig));
