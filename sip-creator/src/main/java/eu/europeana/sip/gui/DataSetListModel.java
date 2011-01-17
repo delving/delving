@@ -195,7 +195,7 @@ public class DataSetListModel extends AbstractListModel {
                         break;
                     case INDEXING:
                         html.append(String.format(
-                                "<p>Data set is busy indexing, with %d records indexed so far of %d.</p>",
+                                "<p>Data set is busy indexing, with %d records processed so far of %d.</p>",
                                 dataSetInfo.recordsIndexed,
                                 dataSetInfo.recordCount
                         ));
