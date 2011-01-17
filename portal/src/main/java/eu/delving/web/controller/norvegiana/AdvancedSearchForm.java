@@ -42,6 +42,7 @@ public class AdvancedSearchForm {
     private boolean onlyDigitalObjects = false;
     private boolean allCounties = true;
     private String[] countyList = null;
+    private String[] municipalityList = null;
     private boolean allCollections = true;
     private String collection = "";
     private String[] collectionList = null;
@@ -155,6 +156,14 @@ public class AdvancedSearchForm {
         this.countyList = countyList;
     }
 
+    public String[] getMunicipalityList() {
+        return municipalityList;
+    }
+
+    public void setMunicipalityList(String[] municipalityList) {
+        this.municipalityList = municipalityList;
+    }
+
     public void setAllCollections(boolean allCollections) {
         this.allCollections = allCollections;
     }
@@ -244,8 +253,9 @@ public class AdvancedSearchForm {
             builder.append(" ").append(makeRangeQueryString("dc_date", creationFrom, creationTo));
         }
         if (countyList != null && !allCounties) {
-            for (String prov : countyList) {
-                builder.append("&qf=abm_county:").append(prov);
+            for (String county : countyList) {
+                //builder.append("&qf=abm_county:").append(county);
+                builder.append("&qf=COUNTY:").append(county);
             }
         }
         if (collectionList != null && !allCollections) {
@@ -261,6 +271,11 @@ public class AdvancedSearchForm {
         if (typeList != null) {
             for (String type : typeList) {
                 builder.append("&qf=TYPE:").append(type);
+            }
+        }
+        if (municipalityList != null) {
+            for (String type : municipalityList) {
+                builder.append("&qf=MUNICIPALITY:").append(type);
             }
         }
         if (onlyDigitalObjects) {
@@ -344,6 +359,8 @@ public class AdvancedSearchForm {
                 ", creationTo=" + creationTo +
                 ", allCounties=" + allCounties +
                 ", countyList='" + Arrays.toString(countyList) + '\'' +
+                ", providersList='" + Arrays.toString(providersList) + '\'' +
+                ", municipalityList='" + Arrays.toString(municipalityList) + '\'' +
                 ", allCollections='" + allCollections + '\'' +
                 ", collection='" + collection + '\'' +
                 ", sortBy='" + sortBy + '\'' +
