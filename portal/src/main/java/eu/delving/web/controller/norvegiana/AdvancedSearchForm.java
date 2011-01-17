@@ -42,6 +42,7 @@ public class AdvancedSearchForm {
     private boolean onlyDigitalObjects = false;
     private boolean allCounties = true;
     private String[] countyList = null;
+    private boolean allMunicipalities = true;
     private String[] municipalityList = null;
     private boolean allCollections = true;
     private String collection = "";
@@ -155,6 +156,15 @@ public class AdvancedSearchForm {
     public void setCountyList(String[] countyList) {
         this.countyList = countyList;
     }
+
+    public boolean isAllMunicipalities() {
+        return allMunicipalities;
+    }
+
+    public void setAllMunicipalities(boolean allMunicipalities) {
+        this.allMunicipalities = allMunicipalities;
+    }
+
 
     public String[] getMunicipalityList() {
         return municipalityList;
@@ -273,7 +283,7 @@ public class AdvancedSearchForm {
                 builder.append("&qf=TYPE:").append(type);
             }
         }
-        if (municipalityList != null) {
+        if (municipalityList != null && !allMunicipalities) {
             for (String type : municipalityList) {
                 builder.append("&qf=MUNICIPALITY:").append(type);
             }

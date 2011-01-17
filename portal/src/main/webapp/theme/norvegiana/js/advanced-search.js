@@ -8,11 +8,11 @@
 
 $(document).ready(function() {
 
-    $('#provider-list :checkbox').each(function(){
-        if(this.checked) {
-            $("#provider-list").show();
-        }
-    });
+//    $('#provider-list :checkbox').each(function(){
+//        if(this.checked) {
+//            $("#provider-list").show();
+//        }
+//    });
 
     $('#sel-counties :selected').each(function(){
         if($(this).val()=="false") {
@@ -23,12 +23,23 @@ $(document).ready(function() {
     $("#sel-counties").change(function() {
         if ($("#sel-counties :selected").val() == "false") {
             $("#county-list").show("slow");
+            $("tr#municipalities-row").show();
         }
         if ($("#sel-counties :selected").val() == "true") {
             $("#county-list").hide("slow");
+            $("tr#municipalities-row").hide();
         }
     });
 
+    $("#sel-municipalities").change(function() {
+        if ($("#sel-municipalities :selected").val() == "false") {
+            loadMunicipalities();
+            $("#municipality-list").show("slow");
+        }
+        if ($("#sel-municipalities :selected").val() == "true") {
+            $("#municipality-list").hide("slow");
+        }
+    });
     $("#sel-dataproviders").change(function() {
         if ($("#sel-dataproviders :selected").val() == "false") {
             $("#provider-list").show("slow");
@@ -50,6 +61,20 @@ $(document).ready(function() {
 //     }
 
     $("#county-list").change(function(){
+        loadMunicipalities();
+    });
+
+    // extra form reset functionality
+    $("input[type=reset]").click(function(){
+        $("#provider-list").hide();
+        $("#county-list").hide();
+        $("tr#municipalities-row").hide();
+        $("#municipality-list").hide();
+    })
+
+});
+
+function loadMunicipalities(){
         var county = $("#county-list :selected").val();
 //        var multipleValues = $(this).val() || [];
 //            $(this.options).each(function(){
@@ -57,22 +82,18 @@ $(document).ready(function() {
 //                    multipleValues.join("&")
 //                }
 //            });
-//            alert(multipleValues);
          $.getJSON(portalName+"/getFacets.html", "qf=COUNTY:"+county, function(data) {
             var options = '';
              for (var i = 0; i < data.municipalities.length; i++) {
-               options +=
-                       '<option value="' + data.municipalities[i].name + '">' +
-                               data.municipalities[i].name + ' (' +
-                               data.municipalities[i].count + ')' +
-                               '</option>';
+               options +='<option value="' + data.municipalities[i].name + '">'
+                       +data.municipalities[i].name + ' ('
+                       +data.municipalities[i].count + ')'
+                       +'</option>';
              }
              $("tr#municipalities-row").show();
              $("select#municipality-list").html(options);
-        });
+         })
+};
 
-    });
-
-});
 
 

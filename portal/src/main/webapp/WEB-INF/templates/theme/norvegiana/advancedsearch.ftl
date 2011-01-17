@@ -91,7 +91,7 @@
             <tr>
                 <td align="right"><@spring.message '_metadata.abm.county'/>:</td>
                 <td>
-                    <#assign counties = ['&#248;stfold','akershus','oslo','hedmark','oppland','buskerud','vestfold','telemark','aust-agder','vest-agder','rogaland','hordaland','sogn og fjordane','m&#248;re og romsdal','s&#248;r-tr&#248;ndelag','nord-tr&#248;ndelag','nordland','troms','finnmark']/>
+
                     <select name="allCounties" id="sel-counties">
                        <option value="true"><@spring.message '_metadata.type.all'/></option>
                        <option value="false"><@spring.message '_search.select'/></option>
@@ -119,7 +119,13 @@
             </tr>
             <tr id="municipalities-row" style="display:none">
                 <td align="right"><@spring.message '_metadata.abm.municipality'/>:</td>
-                <td><select id="municipality-list" name="municipalityList"></select></td>
+                <td>
+                    <select name="allMunicipalities" id="sel-municipalities">
+                       <option value="true"><@spring.message '_metadata.type.all'/></option>
+                       <option value="false"><@spring.message '_search.select'/></option>
+                     </select>
+                    <select id="municipality-list" name="municipalityList" style="display:none;"></select>
+                </td>
             </tr>
             </#if>
             <#--<#if municipality??>-->
