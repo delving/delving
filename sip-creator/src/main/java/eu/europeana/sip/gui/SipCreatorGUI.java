@@ -23,12 +23,14 @@ package eu.europeana.sip.gui;
 
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.MetadataModelImpl;
+import eu.delving.sip.AppConfig;
 import eu.delving.sip.DataSetInfo;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.FileStoreImpl;
 import eu.europeana.sip.core.GroovyCodeResource;
 import eu.europeana.sip.core.RecordValidationException;
+import eu.europeana.sip.model.AppConfigModel;
 import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.UserNotifier;
 import org.apache.commons.io.FileUtils;
@@ -44,11 +46,9 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
@@ -82,13 +82,14 @@ import java.util.Set;
 public class SipCreatorGUI extends JFrame {
     private static final String LOCAL_SETS = "Local Data Sets";
     private static final String LOCAL_AND_REMOTE_SETS = "Local and Remote Data Sets";
+    private static final String CONNECT_TO = "Connect to repository at %s";
     private static final Dimension SIZE = new Dimension(1024, 768);
     private static final int MARGIN = 15;
     private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel;
     private JLabel titleLabel = new JLabel(LOCAL_SETS, JLabel.CENTER);
     private DataSetClient dataSetClient;
-    private JCheckBox connectedBox = new JCheckBox("Connect to remote repository");
+    private JCheckBox connectedBox;
     private DataSetListModel dataSetListModel = new DataSetListModel();
     private JList dataSetList = new JList(dataSetListModel);
     private DataSetActions dataSetActions;
@@ -121,14 +122,14 @@ public class SipCreatorGUI extends JFrame {
                     }
                 }
                 else {
-                    log.warn("recieved empty list from the server");
+                    log.warn("received empty list from the server");
                 }
             }
 
             @Override
             public void disconnected() {
                 connectedBox.setSelected(false);
-                sipModel.getUserNotifier().tellUser("Disconnected from Repository");
+                sipModel.getUserNotifier().tellUser(String.format("Disconnected from Repository at %s", sipModel.getAppConfigModel().getServerHostPort()));
             }
         });
         dataSetActions = new DataSetActions(this, sipModel, dataSetClient, new Runnable() {
@@ -206,6 +207,13 @@ public class SipCreatorGUI extends JFrame {
     }
 
     private JPanel createConnectPanel() {
+        connectedBox = new JCheckBox(String.format(CONNECT_TO, sipModel.getAppConfigModel().getServerHostPort()));
+        sipModel.getAppConfigModel().addListener(new AppConfigModel.Listener() {
+            @Override
+            public void appConfigUpdated(AppConfig appConfig) {
+                connectedBox.setText(String.format(CONNECT_TO, sipModel.getAppConfigModel().getServerHostPort()));
+            }
+        });
         connectedBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent itemEvent) {
@@ -288,16 +296,9 @@ public class SipCreatorGUI extends JFrame {
                 }
             }
         }));
-        bar.add(createRepositoryMenu());
+        bar.add(new RepositoryMenu(this, sipModel));
         bar.add(dataSetActions.createPrefixActivationMenu());
         return bar;
-    }
-
-    private JMenu createRepositoryMenu() {
-        JMenu repository = new JMenu("Repository");
-        repository.add(new ServerHostPortAction());
-        repository.add(new AccessKeyAction());
-        return repository;
     }
 
     private MetadataModel loadMetadataModel() {
@@ -351,38 +352,6 @@ public class SipCreatorGUI extends JFrame {
         @Override
         public void tellUser(String message) {
             tellUser(message, null);
-        }
-    }
-
-    private class ServerHostPortAction extends AbstractAction {
-
-        public ServerHostPortAction() {
-            super("Server Network Address");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent actionEvent) {
-            String serverHostPort = JOptionPane.showInputDialog(SipCreatorGUI.this, "Server network address host:port (eg. delving.eu:8080).", sipModel.getAppConfigModel().getServerHostPort());
-            if (serverHostPort != null && !serverHostPort.isEmpty()) {
-                sipModel.getAppConfigModel().setServerHostPort(serverHostPort);
-            }
-        }
-    }
-
-    private class AccessKeyAction extends AbstractAction {
-
-        public AccessKeyAction() {
-            super("Access Key");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent actionEvent) {
-            JPasswordField passwordField = new JPasswordField(sipModel.getAppConfigModel().getAccessKey());
-            Object[] msg = {"Server Access Key", passwordField};
-            int result = JOptionPane.showConfirmDialog(SipCreatorGUI.this, msg, "Permission", JOptionPane.OK_CANCEL_OPTION);
-            if (result == JOptionPane.OK_OPTION) {
-                sipModel.getAppConfigModel().setServerAccessKey(new String(passwordField.getPassword()));
-            }
         }
     }
 
