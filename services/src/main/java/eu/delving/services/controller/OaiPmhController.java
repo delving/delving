@@ -5,6 +5,7 @@ import eu.delving.services.harvesting.OaiPmhService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,10 +25,20 @@ public class OaiPmhController {
 
 
     @RequestMapping("/oai-pmh")
-    public void searchController(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void pmhController(HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("text/xml");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(OaiPmhService.parseHttpServletRequest(request, metaRepo));
+        response.getWriter().write(OaiPmhService.parseHttpServletRequest(request, metaRepo, ""));
+        response.getWriter().close();
+    }
+
+    @RequestMapping("/oai-pmh/{accessKey}")
+    public void pmhController(
+            @PathVariable String accessKey,
+            HttpServletRequest request, HttpServletResponse response) throws Exception {
+        response.setContentType("text/xml");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(OaiPmhService.parseHttpServletRequest(request, metaRepo, accessKey));
         response.getWriter().close();
     }
 }
