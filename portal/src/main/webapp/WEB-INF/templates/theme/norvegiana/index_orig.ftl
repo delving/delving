@@ -15,6 +15,7 @@
         <#if facetMap.facetExists("DATAPROVIDER")>
             <dd><@spring.message '_metadata.searchfield.dataprovider'/>: <strong>${facetMap.getFacetCount("DATAPROVIDER")}</strong></dd>
         </#if>
+        <dd><a href="/${portalName}/statistics.html"><@spring.message '_portal.ui.statistics'/></a></dd>
     </dl>
 
 
