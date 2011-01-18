@@ -863,7 +863,6 @@
     <#--${overlayUrl}-->
 
     <#if !overlayUrl?matches("") && result.fullDoc.europeanaType == "IMAGE">
-        ${overlayUrl}
         <#assign overlayUrl = overlayUrl/>
         <#assign overlayActive = true/>
     </#if>
