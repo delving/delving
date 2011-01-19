@@ -983,6 +983,11 @@ dl.zebra dd:nth-child(even){
     background-color: #fffff0;
 }
 
+dl#statistics dd {
+    background: url(../images/stats.png) 5px 5px no-repeat;
+    padding-left: 28px;
+}
+
 
 /* TABLES */
 table

@@ -707,7 +707,7 @@
                 <a href="?${tabURL?trim}&qf=TYPE:VIDEO&tab=videos&start=1" rel="nofollow"><@spring.message '_metadata.type.videos'/><span><@getFacetCount result "TYPE" "VIDEO"/></span></a>
             </li>
             <li class="ui-state-default ui-corner-top <#if tab = 'sounds'>ui-state-active</#if>">
-                <a href="?${tabURL?trim}&qf=TYPE:TEXT&tab=sounds&start=1" rel="nofollow"><@spring.message '_metadata.type.sounds'/><span><@getFacetCount result "TYPE" "SOUND"/></span></a>
+                <a href="?${tabURL?trim}&qf=TYPE:SOUND&tab=sounds&start=1" rel="nofollow"><@spring.message '_metadata.type.sounds'/><span><@getFacetCount result "TYPE" "SOUND"/></span></a>
             </li>
         </ul>
     </div>
@@ -862,16 +862,16 @@
 
     <#--${overlayUrl}-->
 
-    <#if !overlayUrl?matches(" ")>
+    <#if !overlayUrl?matches("") && result.fullDoc.europeanaType == "IMAGE">
         <#assign overlayUrl = overlayUrl/>
         <#assign overlayActive = true/>
     </#if>
 
-    <#if !originalContextUrl?matches(" ") && !overlayUrl?matches(" ")>
+    <#if !originalContextUrl?matches("") && !overlayUrl?matches("")>
         <#assign originalContextUrl = originalContextUrl/>
-    <#elseif originalContextUrl?matches(" ") && !overlayUrl?matches(" ")>
+    <#elseif originalContextUrl?matches("") && !overlayUrl?matches("")>
         <#assign originalContextUrl = overlayUrl/>
-    <#elseif !originalContextUrl?matches(" ") && overlayUrl?matches(" ")>
+    <#elseif !originalContextUrl?matches("") && overlayUrl?matches("")>
         <#assign overlayUrl = originalContextUrl/>
         <#assign overlayActive = false/>
     </#if>
@@ -910,7 +910,7 @@
 
     </a>
     <#-- originalContextUrl assigned top of page -->
-    <#if !originalContextUrl?matches(" ")>
+    <#if !originalContextUrl?matches("")>
     <nav style="padding: 1em;">
     <a
             href="/${portalName}/redirect.html?shownAt=${originalContextUrl?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"

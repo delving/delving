@@ -6,7 +6,7 @@
 
 <section class="grid_3 main" role="complimentary">
 
-    <dl class="menu zebra">
+    <dl class="menu zebra" id="statistics">
         <dt>${portalDisplayName}</dt>
         <dd> total nr. of records: <strong>${totalCount?c}</strong></dd>
         <#if facetMap.facetExists("HASDIGITALOBJECT")>
@@ -15,6 +15,8 @@
         <#if facetMap.facetExists("DATAPROVIDER")>
             <dd><@spring.message '_metadata.searchfield.dataprovider'/>: <strong>${facetMap.getFacetCount("DATAPROVIDER")}</strong></dd>
         </#if>
+        <dd>
+            <a href="/${portalName}/statistics.html"><@spring.message '_portal.ui.statistics'/></a></dd>
     </dl>
 
 
