@@ -34,7 +34,7 @@
                     <#list pagePathList as pagePath>
                         <tr id="${pagePath_index}">
                             <td>
-                                <a href="${pagePath}?edit=true">
+                                <a href="${pagePath}">
                                     <span class="ui-icon ui-icon-document"></span>
                                 ${pagePath}</a></td>
                             <td width="100"><a href="${pagePath}?edit=true" class="btn-strong">
