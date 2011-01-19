@@ -8,15 +8,14 @@
 
 $(document).ready(function() {
 
-//    $('#provider-list :checkbox').each(function(){
-//        if(this.checked) {
-//            $("#provider-list").show();
-//        }
-//    });
-
     $('#sel-counties :selected').each(function(){
         if($(this).val()=="false") {
             $("#county-list").show();
+            $("tr#municipalities-row").show();
+            if ($("#sel-municipalities :selected").val() == "false") {
+                loadMunicipalities();
+                $("#municipality-list").show("slow");
+            }
         }
     });
 
@@ -48,17 +47,6 @@ $(document).ready(function() {
             $("#provider-list").hide("slow");
         }
     });
-
-//    if($("#sel-collections")){
-//        $("#sel-collections").change(function() {
-//        if ($("#sel-collections :selected").val() == "false") {
-//            $("#collections-list").show("slow");
-//        }
-//        if ($("#sel-collections :selected").val() == "true") {
-//            $("#collections-list").hide("slow");
-//        }
-//        });
-//     }
 
     $("#county-list").change(function(){
         loadMunicipalities();
