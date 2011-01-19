@@ -707,7 +707,7 @@
                 <a href="?${tabURL?trim}&qf=TYPE:VIDEO&tab=videos&start=1" rel="nofollow"><@spring.message '_metadata.type.videos'/><span><@getFacetCount result "TYPE" "VIDEO"/></span></a>
             </li>
             <li class="ui-state-default ui-corner-top <#if tab = 'sounds'>ui-state-active</#if>">
-                <a href="?${tabURL?trim}&qf=TYPE:TEXT&tab=sounds&start=1" rel="nofollow"><@spring.message '_metadata.type.sounds'/><span><@getFacetCount result "TYPE" "AUDIO"/></span></a>
+                <a href="?${tabURL?trim}&qf=TYPE:TEXT&tab=sounds&start=1" rel="nofollow"><@spring.message '_metadata.type.sounds'/><span><@getFacetCount result "TYPE" "SOUND"/></span></a>
             </li>
         </ul>
     </div>
