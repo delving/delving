@@ -85,7 +85,7 @@ function loadMunicipalities(){
          $.getJSON(portalName+"/getFacets.html", "qf=COUNTY:"+county, function(data) {
             var options = '';
              for (var i = 0; i < data.municipalities.length; i++) {
-               options +='<option value="' + data.municipalities[i].name + '">'
+               options +='<option value="' + data.municipalities[i].value + '">'
                        +data.municipalities[i].name + ' ('
                        +data.municipalities[i].count + ')'
                        +'</option>';
