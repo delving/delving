@@ -1,6 +1,6 @@
-package eu.europeana.core.harvesting
+package eu.delving.core
 
-import _root_.java.io.{PrintWriter}
+import _root_.java.io.PrintWriter
 import _root_.java.net.URL
 import _root_.java.util.Date
 import xml.{NodeSeq, Elem, XML}
