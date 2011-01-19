@@ -109,7 +109,7 @@
                         <#--</table>-->
                             <select id="county-list" name="countyList" style="display: none">
                             <#list county?sort as row>
-                                <option value="${row.name}">${row.name} (${row.count})</option>
+                                <option value="${row.name?url('utf-8')}">${row.name} (${row.count})</option>
                             </#list>
                             </select>
 
