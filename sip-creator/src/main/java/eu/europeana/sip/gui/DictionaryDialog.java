@@ -37,8 +37,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,6 +60,7 @@ public class DictionaryDialog extends JDialog {
     private JComboBox valueBox;
     private JTable table;
     private JLabel statusLabel = new JLabel("", JLabel.CENTER);
+    private Runnable finishedRunnable;
     private Timer timer;
 
     public DictionaryDialog(Dialog owner, FieldMapping fieldMapping, final Runnable finishedRunnable) {
@@ -69,6 +68,7 @@ public class DictionaryDialog extends JDialog {
         setTitle(String.format("Dictionary for %s", fieldMapping.getFieldNameString()));
         this.fieldMapping = fieldMapping;
         this.mapModel = new MapModel();
+        this.finishedRunnable = finishedRunnable;
         JPanel p = new JPanel(new BorderLayout(6, 6));
         p.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
         p.add(createNorth(), BorderLayout.NORTH);
@@ -77,12 +77,6 @@ public class DictionaryDialog extends JDialog {
         getContentPane().add(p);
         setLocation(owner.getLocation());
         setSize(owner.getSize());
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent windowEvent) {
-                finishedRunnable.run();
-            }
-        });
         timer = new Timer(300, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -214,6 +208,8 @@ public class DictionaryDialog extends JDialog {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             dialog.setVisible(false);
+            dialog.dispose();
+            finishedRunnable.run();
         }
     }
 
