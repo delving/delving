@@ -209,28 +209,23 @@ public class SipModel {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        final List<FieldStatistics> statistics = dataSetStore.getStatistics();
-                        final Facts facts = dataSetStore.getFacts();
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                SipModel.this.facts = facts;
-                                factModel.clear();
-                                factModel.setFacts(facts, dataSetStore.getSpec());
-                                mappingModel.setRecordMapping(null);
-                                setStatisticsList(statistics);
-                                variableListModel.clear();
-                                AnalysisTree.setUniqueElement(analysisTreeModel, getUniqueElement());
-                                for (UpdateListener updateListener : updateListeners) {
-                                    updateListener.updatedDataSetStore(dataSetStore);
-                                }
+                    final List<FieldStatistics> statistics = dataSetStore.getStatistics();
+                    final Facts facts = dataSetStore.getFacts();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            SipModel.this.facts = facts;
+                            factModel.clear();
+                            factModel.setFacts(facts, dataSetStore.getSpec());
+                            mappingModel.setRecordMapping(null);
+                            setStatisticsList(statistics);
+                            variableListModel.clear();
+                            AnalysisTree.setUniqueElement(analysisTreeModel, getUniqueElement());
+                            for (UpdateListener updateListener : updateListeners) {
+                                updateListener.updatedDataSetStore(dataSetStore);
                             }
-                        });
-                    }
-                    catch (FileStoreException e) {
-                        userNotifier.tellUser("Unable to select Data Set " + dataSetStore, e);
-                    }
+                        }
+                    });
                 }
             });
         }

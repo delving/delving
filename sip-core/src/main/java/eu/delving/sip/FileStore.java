@@ -71,7 +71,7 @@ public interface FileStore {
 
         InputStream createXmlInputStream() throws FileStoreException;
 
-        List<FieldStatistics> getStatistics() throws FileStoreException;
+        List<FieldStatistics> getStatistics();
 
         void setStatistics(List<FieldStatistics> fieldStatisticsList) throws FileStoreException;
 

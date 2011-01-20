@@ -34,6 +34,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +58,8 @@ public class FieldStatisticsPanel extends JPanel {
                 )
         );
         add(createTabs(), BorderLayout.CENTER);
-        add(summaryLabel, BorderLayout.SOUTH);
+        summaryLabel.setFont(new Font(summaryLabel.getFont().getFamily(), Font.BOLD, summaryLabel.getFont().getSize()));
+        add(summaryLabel, BorderLayout.NORTH);
     }
 
     public void setStatistics(final FieldStatistics fieldStatistics) {
@@ -106,7 +108,7 @@ public class FieldStatisticsPanel extends JPanel {
             list.clear();
             fireIntervalRemoved(this, 0, size);
             if (histogram != null) {
-                list.addAll(histogram.getCounters(true));
+                list.addAll(histogram.getTrimmedCounters());
                 fireIntervalAdded(this, 0, getSize());
             }
         }

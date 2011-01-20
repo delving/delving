@@ -265,7 +265,7 @@ public class DataSetActions {
 
             @Override
             boolean isEnabled(DataSetListModel.Entry entry) {
-                return entry.getDataSetStore() != null;
+                return entry.getDataSetStore() != null && entry.getDataSetStore().hasSource() && entry.getDataSetStore().getStatistics() != null;
             }
         };
     }
