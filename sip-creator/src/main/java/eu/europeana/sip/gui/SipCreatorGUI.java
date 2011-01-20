@@ -50,13 +50,18 @@ import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
@@ -64,6 +69,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
@@ -88,6 +94,8 @@ public class SipCreatorGUI extends JFrame {
     private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel;
     private JLabel titleLabel = new JLabel(LOCAL_SETS, JLabel.CENTER);
+    private JTextField filter = new JTextField(10);
+    private Timer filterTimer;
     private DataSetClient dataSetClient;
     private JCheckBox connectedBox;
     private DataSetListModel dataSetListModel = new DataSetListModel();
@@ -155,6 +163,7 @@ public class SipCreatorGUI extends JFrame {
         titleLabel.setOpaque(true);
         titleLabel.setFont(new Font("Sans", Font.BOLD, 24));
         JLabel northRight = new JLabel(new ImageIcon(getClass().getResource("/delving-logo-name.jpg")));
+        north.add(createFilterPanel(), BorderLayout.WEST);
         north.add(titleLabel, BorderLayout.CENTER);
         north.add(northRight, BorderLayout.EAST);
         getContentPane().add(north, BorderLayout.NORTH);
@@ -175,6 +184,36 @@ public class SipCreatorGUI extends JFrame {
                 }
             }
         });
+    }
+
+    private Component createFilterPanel() {
+        JPanel p = new JPanel(new BorderLayout());
+        p.setBackground(Color.WHITE);
+        p.setBorder(BorderFactory.createTitledBorder("Filter"));
+        filterTimer = new Timer(300, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                dataSetListModel.setPattern(filter.getText());
+            }
+        });
+        filter.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent documentEvent) {
+                filterTimer.restart();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent documentEvent) {
+                filterTimer.restart();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent documentEvent) {
+                filterTimer.restart();
+            }
+        });
+        p.add(filter, BorderLayout.CENTER);
+        return p;
     }
 
     private File getFileStoreDirectory() throws FileStoreException {
