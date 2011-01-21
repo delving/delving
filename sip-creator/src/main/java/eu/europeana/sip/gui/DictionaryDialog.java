@@ -49,7 +49,7 @@ import java.util.Map;
  */
 
 public class DictionaryDialog extends JDialog {
-    public static final String COPY_VERBATIM = "<<< copy verbatim >>>";
+    public static final String COPY_VERBATIM = "<<< empty >>>";
     public static final String ASSIGN_SELECTED = "Assign Selected";
     public static final String ASSIGN_ALL = "Assign All";
     private JCheckBox showSet;

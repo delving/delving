@@ -193,9 +193,11 @@ public class SipCreatorGUI extends JFrame {
         filterTimer = new Timer(300, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                dataSetList.clearSelection();
                 dataSetListModel.setPattern(filter.getText());
             }
         });
+        filterTimer.setRepeats(false);
         filter.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent documentEvent) {
