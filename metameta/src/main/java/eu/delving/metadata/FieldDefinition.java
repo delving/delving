@@ -208,7 +208,7 @@ public class FieldDefinition implements Comparable<FieldDefinition> {
             return enumString.toString();
         }
 
-        private List<String> getOptions() {
+        public List<String> getOptions() {
             if (options != null) {
                 return options;
             }
