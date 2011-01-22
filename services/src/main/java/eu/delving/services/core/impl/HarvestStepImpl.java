@@ -84,7 +84,7 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
                     loop:
                     while (true) {
                         int recordsToFetch = implFactory.getResponseListSize() - getRecordCount() + 1; // 1 extra
-                        List<? extends MetaRepo.Record> records = dataSet.getRecords(
+                        MetaRepo.DataSet.RecordFetch recordFetch  = dataSet.getRecords(
                                 getPmhRequest().getMetadataPrefix(),
                                 recordsToFetch,
                                 getPmhRequest().getFrom(),
@@ -92,15 +92,12 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
                                 getPmhRequest().getUntil(),
                                 key
                         );
-                        if (records == null) {
+                        if (recordFetch.getRecords() == null) {
                             break;
                         }
-                        if (!records.isEmpty()) {
-                            afterId = records.get(records.size()-1).getId();
-                            // todo: this will fail if there are no records returned (mapping failed on all) because we'll keep fetching the same ones
-                        }
-                        log.info(String.format("Fetched %d records", records.size()));
-                        for (MetaRepo.Record record : records) {
+                        afterId = recordFetch.getAfterId();
+                        log.info(String.format("Fetched %d records", recordFetch.getRecords().size()));
+                        for (MetaRepo.Record record : recordFetch.getRecords()) {
                             if (addRecord(record) == implFactory.getResponseListSize()) { // full => prepare next step
                                 log.info("Full at "+getRecordCount());
                                 DBObject nextStep = insertNextStep(

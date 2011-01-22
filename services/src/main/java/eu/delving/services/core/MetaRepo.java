@@ -99,7 +99,12 @@ public interface MetaRepo {
         Map<String,Mapping> mappings();
         int getRecordCount();
         Record getRecord(ObjectId id, String metadataPrefix, String accessKey) throws MappingNotFoundException, AccessKeyException;
-        List<? extends Record> getRecords(String prefix, int count, Date from, ObjectId afterId, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException;
+
+        interface RecordFetch {
+            List<? extends Record> getRecords();
+            ObjectId getAfterId();
+        }
+        RecordFetch getRecords(String prefix, int count, Date from, ObjectId afterId, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException;
 
         List<String> getHashes();
         void save();
