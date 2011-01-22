@@ -455,7 +455,8 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             solrQuery.setRows(12); // todo replace with annotation later
             solrQuery.addFacetField(metadataModel.getRecordDefinition().getFacetFieldStrings());
             // todo now hard-coded but these values must be retrieved from the RecordDefinition later
-            solrQuery.setFields("europeana_uri,title,europeana_object,creator,YEAR,PROVIDER,DATAPROVIDER,LANGUAGE,TYPE");
+            solrQuery.setFields("europeana_uri,dc_title,europeana_object,dc_creator,europeana_year,europeana_provider," +
+                    "europeana_dataProvider,europeana_language,europeana_type,dc_description");
 //            solrQuery.setFields("*,score");
 //            solrQuery.setFields(metadataModel.getRecordDefinition().getFieldStrings());
             if (solrQuery.getQueryType().equalsIgnoreCase(QueryType.SIMPLE_QUERY.toString())) {

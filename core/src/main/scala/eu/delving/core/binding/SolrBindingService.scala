@@ -275,20 +275,20 @@ case class BriefDocItem(solrDocument : SolrDocument) extends BriefDoc {
 
     override def getFieldValue(key : String) : FieldValue = FieldValue(key, solrDocument)
 
-    def getFieldValuesFiltered(include: Boolean, fields: List[String]) : JList[FieldValue] = solrDocument.getFieldValuesFiltered(include, fields)
+    override def getFieldValuesFiltered(include: Boolean, fields: Array[String]) : JList[FieldValue] = solrDocument.getFieldValuesFiltered(include, fields.toList)
 
-    def getFieldValueList : JList[FieldValue] = solrDocument.getFieldValueList
+    override def getFieldValueList : JList[FieldValue] = solrDocument.getFieldValueList
 
     def getId : String = assign("europeana_uri")
     def getDelvingId : String = assign("delving_pmhId")
-    def getTitle : String = assign("title")
+    def getTitle : String = assign("dc_title")
     def getThumbnail : String = assign("europeana_object")
-    def getCreator : String = assign("creator")
-    def getYear : String = assign("YEAR")
-    def getProvider : String = assign("PROVIDER")
-    def getDataProvider : String = assign("DATAPROVIDER")
-    def getLanguage : String = assign("LANGUAGE")
-    def getType : DocType = DocType.get(assign("TYPE"))
+    def getCreator : String = assign("dc_creator")
+    def getYear : String = assign("europeana_year")
+    def getProvider : String = assign("europeana_provider")
+    def getDataProvider : String = assign("europeana_dataProvider")
+    def getLanguage : String = assign("europeana_language")
+    def getType : DocType = DocType.get(assign("europeana_type"))
 
     @BeanProperty var index : Int = _
     @BeanProperty var fullDocUrl: String = _
