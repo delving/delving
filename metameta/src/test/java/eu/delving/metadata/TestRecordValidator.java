@@ -38,7 +38,7 @@ public class TestRecordValidator {
             "<europeana:collectionName>collectionName</europeana:collectionName>",
             "<europeana:language>en</europeana:language>",
             "<europeana:object>http://object.com/</europeana:object>",
-            "<europeana:rights>UNKNOWN</europeana:rights>",
+            "<europeana:rights>http://creativecommons.org/licenses/by-nc/3.0/de/</europeana:rights>",
             "<europeana:dataProvider>everyone</europeana:dataProvider>",
             "<europeana:type>IMAGE</europeana:type>",
             "<europeana:collectionTitle>Tittle</europeana:collectionTitle>",
@@ -107,6 +107,9 @@ public class TestRecordValidator {
             if (problem.contains(problemContains)) {
                 found = true;
             }
+            else {
+                Assert.fail(String.format("Unexpected problem [%s]", problem));
+            }
         }
         if (!found) {
             Assert.fail(String.format("Expected to find a problem containing [%s]", problemContains));
@@ -149,10 +152,20 @@ public class TestRecordValidator {
     public void optionsFalse() {
         problem(
                 new String[]{
-                        "<europeana:type>SOwUND</europeana:type>",
+                        "<europeana:isShownAt>http://is-shown-at.com/</europeana:isShownAt>",
+                        "<europeana:uri>http://uri.com/</europeana:uri>",
+                        "<europeana:provider>provider</europeana:provider>",
+                        "<europeana:country>netherlands</europeana:country>",
+                        "<europeana:collectionName>collectionName</europeana:collectionName>",
+                        "<europeana:language>en</europeana:language>",
+                        "<europeana:object>http://object.com/</europeana:object>",
+                        "<europeana:rights>http://creativecommons.org/licenses/by-nc/3.0/de/</europeana:rights>",
+                        "<europeana:dataProvider>everyone</europeana:dataProvider>",
+                        "<europeana:collectionTitle>Tittle</europeana:collectionTitle>",
+                        "<europeana:type>IMmmAGE</europeana:type>", // here is the problem
                 },
                 "which does not belong to",
-                true
+                false
         );
     }
 
@@ -235,7 +248,7 @@ public class TestRecordValidator {
                         "<europeana:collectionName>collectionName</europeana:collectionName>",
                         "<europeana:language>en</europeana:language>",
                         "<europeana:object>http://object.com/</europeana:object>",
-                        "<europeana:rights>nerd's</europeana:rights>",
+                        "<europeana:rights>http://creativecommons.org/licenses/by-nc/3.0/de/</europeana:rights>",
                         "<europeana:dataProvider>everyone</europeana:dataProvider>",
                         "<europeana:type>IMAGE</europeana:type>",
                         "<europeana:collectionTitle>Tittle</europeana:collectionTitle>",
@@ -243,6 +256,29 @@ public class TestRecordValidator {
                 "Required field violation for [Shown-at or Shown-by]",
                 false
         );
+    }
+
+    @Test
+    public void urlOption() {
+        problem(
+                new String[]{
+                        "<europeana:uri>http://uri.com/</europeana:uri>",
+                        "<europeana:provider>provider</europeana:provider>",
+                        "<europeana:country>netherlands</europeana:country>",
+                        "<europeana:collectionName>collectionName</europeana:collectionName>",
+                        "<europeana:language>en</europeana:language>",
+                        "<europeana:object>http://object.com/</europeana:object>",
+                        "<europeana:dataProvider>everyone</europeana:dataProvider>",
+                        "<europeana:type>IMAGE</europeana:type>",
+                        "<europeana:collectionTitle>Tittle</europeana:collectionTitle>",
+
+                        "<europeana:rights>http://gumby.com</europeana:rights>",
+                },
+                "which does not belong to",
+                true
+        );
+//        "http://creativecommons.org/licenses/by-nc/3.0/de/"
+
     }
 
 }

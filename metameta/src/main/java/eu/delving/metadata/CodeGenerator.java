@@ -35,7 +35,7 @@ public class CodeGenerator {
 
     public static boolean isDictionaryPossible(FieldDefinition fieldDefinition, AnalysisTree.Node node) {
         return fieldDefinition.validation != null &&
-                fieldDefinition.validation.getOptions() != null &&
+                fieldDefinition.validation.hasOptions() &&
                 node.getStatistics().getHistogramValues() != null;
     }
 

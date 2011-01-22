@@ -84,7 +84,7 @@
         </field>
         <field prefix="europeana" localName="source"/> <!-- to be deleted is unused -->
         <field prefix="europeana" localName="type" fieldType="string" facetPrefix="tp" facetName="type">
-            <validation type="true" factName="type" requiredGroup="Type"/>
+            <validation type="true" factName="type" multivalued="false" requiredGroup="Type"/>
         </field>
         <field prefix="europeana" localName="unstored" fieldType="text" fulldoc="false">
             <description>This field is not stored only indexed </description>
