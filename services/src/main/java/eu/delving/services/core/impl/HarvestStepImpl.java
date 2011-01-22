@@ -92,7 +92,7 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
                                 getPmhRequest().getUntil(),
                                 key
                         );
-                        if (recordFetch.getRecords() == null) {
+                        if (recordFetch == null) {
                             break;
                         }
                         afterId = recordFetch.getAfterId();
