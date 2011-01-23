@@ -6,7 +6,10 @@ import eu.europeana.sip.core.GroovyNode
 public class MappingCategory {
 
   static GroovyList ifAbsentUse(GroovyList list, Object factVariable) {
-    if (list.size() == 1) {
+    if (!list) {
+      list += factVariable
+    }
+    else if (list.size() == 1) {
       GroovyNode node = (GroovyNode) list[0];
       if (!node.text()) {
         list += factVariable
