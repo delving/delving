@@ -80,14 +80,21 @@ public class UserAjaxController {
 
     @RequestMapping("/remove-user.ajax")
     public ModelAndView removeUser(
-            HttpServletRequest request,
+//            HttpServletRequest request,
             @RequestParam String email
     ) throws Exception {
-        User user = userRepo.byEmail(email);
+        User user = ControllerUtil.getUser();
         if (user != null) {
-            user.delete();
+            User doomed = userRepo.byEmail(email);
+            if (doomed != null &&
+                    (user.getRole() == User.Role.ROLE_ADMINISTRATOR || user.getRole() == User.Role.ROLE_GOD ||
+                            user.getEmail().equals(doomed.getEmail()))) {
+                doomed.delete();
+//                clickStreamLogger.logUserAction(request, UserAction.REMOVE_USER);
+                complete(true);
+            }
         }
-        return complete(user != null);
+        return complete(false);
     }
 
     @RequestMapping("/remove-item.ajax")
