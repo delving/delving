@@ -83,7 +83,7 @@ public class AdvancedSearchController {
         String queryString = advancedSearchForm.toSolrQuery();
         log.info(advancedSearchForm);
         clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.ADVANCED_SEARCH, advancedSearchForm.toString());
-        return "redirect:/brief-doc.html?query=" + queryString;
+        return "redirect:/search?query=" + queryString;
     }
 
 }

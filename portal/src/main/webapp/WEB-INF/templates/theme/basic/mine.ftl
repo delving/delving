@@ -146,9 +146,9 @@ td {
                     <#list user.searches as search>
                        <#assign rowId = "search_row_"+search_index/>
                         <tr id="${rowId}">
-                            <td width="5"><a href="/${portalName}/brief-doc.html?${search.query}"><span class="ui-icon ui-icon-search"></span></a></td>
+                            <td width="5"><a href="/${portalName}/search?${search.query}"><span class="ui-icon ui-icon-search"></span></a></td>
                             <td valign="top" class="item-info">
-                                <a href="/${portalName}/brief-doc.html?${search.query}">${search.queryString}</a><br/>
+                                <a href="/${portalName}/search?${search.query}">${search.queryString}</a><br/>
                                 <@spring.message '_mine.date.saved'/>: <em>${search.dateSaved?datetime}</em>
                             </td>
                             <td width="60"><a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeSavedSearch(${search.id?string('0')},'${rowId}');"><span class="ui-icon ui-icon-trash"></span><@spring.message '_mine.delete'/></a></td>

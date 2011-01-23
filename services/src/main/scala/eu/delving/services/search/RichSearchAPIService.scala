@@ -14,7 +14,7 @@ class RichSearchAPIService(request: HttpServletRequest, beanQueryModelFactory: B
   val servicesUrl = launchProperties.getProperty("services.url")
   val portalBaseUrl = launchProperties.getProperty("portal.baseUrl")
   val portalName = launchProperties.getProperty("portal.name")
-  val briefDocSearch = portalBaseUrl + "/" + portalName + "/brief-doc.html"
+  val briefDocSearch = portalBaseUrl + "/" + portalName + "/search"
   val prettyPrinter = new PrettyPrinter(150, 5)
 
 

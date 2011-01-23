@@ -3,12 +3,12 @@
 <channel>
 <title>Delving</title>
 <link>http://www.delving.eu/</link>
-    <atom:link rel="self" href="${servletUrl}/brief-doc.html?query=${query}&amp;start=${pagination.start}&amp;format=rss" type="application/rss+xml" />
+    <atom:link rel="self" href="${servletUrl}/search?query=${query}&amp;start=${pagination.start}&amp;format=rss" type="application/rss+xml" />
     <#if pagination.isPrevious()>
-    <atom:link rel="previous" href="${servletUrl}/brief-doc.html?query=${query}&amp;start=${pagination.previousPage}&amp;format=rss" type="application/rss+xml" />
+    <atom:link rel="previous" href="${servletUrl}/search?query=${query}&amp;start=${pagination.previousPage}&amp;format=rss" type="application/rss+xml" />
     </#if>
     <#if pagination.isNext()>
-    <atom:link rel="next" href="${servletUrl}/brief-doc.html?query=${query}&amp;start=${pagination.nextPage}&amp;format=rss" type="application/rss+xml" />
+    <atom:link rel="next" href="${servletUrl}/search?query=${query}&amp;start=${pagination.nextPage}&amp;format=rss" type="application/rss+xml" />
     </#if>
     <#list model.briefDocWindow.docs as doc>
     <item>

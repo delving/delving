@@ -738,7 +738,7 @@
             <#if !query?starts_with("europeana_uri:")>
                 <#list pagination.breadcrumbs as crumb>
                     <#if !crumb.last>
-                        <a href="/${portalName}/brief-doc.html?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;
+                        <a href="/${portalName}/search?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;
                     <#else>
                         <strong>${crumb.display?html}</strong>
                     </#if>
@@ -1058,7 +1058,7 @@
  * Macro to generate a simple search form.
  -->
 <#macro simpleSearch>
-<form method="get" action="/${portalName}/brief-doc.html" accept-charset="UTF-8" id="formSimpleSearch">
+<form method="get" action="/${portalName}/search" accept-charset="UTF-8" id="formSimpleSearch">
     <input type="hidden" name="start" value="1" />
     <input type="hidden" name="view" value="${view}" />
     <fieldset>

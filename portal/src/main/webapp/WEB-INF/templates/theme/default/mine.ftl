@@ -124,9 +124,9 @@
                             <#if user.searches?size &gt; 0>
                                 <#list user.searches as search>
                                     <tr>
-                                        <td width="5"><a href="/${portalName}/brief-doc.html?${search.query}"><span class="ui-icon ui-icon-search"></span></a></td>
+                                        <td width="5"><a href="/${portalName}/search?${search.query}"><span class="ui-icon ui-icon-search"></span></a></td>
                                         <td valign="top" class="item-info">
-                                            <a href="/${portalName}/brief-doc.html?${search.query}">${search.queryString}</a>
+                                            <a href="/${portalName}/search?${search.query}">${search.queryString}</a>
                                             <p><@spring.message '_mine.date.saved'/>: <em>${search.dateSaved?datetime}</em></p>
                                         </td>
                                         <td width="60"><a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeRequest('SavedSearch',${search.id?string("0")});"><span class="ui-icon ui-icon-trash"></span><@spring.message '_mine.delete'/></a></td>
@@ -150,7 +150,7 @@
                                 <tr>
                                     <th valign="top" class="item-info" colspan="3">
                                         <#--${tagQuery}-->
-                                        <#--<a href="/${portalName}/brief-doc.html?query=europeana_userTag:${count.tag}"><strong>${count.tag} (${count.list?size})</strong></a>-->
+                                        <#--<a href="/${portalName}/search?query=europeana_userTag:${count.tag}"><strong>${count.tag} (${count.list?size})</strong></a>-->
                                         <span class="ui-icon ui-icon-tag"></span><strong>${count.tag} (${count.list?size})</strong>
                                     </th>
                                 </tr>

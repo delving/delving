@@ -29,7 +29,7 @@
             </#list>
             <#if result.relatedItems?size &gt; max-1>
                 <dd>
-                     <a href='/${portalName}/brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message '_action.see.all.related.items' /></a>
+                     <a href='/${portalName}/search?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message '_action.see.all.related.items' /></a>
                 </dd>
             </#if>
     </dl>

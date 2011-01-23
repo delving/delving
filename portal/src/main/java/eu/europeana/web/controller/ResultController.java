@@ -204,7 +204,7 @@ public class ResultController {
         return page;
     }
 
-    @RequestMapping("/brief-doc.html")
+    @RequestMapping("/search")
     public ModelAndView briefDocHtml(
             @RequestParam(value = "query", required = false) String query,
             @RequestParam(value = "format", required = false) String format,

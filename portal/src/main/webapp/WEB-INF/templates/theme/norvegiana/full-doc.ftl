@@ -29,7 +29,7 @@
         </#list>
     </dl>
     <#if result.relatedItems?size &gt; max-1>
-        <a class="fg-button ui-state-default ui-corner-all" href='/${portalName}/brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message '_action.see.all.related.items' /></a>
+        <a class="fg-button ui-state-default ui-corner-all" href='/${portalName}/search?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message '_action.see.all.related.items' /></a>
     </#if>
 
     <dl class="menu" id="actions">

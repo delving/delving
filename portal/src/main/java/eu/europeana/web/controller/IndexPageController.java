@@ -61,7 +61,7 @@ public class IndexPageController {
         final SolrQuery solrQuery = new SolrQuery("*:*");
         solrQuery.addSortField(SolrQueryUtil.createRandomSortKey(), SolrQuery.ORDER.asc);
         solrQuery.addFilterQuery("europeana_hasDigitalObject:true");
-        solrQuery.setFields("europeana_uri", "europeana_object", "DATAPROVIDER", "TYPE", "title", "creator");
+        solrQuery.setFields("europeana_uri", "europeana_object", "europeana_dataProvider", "europeana_type", "dc_title", "dc_creator");
         solrQuery.setRows(10);
         final QueryResponse solrResponse = beanQueryModelFactory.getSolrResponse(solrQuery);
         final List<BriefDocItem> briefDocs = SolrBindingService.getBriefDocs(solrResponse);

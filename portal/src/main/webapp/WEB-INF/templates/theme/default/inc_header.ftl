@@ -71,10 +71,10 @@
                 <span style="font-style: italic;">Wrong query. ${result.errorMessage}</span>
             </#if>
             <#--<#if result.spellCheck??>-->
-               <#--<#if !result.spellCheck.correctlySpelled>did you mean: <a href="/${portalName}/brief-doc.html?query=${result.spellCheck.collatedResult}">${result.spellCheck.collatedResult}</a></#if>-->
+               <#--<#if !result.spellCheck.correctlySpelled>did you mean: <a href="/${portalName}/search?query=${result.spellCheck.collatedResult}">${result.spellCheck.collatedResult}</a></#if>-->
             <#--</#if>-->
         </#if>
-        <form method="get" action="/${portalName}/brief-doc.html" accept-charset="UTF-8" onsubmit="return checkFormSimpleSearch('query');">
+        <form method="get" action="/${portalName}/search" accept-charset="UTF-8" onsubmit="return checkFormSimpleSearch('query');">
             <input type="hidden" name="start" value="1" />
             <input type="hidden" name="view" value="${view}" />
             <input class="txt-input" name="query" id="query" type="text" title="Europeana Search" maxlength="75" />

@@ -938,7 +938,7 @@
  * Macro to generate a simple search form.
  -->
 <#macro simpleSearch>
-<form method="get" action="/${portalName}/brief-doc.html" accept-charset="UTF-8" id="formSimpleSearch">
+<form method="get" action="/${portalName}/search" accept-charset="UTF-8" id="formSimpleSearch">
     <input type="hidden" name="start" value="1" />
     <input type="hidden" name="view" value="${view}" />
     <fieldset>
