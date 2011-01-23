@@ -452,7 +452,9 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             solrQuery.setFacet(true);
             solrQuery.setFacetMinCount(1);
             solrQuery.setFacetLimit(100);
-            solrQuery.setRows(12); // todo replace with annotation later
+            if (solrQuery.getRows() ==  null) {
+                solrQuery.setRows(12);
+            }
             solrQuery.addFacetField(metadataModel.getRecordDefinition().getFacetFieldStrings());
             // todo now hard-coded but these values must be retrieved from the RecordDefinition later
             if (solrQuery.getFields() == null) {
