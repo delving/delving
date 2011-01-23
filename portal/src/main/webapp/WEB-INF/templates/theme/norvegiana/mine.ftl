@@ -51,7 +51,7 @@
                         <#assign rowId = "item_row_"+item.index/>
                         <tr id="${rowId}">
                             <td width="60">
-                                 <a href="/${portalName}/record/${item.europeanaId}.html">
+                                 <a href="/${portalName}/object/${item.europeanaId}.html">
                                     <#if useCache="true">
                                         <#--${item.getThumbnail()}-->
                                         <img class="thumb" id="img_${item_index}" align="middle" src="${cacheUrl}id=${item.getThumbnail()?url('utf-8')}" alt="Click for more information" width="50" style="float:left" onerror="showDefaultImage(this,'${item.docType}')"/>
@@ -65,7 +65,7 @@
                                 </a>
                             </td>
                             <td valign="top" class="item-info">
-                                <a href="/${portalName}/record/${item.europeanaId}.html">
+                                <a href="/${portalName}/object/${item.europeanaId}.html">
                                     <strong><@stringLimiter "${item.getTitle()}" "50"/></strong>
                                 </a>
                                 <br/>

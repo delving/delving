@@ -86,7 +86,7 @@
                                 <#list user.items as item>
                                     <tr>
                                         <td valign="top" class="item-img">
-                                            <a href="/${portalName}/record/${item.europeanaId.europeanaUri}.html">
+                                            <a href="/${portalName}/object/${item.europeanaId.europeanaUri}.html">
                                              <#if useCache="true">
                                                 <img class="thumb" align="middle" src="${cacheUrl}uri=${item.europeanaObject}&size=BRIEF_DOC" alt="Click for more information" height="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
                                              <#else>
@@ -99,7 +99,7 @@
                                             </a>
                                         </td>
                                         <td valign="top" class="item-info">
-                                            <a href="/${portalName}/record/${item.europeanaId.europeanaUri}.html">
+                                            <a href="/${portalName}/object/${item.europeanaId.europeanaUri}.html">
                                                 <strong><@stringLimiter "${item.title}" "50"/></strong>
                                             </a>
                                             <br/>
@@ -158,7 +158,7 @@
                                    <tr>
                                      <td width="35" align="right">
                                          <#if tag.europeanaObject??>
-                                            <a href="/${portalName}/record/${tag.europeanaUri}.html">
+                                            <a href="/${portalName}/object/${tag.europeanaUri}.html">
                                             <#if useCache = "true">
                                                 <img class="thumb" src="${cacheUrl}uri=${tag.europeanaObject}&size=BRIEF_DOC" alt="Click for more information" width="25"/>
                                             </#if>
@@ -177,7 +177,7 @@
                                          </#if>
                                      </td>
                                      <td valign="top" class="item-info">
-                                         <a href="/${portalName}/record/${tag.europeanaUri}.html">${tag.title}</a><br/>
+                                         <a href="/${portalName}/object/${tag.europeanaUri}.html">${tag.title}</a><br/>
                                          <p><@spring.message '_mine.date.saved'/>: <em>${tag.dateSaved?datetime}</em></p>
                                      </td>
                                      <td width="60"><a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeRequest('SocialTag',${tag.id?string("0")});"><span class="ui-icon ui-icon-trash"></span><@spring.message '_mine.delete'/></a></td>

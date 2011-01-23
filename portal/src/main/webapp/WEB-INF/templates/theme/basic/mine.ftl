@@ -105,7 +105,7 @@ td {
                         <#assign rowId = "item_row_"+item_index/>
                         <tr id="${rowId}">
                             <td width="60">
-                                <a href="/${portalName}/record/${item.europeanaId.europeanaUri}.html">
+                                <a href="/${portalName}/object/${item.europeanaId.europeanaUri}.html">
                                  <#if useCache="true">
                                     <img class="thumb" id="img_${item_index}" align="middle" src="${cacheUrl}id=${item.europeanaObject}&size=BRIEF_DOC" alt="Click for more information" width="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
                                  <#else>
@@ -118,7 +118,7 @@ td {
                                 </a>
                             </td>
                             <td valign="top" class="item-info">
-                                <a href="/${portalName}/record/${item.europeanaId.europeanaUri}.html">
+                                <a href="/${portalName}/object/${item.europeanaId.europeanaUri}.html">
                                     <strong><@stringLimiter "${item.title}" "50"/></strong>
                                 </a>
                                 <br/>

@@ -314,7 +314,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     }
 
     private String createFullDocUrl(String europeanaId) {
-        return MessageFormat.format("/{0}/record/{1}.html", portalName, europeanaId);
+        return MessageFormat.format("/{0}/object/{1}.html", portalName, europeanaId);
     }
 
     private class FullBeanViewImpl implements FullBeanView {

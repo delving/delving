@@ -27,13 +27,13 @@
     <ul id="random-carousel">
     <#list randomItems as item>
         <#if useCache="true">
-            <li><a href="/${portalName}/record/${item.id}.html"">
+            <li><a href="/${portalName}/object/${item.id}.html"">
                     <img src="${cacheUrl}id=${item.thumbnail?url('utf-8')}" width="100" height="100" title="<@stringLimiter item.title 50/>" onerror="showDefaultImage(this,'${item.type}')"/>
                 </a>
             </li>
             <#else>
                 <li>
-                    <a href="/${portalName}/record/${item.id}.html"">
+                    <a href="/${portalName}/object/${item.id}.html"">
                         <img src="${item.thumbnail}"  width="100" height="100" title="<@stringLimiter item.title 50/>" onerror="showDefaultImage(this,'${item.type}')"/>
                     </a>
                 </li>

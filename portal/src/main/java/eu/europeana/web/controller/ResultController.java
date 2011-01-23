@@ -93,7 +93,7 @@ public class ResultController {
         return page;
     }
 
-    @RequestMapping("/record/{collId}/{recordHash}.html")
+    @RequestMapping("/object/{collId}/{recordHash}.html")
     @SuppressWarnings("unchecked")
     public ModelAndView fullDocRest(
             @PathVariable String collId, @PathVariable String recordHash,
