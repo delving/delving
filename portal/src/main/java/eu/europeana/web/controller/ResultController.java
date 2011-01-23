@@ -63,36 +63,6 @@ public class ResultController {
     @Value("#{launchProperties['image.annotation.tool.base.url']}")
     private String imageAnnotationToolBaseUrl;
 
-    @RequestMapping("/full-doc.html")
-    @SuppressWarnings("unchecked")
-    public ModelAndView fullDocHtml(
-            @RequestParam(value = "query", required = false) String query,
-            @RequestParam(value = "uri", required = true) String uri,
-            @RequestParam(value = "start", required = false) String start,
-            @RequestParam(value = "format", required = false) String format,
-            HttpServletRequest request
-    ) throws Exception {
-        final Map params = request.getParameterMap();
-        boolean srwFormat = format != null && format.equals("srw");
-
-        // get results
-        final FullBeanView fullResultView = beanQueryModelFactory.getFullResultView(params);
-
-        // create ModelAndView
-        ModelAndView page = ControllerUtil.createModelAndViewPage(srwFormat ? "xml/full-doc-srw" : "full-doc");
-        page.addObject("result", fullResultView);
-        if (fullResultView.getDocIdWindowPager() != null) {
-            page.addObject("pagination", fullResultView.getDocIdWindowPager());
-        }
-        if (format != null && format.equalsIgnoreCase("labels")) {
-            page.addObject("format", format);
-        }
-        page.addObject("uri", uri);
-        page.addObject("imageAnnotationToolBaseUrl", imageAnnotationToolBaseUrl);
-        clickStreamLogger.logFullResultView(request, fullResultView, page, fullResultView.getFullDoc().getId());
-        return page;
-    }
-
     @RequestMapping("/object/{collId}/{recordHash}.html")
     @SuppressWarnings("unchecked")
     public ModelAndView fullDocRest(
@@ -204,7 +174,7 @@ public class ResultController {
         return page;
     }
 
-    @RequestMapping("/search")
+    @RequestMapping(value = {"/search", "/brief-doc.html"})
     public ModelAndView briefDocHtml(
             @RequestParam(value = "query", required = false) String query,
             @RequestParam(value = "format", required = false) String format,
@@ -233,9 +203,6 @@ public class ResultController {
         return page;
     }
 
-//    <prop key="/brief-doc.rss">briefDocController</prop>
-//    <prop key="/brief-doc.rdf">briefDocController</prop>
-//    <prop key="/brief-doc.srw">briefDocController</prop>
 
     /*
      * The page where you are redirected to the isShownAt and isShownBy links
