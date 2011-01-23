@@ -4,7 +4,7 @@ import scala.collection.JavaConversions._
 import scala.reflect.BeanProperty
 import org.apache.solr.common.SolrDocumentList
 import java.util. {Date, ArrayList, List => JList}
-import java.lang.{Boolean => JBoolean}
+import java.lang.{Boolean => JBoolean, Float => JFloat}
 import eu.europeana.core.querymodel.query._
 import org.apache.solr.client.solrj.response. {FacetField, QueryResponse}
 import java.net.URL
@@ -61,6 +61,7 @@ object SolrBindingService {
     val ArrayListObject = classOf[ArrayList[Any]]
     val StringObject = classOf[String]
     val DateObject = classOf[Date]
+    val FloatObject = classOf[JFloat]
     val BooleanObject = classOf[JBoolean]
     // check for required fields else check exception
     solrDocumentList.foreach{
@@ -74,7 +75,8 @@ object SolrBindingService {
                 case StringObject => solrDoc.add(field.getKey, List(FieldValueNode(field.getKey, field.getValue.toString)))
                 case DateObject => solrDoc.add(field.getKey, List(FieldValueNode(field.getKey, field.getValue.toString)))
                 case BooleanObject => solrDoc.add(field.getKey, List(FieldValueNode(field.getKey, field.getValue.toString)))
-                case _ => println("unknown class in SolrBindingService " + field.getKey )
+                case FloatObject => solrDoc.add(field.getKey, List(FieldValueNode(field.getKey, field.getValue.toString)))
+                case _ => println("unknown class in SolrBindingService " + field.getKey + FieldValueClass.getCanonicalName)
               }
           }
       docs add solrDoc
