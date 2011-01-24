@@ -98,9 +98,9 @@ public class SipCreatorGUI extends JFrame {
     private Timer filterTimer;
     private DataSetClient dataSetClient;
     private JCheckBox connectedBox;
-    private DataSetListModel dataSetListModel = new DataSetListModel();
-    private JList dataSetList = new JList(dataSetListModel);
+    private DataSetListModel dataSetListModel;
     private DataSetActions dataSetActions;
+    private JList dataSetList;
 
     public SipCreatorGUI() throws FileStoreException {
         super("Delving SIP Creator");
@@ -109,6 +109,13 @@ public class SipCreatorGUI extends JFrame {
         File fileStoreDirectory = getFileStoreDirectory();
         FileStore fileStore = new FileStoreImpl(fileStoreDirectory, metadataModel);
         GroovyCodeResource groovyCodeResource = new GroovyCodeResource();
+        this.dataSetListModel  = new DataSetListModel(new DataSetListModel.ConnectedStatus() {
+            @Override
+            public boolean isConnected() {
+                return connectedBox.isSelected();
+            }
+        });
+        this.dataSetList = new JList(dataSetListModel);
         this.sipModel = new SipModel(fileStore, metadataModel, groovyCodeResource, new PopupExceptionHandler());
         this.dataSetClient = new DataSetClient(sipModel, new DataSetClient.Listener() {
 
