@@ -117,7 +117,8 @@ public class SipModel {
 
     public SipModel(FileStore fileStore, MetadataModel metadataModel, GroovyCodeResource groovyCodeResource, UserNotifier userNotifier) throws FileStoreException {
         this.fileStore = fileStore;
-        this.appConfigModel = new AppConfigModel(fileStore.getAppConfig(), new AppConfigModel.Listener() {
+        this.appConfigModel = new AppConfigModel(fileStore.getAppConfig());
+        this.appConfigModel.addListener(new AppConfigModel.Listener() {
             @Override
             public void appConfigUpdated(AppConfig appConfig) {
                 executor.execute(new AppConfigSetter(appConfig));
@@ -153,6 +154,10 @@ public class SipModel {
 
     public void addUpdateListener(UpdateListener updateListener) {
         updateListeners.add(updateListener);
+    }
+
+    public void addParseListener(ParseListener parseListener) {
+        parseListeners.add(parseListener);
     }
 
     public FileStore getFileStore() {
@@ -204,30 +209,30 @@ public class SipModel {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        final List<FieldStatistics> statistics = dataSetStore.getStatistics();
-                        final Facts facts = dataSetStore.getFacts();
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                SipModel.this.facts = facts;
-                                factModel.clear();
-                                factModel.setFacts(facts, dataSetStore.getSpec());
-                                mappingModel.setRecordMapping(null);
-                                setStatisticsList(statistics);
-                                variableListModel.clear();
-                                AnalysisTree.setUniqueElement(analysisTreeModel, getUniqueElement());
+                    final List<FieldStatistics> statistics = dataSetStore.getStatistics();
+                    final Facts facts = dataSetStore.getFacts();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            SipModel.this.facts = facts;
+                            factModel.clear();
+                            factModel.setFacts(facts, dataSetStore.getSpec());
+                            mappingModel.setRecordMapping(null);
+                            setStatisticsList(statistics);
+                            variableListModel.clear();
+                            AnalysisTree.setUniqueElement(analysisTreeModel, getUniqueElement());
+                            for (UpdateListener updateListener : updateListeners) {
+                                updateListener.updatedDataSetStore(dataSetStore);
                             }
-                        });
-                    }
-                    catch (FileStoreException e) {
-                        userNotifier.tellUser("Unable to select Data Set " + dataSetStore, e);
-                    }
+                        }
+                    });
                 }
             });
         }
-        for (UpdateListener updateListener : updateListeners) {
-            updateListener.updatedDataSetStore(this.dataSetStore);
+        else {
+            for (UpdateListener updateListener : updateListeners) {
+                updateListener.updatedDataSetStore(this.dataSetStore);
+            }
         }
     }
 
@@ -243,7 +248,7 @@ public class SipModel {
                         public void run() {
                             mappingModel.setRecordMapping(recordMapping);
                             recordCompileModel.setRecordValidator(new RecordValidator(getRecordDefinition(), false));
-                            createMetadataParser(1);
+                            seekRecord(1, null);
                             if (recordMapping != null) {
                                 if (getRecordRoot() != null) {
                                     setRecordRootInternal(new Path(facts.getRecordRootPath()), Integer.parseInt(facts.getRecordCount()));
@@ -288,8 +293,9 @@ public class SipModel {
         }
         else {
             try {
+                template.apply(getRecordDefinition());
                 mappingModel.applyTemplate(template);
-                createMetadataParser(1);
+                seekRecord(1, null);
             }
             catch (Exception e) {
                 userNotifier.tellUser("Unable to load template", e);
@@ -360,7 +366,7 @@ public class SipModel {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                createMetadataParser(exception.getMetadataRecord().getRecordNumber());
+                                seekRecord(exception.getMetadataRecord().getRecordNumber(), progressListener);
                             }
                         });
                     }
@@ -371,7 +377,7 @@ public class SipModel {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                createMetadataParser(exception.getMetadataRecord().getRecordNumber());
+                                seekRecord(exception.getMetadataRecord().getRecordNumber(), progressListener);
                             }
                         });
                     }
@@ -429,7 +435,7 @@ public class SipModel {
     public void setRecordRoot(Path recordRoot, int recordCount) {
         checkSwingThread();
         setRecordRootInternal(recordRoot, recordCount);
-        createMetadataParser(1);
+        seekRecord(1, null);
         facts.setRecordRootPath(recordRoot.toString());
         facts.setRecordCount(String.valueOf(recordCount));
         factModel.setFacts(facts, dataSetStore.getSpec());
@@ -492,14 +498,24 @@ public class SipModel {
         return fieldMappingListModel;
     }
 
-    public void firstRecord() {
+    public void seekRecord(int recordNumber, ProgressListener progressListener) {
         checkSwingThread();
-        createMetadataParser(1);
+        if (metadataParser != null) {
+            metadataParser.close();
+            metadataParser = null;
+            for (ParseListener parseListener : parseListeners) {
+                parseListener.updatedRecord(null);
+            }
+        }
+        Path recordRoot = getRecordRoot();
+        if (recordRoot != null) {
+            executor.execute(new RecordFetcher(recordNumber, progressListener));
+        }
     }
 
     public void nextRecord() {
         checkSwingThread();
-        executor.execute(new RecordFetcher(1));
+        executor.execute(new RecordFetcher(1, null));
     }
 
     public CompileModel getRecordCompileModel() {
@@ -564,29 +580,19 @@ public class SipModel {
         if (getRecordRoot() != null) {
             AnalysisTree.setRecordRoot(analysisTreeModel, getRecordRoot());
         }
+        if (getUniqueElement() != null) {
+            AnalysisTree.setUniqueElement(analysisTreeModel, getUniqueElement());
+        }
         setStatistics(null);
-    }
-
-    private void createMetadataParser(int recordNumber) {
-        checkSwingThread();
-        if (metadataParser != null) {
-            metadataParser.close();
-            metadataParser = null;
-            for (ParseListener parseListener : parseListeners) {
-                parseListener.updatedRecord(null);
-            }
-        }
-        Path recordRoot = getRecordRoot();
-        if (recordRoot != null) {
-            executor.execute(new RecordFetcher(recordNumber));
-        }
     }
 
     private class RecordFetcher implements Runnable {
         private int recordNumber;
+        private ProgressListener progressListener;
 
-        private RecordFetcher(int recordNumber) {
+        private RecordFetcher(int recordNumber, ProgressListener progressListener) {
             this.recordNumber = recordNumber;
+            this.progressListener = progressListener;
         }
 
         @Override
@@ -597,7 +603,10 @@ public class SipModel {
             }
             try {
                 if (metadataParser == null) {
-                    metadataParser = new MetadataParser(dataSetStore.createXmlInputStream(), recordRoot, getRecordCount(), null);
+                    metadataParser = new MetadataParser(dataSetStore.createXmlInputStream(), recordRoot, getRecordCount(), progressListener);
+                }
+                else {
+                    metadataParser.setProgressListener(progressListener);
                 }
                 while (recordNumber-- > 0) {
                     metadataRecord = metadataParser.nextRecord();
@@ -607,6 +616,9 @@ public class SipModel {
                     public void run() {
                         for (ParseListener parseListener : parseListeners) {
                             parseListener.updatedRecord(metadataRecord);
+                        }
+                        if (progressListener != null) {
+                            progressListener.finished(true);
                         }
                     }
                 });

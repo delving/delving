@@ -31,7 +31,6 @@ import eu.europeana.sip.model.SipModel;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -52,8 +51,6 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 
 /**
  * A Graphical interface for analysis
@@ -63,12 +60,12 @@ import java.awt.event.FocusListener;
  */
 
 public class AnalysisFactsPanel extends JPanel {
-    private static final String RERUN = "Rerun the Analysis";
+    private static final String RUN_ANALYSIS = "Run the Analysis";
     private static final String ELEMENTS_PROCESSED = "%d Elements Processed";
     private JButton selectRecordRootButton = new JButton("Select Record Root >> ");
     private JButton selectUniqueElementButton = new JButton("Select Unique Element >> ");
-    private JButton reanalyzeButton = new JButton(RERUN);
-    private JEditorPane statisticsView = new JEditorPane();
+    private JButton analyzeButton = new JButton(RUN_ANALYSIS);
+    private FieldStatisticsPanel fieldStatisticsPanel = new FieldStatisticsPanel();
     private JTree statisticsJTree;
     private SipModel sipModel;
 
@@ -78,7 +75,8 @@ public class AnalysisFactsPanel extends JPanel {
         this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         JPanel left = new JPanel(new GridLayout(0, 1, 5, 5));
         left.add(createTreePanel());
-        left.add(createStatisticsPanel());
+        fieldStatisticsPanel.setPreferredSize(new Dimension(300, 500));
+        left.add(fieldStatisticsPanel);
         JPanel center = new JPanel(new GridLayout(1, 0, 5, 5));
         center.add(left);
         center.add(new FactPanel(sipModel.getFactModel()));
@@ -93,24 +91,9 @@ public class AnalysisFactsPanel extends JPanel {
         statisticsJTree.getModel().addTreeModelListener(new Expander());
         statisticsJTree.setCellRenderer(new AnalysisTreeCellRenderer());
         statisticsJTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-        statisticsJTree.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent focusEvent) {
-                if (reanalyzeButton.isEnabled()) {
-                    if (sipModel.getAnalysisTreeModel().getChildCount(sipModel.getAnalysisTreeModel().getRoot()) == 0) {
-                        reanalyzeButton.setEnabled(false);
-                        performAnalysis();
-                    }
-                }
-            }
-
-            @Override
-            public void focusLost(FocusEvent focusEvent) {
-            }
-        });
         p.add(scroll(statisticsJTree), BorderLayout.CENTER);
         JPanel south = new JPanel(new GridLayout(0, 1));
-        south.add(reanalyzeButton);
+        south.add(analyzeButton);
         south.add(createSelectButtonPanel());
         p.add(south, BorderLayout.SOUTH);
         return p;
@@ -125,14 +108,6 @@ public class AnalysisFactsPanel extends JPanel {
         return bp;
     }
 
-    private JPanel createStatisticsPanel() {
-        JPanel p = new JPanel(new BorderLayout(5, 5));
-        p.setBorder(BorderFactory.createTitledBorder("Field Statistics"));
-        statisticsView.setContentType("text/html");
-        p.add(scroll(statisticsView), BorderLayout.CENTER);
-        return p;
-    }
-
     private JScrollPane scroll(JComponent content) {
         JScrollPane scroll = new JScrollPane(content);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -142,30 +117,20 @@ public class AnalysisFactsPanel extends JPanel {
     }
 
     private void setElementsProcessed(long count) {
-        reanalyzeButton.setText(String.format(ELEMENTS_PROCESSED, count));
+        analyzeButton.setText(String.format(ELEMENTS_PROCESSED, count));
     }
 
     private void wireUp() {
         sipModel.addUpdateListener(new SipModel.UpdateListener() {
             @Override
             public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
-                reanalyzeButton.setText(RERUN);
+                analyzeButton.setText(RUN_ANALYSIS);
+                analyzeButton.setEnabled(true);
             }
 
             @Override
             public void updatedStatistics(final FieldStatistics fieldStatistics) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (fieldStatistics == null) {
-                            statisticsView.setText("<html><h3>No Statistics</h3>");
-                        }
-                        else {
-                            statisticsView.setText(fieldStatistics.toHtml());
-                        }
-                        statisticsView.setCaretPosition(0);
-                    }
-                });
+                fieldStatisticsPanel.setStatistics(fieldStatistics);
             }
 
             @Override
@@ -222,10 +187,10 @@ public class AnalysisFactsPanel extends JPanel {
                 sipModel.setUniqueElement(node.getPath());
             }
         });
-        reanalyzeButton.addActionListener(new ActionListener() {
+        analyzeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                reanalyzeButton.setEnabled(false);
+                analyzeButton.setEnabled(false);
                 performAnalysis();
             }
         });
@@ -240,7 +205,7 @@ public class AnalysisFactsPanel extends JPanel {
                     @Override
                     public void run() {
                         setElementsProcessed(sipModel.getElementCount());
-                        reanalyzeButton.setEnabled(true);
+                        analyzeButton.setEnabled(true);
                     }
                 });
             }

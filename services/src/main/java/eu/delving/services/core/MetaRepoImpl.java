@@ -57,7 +57,11 @@ public class MetaRepoImpl implements MetaRepo {
     private GroovyCodeResource groovyCodeResource;
 
     @Value("#{launchProperties['services.mongo.dbName']}")
-    private String mongoDatabaseName = null;
+    private String mongoDatabaseName;
+
+    public void setMongoDatabaseName(String mongoDatabaseName) {
+        this.mongoDatabaseName = mongoDatabaseName;
+    }
 
     public void setResponseListSize(int responseListSize) {
         factory().setResponseListSize(responseListSize);
@@ -85,7 +89,7 @@ public class MetaRepoImpl implements MetaRepo {
     public DataSet createDataSet(String spec) {
         DBObject object = new BasicDBObject();
         object.put(DataSet.SPEC, spec);
-        object.put(DataSet.DATA_SET_STATE, DataSetState.EMPTY.toString());
+        object.put(DataSet.DATA_SET_STATE, DataSetState.INCOMPLETE.toString());
 
         DataSet dataSet = factory().createDataSet(object);
         dataSet.save();
@@ -124,24 +128,6 @@ public class MetaRepoImpl implements MetaRepo {
             return null;
         }
         return factory().createDataSet(object);
-    }
-
-    @Override
-    public void incrementRecordCount(String spec, int increment) {
-        DBCollection collection = db().getCollection(DATASETS_COLLECTION);
-        collection.update(
-                new BasicDBObject(
-                        DataSet.SPEC,
-                        spec
-                ),
-                new BasicDBObject(
-                        "$inc",
-                        new BasicDBObject(
-                                DataSet.RECORDS_INDEXED,
-                                increment
-                        )
-                )
-        );
     }
 
     @Override

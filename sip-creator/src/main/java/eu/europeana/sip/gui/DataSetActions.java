@@ -38,6 +38,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -45,6 +46,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.KeyStroke;
 import javax.swing.ProgressMonitor;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -57,6 +59,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * All the actions that can be launched when a data set is selected
@@ -87,11 +90,6 @@ public class DataSetActions {
         this.recordStatisticsDialog = new RecordStatisticsDialog(sipModel);
         this.analysisFactsDialog = new AnalysisFactsDialog(sipModel);
         this.mappingDialog = new MappingDialog(sipModel);
-        createLocalActions(sipModel);
-        createRemoteActions();
-        actions.addAll(localActions);
-        actions.addAll(remoteActions);
-        setEntry(null);
     }
 
     public JPanel getPanel() {
@@ -126,14 +124,6 @@ public class DataSetActions {
         return menu;
     }
 
-    public List<Action> getLocalActions() {
-        return new ArrayList<Action>(localActions);
-    }
-
-    public List<Action> getRemoteActions() {
-        return new ArrayList<Action>(remoteActions);
-    }
-
     public void setEntry(DataSetListModel.Entry entry) {
         this.entry = entry;
         for (DataSetAction dataSetAction : actions) {
@@ -142,14 +132,29 @@ public class DataSetActions {
     }
 
     public void setDataSetInfo(DataSetInfo dataSetInfo) {
-        if (entry != null && entry.getDataSetInfo() != null && entry.getDataSetInfo().spec.equals(dataSetInfo.spec)) {
-            for (DataSetAction dataSetAction : actions) {
-                dataSetAction.setEntry(entry);
+        if (entry != null) {
+            if (dataSetInfo == null) {
+                setEntry(null);
+            }
+            else if (entry.getDataSetInfo() != null && entry.getDataSetInfo().spec.equals(dataSetInfo.spec)) {
+                setEntry(entry);
             }
         }
     }
 
+    public void setUntouched(Set<String> untouched) {
+        if (entry != null && untouched.contains(entry.getSpec())) {
+            entry.setDataSetInfo(null);
+            setEntry(entry);
+        }
+    }
+
     private void buildPanel() {
+        createLocalActions(sipModel);
+        createRemoteActions();
+        actions.clear();
+        actions.addAll(localActions);
+        actions.addAll(remoteActions);
         JPanel local = createLocalPanel();
         JPanel remote = createRemotePanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
@@ -157,6 +162,7 @@ public class DataSetActions {
         panel.add(Box.createVerticalGlue());
         panel.add(remote);
         panel.add(Box.createVerticalGlue());
+        setEntry(entry);
     }
 
     private JPanel createRemotePanel() {
@@ -259,7 +265,7 @@ public class DataSetActions {
 
             @Override
             boolean isEnabled(DataSetListModel.Entry entry) {
-                return entry.getDataSetStore() != null;
+                return entry.getDataSetStore() != null && entry.getDataSetStore().hasSource() && entry.getDataSetStore().getStatistics() != null;
             }
         };
     }
@@ -296,7 +302,7 @@ public class DataSetActions {
     }
 
     private boolean canUpload(FileType fileType, File file, DataSetListModel.Entry entry) {
-        if (!dataSetClient.isConnected() || file == null) {
+        if (!dataSetClient.isConnected() || file == null || !file.exists()) {
             return false;
         }
         if (entry.getDataSetInfo() == null) {
@@ -415,7 +421,7 @@ public class DataSetActions {
                     return false;
                 }
                 else switch (DataSetState.valueOf(info.state)) {
-                    case EMPTY:
+                    case INCOMPLETE:
                         switch (command) {
                             case DELETE:
                                 return true;
@@ -556,17 +562,30 @@ public class DataSetActions {
         }
     }
 
-    private JPanel createFinishedPanel(final JDialog frame) {
+    private JPanel createFinishedPanel(JDialog dialog) {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton hide = new JButton("Finished");
-        hide.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                setEntry(entry);
-                frame.setVisible(false);
-            }
-        });
+        Action finishedAction = new FinishedAction(dialog);
+        ((JComponent) dialog.getContentPane()).getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("ESCAPE"), "finished");
+        ((JComponent) dialog.getContentPane()).getActionMap().put("finished", finishedAction);
+        JButton hide = new JButton(finishedAction);
         panel.add(hide);
         return panel;
+    }
+
+    private class FinishedAction extends AbstractAction {
+
+        private JDialog dialog;
+
+        private FinishedAction(JDialog dialog) {
+            this.dialog = dialog;
+            putValue(NAME, "Finished (ESCAPE)");
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ESC"));
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            setEntry(entry);
+            dialog.setVisible(false);
+        }
     }
 }

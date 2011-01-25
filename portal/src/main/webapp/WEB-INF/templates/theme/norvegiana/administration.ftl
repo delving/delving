@@ -10,20 +10,23 @@
 
         <h1><@spring.message '_cms.administration.users' /></h1>
 
-        <div class="grid_6 alpha">
+        <div class="grid_4 alpha">
 
 
-         <h4><@spring.message '_cms.user.find' /></h4>
-            <form method="post" action="administration.html" id="search-form">
+
+            <form method="post" action="administration.html" id="search-form" name="search-form">
+                <fieldset>
+                    <legend><@spring.message '_cms.user.find' /></legend>
                 <table>
                     <tr>
                         <td width="150"><input type="text" id="searchPattern" name="searchPattern"/></td>
                         <td><input type="submit" class="btn-strong" value="<@spring.message '_cms.find' />"/> </td>
                     </tr>
                 </table>
+                </fieldset>
             </form>
            <#if userList?? && userList?size=0>
-               <h6>Geen gebruiker(s) gevonden</h6>
+               <h6><@spring.message '_cms.user.not.found'/></h6>
            </#if>
         </div>
 
@@ -43,10 +46,10 @@
                 <tbody>
 
                 <#list userList as userEdit>
-                  <form method="post" action="administration.html" class="set-form" name="set-form_${userEdit_index}">
-                        <input type="hidden" id="userEmail" name="userEmail" value="${userEdit.email}"/>
-                        <tr>
-                            <td width="150">${userEdit.email}</td>
+                  <form method="post" action="administration.html" class="set-form" name="set-form_${userEdit_index}"
+                        <input type="hidden" class="formIndex" value="${userEdit_index}"/>
+                        <tr id="row_${userEdit_index}">
+                            <td width="150">${userEdit.email}<input type="hidden" name="userEmail" value="${userEdit.email}"/></td>
                             <td width="150">${userEdit.userName}</td>
                             <td width="150">
                                 <#switch userEdit.role>
@@ -69,7 +72,7 @@
                                 </select>
                             </td>
                             <td><input type="submit" class="button btn-strong" value="<@spring.message '_cms.change' />" class="btn-strong"/> </td>
-                            <td><button id="rem-user" class="btn-strong delete"><@spring.message '_cms.delete' /></button> </td>
+                            <td><button class="btn-strong delete" type="button" value="${userEdit_index}"><@spring.message '_cms.delete' /></button> </td>
                         </tr>
                    </form>
                 </#list>
@@ -102,5 +105,11 @@
             showMessage("success","User has been successfully removed");
         </#if>
     </#if>
+
+    $('button.delete').click(function() {
+        var targetRow = "#row_"+$(this).val();
+        var targetMail = $(targetRow+" input[name=userEmail]").val();
+        showConfirm("notification", "<strong>"+targetMail+"</strong><br/><@spring.message '_cms.user.remove.confirm'/>", "removeUser('" + targetMail + "')")
+    });
 </script>
 <@addFooter/>

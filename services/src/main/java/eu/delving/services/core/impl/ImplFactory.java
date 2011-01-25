@@ -21,6 +21,7 @@
 
 package eu.delving.services.core.impl;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -99,6 +100,13 @@ public class ImplFactory {
         return accessKey;
     }
 
+    public void removeHarvestSteps(MetaRepo.DataSet dataSet, String metadataPrefix) {
+        DBObject query = new BasicDBObject();
+        query.put(MetaRepo.HarvestStep.PMH_REQUEST + "." + MetaRepo.PmhRequest.SET, dataSet.getSpec());
+        query.put(MetaRepo.HarvestStep.PMH_REQUEST + "." + MetaRepo.PmhRequest.PREFIX, metadataPrefix);
+        harvestSteps().remove(query);
+    }
+
     public MetaRepo.DataSet createDataSet(DBObject object) {
         return new DataSetImpl(this, object);
     }
@@ -115,15 +123,15 @@ public class ImplFactory {
                 if (step.getErrorMessage() != null) {
                     throw new RuntimeException(step.getErrorMessage());
                 }
-                executor.execute(step.createRecordSaver());
+                step.save();
             }
         }
         else { // the step has not yet been stored
             harvestSteps().save(step.getObject());
             step.createRecordFetcher(getDataSet(step), key).run();
-            step.createRecordSaver().run();
+            step.save(); // it now knows what the first id is
             step.getObject().put(MetaRepo.HarvestStep.FIRST_ID, step.getObject().get(MetaRepo.MONGO_ID));
-            step.createRecordSaver().run();
+            step.save();
         }
         return step;
     }

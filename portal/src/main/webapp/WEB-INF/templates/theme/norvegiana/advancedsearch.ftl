@@ -2,20 +2,20 @@
 <#include "includeMarcos.ftl">
 <#assign title><@spring.message '_action.advanced.search'/></#assign>
 <@addHeader "${portalDisplayName} - ${title}", "",["advanced-search.js"],[]/>
-<section id="search_advanced" class="grid_10 prefix_2 main"  role="search">
-    <div class="inner">
-       <h1><@spring.message '_action.advanced.search'/></h1>
+
+<section id="search-advanced" class="grid_10 prefix_1 main"  role="search">
+
        <form method="POST" action="advancedsearch.html" accept-charset="UTF-8">
         <input type="hidden" name="start" value="1" />
         <input type="hidden" name="view" value="${view}" />
+        <fieldset>
+            <legend><@spring.message '_action.advanced.search'/></legend>
 
-
-
-        <table>
+        <table width="100%">
 
             <tr>
                 <td width="200" align="right"><select name="facet0" id="m-facet1"><option value=""><@spring.message '_search.field.any.field'/> &nbsp;</option><option value="dc_title"><@spring.message '_search.field.title'/></option><option value="dc_creator"><@spring.message '_search.field.creator'/></option><option value="dc_date"><@spring.message '_search.field.date'/></option><option value="dc_subject"><@spring.message '_search.field.subject'/></option></select></td>
-                <td width=""><input type="text" name="value0" class="search-input" maxlength="75"/></td>
+                <td width="600"><input type="text" name="value0" class="search-input" maxlength="75"/></td>
             </tr>
             <tr>
                 <td align="right">
@@ -44,74 +44,119 @@
             <tr>
                 <td align="right"><@spring.message '_metadata.abm.data.provider'/>:</td>
                 <td>
-                    <select name="allDataProviders" id="sel-dataproviders">
+                    <select name="allProviders" id="sel-dataproviders">
                        <option value="true"><@spring.message '_metadata.type.all'/></option>
                        <option value="false"><@spring.message '_search.select'/></option>
-                   </select>
-                   <div id="provider-list" style="display:none">
-                       <table class="squash">
-                        <#list dataProviders?chunk(4) as row>
-                           <tr>
-                               <#list row as dataprovider>
-                                    <td><input type="checkbox" name="collectionList" value="${dataprovider.name?url('utf-8')}"/>${dataprovider.name} (${dataprovider.count})</td>
-                               </#list>
+                    </select>
+                    <select id="provider-list" name="providersList" style="display:none">
+                    <#list dataProviders?sort as row>
+                        <option value="${row.name}">${row.name} (${row.count})</option>
+                    </#list>
+                    </select>
 
-                            </tr>
-                        </#list>
-                       </table>
-                   </div>
                 </td>
             </tr>
             </#if>
-            <#if (user??) && (user.role=="ROLE_ADMINISTRATOR" || user.role=="ROLE_GOD")>
-                <#if collections??>
-                <tr>
-                    <td align="right"><@spring.message '_search.field.collection'/>:</td>
-                    <td>
-                        <select name="allCollections" id="sel-collections">
-                           <option value="true"><@spring.message '_metadata.type.all'/></option>
-                           <option value="false"><@spring.message '_search.select'/></option>
-                       </select>
-                       <div id="collections-list" style="display:none">
-                           <table class="squash">
-                            <#list collections?chunk(4) as row>
-                               <tr>
-                                   <#list row as collection>
-                                        <td><input type="checkbox" name="collectionList" value="${collection.name?url('utf-8')}"/>${collection.name} (${collection.count})</td>
-                                   </#list>
+            <#--<#if (user??) && (user.role=="ROLE_ADMINISTRATOR" || user.role=="ROLE_GOD")>-->
+                <#--<#if collections??>-->
+                <#--<tr>-->
+                    <#--<td align="right"><@spring.message '_search.field.collection'/>:</td>-->
+                    <#--<td>-->
+                        <#--<select name="allCollections" id="sel-collections">-->
+                           <#--<option value="true"><@spring.message '_metadata.type.all'/></option>-->
+                           <#--<option value="false"><@spring.message '_search.select'/></option>-->
+                       <#--</select>-->
+                     <#--<select id="collections-list" name="collectionsList" style="display:none">-->
+                    <#--<#list collections?sort as row>-->
+                        <#--<option value="${row.name}">${row.name} (${row.count})</option>-->
+                    <#--</#list>-->
+                    <#--</select>-->
+                       <#--&lt;#&ndash;<div id="collections-list" style="display:none">&ndash;&gt;-->
+                           <#--&lt;#&ndash;<table class="squash">&ndash;&gt;-->
+                            <#--&lt;#&ndash;<#list collections?chunk(4) as row>&ndash;&gt;-->
+                               <#--&lt;#&ndash;<tr>&ndash;&gt;-->
+                                   <#--&lt;#&ndash;<#list row as collection>&ndash;&gt;-->
+                                        <#--&lt;#&ndash;<td><input type="checkbox" name="collectionList" value="${collection.name?url('utf-8')}"/>${collection.name} (${collection.count})</td>&ndash;&gt;-->
+                                   <#--&lt;#&ndash;</#list>&ndash;&gt;-->
 
-                                </tr>
-                            </#list>
-                           </table>
-                       </div>
-                    </td>
-                </tr>
-                </#if>
-            </#if>
+                                <#--&lt;#&ndash;</tr>&ndash;&gt;-->
+                            <#--&lt;#&ndash;</#list>&ndash;&gt;-->
+                           <#--&lt;#&ndash;</table>&ndash;&gt;-->
+                       <#--&lt;#&ndash;</div>&ndash;&gt;-->
+                    <#--</td>-->
+                <#--</tr>-->
+                <#--</#if>-->
+            <#--</#if>-->
             <#if county??>
             <tr>
                 <td align="right"><@spring.message '_metadata.abm.county'/>:</td>
                 <td>
+
                     <select name="allCounties" id="sel-counties">
                        <option value="true"><@spring.message '_metadata.type.all'/></option>
                        <option value="false"><@spring.message '_search.select'/></option>
                      </select>
-                        <div id="county-list" style="display: none">
-                        <table class="squash"
-                        <#list county?chunk(4) as row>
-                            <tr>
-                                <#list row as county>
-                                    <td><input type="checkbox" name="countyList" value="${county.name?url('utf-8')}"/>${county.name} (${county.count})</td>
-                                </#list>
-                            </tr>
+                        <#--<div id="county-list" style="display: none">-->
+                        <#--<table style="font-size: .85em">-->
+                            <#--<#list county?sort?chunk(4) as row>-->
+                                <#--<tr>-->
+                                    <#--<#list row as c>-->
+                                        <#--<td><input type="checkbox" name="countyList" value="${c.name?url('utf-8')}"/>${c.name}(${c.count})</td>-->
+                                    <#--</#list>-->
+                                <#--</tr>-->
 
-                        </#list>
-                        </table>
-                        </div>
+                            <#--</#list>-->
+                        <#--</table>-->
+                            <select id="county-list" name="countyList" style="display: none">
+                            <#list county?sort as row>
+                                <option value="${row.name?url('utf-8')}">${row.name} (${row.count})</option>
+                            </#list>
+                            </select>
+
+                        <#--</div>-->
 
                 </td>
             </tr>
+            <tr id="municipalities-row" style="display:none">
+                <td align="right"><@spring.message '_metadata.abm.municipality'/>:</td>
+                <td>
+                    <select name="allMunicipalities" id="sel-municipalities">
+                       <option value="true"><@spring.message '_metadata.type.all'/></option>
+                       <option value="false"><@spring.message '_search.select'/></option>
+                     </select>
+                    <select id="municipality-list" name="municipalityList" style="display:none;"></select>
+                </td>
+            </tr>
             </#if>
+            <#--<#if municipality??>-->
+            <#--<tr>-->
+                <#--<td align="right"><@spring.message '_metadata.abm.municipality'/>:</td>-->
+                <#--<td>-->
+                    <#--<select name="allCounties" id="sel-municipalities">-->
+                       <#--<option value="true"><@spring.message '_metadata.type.all'/></option>-->
+                       <#--<option value="false"><@spring.message '_search.select'/></option>-->
+                     <#--</select>-->
+                            <#--<select id="municipality-list" name="municipaltyList" style="display: none">-->
+                            <#--<#list municipality?sort as row>-->
+                                <#--<option value="${row.name}">${row.name} (${row.count})</option>-->
+                            <#--</#list>-->
+                            <#--</select>-->
+                        <#--&lt;#&ndash;<div id="municipality-list" style="display:none;">&ndash;&gt;-->
+                        <#--&lt;#&ndash;<table  style="font-size: .85em">&ndash;&gt;-->
+                        <#--&lt;#&ndash;<#list municipality?sort?chunk(4) as row>&ndash;&gt;-->
+                            <#--&lt;#&ndash;<tr>&ndash;&gt;-->
+                                <#--&lt;#&ndash;<#list row as muni>&ndash;&gt;-->
+                                    <#--&lt;#&ndash;<td><input type="checkbox" name="municipalityList" value="${muni.name?url('utf-8')}"/>${muni.name} (${muni.count})</td>&ndash;&gt;-->
+                                <#--&lt;#&ndash;</#list>&ndash;&gt;-->
+                            <#--&lt;#&ndash;</tr>&ndash;&gt;-->
+
+                        <#--&lt;#&ndash;</#list>&ndash;&gt;-->
+                        <#--&lt;#&ndash;</table>&ndash;&gt;-->
+                        <#--&lt;#&ndash;</div>&ndash;&gt;-->
+
+                <#--</td>-->
+            <#--</tr>-->
+            <#--</#if>-->
             <tr>
                 <td align="right">Digital content only:</td>
                 <td><input type="checkbox" value="true" name="onlyDigitalObjects"/> </td>
@@ -138,8 +183,8 @@
             </tr>
 
          </table>
+        </fieldset>
         </form>
-</div>
 </section><!-- end search -->
 
 <@addFooter/>

@@ -15,9 +15,9 @@
             <#if doc_index &gt; (max-1)><#break/></#if>
             <dd>
                 <#if useCache="true">
-                    <img src="${cacheUrl}id=${doc.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" onerror="showDefaultSmall(this,'${doc.type}')" alt="Click here to view related item" width="25"/>
+                    <img src="${cacheUrl}id=${doc.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" onerror="showDefaultImage(this,'${doc.type}')" alt="Click here to view related item" width="32" height="32"/>
                     <#else>
-                        <img src="${doc.thumbnail}" alt="Click here to view related item" width="25" onerror="showDefaultSmall(this,'${doc.type}')"/>
+                        <img src="${doc.thumbnail}" alt="Click here to view related item" onerror="showDefaultImage(this,'${doc.type}')"  width="32" height="32"/>
                 </#if>
                 <#if queryStringForPaging??>
                     <a href='${doc.fullDocUrl()}?query=europeana_uri:"${doc.id?url('utf-8')}"&amp;start=${doc.index()?c}&amp;startPage=1&amp;pageId=brd'><@stringLimiter "${doc.title}" "40"/></a>
@@ -29,7 +29,7 @@
         </#list>
     </dl>
     <#if result.relatedItems?size &gt; max-1>
-        <a class="fg-button ui-state-default ui-corner-all" href='/${portalName}/brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message '_action.see.all.related.items' /></a>
+        <a class="fg-button ui-state-default ui-corner-all" href='/${portalName}/search?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message '_action.see.all.related.items' /></a>
     </#if>
 
     <dl class="menu" id="actions">
@@ -48,7 +48,8 @@
         </#if>
         <#if user??>
             <dd>
-                <a href="#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.getFieldValue("europeana_object").getFirst()?js_string}','${result.fullDoc.europeanaType}');"><@spring.message '_action.save.to.mine' /></a>
+                <#--<a href="#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.getFieldValue("europeana_object").getFirst()?url("utf-8")}','${result.fullDoc.europeanaType}');"><@spring.message '_action.save.to.mine' /></a>-->
+                <a href="#" onclick="saveItem('${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.delvingId?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.getFieldValue("europeana_object").getFirst()?js_string}','${result.fullDoc.europeanaType}');"><@spring.message '_action.save.to.mine' /></a>
             </dd>
             <#if result.fullDoc.europeanaType == "IMAGE">
                 <#if result.fullDoc.europeanaIsShownBy[0]?? && imageAnnotationToolBaseUrl?? && imageAnnotationToolBaseUrl!="">
@@ -58,10 +59,6 @@
                 </#if>
             </#if>
         <#else>
-            <dd>
-                <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); showMessage('error','<@spring.message '_mine.user.notification.login.required'/>'); return false;"><@spring.message '_action.add.tag' /></a>
-            </dd>
-
             <dd>
                 <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); showMessage('error','<@spring.message '_mine.user.notification.login.required'/>'); return false;"><@spring.message '_action.save.to.mine' /></a>
             </dd>

@@ -21,9 +21,12 @@
 
 package eu.delving.services.util;
 
+import eu.delving.core.util.LaunchProperties;
 import eu.europeana.core.util.StarterUtil;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
+
+import java.util.Arrays;
 
 /**
  * Bootstrap the entire system, including the ApacheSolr, resolver and cache servlet
@@ -31,13 +34,16 @@ import org.mortbay.jetty.webapp.WebAppContext;
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
  */
 
+
 public class ServicesStarter {
 
     public static void main(String... args) throws Exception {
         String root = StarterUtil.getEuropeanaPath();
-        System.setProperty("solr.solr.home", root + "/core/src/test/solr/home");
+        System.setProperty("solr.solr.home", root + "/core/src/test/solr/single-core");
+//        System.setProperty("solr.solr.home", root + "/core/src/test/solr/multi-core");
         if (System.getProperty("solr.data.dir") == null) {
-            System.setProperty("solr.data.dir", root + "/core/target/solrdata");
+            final LaunchProperties launchProperties = new LaunchProperties(Arrays.asList("services.harvindexing.prefix"));
+            System.setProperty("solr.data.dir", root + "/core/target/solrdata/" + launchProperties.getProperty("services.harvindexing.prefix"));
         }
         int port = 8983;
         if (args.length > 0) {

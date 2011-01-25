@@ -938,7 +938,7 @@
  * Macro to generate a simple search form.
  -->
 <#macro simpleSearch>
-<form method="get" action="/${portalName}/brief-doc.html" accept-charset="UTF-8" id="formSimpleSearch">
+<form method="get" action="/${portalName}/search" accept-charset="UTF-8" id="formSimpleSearch">
     <input type="hidden" name="start" value="1" />
     <input type="hidden" name="view" value="${view}" />
     <fieldset>
@@ -985,20 +985,20 @@
         <@spring.message '_mine.loggedinas' />: <strong>${user.userName?html}</strong> | <a
             href="/${portalName}/logout.html"><@spring.message '_mine.logout' /></a>
     </li>
-    <#if user.savedItems??>
+    <#if user.items??>
     <li>
         <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });">
             <@spring.message '_mine.saved.items' />
         </a>
-        (<span id="savedItemsCount">${user.savedItems?size}</span>)
+        (<span id="savedItemsCount">${user.items?size}</span>)
     </li>
     </#if>
-    <#if user.savedSearches??>
+    <#if user.searches??>
     <li>
         <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });">
             <@spring.message '_mine.saved.searches' />
         </a>
-        (<span id="savedSearchesCount">${user.savedSearches?size}</span>)
+        (<span id="savedSearchesCount">${user.searches?size}</span>)
     </li>
     </#if>
     <#--<#if user.socialTags??>-->

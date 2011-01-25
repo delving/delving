@@ -21,8 +21,9 @@
 
 package eu.europeana.core.util.web;
 
+import eu.delving.core.storage.SpringUserService;
+import eu.delving.core.storage.User;
 import eu.delving.domain.Language;
-import eu.europeana.core.database.domain.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.LocaleResolver;
@@ -55,20 +56,12 @@ public class ControllerUtil {
             return null;
         }
         Object principal = authentication.getPrincipal();
-        if (principal instanceof UserDaoDetailsService.UserHolder) {
-            UserDaoDetailsService.UserHolder userHolder = (UserDaoDetailsService.UserHolder) authentication.getPrincipal();
+        if (principal instanceof SpringUserService.UserHolder) {
+            SpringUserService.UserHolder userHolder = (SpringUserService.UserHolder) authentication.getPrincipal();
             return userHolder.getUser();
         }
         else {
             return null;
-        }
-    }
-
-    public static void setUser(User user) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            UserDaoDetailsService.UserHolder userHolder = (UserDaoDetailsService.UserHolder) authentication.getPrincipal();
-            userHolder.setUser(user);
         }
     }
 

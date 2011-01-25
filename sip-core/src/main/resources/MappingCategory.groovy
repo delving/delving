@@ -5,6 +5,19 @@ import eu.europeana.sip.core.GroovyNode
 
 public class MappingCategory {
 
+  static GroovyList ifAbsentUse(GroovyList list, Object factVariable) {
+    if (!list) {
+      list += factVariable
+    }
+    else if (list.size() == 1) {
+      GroovyNode node = (GroovyNode) list[0];
+      if (!node.text()) {
+        list += factVariable
+      }
+    }
+    return list
+  }
+
   static Object power(GroovyList list, Closure closure) {  // operator **
     multiply(mod(list, / +/), closure)
   }
@@ -18,14 +31,18 @@ public class MappingCategory {
 
   static Object multiply(GroovyList list, Closure closure) { // operator *
     for (Object child: list) {
-      closure.call(child);
+      String string = child.toString()
+      if (string) {
+        closure.call(string)
+      }
     }
     return null;
   }
 
   static Object multiply(GroovyNode node, Closure closure) { // operator *
-    for (Object child: node.children()) {
-      closure.call(child);
+    String string = node.toString();
+    if (string) {
+      closure.call(string);
     }
     return null;
   }

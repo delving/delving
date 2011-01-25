@@ -152,11 +152,11 @@ public class TestFileStore {
         FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC);
         store.importFile(sampleFile(), null);
         Facts facts = store.getFacts();
-        Assert.assertEquals("facts should be empty", "", facts.get("recordPath"));
-        facts.set("recordPath", "Wingy");
+        Assert.assertEquals("facts should be empty", "", facts.get("recordRootPath"));
+        facts.set("recordRootPath", "Wingy");
         store.setFacts(facts);
         facts = fileStore.getDataSetStores().get(SPEC).getFacts();
-        Assert.assertEquals("facts should be restored", "Wingy", facts.get("recordPath"));
+        Assert.assertEquals("facts should be restored", "Wingy", facts.get("recordRootPath"));
     }
 
     @Test

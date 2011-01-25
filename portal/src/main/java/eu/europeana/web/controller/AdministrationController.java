@@ -21,9 +21,8 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.core.database.UserDao;
-import eu.europeana.core.database.domain.Role;
-import eu.europeana.core.database.domain.User;
+import eu.delving.core.storage.User;
+import eu.delving.core.storage.UserRepo;
 import eu.europeana.core.util.web.ControllerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -46,11 +45,10 @@ import java.util.List;
 public class AdministrationController {
 
     @Autowired
-    private UserDao userDao;
+    UserRepo userRepo;
 
     @RequestMapping(method = RequestMethod.GET)
-    public ModelAndView adminGet(
-            @ModelAttribute("command") AdminForm adminForm
+    public ModelAndView adminGet(@ModelAttribute("command") AdminForm adminForm
 
     ) throws Exception {
         return ControllerUtil.createModelAndViewPage("administration");
@@ -62,30 +60,30 @@ public class AdministrationController {
     ) throws Exception {
         ModelAndView page = ControllerUtil.createModelAndViewPage("administration");
         if (adminForm.getUserEmail().isEmpty()) {
-            List<User> userList = userDao.fetchUsers(adminForm.getSearchPattern().trim());
+            List<User> userList = userRepo.getUsers(adminForm.getSearchPattern().trim());
             page.addObject("userList", userList);
         }
         else {
-            User targetUser = userDao.fetchUserByEmail(adminForm.getUserEmail());
-            if (targetUser == null) {
+            User user = userRepo.byEmail(adminForm.getUserEmail());
+            if (user == null) {
                 throw new IllegalArgumentException(String.format("User %s not found", adminForm.getUserEmail()));
             }
             if (!adminForm.getNewRole().isEmpty()) {
-                Role role = Role.valueOf(adminForm.getNewRole());
+                User.Role role = User.Role.valueOf(adminForm.getNewRole());
                 switch (role) {
                     case ROLE_USER:
                     case ROLE_RESEARCH_USER:
-                        targetUser.setRole(role);
-                        userDao.updateUser(targetUser);
-                        page.addObject("targetUser", targetUser);
+                        user.setRole(role);
+                        user.save();
+                        page.addObject("targetUser", user);
                         break;
                     case ROLE_ADMINISTRATOR:
-                        if (ControllerUtil.getUser().getRole() != Role.ROLE_GOD) {
+                        if (ControllerUtil.getUser().getRole() != User.Role.ROLE_GOD) {
                             throw new IllegalArgumentException("Only superuser can make someone an administrator");
                         }
-                        targetUser.setRole(role);
-                        userDao.updateUser(targetUser);
-                        page.addObject("targetUser", targetUser);
+                        user.setRole(role);
+                        user.save();
+                        page.addObject("targetUser", user);
                         break;
                     default:
                         break;

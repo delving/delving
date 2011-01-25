@@ -1,7 +1,7 @@
 /*
- * Copyright 2007 EDL FOUNDATION
+ * Copyright 2010 DELVING BV
  *
- *  Licensed under the EUPL, Version 1.0 or as soon they
+ *  Licensed under the EUPL, Version 1.0 or? as soon they
  *  will be approved by the European Commission - subsequent
  *  versions of the EUPL (the "Licence");
  *  you may not use this work except in compliance with the
@@ -21,14 +21,9 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.core.database.UserDao;
-import eu.europeana.core.database.domain.Role;
-import eu.europeana.core.database.domain.SavedItem;
-import eu.europeana.core.database.domain.SavedSearch;
-import eu.europeana.core.database.domain.SocialTag;
-import eu.europeana.core.database.domain.User;
+import eu.delving.core.storage.User;
+import eu.delving.core.storage.UserRepo;
 import eu.europeana.core.querymodel.query.DocType;
-import eu.europeana.core.util.indexing.SorlIndexUtil;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.log4j.Logger;
@@ -59,13 +54,10 @@ public class UserAjaxController {
     protected Logger log = Logger.getLogger(getClass());
 
     @Autowired
-    private UserDao userDao;
+    private UserRepo userRepo;
 
     @Autowired
     private ClickStreamLogger clickStreamLogger;
-
-    @Autowired
-    private SorlIndexUtil sorlIndexUtil;
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -76,9 +68,9 @@ public class UserAjaxController {
     @RequestMapping("/list-users.ajax")
     public ModelAndView listUsers() throws Exception {
         User user = ControllerUtil.getUser();
-        if (user != null && (user.getRole() == Role.ROLE_ADMINISTRATOR || user.getRole() == Role.ROLE_GOD)) {
+        if (user != null && (user.getRole() == User.Role.ROLE_ADMINISTRATOR || user.getRole() == User.Role.ROLE_GOD)) {
             ModelAndView page = complete(true);
-            page.addObject("users", userDao.fetchUsers());
+            page.addObject("users", userRepo.getUsers());
             return page;
         }
         else {
@@ -88,106 +80,73 @@ public class UserAjaxController {
 
     @RequestMapping("/remove-user.ajax")
     public ModelAndView removeUser(
-            HttpServletRequest request,
+//            HttpServletRequest request,
             @RequestParam String email
     ) throws Exception {
-        User user = userDao.fetchUserByEmail(email);
+        User user = ControllerUtil.getUser();
         if (user != null) {
-            userDao.removeUser(user);
+            User doomed = userRepo.byEmail(email);
+            if (doomed != null &&
+                    (user.getRole() == User.Role.ROLE_ADMINISTRATOR || user.getRole() == User.Role.ROLE_GOD ||
+                            user.getEmail().equals(doomed.getEmail()))) {
+                doomed.delete();
+//                clickStreamLogger.logUserAction(request, UserAction.REMOVE_USER);
+                complete(true);
+            }
         }
-        return complete(user != null);
+        return complete(false);
     }
 
-    @RequestMapping("/remove-saved-item.ajax")
+    @RequestMapping("/remove-item.ajax")
     public ModelAndView removeSavedItem(
             HttpServletRequest request,
-            @RequestParam Long id
+            @RequestParam int index
     ) throws Exception {
-        ControllerUtil.setUser(userDao.removeSavedItem(id));
+        User user = ControllerUtil.getUser();
+        user.removeItem(index);
+        user.save();
         clickStreamLogger.logUserAction(request, UserAction.REMOVE_SAVED_ITEM);
         return complete(true);
     }
 
-
-    @RequestMapping("/remove-saved-search.ajax")
+    @RequestMapping("/remove-search.ajax")
     public ModelAndView removeSavedSearch(
             HttpServletRequest request,
-            @RequestParam Long id
+            @RequestParam int index
     ) throws Exception {
-        ControllerUtil.setUser(userDao.removeSavedSearch(id));
+        User user = ControllerUtil.getUser();
+        user.removeSearch(index);
+        user.save();
         clickStreamLogger.logUserAction(request, UserAction.REMOVE_SAVED_SEARCH);
         return complete(true);
     }
 
-    @RequestMapping("/remove-social-tag.ajax")
-    public ModelAndView removeSocialTag(
-            HttpServletRequest request,
-            @RequestParam Long id
-    ) throws Exception {
-        final String europeanaUri = userDao.findEuropeanaUri(id);
-        ControllerUtil.setUser(userDao.removeSocialTag(id));
-        sorlIndexUtil.indexUserTags(europeanaUri);
-        clickStreamLogger.logUserAction(request, UserAction.REMOVE_SOCIAL_TAG);
-        return complete(true);
-    }
-
-    @RequestMapping("/save-saved-item.ajax")
+    @RequestMapping("/save-item.ajax")
     public ModelAndView saveSavedItem(
             HttpServletRequest request,
             @RequestParam String title,
             @RequestParam String author,
-            @RequestParam String docType,
-            @RequestParam String europeanaObject,
-            @RequestParam String europeanaUri
+            @RequestParam String europeanaId,
+            @RequestParam String delvingId,
+            @RequestParam("docType") String docTypeString,
+            @RequestParam String thumbnail
     ) throws Exception {
-        SavedItem savedItem = new SavedItem();
-        savedItem.setTitle(title);
-        savedItem.setAuthor(author);
-        savedItem.setDocType(DocType.valueOf(docType));
-        savedItem.setLanguage(ControllerUtil.getLocale(request));
-        savedItem.setEuropeanaObject(europeanaObject);
         User user = ControllerUtil.getUser();
-        ControllerUtil.setUser(userDao.addSavedItem(user, savedItem, europeanaUri));
+        user.addItem(author, title, ControllerUtil.getLocale(request), delvingId, europeanaId, DocType.valueOf(docTypeString), thumbnail);
+        user.save();
         clickStreamLogger.logUserAction(request, UserAction.SAVE_ITEM);
         return complete(true);
     }
 
-    @RequestMapping("/save-saved-search.ajax")
+    @RequestMapping("/save-search.ajax")
     public ModelAndView saveSavedSearch(
             HttpServletRequest request,
             @RequestParam String query,
             @RequestParam String queryString
     ) throws Exception {
-        SavedSearch savedSearch = new SavedSearch();
-        savedSearch.setQuery(query);
-        savedSearch.setQueryString(URLDecoder.decode(queryString, "utf-8"));
-        savedSearch.setLanguage(ControllerUtil.getLocale(request));
         User user = ControllerUtil.getUser();
-        ControllerUtil.setUser(userDao.addSavedSearch(user, savedSearch));
-        clickStreamLogger.logUserAction(request, UserAction.SAVE_SEARCH);
-        return complete(true);
-    }
-
-    @RequestMapping("/save-social-tag.ajax")
-    public ModelAndView saveSocialTag(
-            HttpServletRequest request,
-            @RequestParam String tag,
-            @RequestParam String europeanaUri,
-            @RequestParam String docType,
-            @RequestParam String europeanaObject,
-            @RequestParam String title
-    ) throws Exception {
-        SocialTag socialTag = new SocialTag();
-        socialTag.setTag(tag);
-        socialTag.setEuropeanaUri(europeanaUri);
-        socialTag.setDocType(DocType.valueOf(docType));
-        socialTag.setEuropeanaObject(europeanaObject);
-        socialTag.setTitle(title);
-        socialTag.setLanguage(ControllerUtil.getLocale(request));
-        User user = ControllerUtil.getUser();
-        ControllerUtil.setUser(userDao.addSocialTag(user, socialTag));
-        boolean success = sorlIndexUtil.indexUserTags(europeanaUri);
-        clickStreamLogger.logCustomUserAction(request, UserAction.SAVE_SOCIAL_TAG, "tag=" + tag);
+        user.addSearch(query, URLDecoder.decode(queryString, "utf-8"), ControllerUtil.getLocale(request));
+        user.save();
         clickStreamLogger.logUserAction(request, UserAction.SAVE_SEARCH);
         return complete(true);
     }

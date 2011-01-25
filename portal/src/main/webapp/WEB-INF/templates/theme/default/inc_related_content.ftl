@@ -34,7 +34,7 @@
                     </#list>
                     <#if result.relatedItems?size &gt; max>
                     <tr>
-                        <td id="see-all" colspan="2"><a href='/${portalName}/brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message '_action.see.all.related.items' /></a></td>
+                        <td id="see-all" colspan="2"><a href='/${portalName}/search?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message '_action.see.all.related.items' /></a></td>
                     </tr>
                     </#if>
                 </table>
@@ -43,7 +43,7 @@
             <#--<div class="toggler-c"title="<@spring.message '_portal.ui.message.usertags' />">-->
                 <#--<p>-->
                     <#--<#list model.fullDoc.europeanaUserTag as userTag>-->
-                    <#--<a href="brief-doc.html?query=europeana_userTag:${userTag}&view=${view}">${userTag}</a><br/>-->
+                    <#--<a href="search?query=europeana_userTag:${userTag}&view=${view}">${userTag}</a><br/>-->
                     <#--</#list>-->
                 <#--</p>-->
             <#--</div>-->

@@ -28,6 +28,21 @@ body.ninesixty .container_12
 	position:relative;
 }
 
+form fieldset {
+    border: 1px solid #ddd;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+    border-radius: 5px;
+}
+
+form legend {
+    color: #777;
+    font-weight: bold;
+    font-size: 1.25em;
+    margin: 0 .25em;
+    padding: 0 .25em;
+}
+
 /* HYPERLINKS *******************************/
 
 a:link
@@ -62,7 +77,10 @@ a.fg-button.ui-state-active
 	text-decoration:none;
 }
 /* MESSAGES *********************************/
-#messages
+
+#dmessages,
+#messages,
+#confirmation
 {
 	-moz-border-radius:0 0 10px 10px;
 	-webkit-border-radius:0 0 10px 10px;
@@ -74,15 +92,14 @@ a.fg-button.ui-state-active
 	top:0;
 	width:460px;
 	z-index:1000;
+    color: #555;
 }
 
-#messages .actions
-{
-	text-align:right;
-	width:100%;
-}
+/*#dmessages {display: block;}*/
 
-#messages .inner
+#dmessages .inner,
+#messages .inner,
+#confirmation .inner
 {
 	-moz-border-radius:0 0 5px 5px;
 	-webkit-border-radius:0 0 5px 5px;
@@ -93,19 +110,46 @@ a.fg-button.ui-state-active
 	text-align:left;
 }
 
-#messages.success
+#dmessages .actions,
+#messages .actions,
+#confirmation .actions
+{
+    margin-top: 1em;
+}
+
+#dmessages.success,
+#messages.success,
+#confirmation.success
 {
 	background:#693;
+    color: #555
 }
 
-#messages.fail,#messages.error
+#dmessages.fail,
+#dmessages.error,
+#messages.fail,
+#messages.error,
+#confirmation.error,
+#confirmation.fail
 {
 	background:#c00;
+    color: #555
 }
 
-#message.notification
+#dmessages.notification,
+#message.notification,
+#confirmation.notification
 {
     background:#336699;
+    color: #555
+}
+
+/* OTHER NOTIFICATIONS *****************************/
+
+p.error, div.error, span.error {
+    background: #c00;
+    color: #fff;
+    padding: .25em;
 }
 
 /* HEADER/BRANDING *********************************/
@@ -285,6 +329,9 @@ li.jcarousel-item {
 }
 
 /* SEARCH ************************************/
+#search fieldset{
+    border: none;
+}
 #search
 {
 	-moz-border-radius:8px 8px 0 0;
@@ -364,11 +411,24 @@ input.in-small {
     width: 50px;
 }
 
+#search-advanced fieldset {
+    border: 1px solid #ccc;
+    padding: 1em;
+}
+#search-advanced legend {
+    font-size: 1.25em;
+    font-weight:bold;
+    margin: 0 .5em;
+    padding: 0 .25em;
+
+}
+
 /* MAIN SECTION  ******************************/
 section#main,
 .main
 {
 	margin-top:2em;
+    min-height: 350px;
 }
 
 section[role="main"],section[role="complementary"]
@@ -517,40 +577,41 @@ nav#facetList
 /* FACETS TOGGLER *******************************/
 h4.trigger
 {
-	background:url(../images/togglerch.gif) no-repeat 5px 8px;
+	/*background:url(../images/toggleroh.gif) no-repeat 5px 8px;*/
 	border-bottom:1px solid #ccc;
 	font-size:1em;
 	margin:0;
-	padding:5px 0 5px 25px;
+	/*padding:5px 0 5px 25px;*/
+	padding:5px 0 5px 5px;
 }
 
-h4.trigger .ui-icon
-{
-	float:left;
-	margin-right:.25em;
-}
+/*h4.trigger .ui-icon*/
+/*{*/
+	/*float:left;*/
+	/*margin-right:.25em;*/
+/*}*/
 
-h4.trigger:hover
-{
-	background:url(../images/togglerc.gif) no-repeat 5px 8px;
-	color:#ccc;
-}
+/*h4.trigger:hover*/
+/*{*/
+	/*background:url(../images/togglero.gif) no-repeat 5px 8px;*/
+	/*color:#ccc;*/
+/*}*/
 
-h4.trigger a
-{
-	display:block;
-	text-decoration:none;
-}
+/*h4.trigger a*/
+/*{*/
+	/*display:block;*/
+	/*text-decoration:none;*/
+/*}*/
 
-h4.active
-{
-	background:url(../images/toggleroh.gif) no-repeat 5px 8px;
-}
+/*h4.closed*/
+/*{*/
+	/*background:url(../images/togglerch.gif) no-repeat 5px 8px;*/
+/*}*/
 
-h4.active:hover
-{
-	background:url(../images/togglero.gif) no-repeat 5px 8px;
-}
+/*h4.closed:hover*/
+/*{*/
+	/*background:url(../images/togglerc.gif) no-repeat 5px 8px;*/
+/*}*/
 
 .facets_container
 {
@@ -558,10 +619,11 @@ h4.active:hover
 	border-bottom:1px solid #ddddd0;
 	clear:both;
 	margin:0;
-	max-height:300px;
+	max-height:135px;
 	overflow-x:hidden;
 	overflow-y:auto;
 	padding:5px 0;
+    font-size: .9em;
 }
 
 .facets_container table td
@@ -921,6 +983,11 @@ dl.zebra dd:nth-child(even){
     background-color: #fffff0;
 }
 
+dl#statistics dd {
+    background: url(../images/stats.png) 5px 5px no-repeat;
+    padding-left: 28px;
+}
+
 
 /* TABLES */
 table
@@ -1032,7 +1099,7 @@ table.zebra thead tr th
 
 table.zebra tbody tr:nth-child(odd) td
 {
-	background-color:#eee;
+	background-color:#efefef;
 }
 
 table.zebra tbody tr:nth-child(even) td
@@ -1044,7 +1111,8 @@ table.zebra tbody tr:nth-child(even) td
 table.squash {margin: 0;}
 table.squash tbody td,
 table.squash tbody th {
-    padding:.5em 0 0 0; font-size: .85em
+    font-size: .925em;
+    padding:.5em .5em 0 0;
 }
 
 /* LINED TABLES */

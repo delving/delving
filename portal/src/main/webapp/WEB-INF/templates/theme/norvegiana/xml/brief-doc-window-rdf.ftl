@@ -6,7 +6,7 @@
     xmlns:dc="http://purl.org/dc/elements/1.1/"
     xmlns="http://schemas.uche.ogbuji.net/rdfexample/">
  <#list result.briefDocs as doc>
- <rdf:Description about="${portalBaseUrl}/${portalName}/record/${doc.id}.html">
+ <rdf:Description about="${portalBaseUrl}/${portalName}/object/${doc.id}.html">
      <#assign dcTitle = doc.getFieldValue("dc_title")/>
      <#if dcTitle.isNotEmpty()>
      <dc:title>${dcTitle.getFirst()}</dc:title>

@@ -271,7 +271,7 @@
                                  class="thumb"
                                  id="thumb_${cell.index()?c}"
                                  align="middle"
-                                 src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}" alt="<@spring.message '_action.alt.more.info' />"
+                                 src="${cacheUrl}id=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}" alt="<@spring.message '_action.alt.more.info' />"
                                  onload="checkSize(this.id,'brief',this.width);"
                                  onerror="showDefaultSmall(this,'${cell.type}')"
                                  height="110"
@@ -345,7 +345,7 @@
                         <img class="thumb"
                              id="thumb_${cell.index()}"
                              align="middle"
-                             src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}"
+                             src="${cacheUrl}id=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}"
                              alt="<@spring.message '_action.alt.more.info' />"
                              height="50"
                           />
@@ -656,7 +656,7 @@
             <#assign match = result.matchDoc/>
             <a href="${match.fullDocUrl()}">
                 <#if useCache="true">
-                    <img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                    <img src="${cacheUrl}id=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
                 <#else>
                     <img src="${match.thumbnail}" alt="${match.title}" height="25"/>${match.title}
                 </#if>
@@ -687,7 +687,7 @@
                 <#assign match = result.matchDoc/>
                 <a href="${match.fullDocUrl}">
                     <#if useCache="true">
-                        <img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                        <img src="${cacheUrl}id=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
                     <#else>
                         <img src="${match.thumbnail}" alt="${match.title}" height="25"/>
                     </#if>
@@ -719,7 +719,7 @@
             <#if !query?starts_with("europeana_uri:")>
                 <#list pagination.breadcrumbs as crumb>
                     <#if !crumb.last>
-                        <a href="${portalName}/brief-doc.html?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;
+                        <a href="${portalName}/search?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;
                     <#else>
                         <strong>${crumb.display?html}</strong>
                     </#if>
@@ -734,7 +734,7 @@
                     <a href="full-doc.html?&amp;uri=${match.id}">
                     <#if useCache="true">
                         <#--<img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>-->
-                        <img src="${cacheUrl}uri=${imgSrc?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                        <img src="${cacheUrl}id=${imgSrc?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
                     <#else>
                         <img src="${imgSrc}" alt="${match.getFieldValue("dc_title").getFirst()}" height="25"/>
                     </#if>
@@ -762,7 +762,7 @@
                     <#--todo review this. It seems wrong to display the image of the current full-doc instead of the original related item search-->
                     <a href="full-doc.html?&amp;uri=${match.id}">
                     <#if useCache="true">
-                        <img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                        <img src="${cacheUrl}id=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
                     <#else>
                         <img src="${match.thumbnail}" alt="${match.title}" height="25"/>
                     </#if>
@@ -868,7 +868,7 @@
        <#--alt="<@spring.message '_action.view.in.original.context' /> <@spring.message '_action.OpenInNewWindow'/>"-->
     <#-->-->
     <#if useCache="true">
-        <img src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
+        <img src="${cacheUrl}id=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
              class="full"
              alt="${result.fullDoc.dcTitle[0]}"
              id="imgview"
@@ -965,7 +965,7 @@
  * Macro to generate a simple search form.
  -->
 <#macro simpleSearch>
-<form method="get" action="/${portalName}/brief-doc.html" accept-charset="UTF-8" id="formSimpleSearch">
+<form method="get" action="/${portalName}/search" accept-charset="UTF-8" id="formSimpleSearch">
     <input type="hidden" name="start" value="1" />
     <input type="hidden" name="view" value="${view}" />
     <fieldset>
@@ -1014,20 +1014,20 @@
         <@spring.message '_mine.loggedinas' />: <strong>${user.userName?html}</strong> | <a
             href="/${portalName}/logout.html"><@spring.message '_mine.logout' /></a>
     </li>
-    <#if user.savedItems??>
+    <#if user.items??>
     <li>
         <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });">
             <@spring.message '_mine.saved.items' />
         </a>
-        (<span id="savedItemsCount">${user.savedItems?size}</span>)
+        (<span id="savedItemsCount">${user.items?size}</span>)
     </li>
     </#if>
-    <#if user.savedSearches??>
+    <#if user.searches??>
     <li>
         <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });">
             <@spring.message '_mine.saved.searches' />
         </a>
-        (<span id="savedSearchesCount">${user.savedSearches?size}</span>)
+        (<span id="savedSearchesCount">${user.searches?size}</span>)
     </li>
     </#if>
     <#--<#if user.socialTags??>-->

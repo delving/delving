@@ -1,7 +1,7 @@
 /*
- * Copyright 2007 EDL FOUNDATION
+ * Copyright 2010 DELVING BV
  *
- *  Licensed under the EUPL, Version 1.0 or as soon they
+ *  Licensed under the EUPL, Version 1.0 or? as soon they
  *  will be approved by the European Commission - subsequent
  *  versions of the EUPL (the "Licence");
  *  you may not use this work except in compliance with the
@@ -21,7 +21,8 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.core.database.domain.User;
+import eu.delving.core.storage.User;
+import eu.delving.core.util.SimpleMessageCodesResolver;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import eu.europeana.core.util.web.EmailSender;
@@ -68,6 +69,7 @@ public class ContactPageController {
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.setValidator(new ContactFormValidator());
+        binder.setMessageCodesResolver(new SimpleMessageCodesResolver());
     }
 
     @ModelAttribute("command")
@@ -86,18 +88,18 @@ public class ContactPageController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    protected String handlePost(@ModelAttribute("command") @Valid ContactForm form, BindingResult result, HttpServletRequest request) throws Exception {
+    protected String handlePost(@Valid @ModelAttribute ContactForm command, BindingResult result, HttpServletRequest request) throws Exception {
         if (result.hasErrors()) {
             clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.FEEDBACK_SEND_FAILURE);
         }
         else {
             Map<String, Object> model = new TreeMap<String, Object>();
-            model.put("email", form.getEmail());
-            model.put("feedback", form.getFeedbackText());
+            model.put("email", command.getEmail());
+            model.put("feedback", command.getFeedbackText());
             userFeedbackSender.sendEmail(model);
-            model.put(EmailSender.TO_EMAIL, form.getEmail());
+            model.put(EmailSender.TO_EMAIL, command.getEmail());
             userFeedbackConfirmSender.sendEmail(model);
-            form.setSubmitMessage("Your feedback was successfully sent. Thank you!");
+            command.setSubmitMessage("Your feedback was successfully sent. Thank you!");
             clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.FEEDBACK_SEND);
         }
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.CONTACT_PAGE);

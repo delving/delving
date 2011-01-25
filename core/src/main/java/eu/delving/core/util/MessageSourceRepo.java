@@ -57,20 +57,20 @@ public class MessageSourceRepo extends AbstractMessageSource {
     }
 
     public Map<String, Map<String, String>> getMessageFileMaps() {
-        Map<String, Map<String, String>> fileMap = new TreeMap<String,Map<String,String>>();
+        Map<String, Map<String, String>> fileMap = new TreeMap<String, Map<String, String>>();
         DBCursor cursor = messages().find();
         while (cursor.hasNext()) {
             DBObject object = cursor.next();
             String messsageKey = (String) object.get(KEY);
             for (String contentKey : object.keySet()) {
                 if (contentKey.startsWith(CONTENT)) {
-                    String fileName = String.format("messages%s.properties",contentKey.substring(CONTENT.length()));
+                    String fileName = String.format("messages%s.properties", contentKey.substring(CONTENT.length()));
                     Map<String, String> map = fileMap.get(fileName);
                     if (map == null) {
                         map = new TreeMap<String, String>();
                         fileMap.put(fileName, map);
                     }
-                    map.put(messsageKey, (String)object.get(contentKey));
+                    map.put(messsageKey, (String) object.get(contentKey));
                 }
             }
         }
@@ -106,6 +106,9 @@ public class MessageSourceRepo extends AbstractMessageSource {
             String content = (String) object.get(objectKey(locale));
             if (content == null) {
                 content = getParentMessageSource().getMessage(getKey(), null, locale);
+                if (content.equals(getKey())) {
+                    return getKey();
+                }
             }
             return content;
         }

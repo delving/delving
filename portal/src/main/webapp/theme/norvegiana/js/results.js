@@ -1,12 +1,12 @@
 /* ________________BRIEF DOC_______________________*/
 
-function saveQuery(className, queryToSave, queryString){
+function saveQuery(queryToSave, queryString){
     var sr = $("#msg-save-search");
     sr.css("display","block");
     $.ajax({
        type: "POST",
-       url: "/portal/save-saved-search.ajax",
-       data: "className="+className+"&query="+queryToSave+"&queryString="+queryString,
+       url: "/portal/save-search.ajax",
+       data: "query="+queryToSave+"&queryString="+queryString,
        success: function(msg){
            
            showMessage("success",msgSearchSaveSuccess);
@@ -100,13 +100,13 @@ function addTag(className,tagText,fullDocId,thumbnailId,objTitle,objType){
     }
     return false;
 }
-function saveItem(className,postTitle,postAuthor,objUri,thumbnail,type){
+function saveItem(postTitle,postAuthor,delvingId,europeanaId,thumbnail,type){
     var sr = document.getElementById("msg-save-item");
     sr.style.display = 'block';
     $.ajax({
        type: "POST",
-       url: "/portal/save-saved-item.ajax",
-       data: "className="+className+"&title="+postTitle+"&author="+postAuthor+"&europeanaUri="+objUri+"&europeanaObject="+thumbnail+"&docType="+type,
+       url: "/portal/save-item.ajax",
+       data: "title="+postTitle+"&author="+postAuthor+"&delvingId="+delvingId+"&europeanaId="+europeanaId+"&thumbnail="+thumbnail+"&docType="+type,
        success: function(msg){
            showMessage("success",msgItemSaveSuccess);
            var ss = document.getElementById("savedItemsCount");
@@ -130,8 +130,8 @@ function checkSize(obj,type,w){
         }
     }
     else {
-        if (w > 270) {
-            $("#"+obj).css("width","270px");
+        if (w > 230) {
+            $("#"+obj).css("width","230px");
         }
     }
 }
@@ -144,24 +144,24 @@ $(document).ready(function(){
         })
     }
 
-    if($("div.facets_container").length > 0){
-        //Hide (Collapse) the toggle containers on load
-        $("div.facets_container").hide();
-
-        //Switch the "Open" and "Close" state per click then slide up/down (depending on open/close state)
-        $("h4.trigger").click(function(){
-            $(this).toggleClass("active").next().slideToggle("slow");
-            return false; //Prevent the browser jump to the link anchor
-        });
-
-        //Check to see if there are any active facets that need to be toggled to open
-        var toggles = $(document).find("h4.trigger");
-        $.each(toggles, function(){
-            if($(this).hasClass("active")){
-                $(this).next().css("display","block");
-            }
-        })
-    }
+//    if($("div.facets_container").length > 0){
+//        //Hide (Collapse) the toggle containers on load
+//        $("div.facets_container").show();
+//
+//        //Switch the "Open" and "Close" state per click then slide up/down (depending on open/close state)
+//        $("h4.trigger").click(function(){
+//            $(this).toggleClass("closed").next().slideToggle("slow");
+//            return false; //Prevent the browser jump to the link anchor
+//        });
+//
+//        //Check to see if there are any active facets that need to be toggled to open
+//        var toggles = $(document).find("h4.trigger");
+//        $.each(toggles, function(){
+//            if($(this).hasClass("closed")){
+//                $(this).next().css("display","block");
+//            }
+//        })
+//    }
 
 
 });

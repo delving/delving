@@ -23,10 +23,13 @@ package eu.delving.metadata;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * Use some adjacent primes to check for uniqueness of strings based on hashCode
@@ -36,10 +39,12 @@ import java.util.TreeMap;
 
 public class Histogram implements Serializable {
     private static final DecimalFormat PERCENT = new DecimalFormat("#0.00%");
+    private static final double OVERSAMPLING = 1.2;
     private int maxStorageSize, maxSize;
     private int total;
     private int storageSize;
-    private Map<String, Counter> counterMap = new TreeMap<String, Counter>();
+    private Map<String, Counter> counterMap = new HashMap<String, Counter>();
+    private boolean trimmed;
 
     public Histogram(int maxStorageSize, int maxSize) {
         this.maxStorageSize = maxStorageSize;
@@ -60,20 +65,53 @@ public class Histogram implements Serializable {
         return total;
     }
 
+    public int getMaxSize() {
+        return maxSize;
+    }
+
+    public int getMaxStorageSize() {
+        return maxStorageSize;
+    }
+
     public int getSize() {
         return counterMap.size();
     }
 
     public Set<String> getValues() {
+        if (trimmed) {
+            throw new RuntimeException("Should not be using values if the histogram is trimmed");
+        }
         return counterMap.keySet();
     }
 
-    public Collection<Counter> getCounters() {
-        return counterMap.values();
+    public boolean isTrimmed() {
+        return trimmed;
     }
 
-    public boolean isStorageOverflow() {
-        return storageSize > maxStorageSize || counterMap.size() > maxSize;
+    public Collection<Counter> getTrimmedCounters() {
+        List<Counter> counters = new ArrayList<Counter>(counterMap.values());
+        Collections.sort(counters);
+        int size = counters.size();
+        if (size > maxSize) {
+            trimmed = true;
+            for (int walk = maxSize; walk < size; walk++) { // remove excess
+                Counter c = counters.get(walk);
+                storageSize -= c.getValue().length();
+                counterMap.remove(c.getValue());
+            }
+            return counters.subList(0, maxSize);
+        }
+        else {
+            return counters;
+        }
+    }
+
+    public boolean isTooLarge() {
+        return counterMap.size() > (int) (maxSize * OVERSAMPLING);
+    }
+
+    public boolean isTooMuchData() {
+        return storageSize > maxStorageSize;
     }
 
     public class Counter implements Comparable<Counter>, Serializable {

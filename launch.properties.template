@@ -21,29 +21,6 @@
 
 ###############################################
 #                                             #
-#       database connection settings          #
-#                                             #
-###############################################
-
-# Database driver used by Hibernate
-
-db.driverClass = org.postgresql.Driver
-
-# url used to connect to the database. Last element is the database name
-
-db.jdbcUrl     = jdbc:postgresql:delving
-
-# database user
-
-db.user        = delving
-
-# database password
-
-db.password    = culture
-
-
-###############################################
-#                                             #
 #       solr connection settings              #
 #                                             #
 ###############################################
@@ -56,10 +33,6 @@ solr.selectUrl = http://localhost:8983/solr
 # select urls are the same.
 
 solr.updateUrl = http://localhost:8983/solr
-
-# Number of records that will be send to Solr as indexing batch. Default 1000 is good in most situations
-
-solr.chunkSize = 1000
 
 # The timeout for SolrJ connectionPool
 
@@ -259,7 +232,7 @@ portal.baseUrl = http://localhost:8080
 
 # The name of the MongoDB database that is used by the Portal CMS. At a later stage this will be deferred to the Services module.
 
-portal.mongo.dbName = static
+portal.mongo.dbName = PoolDB
 
 # The url used by the Portal to get images from the Thumbnail cache instead of directly from the provider websites.
 # (Currently not used.)

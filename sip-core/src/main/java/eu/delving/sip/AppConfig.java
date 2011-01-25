@@ -24,6 +24,7 @@ package eu.delving.sip;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -40,6 +41,9 @@ public class AppConfig {
     private String recentDirectory;
     private String normalizeDirectory;
     private List<String> activeMetadataPrefixes;
+
+    @XStreamAlias("repository-connections")
+    private List<RepositoryConnection> repositoryConnections;
 
     public String getServerHostPort() {
         if (serverHostPort == null) {
@@ -61,6 +65,34 @@ public class AppConfig {
 
     public void setAccessKey(String accessKey) {
         this.accessKey = accessKey;
+        saveConnection();
+    }
+
+    public void saveConnection() {
+        for (RepositoryConnection connection : getRepositoryConnections()) {
+            if (connection.serverHostPort.equals(getServerHostPort())) {
+                connection.accessKey = getAccessKey();
+                return;
+            }
+        }
+        RepositoryConnection connection = new RepositoryConnection();
+        connection.serverHostPort = getServerHostPort();
+        connection.accessKey = getAccessKey();
+        repositoryConnections.add(connection);
+    }
+
+    public void deleteConnection() {
+        repositoryConnections = filter(getServerHostPort(), repositoryConnections);
+    }
+
+    public void selectConnection(String serverHostPort) {
+        for (RepositoryConnection connection : getRepositoryConnections()) {
+            if (connection.serverHostPort.equals(serverHostPort)) {
+                this.serverHostPort = connection.serverHostPort;
+                this.accessKey = connection.accessKey;
+                return;
+            }
+        }
     }
 
     public String getRecentDirectory() {
@@ -100,5 +132,30 @@ public class AppConfig {
             activeMetadataPrefixes = new ArrayList<String>();
         }
         return activeMetadataPrefixes;
+    }
+
+    public List<RepositoryConnection> getRepositoryConnections() {
+        if (repositoryConnections == null) {
+            repositoryConnections = new ArrayList<RepositoryConnection>();
+        }
+        return repositoryConnections;
+    }
+
+    @XStreamAlias("repository-connection")
+    public static class RepositoryConnection {
+        public String serverHostPort;
+        public String accessKey;
+    }
+
+    private static List<RepositoryConnection> filter(String serverHostPort, List<RepositoryConnection> original) {
+        List<RepositoryConnection> list = new ArrayList<RepositoryConnection>(original);
+        Iterator<RepositoryConnection> walk = list.iterator();
+        while (walk.hasNext()) {
+            RepositoryConnection connection = walk.next();
+            if (serverHostPort.equals(connection.serverHostPort)) {
+                walk.remove();
+            }
+        }
+        return list;
     }
 }

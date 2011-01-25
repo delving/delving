@@ -23,6 +23,8 @@ package eu.europeana.core.querymodel.query;
 
 import eu.delving.core.binding.FieldValue;
 
+import java.util.List;
+
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -32,6 +34,7 @@ public interface BriefDoc { // if multiple-> show first
     int getIndex();
     String getFullDocUrl();
     String getId();
+    String getDelvingId(); // this is the OAI-PMH id
     String getTitle();
     String getThumbnail();
     String getCreator();
@@ -46,6 +49,8 @@ public interface BriefDoc { // if multiple-> show first
 
     // get FieldValue from bindingMap
     FieldValue getFieldValue(String key);
+    List<FieldValue> getFieldValueList();
+    List<FieldValue> getFieldValuesFiltered(boolean include, String[] fields);
 
     void setIndex(int index);
     void setFullDocUrl(String fullDocUrl);

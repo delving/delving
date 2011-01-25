@@ -21,9 +21,8 @@
 
 package eu.europeana.core.util.web;
 
+import eu.delving.core.storage.User;
 import eu.delving.domain.Language;
-import eu.europeana.core.database.domain.StaticPageType;
-import eu.europeana.core.database.domain.User;
 import eu.europeana.core.querymodel.query.BriefBeanView;
 import eu.europeana.core.querymodel.query.DocIdWindowPager;
 import eu.europeana.core.querymodel.query.FullBeanView;
@@ -76,14 +75,6 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
                 MessageFormat.format(
                         "[action={0}, {2}, {1}]",
                         action, printLogAffix(request), logString));
-    }
-
-    @Override
-    public void logStaticPageView(HttpServletRequest request, StaticPageType pageType) {
-        log.info(
-                MessageFormat.format(
-                        "[action={0}, view={1}, {2}]",
-                        UserAction.STATICPAGE, pageType.getViewName(), printLogAffix(request)));
     }
 
     @Override
@@ -173,7 +164,7 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
         final User user = ControllerUtil.getUser();
         String userId;
         if (user != null) {
-            userId = user.getId().toString();
+            userId = user.getEmail(); // todo: is this desirable?  was id.toString()
         }
         else {
             userId = "";

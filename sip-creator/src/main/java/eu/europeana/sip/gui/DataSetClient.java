@@ -45,6 +45,7 @@ public class DataSetClient {
     private Logger log = Logger.getLogger(getClass());
     private Executor executor = Executors.newSingleThreadExecutor();
     private SipModel sipModel;
+    private boolean fetching;
     private Timer periodicListFetchTimer;
     private Listener listener;
 
@@ -65,10 +66,11 @@ public class DataSetClient {
                 executor.execute(new ListFetcher());
             }
         });
-        periodicListFetchTimer.setRepeats(true);
+        periodicListFetchTimer.setRepeats(false);
     }
 
     public void setListFetchingEnabled(boolean enable) {
+        fetching = enable;
         if (enable) {
             executor.execute(new ListFetcher());
             periodicListFetchTimer.restart();
@@ -79,7 +81,7 @@ public class DataSetClient {
     }
 
     public boolean isConnected() {
-        return periodicListFetchTimer.isRunning();
+        return fetching;
     }
 
     public void sendCommand(String spec, DataSetCommand command) {
@@ -93,35 +95,28 @@ public class DataSetClient {
     private class ListFetcher implements Runnable {
         @Override
         public void run() {
-            try {
-                String url = String.format(
-                        "%s?accessKey=%s",
-                        sipModel.getAppConfigModel().getServerUrl(),
-                        sipModel.getAppConfigModel().getAccessKey()
-                );
-                final DataSetResponse response = execute(new HttpGet(url));
+            fetching = true;
+            String url = String.format(
+                    "%s?accessKey=%s",
+                    sipModel.getAppConfigModel().getServerUrl(),
+                    sipModel.getAppConfigModel().getAccessKey()
+            );
+            final DataSetResponse response = execute(new HttpGet(url));
+            if (response != null) {
                 if (response.isEverythingOk()) {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
                             listener.setList(response.getDataSetList());
+                            periodicListFetchTimer.restart();
                         }
                     });
                 }
                 else {
+                    fetching = false;
                     periodicListFetchTimer.stop();
                     notifyUser(response.getResponseCode());
                 }
-            }
-            catch (final Exception e) {
-                periodicListFetchTimer.stop();
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        sipModel.getUserNotifier().tellUser("Disconnected from Repository", e);
-                        listener.disconnected();
-                    }
-                });
             }
         }
     }
@@ -137,15 +132,15 @@ public class DataSetClient {
 
         @Override
         public void run() {
-            try {
-                String url = String.format(
-                        "%s/%s/%s?accessKey=%s",
-                        sipModel.getAppConfigModel().getServerUrl(),
-                        spec,
-                        command,
-                        sipModel.getAppConfigModel().getAccessKey()
-                );
-                final DataSetResponse response = execute(new HttpGet(url));
+            String url = String.format(
+                    "%s/%s/%s?accessKey=%s",
+                    sipModel.getAppConfigModel().getServerUrl(),
+                    spec,
+                    command,
+                    sipModel.getAppConfigModel().getAccessKey()
+            );
+            final DataSetResponse response = execute(new HttpGet(url));
+            if (response != null) {
                 if (response.isEverythingOk()) {
                     if (response.getDataSetList() == null || response.getDataSetList().size() != 1) {
                         throw new RuntimeException("Expected exactly one Info object");
@@ -160,10 +155,7 @@ public class DataSetClient {
                 else {
                     notifyUser(response);
                 }
-            }
-            catch (final Exception e) {
-                notifyUser(e);
-            }
+            } // otherwise we will have disconnected
         }
     }
 
@@ -194,7 +186,7 @@ public class DataSetClient {
                 file = Hasher.hashFile(file);
                 log.info("Uploading " + file);
                 final DataSetResponse response = uploadFile();
-                boolean success = response.getResponseCode() == DataSetResponseCode.THANK_YOU;
+                boolean success = response != null && response.getResponseCode() == DataSetResponseCode.THANK_YOU;
                 progressListener.finished(success);
                 if (!success) {
                     notifyUser(response);
@@ -207,7 +199,7 @@ public class DataSetClient {
             }
         }
 
-        private DataSetResponse uploadFile() throws IOException {
+        private DataSetResponse uploadFile() {
             HttpPost httpPost = new HttpPost(createRequestUrl());
             httpPost.setEntity(createEntity());
             return execute(httpPost);
@@ -305,22 +297,31 @@ public class DataSetClient {
         }
     }
 
-    private DataSetResponse execute(HttpGet httpGet) throws IOException {
-        log.info("GET: " + httpGet.getURI());
+    private DataSetResponse execute(HttpGet httpGet) {
         HttpClient httpClient = new DefaultHttpClient();
         try {
             return translate(httpClient.execute(httpGet));
+        }
+        catch (IOException e) {
+            log.warn("Problem executing get", e);
+            forceDisconnect();
+            return null;
         }
         finally {
             httpClient.getConnectionManager().shutdown();
         }
     }
 
-    private DataSetResponse execute(HttpPost httpPost) throws IOException {
+    private DataSetResponse execute(HttpPost httpPost) {
         log.info("POST: " + httpPost.getURI());
         HttpClient httpClient = new DefaultHttpClient();
         try {
             return translate(httpClient.execute(httpPost));
+        }
+        catch (IOException e) {
+            log.warn("Problem executing post", e);
+            forceDisconnect();
+            return null;
         }
         finally {
             httpClient.getConnectionManager().shutdown();
@@ -345,10 +346,14 @@ public class DataSetClient {
             @Override
             public void run() {
                 sipModel.getUserNotifier().tellUser("Sorry, there was a problem communicating with Repository", exception);
-                periodicListFetchTimer.stop();
-                listener.disconnected();
+                forceDisconnect();
             }
         });
+    }
+
+    private void forceDisconnect() {
+        setListFetchingEnabled(false);
+        listener.disconnected();
     }
 
     private void notifyUser(DataSetResponse response) {

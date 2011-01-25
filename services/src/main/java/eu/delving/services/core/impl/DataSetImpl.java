@@ -77,7 +77,10 @@ class DataSetImpl implements MetaRepo.DataSet {
     }
 
     @Override
-    public DataSetState getState() {
+    public DataSetState getState(boolean fresh) {
+        if (fresh) {
+            object = implFactory.dataSets().findOne(new BasicDBObject("_id", object.get("_id")));
+        }
         return DataSetState.get((String) object.get(DATA_SET_STATE));
     }
 
@@ -153,6 +156,7 @@ class DataSetImpl implements MetaRepo.DataSet {
         mapping.put(MetaRepo.Mapping.RECORD_MAPPING, xml);
         mappings.put(mappedNamespace.getPrefix(), mapping);
         save();
+        implFactory.removeHarvestSteps(this, recordMapping.getPrefix());
     }
 
     @Override
@@ -182,6 +186,24 @@ class DataSetImpl implements MetaRepo.DataSet {
     @Override
     public void setRecordsIndexed(int count) {
         object.put(RECORDS_INDEXED, count);
+    }
+
+    @Override
+    public void incrementRecordsIndexed(int increment) {
+        implFactory.dataSets().update(
+                new BasicDBObject(
+                        MetaRepo.DataSet.SPEC,
+                        getSpec()
+                ),
+                new BasicDBObject(
+                        "$inc",
+                        new BasicDBObject(
+                                RECORDS_INDEXED,
+                                increment
+                        )
+                )
+        );
+        setRecordsIndexed(getRecordsIndexed() + increment);
     }
 
     @Override
@@ -244,9 +266,9 @@ class DataSetImpl implements MetaRepo.DataSet {
     }
 
     @Override
-    public List<? extends MetaRepo.Record> getRecords(String prefix, int count, Date from, ObjectId afterId, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException {
+    public RecordFetch getRecords(String prefix, int count, Date from, ObjectId afterId, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException {
         MetaRepo.Mapping mapping = getMapping(prefix, accessKey);
-        List<RecordImpl> list = new ArrayList<RecordImpl>();
+        final List<RecordImpl> list = new ArrayList<RecordImpl>();
         DBCursor cursor = createCursor(from, afterId, until).limit(count).sort(new BasicDBObject(MetaRepo.MONGO_ID, 1));
         while (cursor.hasNext()) {
             DBObject object = cursor.next();
@@ -255,15 +277,29 @@ class DataSetImpl implements MetaRepo.DataSet {
         if (list.isEmpty()) {
             return null;
         }
-        else if (mapping != null) {
-            Map<String, String> namespaces = new TreeMap<String, String>();
-            DBObject namespacesObject = (DBObject) object.get(NAMESPACES);
-            for (String nsPrefix : namespacesObject.keySet()) {
-                namespaces.put(nsPrefix, (String) namespacesObject.get(nsPrefix));
+        else {
+            final ObjectId nextAfterId = list.get(list.size()-1).getId();
+            if (mapping != null) {
+                Map<String, String> namespaces = new TreeMap<String, String>();
+                DBObject namespacesObject = (DBObject) object.get(NAMESPACES);
+                for (String nsPrefix : namespacesObject.keySet()) {
+                    namespaces.put(nsPrefix, (String) namespacesObject.get(nsPrefix));
+                }
+                ((MappingInternal) mapping).executeMapping(list, namespaces); // can remove members when records don't validate
             }
-            ((MappingInternal) mapping).executeMapping(list, namespaces); // can remove members when records don't validate
+            return new RecordFetch() {
+
+                @Override
+                public List<? extends MetaRepo.Record> getRecords() {
+                    return list;
+                }
+
+                @Override
+                public ObjectId getAfterId() {
+                    return nextAfterId;
+                }
+            };
         }
-        return list;
     }
 
     @Override
@@ -286,6 +322,24 @@ class DataSetImpl implements MetaRepo.DataSet {
     public void delete() {
         records().drop();
         implFactory.dataSets().remove(object);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("DataSet(%s)", getSpec());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DataSetImpl dataSet = (DataSetImpl) o;
+        return getSpec().equals(dataSet.getSpec());
+    }
+
+    @Override
+    public int hashCode() {
+        return getSpec().hashCode();
     }
 
     private void addHash(String hashAttribute, List<String> hashes) {

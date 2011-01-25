@@ -23,7 +23,6 @@ package eu.europeana.web.controller;
 
 import eu.delving.core.binding.FacetStatisticsMap;
 import eu.delving.core.binding.SolrBindingService;
-import eu.europeana.core.database.domain.StaticPageType;
 import eu.europeana.core.querymodel.query.*;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
@@ -64,38 +63,7 @@ public class ResultController {
     @Value("#{launchProperties['image.annotation.tool.base.url']}")
     private String imageAnnotationToolBaseUrl;
 
-    @RequestMapping("/full-doc.html")
-    @SuppressWarnings("unchecked")
-    public ModelAndView fullDocHtml(
-            @RequestParam(value = "query", required = false) String query,
-            @RequestParam(value = "uri", required = true) String uri,
-            @RequestParam(value = "start", required = false) String start,
-            @RequestParam(value = "format", required = false) String format,
-            HttpServletRequest request
-    ) throws Exception {
-        final Map params = request.getParameterMap();
-        boolean srwFormat = format != null && format.equals("srw");
-
-        // get results
-        final FullBeanView fullResultView = beanQueryModelFactory.getFullResultView(params);
-
-        // create ModelAndView
-        ModelAndView page = ControllerUtil.createModelAndViewPage(srwFormat ? "xml/full-doc-srw" : "full-doc");
-        page.addObject("result", fullResultView);
-        if (fullResultView.getDocIdWindowPager() != null) {
-            page.addObject("pagination", fullResultView.getDocIdWindowPager());
-        }
-        if (format != null && format.equalsIgnoreCase("labels")) {
-            page.addObject("format", format);
-        }
-        page.addObject("uri", uri);
-        page.addObject("socialTags", fullResultView.getUserTags());
-        page.addObject("imageAnnotationToolBaseUrl", imageAnnotationToolBaseUrl);
-        clickStreamLogger.logFullResultView(request, fullResultView, page, fullResultView.getFullDoc().getId());
-        return page;
-    }
-
-    @RequestMapping("/record/{collId}/{recordHash}.html")
+    @RequestMapping("/object/{collId}/{recordHash}.html")
     @SuppressWarnings("unchecked")
     public ModelAndView fullDocRest(
             @PathVariable String collId, @PathVariable String recordHash,
@@ -123,7 +91,6 @@ public class ResultController {
             page.addObject("format", format);
         }
         page.addObject("uri", uri);
-        page.addObject("socialTags", fullResultView.getUserTags());
         page.addObject("imageAnnotationToolBaseUrl", imageAnnotationToolBaseUrl);
         clickStreamLogger.logFullResultView(request, fullResultView, page, fullResultView.getFullDoc().getId());
         return page;
@@ -173,7 +140,41 @@ public class ResultController {
         return viewName;
     }
 
-    @RequestMapping("/brief-doc.html")
+
+    @RequestMapping("/getFacets.html")
+    public ModelAndView getFacetsJson(
+            HttpServletRequest request
+    ) throws EuropeanaQueryException, UnsupportedEncodingException {
+
+        ModelAndView page = ControllerUtil.createModelAndViewPage("json/getFacets");
+
+        Map<String, String[]> parameterMap = (Map<String, String[]>) request.getParameterMap();
+        if (parameterMap.isEmpty()) {
+            parameterMap = new HashMap<String, String[]>();
+            parameterMap.put("query", new String[]{"*:*"});
+        } else if (!parameterMap.containsKey("query")) {
+            parameterMap = new HashMap<String, String[]>(parameterMap);
+            parameterMap.put("query", new String[]{"*:*"});
+        }
+
+        SolrQuery solrQuery = beanQueryModelFactory.createFromQueryParams(parameterMap);
+        solrQuery.setFacet(true);
+        solrQuery.setFacetMinCount(1);
+        solrQuery.setFacetLimit(300);
+//        solrQuery.addFacetField("MUNICIPALITY", "PROVIDER", "DATAPROVIDER", "COUNTY");
+        solrQuery.addFacetField("MUNICIPALITY");
+        solrQuery.setRows(0);
+
+        // Create ModelAndView
+        final QueryResponse solrResponse = beanQueryModelFactory.getSolrResponse(solrQuery);
+        final List<FacetField> facetFields = solrResponse.getFacetFields();
+        final FacetStatisticsMap facetStatistics = SolrBindingService.createFacetStatistics(facetFields);
+
+        page.addObject("facetMap", facetStatistics);
+        return page;
+    }
+
+    @RequestMapping(value = {"/search", "/brief-doc.html"})
     public ModelAndView briefDocHtml(
             @RequestParam(value = "query", required = false) String query,
             @RequestParam(value = "format", required = false) String format,
@@ -202,9 +203,6 @@ public class ResultController {
         return page;
     }
 
-//    <prop key="/brief-doc.rss">briefDocController</prop>
-//    <prop key="/brief-doc.rdf">briefDocController</prop>
-//    <prop key="/brief-doc.srw">briefDocController</prop>
 
     /*
      * The page where you are redirected to the isShownAt and isShownBy links
@@ -302,8 +300,7 @@ public class ResultController {
 
     @RequestMapping("/error.html")
     public ModelAndView errorPageHandler(HttpServletRequest request) {
-        StaticPageType pageType = StaticPageType.ERROR;
-        clickStreamLogger.logStaticPageView(request, pageType);
-        return ControllerUtil.createModelAndViewPage(pageType.getViewName());
+        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.ERROR);
+        return ControllerUtil.createModelAndViewPage("error");
     }
 }

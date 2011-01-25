@@ -15,7 +15,7 @@
                 <#if doc_index &gt; (max-1)><#break/></#if>
              <dd>
                  <#if useCache="true">
-                         <img src="${cacheUrl}uri=${doc.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" onerror="showDefaultSmall(this,'${doc.type}')" alt="Click here to view related item" width="25"/>
+                         <img src="${cacheUrl}id=${doc.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" onerror="showDefaultSmall(this,'${doc.type}')" alt="Click here to view related item" width="25"/>
                      <#else>
                          <img src="${doc.thumbnail}" alt="Click here to view related item" width="25" onerror="showDefaultSmall(this,'${doc.type}')"/>
                  </#if>
@@ -29,7 +29,7 @@
             </#list>
             <#if result.relatedItems?size &gt; max-1>
                 <dd>
-                     <a href='/${portalName}/brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message '_action.see.all.related.items' /></a>
+                     <a href='/${portalName}/search?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message '_action.see.all.related.items' /></a>
                 </dd>
             </#if>
     </dl>

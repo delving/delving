@@ -167,7 +167,7 @@ class DocIdWindowPagerSpec extends Spec with BeforeAndAfterAll with ShouldMatche
       val (pager, uri) = createPager("2", "1", "*:*")
 
       it("should give back a return to results uri") {
-        pager.getReturnToResults should equal("/portal/brief-doc.html?query=*%3A*&start=1&view=table&tab=all&rtr=true")
+        pager.getReturnToResults should equal("/portal/search?query=*%3A*&start=1&view=table&tab=all&rtr=true")
       }
     }
   }

@@ -195,9 +195,10 @@ public class RecordValidator {
     private void validateField(String text, FieldDefinition fieldDefinition, List<String> problems) {
         FieldDefinition.Validation validation = fieldDefinition.validation;
         if (validation != null) {
-            if (validation.factDefinition != null && validation.factDefinition.options != null && !validation.factDefinition.options.contains(text)) {
-                String optionsString = getOptionsString(fieldDefinition);
-                problems.add(String.format("Value for [%s] was [%s] which does not belong to [%s]", fieldDefinition.path, text, optionsString));
+            if (validation.hasOptions()) {
+                if (!validation.allowOption(text)) {
+                    problems.add(String.format("Value for [%s] was [%s] which does not belong to [%s]", fieldDefinition.path, text, validation.getOptionsString()));
+                }
             }
             if (validation.url) {
                 try {
@@ -213,18 +214,6 @@ public class RecordValidator {
                 }
             }
         }
-    }
-
-    private String getOptionsString(FieldDefinition fieldDefinition) {
-        StringBuilder enumString = new StringBuilder();
-        Iterator<String> walk = fieldDefinition.validation.factDefinition.options.iterator();
-        while (walk.hasNext()) {
-            enumString.append(walk.next());
-            if (walk.hasNext()) {
-                enumString.append(',');
-            }
-        }
-        return enumString.toString();
     }
 
     private static class Counter {

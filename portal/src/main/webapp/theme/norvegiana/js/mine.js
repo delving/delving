@@ -1,10 +1,9 @@
 $(document).ready(function() {
-    $("#savedItems").tabs({selected: $.cookie('ui-tabs-3')});
-    $("#savedItems").tabs({ cookie: { expires: 30 } });
-    $("#rem-acc").click(function(){
-        removeUser($(this).attr("name"));
-
-    })
+    if ($.cookie('mine-tabs')){
+        $("#savedItems").tabs({selected: $.cookie('mine-tabs')});
+    } else {
+        $("#savedItems").tabs({selected: 0});
+    }
 });
 
 function removeRequest(className, id, type) {
@@ -21,29 +20,27 @@ function removeRequest(className, id, type) {
     });
 }
 
-function removeUser(uemail){
-    alert(uemail);
-    $.ajax({
-        type: "POST",
-        url: "/portal/remove-user.ajax",
-        data: "email=" + uemail,
-        success: function(msg) {
-            $(rowRemove).css("display","none");
-            showMessage("success","User was successfully removed!")
-            //window.location.reload();
-        },
-        error: function(xhr) {
-            showMessage("fail","An error occured. The user could not be removed <br \/> error:"+xhr.status);
-        }
-    });
+function removeUser(email){
+        $.ajax({
+          type: 'POST',
+          url: portalName+'/remove-user.ajax',
+          data: "email="+email,
+          success: function(data){
+              //showMessage("success","User: "+toRemove+ " has been successfully removed");
+              document.location.href=portalName+"/logout.html";
+          },
+          error: function(xhr, ajaxOptions, thrownError){
+            showMessage("error","An error has occured: "+xhr.status);
+          }
+        });
 }
 
-function removeSavedItem(itemId, rowId){
+function removeSavedItem(index, rowId){
     var rowRemove="#"+rowId;
     $.ajax({
         type: "POST",
-        url: "/portal/remove-saved-item.ajax",
-        data: "id=" + itemId,
+        url: "/portal/remove-item.ajax",
+        data: "index=" + index,
         success: function(msg) {
             $(rowRemove).css("display","none");
             showMessage("success","Items was successfully removed!")
@@ -59,8 +56,8 @@ function removeSavedSearch(searchId, rowId){
     var rowRemove="#"+rowId;
     $.ajax({
         type: "POST",
-        url: "/portal/remove-saved-search.ajax",
-        data: "id=" + searchId,
+        url: "/portal/remove-search.ajax",
+        data: "index=" + searchId,
         success: function(msg) {
             $(rowRemove).css("display","none");
             showMessage("success","Saved search was successfully removed!")

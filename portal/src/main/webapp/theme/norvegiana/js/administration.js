@@ -1,5 +1,21 @@
-$(document).ready(function(){
-     $.ajax({
+function removeUser(email){
+        $.ajax({
+          type: 'POST',
+          url: portalName+'/remove-user.ajax',
+          data: "email="+email,
+          success: function(data){
+              showMessage("success","User: "+email+ " has been successfully removed");
+              $("#tbl-users-found").hide();
+              showUserList();
+          },
+          error: function(xhr, ajaxOptions, thrownError){
+            showMessage("error","An error has occured: "+xhr.status);
+          }
+        });
+}
+
+function showUserList(){
+         $.ajax({
         url: "/portal/list-users.ajax",
         type: "GET",
         dataType: "XML",
@@ -14,8 +30,6 @@ $(document).ready(function(){
             $(xml).find('user').each(function(){
                 var _email = $(this).attr('email');
                 var _role = $(this).attr('role');
-//                var _firstName = $(this).attr('firstName');
-//                var _lastName = $(this).attr('lastName');
                 var _userName = $(this).attr('userName');
                 var _regDate = $(this).attr('registrationDate');
                 var _lastLoginDate = $(this).attr('lastLoginDate');
@@ -27,7 +41,7 @@ $(document).ready(function(){
             styleUIButtons();
             $('td.searchParam, a.searchParam').click(function(){
                 $('input#searchPattern').val($(this).text());
-                $('form#search-form"').submit();
+                $('form#search-form').submit();
                 return false;
             })
         },
@@ -35,29 +49,13 @@ $(document).ready(function(){
             showMessage("fail","Something went wrong<br/>error: "+xhr.status );
         }
     });
-  
-    $('button#rem-user').click(function(){
-        var toRemove = $('input#userEmail').val();
-        var confirmation = confirm("Remove user: "+toRemove+"?");
-        if(confirmation){
-            $.ajax({
-              type: 'POST',
-              url: portalName+'/remove-user.ajax',
-              data: "email="+toRemove,
-              success: function(data){
-                  $("#tbl-users-found").hide();
-                  showMessage("success","User: "+toRemove+ " has been successfully removed");   
-              },
-              error: function(xhr, ajaxOptions, thrownError){
-                showMessage("error","An error has occured: "+xhr.status);
-              }
-            });
-        }
-        return false;
-    });
-
+}
+$(document).ready(function(){
+    showUserList();
     $("form.set-form").submit(function(){
-        if($("select.newRole").val()=="NONE"){
+        //get the target row
+        var targetRow = "#row_"+$(this).next('input.formIndex').val();
+        if($(targetRow+" select.newRole").val()=="NONE"){
             showMessage("error","You must choose a user role");
             return false;
         }

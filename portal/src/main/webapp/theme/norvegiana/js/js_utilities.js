@@ -93,14 +93,24 @@ function delvingPageCall(targetId,pageName,msgHead,msgBody,msgLink){
 function showMessage(messageClass, messageString){
     var top = $(document).scrollTop()+"px";
     $("#messages .message").html(messageString);
-//    $("#messages").css("top",top);
-//        $("#messages").css("position","fixed");
     $("#messages").addClass(messageClass).slideDown("slow").delay(5000).slideUp("slow");
     $("#messages").click(function(){
         $(this).stop(true, true).css("display","none");
     });
-    
+}
 
+function showConfirm(messageClass, messageString, callback){
+    var top = $(document).scrollTop()+"px";
+    $("div#confirmation .message").html(messageString);
+    $("div#confirmation").addClass(messageClass).slideDown("slow");
+    $("div#confirmation button#cancel").click(function(){
+        $("#confirmation").slideUp("slow");
+        return false;
+    });
+    $("#confirmation button#ok").click(function(){
+        $("div#confirmation").slideUp("slow");
+         eval(callback);
+    });
 }
 
 function styleUIButtons(){
@@ -165,6 +175,30 @@ function styleUIMessages(){
         }
 }
 
+function showDefaultImage(obj, iType, size) {
+    var defImgSize = size || "small";
+    if(obj && iType){
+        switch (iType)
+                {
+            case "IMAGE":
+                obj.src = (defImgSize=="small") ? baseThemePath+"/images/item-image.gif" : baseThemePath+"/images/item-image-large.gif";
+                break;
+            case "TEXT":
+                obj.src = (defImgSize=="small") ? baseThemePath+"/images/item-page.gif" : baseThemePath+"/images/item-page-large.gif";
+                break;
+            case "VIDEO":
+                obj.src = (defImgSize=="small") ? baseThemePath+"/images/item-video.gif" : baseThemePath+"/images/item-video-large.gif";
+                break;
+            case "SOUND":
+                obj.src = (defImgSize=="small") ? baseThemePath+"/images/item-sound.gif" : baseThemePath+"/images/item-sound-large.gif";
+                break;
+            default:
+                obj.src = (defImgSize=="small") ? baseThemePath+"/images/item-image.gif" : baseThemePath+"/images/item-image-large.gif";
+        }
+    }
+
+}
+
 
 $(document).ready(function() {
    $("#formSimpleSearch").validate({
@@ -183,14 +217,25 @@ $(document).ready(function() {
     });
 
    styleUIButtons();
-
     //onclick for login href to take user back to last visited page before logging in
-    if($("a#login, a#logout")){
-        $("a#login, a#logout").click(function(){
-            takeMeBack();
-        })
+    var pathname = window.location.pathname;
+    if(!(pathname == portalName+"/register-request.html"
+            || pathname==portalName+"/register-success.html"
+            || pathname==portalName+"/forgot-password.html"
+            || pathname==portalName+"/change-password-success.html"
+            || pathname==portalName+"/login.html")){
+
+       if($("a#login, a#logout")){
+            $("a#login, a#logout").click(function(){
+                takeMeBack();
+            })
+        }
     }
 
+//    $("#dmessages").notify({
+//        nType: "success",
+//        message: "Delving jQuery Notification!"
+//    });
 });
 
 

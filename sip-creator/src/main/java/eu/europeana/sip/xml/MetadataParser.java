@@ -51,7 +51,7 @@ public class MetadataParser {
     private Path recordRoot;
     private int recordIndex, recordCount;
     private Path path = new Path();
-    private Map<String,String> namespaces = new TreeMap<String,String>();
+    private Map<String, String> namespaces = new TreeMap<String, String>();
     private MetadataRecord.Factory factory = new MetadataRecord.Factory(namespaces);
     private ProgressListener progressListener;
 
@@ -66,6 +66,10 @@ public class MetadataParser {
         xmlif.setProperty(XMLInputFactory.IS_COALESCING, Boolean.FALSE);
         xmlif.configureForSpeed();
         this.input = (XMLStreamReader2) xmlif.createXMLStreamReader("Normalization", inputStream);
+    }
+
+    public void setProgressListener(ProgressListener progressListener) {
+        this.progressListener = progressListener;
     }
 
     @SuppressWarnings("unchecked")
@@ -107,7 +111,6 @@ public class MetadataParser {
                     break;
                 case XMLEvent.END_ELEMENT:
                     if (node != null) {
-                        node = node.parent();
                         String valueString = value.toString().replaceAll("\n", " ").replaceAll(" +", " ").trim();
                         value.setLength(0);
                         if (valueString.length() > 0) {
@@ -117,13 +120,16 @@ public class MetadataParser {
                             if (node.parent() != null) {
                                 throw new RuntimeException("Expected to be at root node");
                             }
-                            metadataRecord = factory.fromGroovyNode(node, ++recordIndex);
+                            metadataRecord = factory.fromGroovyNode(node, ++recordIndex, recordCount);
                             if (progressListener != null) {
                                 if (!progressListener.setProgress(recordIndex)) {
                                     throw new AbortException();
                                 }
                             }
                             node = null;
+                        }
+                        else {
+                            node = node.parent();
                         }
                     }
                     path.pop();

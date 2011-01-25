@@ -21,7 +21,6 @@
 
 package eu.delving.services.core.impl;
 
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import eu.delving.services.core.MetaRepo;
@@ -44,6 +43,7 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
     private Logger log = Logger.getLogger(getClass());
     private ImplFactory implFactory;
     private DBObject object;
+    private List<MetaRepo.Record> records = new ArrayList<MetaRepo.Record>();
 
     HarvestStepImpl(ImplFactory implFactory, DBObject object) {
         this.implFactory = implFactory;
@@ -80,12 +80,11 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
             @Override
             public void run() {
                 try {
-                    addRecord(null); // marking that we've tried
                     ObjectId afterId = getAfterId();
                     loop:
                     while (true) {
                         int recordsToFetch = implFactory.getResponseListSize() - getRecordCount() + 1; // 1 extra
-                        List<? extends MetaRepo.Record> records = dataSet.getRecords(
+                        MetaRepo.DataSet.RecordFetch recordFetch  = dataSet.getRecords(
                                 getPmhRequest().getMetadataPrefix(),
                                 recordsToFetch,
                                 getPmhRequest().getFrom(),
@@ -93,15 +92,12 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
                                 getPmhRequest().getUntil(),
                                 key
                         );
-                        if (records == null) {
+                        if (recordFetch == null) {
                             break;
                         }
-                        if (!records.isEmpty()) {
-                            afterId = records.get(records.size()-1).getId();
-                            // todo: this will fail if there are no records returned (mapping failed on all) because we'll keep fetching the same ones
-                        }
-                        log.info(String.format("Fetched %d records", records.size()));
-                        for (MetaRepo.Record record : records) {
+                        afterId = recordFetch.getAfterId();
+                        log.info(String.format("Fetched %d records", recordFetch.getRecords().size()));
+                        for (MetaRepo.Record record : recordFetch.getRecords()) {
                             if (addRecord(record) == implFactory.getResponseListSize()) { // full => prepare next step
                                 log.info("Full at "+getRecordCount());
                                 DBObject nextStep = insertNextStep(
@@ -137,37 +133,17 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
     }
 
     @Override
-    public Runnable createRecordSaver() {
-        return new Runnable() {
-            @Override
-            public void run() {
-                implFactory.harvestSteps().save(object);
-            }
-        };
-    }
-
-    @Override
     public int getCursor() {
         return (Integer) object.get(CURSOR);
     }
 
     @Override
     public int getRecordCount() {
-        BasicDBList recordList = (BasicDBList) object.get(RECORDS);
-        return recordList == null ? 0 : recordList.size();
+        return records.size();
     }
 
     @Override
     public List<MetaRepo.Record> getRecords() {
-        BasicDBList recordList = (BasicDBList) object.get(RECORDS);
-        if (recordList == null) {
-            return null;
-        }
-        List<MetaRepo.Record> records = new ArrayList<MetaRepo.Record>(recordList.size());
-        for (Object element : recordList) {
-            DBObject recordObject = (DBObject) element;
-            records.add(new RecordImpl(recordObject, getPmhRequest().getMetadataPrefix(), getNamespaces()));
-        }
         return records;
     }
 
@@ -210,19 +186,18 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
     }
 
     @Override
+    public void save() {
+        implFactory.harvestSteps().save(object);
+    }
+
+    @Override
     public void delete() {
         implFactory.harvestSteps().remove(object);
     }
 
     private int addRecord(MetaRepo.Record record) {
-        BasicDBList recordList = (BasicDBList) object.get(RECORDS);
-        if (recordList == null) {
-            object.put(RECORDS, recordList = new BasicDBList());
-        }
-        if (record != null) {
-            recordList.add(((RecordImpl) record).getObject());
-        }
-        return recordList.size();
+        records.add(record);
+        return records.size();
     }
 
     public void setNextId(ObjectId objectId) {

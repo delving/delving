@@ -311,7 +311,7 @@ public class FileStoreImpl implements FileStore {
         }
 
         @Override
-        public List<FieldStatistics> getStatistics() throws FileStoreException {
+        public List<FieldStatistics> getStatistics()  {
             File statisticsFile = new File(directory, STATISTICS_FILE_NAME);
             if (statisticsFile.exists()) {
                 try {
@@ -322,12 +322,7 @@ public class FileStoreImpl implements FileStore {
                     return fieldStatisticsList;
                 }
                 catch (Exception e) {
-                    if (statisticsFile.delete()) {
-                        throw new FileStoreException("Unable to read statistics file. Deleted it.", e);
-                    }
-                    else {
-                        throw new FileStoreException("Unable to read statistics file, or delete it.", e);
-                    }
+                    statisticsFile.delete();
                 }
             }
             return null;

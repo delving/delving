@@ -45,11 +45,12 @@ import java.util.Map;
 
 public class MetadataRecord {
     private GroovyNode rootNode;
-    private int recordNumber;
+    private int recordNumber, recordCount;
 
-    private MetadataRecord(GroovyNode rootNode, int recordNumber) {
+    private MetadataRecord(GroovyNode rootNode, int recordNumber, int recordCount) {
         this.rootNode = rootNode;
         this.recordNumber = recordNumber;
+        this.recordCount = recordCount;
     }
 
     public GroovyNode getRootNode() {
@@ -58,6 +59,10 @@ public class MetadataRecord {
 
     public int getRecordNumber() {
         return recordNumber;
+    }
+
+    public int getRecordCount() {
+        return recordCount;
     }
 
     public List<MetadataVariable> getVariables() {
@@ -97,12 +102,11 @@ public class MetadataRecord {
     }
 
     public String toHtml() {
-        StringBuilder out = new StringBuilder("<html><table border=1 width=100%>");
-        out.append(String.format("<tr><th colspan=2>Record %d</th></tr>\n", recordNumber));
+        StringBuilder out = new StringBuilder(String.format("<html><strong>Record Number %d</strong><dl>", recordNumber));
         for (MetadataVariable variable : getVariables()) {
-            out.append(String.format("<tr><td width=40%%>%s</td><td width=60%%><strong>%s</strong></td></tr>\n", variable.getName(), variable.getValue()));
+            out.append(String.format("<dt>%s</dt><dd><strong>%s</strong></dd>", variable.getName(), variable.getValue()));
         }
-        out.append("</table><html>");
+        out.append("</dl><html>");
         return out.toString();
     }
 
@@ -127,8 +131,8 @@ public class MetadataRecord {
             inputFactory.configureForSpeed();
         }
 
-        public MetadataRecord fromGroovyNode(GroovyNode rootNode, int recordNumber) {
-            return new MetadataRecord(rootNode, recordNumber);
+        public MetadataRecord fromGroovyNode(GroovyNode rootNode, int recordNumber, int recordCount) {
+            return new MetadataRecord(rootNode, recordNumber, recordCount);
         }
 
         public MetadataRecord fromXml(String recordContents) throws XMLStreamException {
@@ -136,14 +140,19 @@ public class MetadataRecord {
             try {
                 Reader reader = new StringReader(recordString);
                 XMLStreamReader2 input = (XMLStreamReader2) inputFactory.createXMLStreamReader(reader);
-                GroovyNode node = null;
+                GroovyNode rootNode = null, node = null;
                 StringBuilder value = new StringBuilder();
                 while (true) {
                     switch (input.getEventType()) {
                         case XMLEvent.START_DOCUMENT:
                             break;
                         case XMLEvent.START_ELEMENT:
-                            node = (node == null)? new GroovyNode("input") : new GroovyNode(node, input.getNamespaceURI(), input.getLocalName(), input.getPrefix());
+                            if (node == null) {
+                                rootNode = node = new GroovyNode("input");
+                            }
+                            else {
+                                node = new GroovyNode(node, input.getNamespaceURI(), input.getLocalName(), input.getPrefix());
+                            }
                             if (input.getAttributeCount() > 0) {
                                 for (int walk = 0; walk < input.getAttributeCount(); walk++) {
                                     QName attributeName = input.getAttributeName(walk);
@@ -157,17 +166,15 @@ public class MetadataRecord {
                             value.append(input.getText());
                             break;
                         case XMLEvent.END_ELEMENT:
-                            if (node != null) {
-                                node = node.parent();
-                                String valueString = value.toString().replaceAll("\n", " ").replaceAll(" +", " ").trim();
-                                value.setLength(0);
-                                if (valueString.length() > 0) {
-                                    node.setValue(valueString);
-                                }
-                                if (node.parent() == null) {
-                                    return new MetadataRecord(node, -1);
-                                }
+                            if (node == null) {
+                                throw new RuntimeException("Node cannot be null");
                             }
+                            String valueString = value.toString().replaceAll("\n", " ").replaceAll(" +", " ").trim();
+                            value.setLength(0);
+                            if (valueString.length() > 0) {
+                                node.setValue(valueString);
+                            }
+                            node = node.parent();
                             break;
                         case XMLEvent.END_DOCUMENT: {
                             break;
@@ -178,11 +185,11 @@ public class MetadataRecord {
                     }
                     input.next();
                 }
+                return new MetadataRecord(rootNode, -1, -1);
             }
             catch (WstxParsingException e) {
                 throw new XMLStreamException("Problem parsing record:\n" + recordString, e);
             }
-            throw new XMLStreamException("Unexpected end while parsing");
         }
 
         private String createCompleteRecordString(String xmlRecord) {

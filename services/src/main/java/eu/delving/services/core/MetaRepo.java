@@ -58,8 +58,6 @@ public interface MetaRepo {
 
     DataSet getFirstDataSet(DataSetState dataSetState);
 
-    void incrementRecordCount(String spec, int increment);
-
     Set<? extends MetadataFormat> getMetadataFormats();
 
     Set<? extends MetadataFormat> getMetadataFormats(String id, String accessKey) throws MappingNotFoundException, AccessKeyException;
@@ -83,7 +81,7 @@ public interface MetaRepo {
         void setFactsHash(String sourceHash);
         DBObject getNamespaces();
 
-        DataSetState getState();
+        DataSetState getState(boolean fresh);
         String getErrorMessage();
         void setState(DataSetState dataSetState);
         void setErrorState(String message);
@@ -96,11 +94,17 @@ public interface MetaRepo {
 
         int getRecordsIndexed();
         void setRecordsIndexed(int count);
+        void incrementRecordsIndexed(int increment);
 
         Map<String,Mapping> mappings();
         int getRecordCount();
         Record getRecord(ObjectId id, String metadataPrefix, String accessKey) throws MappingNotFoundException, AccessKeyException;
-        List<? extends Record> getRecords(String prefix, int count, Date from, ObjectId afterId, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException;
+
+        interface RecordFetch {
+            List<? extends Record> getRecords();
+            ObjectId getAfterId();
+        }
+        RecordFetch getRecords(String prefix, int count, Date from, ObjectId afterId, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException;
 
         List<String> getHashes();
         void save();
@@ -131,7 +135,6 @@ public interface MetaRepo {
         void setUniqueElement(Path path);
         MetadataFormat getMetadataFormat();
 
-
         String NAME = "name";
         String PROVIDER_NAME = "provider_name";
         String DESCRIPTION = "description";
@@ -147,7 +150,6 @@ public interface MetaRepo {
         Date getExpiration();
         int getListSize();
         Runnable createRecordFetcher(DataSet dataSet, String key);
-        Runnable createRecordSaver();
         int getCursor();
         int getRecordCount();
         List<? extends Record> getRecords();
@@ -158,13 +160,13 @@ public interface MetaRepo {
         ObjectId getAfterId();
         ObjectId getNextId();
         String getErrorMessage();
+        void save();
         void delete();
 
         String FIRST_ID = "firstId";
         String EXPIRATION = "exp";
         String LIST_SIZE = "listSize";
         String CURSOR = "cursor";
-        String RECORDS = "records";
         String PMH_REQUEST = "pmhRequest";
         String NAMESPACES = "namespaces";
         String ERROR_MESSAGE = "error";
@@ -190,7 +192,7 @@ public interface MetaRepo {
 
     public interface Record {
         ObjectId getId();
-        PmhSet getPmhSet();
+        String getUnique();
         Date getModifiedDate();
         boolean isDeleted();
         DBObject getNamespaces();

@@ -1,7 +1,7 @@
 /*
- * Copyright 2007 EDL FOUNDATION
+ * Copyright 2010 DELVING BV
  *
- *  Licensed under the EUPL, Version 1.0 or as soon they
+ *  Licensed under the EUPL, Version 1.0 or? as soon they
  *  will be approved by the European Commission - subsequent
  *  versions of the EUPL (the "Licence");
  *  you may not use this work except in compliance with the
@@ -21,8 +21,8 @@
 
 package eu.delving.web.controller;
 
-import eu.europeana.core.database.domain.Role;
-import eu.europeana.core.database.domain.User;
+import eu.delving.core.storage.StaticRepo;
+import eu.delving.core.storage.User;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -274,7 +274,7 @@ public class StaticController {
 
     private boolean isEditor() {
         User user = ControllerUtil.getUser();
-        return user != null && (user.getRole() == Role.ROLE_ADMINISTRATOR || user.getRole() == Role.ROLE_GOD);
+        return user != null && (user.getRole() == User.Role.ROLE_ADMINISTRATOR || user.getRole() == User.Role.ROLE_GOD);
     }
 
     private String getRedirect(String path) {

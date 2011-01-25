@@ -248,9 +248,10 @@ public class DataSetController {
                 throw new DataSetNotFoundException(String.format("String %s does not exist", dataSetSpec));
             }
             DataSetCommand command = DataSetCommand.valueOf(commandString);
+            DataSetState state = dataSet.getState(false);
             switch (command) {
                 case DISABLE:
-                    switch (dataSet.getState()) {
+                    switch (state) {
                         case QUEUED:
                         case INDEXING:
                         case ERROR:
@@ -264,8 +265,7 @@ public class DataSetController {
                             return view(DataSetResponseCode.STATE_CHANGE_FAILURE);
                     }
                 case INDEX:
-                    switch (dataSet.getState()) {
-                        case EMPTY: // todo: make sure the data set goes to upload
+                    switch (state) {
                         case DISABLED:
                         case UPLOADED:
                             dataSet.setState(DataSetState.QUEUED);
@@ -275,7 +275,7 @@ public class DataSetController {
                             return view(DataSetResponseCode.STATE_CHANGE_FAILURE);
                     }
                 case REINDEX:
-                    switch (dataSet.getState()) {
+                    switch (state) {
                         case ENABLED:
                             dataSet.setRecordsIndexed(0);
                             dataSet.setState(DataSetState.QUEUED);
@@ -285,12 +285,13 @@ public class DataSetController {
                             return view(DataSetResponseCode.STATE_CHANGE_FAILURE);
                     }
                 case DELETE:
-                    switch (dataSet.getState()) {
-                        case EMPTY:
+                    switch (state) {
+                        case INCOMPLETE:
                         case DISABLED:
                         case ERROR:
                         case UPLOADED:
                             dataSet.delete();
+                            dataSet.setState(DataSetState.INCOMPLETE);
                             return view(dataSet);
                         default:
                             return view(DataSetResponseCode.STATE_CHANGE_FAILURE);
@@ -306,6 +307,7 @@ public class DataSetController {
 
     private void deleteFromSolr(MetaRepo.DataSet dataSet) throws SolrServerException, IOException {
         solrServer.deleteByQuery("europeana_collectionName:" + dataSet.getSpec());
+        solrServer.commit();
     }
 
     private ModelAndView view(DataSetResponseCode responseCode) {
@@ -360,7 +362,7 @@ public class DataSetController {
     private DataSetInfo getInfo(MetaRepo.DataSet dataSet) {
         DataSetInfo info = new DataSetInfo();
         info.spec = dataSet.getSpec();
-        info.state = dataSet.getState().toString();
+        info.state = dataSet.getState(false).toString();
         info.recordCount = dataSet.getRecordCount();
         info.errorMessage = dataSet.getErrorMessage();
         info.recordsIndexed = dataSet.getRecordsIndexed();

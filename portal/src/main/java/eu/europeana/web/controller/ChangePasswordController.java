@@ -21,12 +21,12 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.core.database.UserDao;
-import eu.europeana.core.database.domain.Token;
-import eu.europeana.core.database.domain.User;
+import eu.delving.core.storage.TokenRepo;
+import eu.delving.core.storage.User;
+import eu.delving.core.storage.UserRepo;
+import eu.delving.core.util.SimpleMessageCodesResolver;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.EmailSender;
-import eu.europeana.core.util.web.TokenService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -59,10 +59,10 @@ public class ChangePasswordController {
     private Logger log = Logger.getLogger(getClass());
 
     @Autowired
-    private UserDao userDao;
+    private UserRepo userRepo;
 
     @Autowired
-    private TokenService tokenService;
+    private TokenRepo tokenRepo;
 
     @Autowired
     @Qualifier("emailSenderForPasswordChangeNotify")
@@ -74,25 +74,26 @@ public class ChangePasswordController {
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.setValidator(new ChangePasswordFormValidator());
+        binder.setMessageCodesResolver(new SimpleMessageCodesResolver());
     }
 
     @RequestMapping(method = RequestMethod.GET)
     protected String getMethod(@RequestParam("token") String tokenKey,
-                               @ModelAttribute("command") ChangePasswordForm form,
+                               @ModelAttribute("command") ChangePasswordForm command,
                                HttpServletRequest request) throws Exception {
-        Token token = tokenService.getToken(tokenKey);
+        TokenRepo.RegistrationToken token = tokenRepo.getRegistrationToken(tokenKey);
         if (token == null) {
             clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.ERROR_TOKEN_EXPIRED);
             return "token-expired";
         }
-        form.setToken(token.getToken());
-        form.setEmail(token.getEmail());
+        command.setToken(token.getId());
+        command.setEmail(token.getEmail());
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.CHANGE_PASSWORD_SUCCES);
         return "change-password";
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    protected String post(@Valid @ModelAttribute("command") ChangePasswordForm form,
+    protected String post(@Valid @ModelAttribute("command") ChangePasswordForm command,
                           BindingResult result,
                           HttpServletRequest request) throws Exception {
         if (result.hasErrors()) {
@@ -100,18 +101,18 @@ public class ChangePasswordController {
             clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.CHANGE_PASSWORD_FAILURE);
             return "change-password";
         }
-        Token token = tokenService.getToken(form.getToken()); //token is validated in handleRequestInternal
-        User user = userDao.fetchUserByEmail(token.getEmail()); //don't use email from the form. use token.
+        TokenRepo.RegistrationToken token = tokenRepo.getRegistrationToken(command.getToken()); //token is validated in handleRequestInternal
+        User user = userRepo.byEmail(token.getEmail()); //don't use email from the form. use token.
         if (user == null) {
             clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.REGISTER_FAILURE);
             throw new RuntimeException("Expected to find user for " + token.getEmail());
         }
-        user.setPassword(form.getPassword());
-        tokenService.removeToken(token); //remove token. it can not be used any more.
-        userDao.updateUser(user); //now update the user
+        user.setPassword(command.getPassword());
+        user.save();
+        token.delete();
         sendNotificationEmail(user);
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.REGISTER_SUCCESS);
-        return "register-success"; // todo: strange to go here, isn't it?
+        return "change-password-success"; // todo: strange to go here, isn't it?
     }
 
     private void sendNotificationEmail(User user) {
@@ -174,8 +175,8 @@ public class ChangePasswordController {
         @Override
         public void validate(Object o, Errors errors) {
             ChangePasswordForm form = (ChangePasswordForm) o;
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "password.required", "Password is required");
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password2", "password2.required", "Repeat Password is required");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "_mine.user.register.requiredfield", "Password is required");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password2", "_mine.user.register.requiredfield", "Repeat Password is required");
 
             if (!form.getPassword().equals(form.getPassword2())) {
                 errors.rejectValue("password", "_mine.user.validation.password.mismatch", "Passwords do not match");

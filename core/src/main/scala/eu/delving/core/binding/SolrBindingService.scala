@@ -4,7 +4,7 @@ import scala.collection.JavaConversions._
 import scala.reflect.BeanProperty
 import org.apache.solr.common.SolrDocumentList
 import java.util. {Date, ArrayList, List => JList}
-import java.lang.{Boolean => JBoolean}
+import java.lang.{Boolean => JBoolean, Float => JFloat}
 import eu.europeana.core.querymodel.query._
 import org.apache.solr.client.solrj.response. {FacetField, QueryResponse}
 import java.net.URL
@@ -61,6 +61,7 @@ object SolrBindingService {
     val ArrayListObject = classOf[ArrayList[Any]]
     val StringObject = classOf[String]
     val DateObject = classOf[Date]
+    val FloatObject = classOf[JFloat]
     val BooleanObject = classOf[JBoolean]
     // check for required fields else check exception
     solrDocumentList.foreach{
@@ -74,7 +75,8 @@ object SolrBindingService {
                 case StringObject => solrDoc.add(field.getKey, List(FieldValueNode(field.getKey, field.getValue.toString)))
                 case DateObject => solrDoc.add(field.getKey, List(FieldValueNode(field.getKey, field.getValue.toString)))
                 case BooleanObject => solrDoc.add(field.getKey, List(FieldValueNode(field.getKey, field.getValue.toString)))
-                case _ => println("unknown class in SolrBindingService " + field.getKey )
+                case FloatObject => solrDoc.add(field.getKey, List(FieldValueNode(field.getKey, field.getValue.toString)))
+                case _ => println("unknown class in SolrBindingService " + field.getKey + FieldValueClass.getCanonicalName)
               }
           }
       docs add solrDoc
@@ -275,19 +277,20 @@ case class BriefDocItem(solrDocument : SolrDocument) extends BriefDoc {
 
     override def getFieldValue(key : String) : FieldValue = FieldValue(key, solrDocument)
 
-    def getFieldValuesFiltered(include: Boolean, fields: List[String]) : JList[FieldValue] = solrDocument.getFieldValuesFiltered(include, fields)
+    override def getFieldValuesFiltered(include: Boolean, fields: Array[String]) : JList[FieldValue] = solrDocument.getFieldValuesFiltered(include, fields.toList)
 
-    def getFieldValueList : JList[FieldValue] = solrDocument.getFieldValueList
+    override def getFieldValueList : JList[FieldValue] = solrDocument.getFieldValueList
 
     def getId : String = assign("europeana_uri")
-    def getTitle : String = assign("title")
+    def getDelvingId : String = assign("delving_pmhId")
+    def getTitle : String = assign("dc_title")
     def getThumbnail : String = assign("europeana_object")
-    def getCreator : String = assign("creator")
-    def getYear : String = assign("YEAR")
-    def getProvider : String = assign("PROVIDER")
-    def getDataProvider : String = assign("DATAPROVIDER")
-    def getLanguage : String = assign("LANGUAGE")
-    def getType : DocType = DocType.get(assign("TYPE"))
+    def getCreator : String = assign("dc_creator")
+    def getYear : String = assign("europeana_year")
+    def getProvider : String = assign("europeana_provider")
+    def getDataProvider : String = assign("europeana_dataProvider")
+    def getLanguage : String = assign("europeana_language")
+    def getType : DocType = DocType.get(assign("europeana_type"))
 
     @BeanProperty var index : Int = _
     @BeanProperty var fullDocUrl: String = _
@@ -313,6 +316,8 @@ case class FullDocItem(solrDocument : SolrDocument) extends FullDoc {
     override def getFieldValuesFiltered(include: Boolean, fields: Array[String]) : JList[FieldValue] = solrDocument.getFieldValuesFiltered(include, fields.toList)
 
     override def getConcatenatedArray(key: String, fields: Array[String]) : FieldFormatted = solrDocument.getConcatenatedArray(key, fields.toList)
+
+    override def getDelvingId : String = assignFirst("delving_pmhId")
 
     // Europeana elements
     override def getId : String = assignFirst("europeana_uri")

@@ -10,11 +10,9 @@
 
 <p style="font-family:Courier,Courier New">==========<br/>
 email        : ${user.email}<br/>
+userName     : ${user.userName}<br/>
 registration : ${user.registrationDate?date}<br/>
 ==========</p>
-
-<p>- Europeana Registration Machine<br />
-RegisterController</p>
 
 </body>
 
