@@ -58,9 +58,18 @@ public class SearchApiController {
 
     @RequestMapping("/api/search")
     public void searchApiController(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        response.setContentType("text/xml");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(RichSearchAPIService.parseHttpServletRequest(request, beanQueryModelFactory, launchProperties, queryAnalyzer));
+
+        final String format = request.getParameter("format");
+        if (format != null && format.equalsIgnoreCase("json")) {
+            response.setContentType("text/javascript");
+            response.getWriter().write(RichSearchAPIService.getJsonResponse(request, beanQueryModelFactory, launchProperties, queryAnalyzer));
+        }
+        else {
+            response.setContentType("text/xml");
+            response.getWriter().write(RichSearchAPIService.getXmlResponse(request, beanQueryModelFactory, launchProperties, queryAnalyzer));
+        }
+
         response.getWriter().close();
     }
 
