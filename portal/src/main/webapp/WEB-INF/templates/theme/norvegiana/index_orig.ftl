@@ -8,12 +8,12 @@
 
     <dl class="menu zebra" id="statistics">
         <dt>${portalDisplayName}</dt>
-        <dd> total nr. of records: <strong><a href="/${portalName}/search?query=*:*">${totalCount?c}</a></strong></dd>
+        <dd><@spring.message '_portal.ui.statistics.records'/>: <strong><a href="/${portalName}/search?query=*:*">${totalCount?c}</a></strong></dd>
         <#if facetMap.facetExists("HASDIGITALOBJECT")>
-            <dd>nr. of digital objects: <strong><a href="/${portalName}/search?query=*:*&amp;qf=HASDIGITALOBJECT:true">${facetMap.getFacetValueCount("true", "HASDIGITALOBJECT")?c}</a></strong></dd>
+            <dd><@spring.message '_portal.ui.statistics.objects'/>: <strong><a href="/${portalName}/search?query=*:*&amp;qf=HASDIGITALOBJECT:true">${facetMap.getFacetValueCount("true", "HASDIGITALOBJECT")?c}</a></strong></dd>
         </#if>
         <#if facetMap.facetExists("DATAPROVIDER")>
-            <dd><@spring.message '_metadata.searchfield.dataprovider'/>: <strong><a href="/${portalName}/search?query=*:*">${facetMap.getFacetCount("DATAPROVIDER")}</a></strong></dd>
+            <dd><@spring.message '_portal.ui.statistics.providers'/>: <strong><a href="/${portalName}/search?query=*:*">${facetMap.getFacetCount("DATAPROVIDER")}</a></strong></dd>
         </#if>
         <dd>
             <a href="/${portalName}/statistics.html"><@spring.message '_portal.ui.statistics'/></a></dd>
