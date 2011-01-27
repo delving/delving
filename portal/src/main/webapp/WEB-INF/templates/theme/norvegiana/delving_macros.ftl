@@ -468,7 +468,7 @@
                 <#list facet.links?chunk(columnSize?int) as row>
                     <tr>
                         <#list row as link>
-                            <td align="left" style="padding: 2px;" <#if (columnSize==2)>width="50%"</#if>>
+                            <td <#if (columnSize==2)>width="50%"</#if>style="padding: 2px">
                             <#-- MUST DO THIS FOR HTML5 VALIDATION -->
                             <#assign facetlink = link.url?replace(' ','%20')/>
                             <#-- DO NOT ENCODE link.url. This is already done in the java code. Encoding it will break functionality !!!  -->
@@ -816,16 +816,16 @@
             <#assign urlNext = pagination.nextFullDocUrl/>
         </#if>
 
-        <a href="${urlPrevious}" class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}" alt="<@spring.message '_action.alt.previous.page' />">
+        <a href="${urlPrevious}" class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}">
             <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message '_action.previous' />
         </a>
 
-        <a href="${urlNext}" class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}" alt="<@spring.message '_action.alt.next.page' />">
+        <a href="${urlNext}" class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}">
             <span class="ui-icon ui-icon-circle-arrow-e"></span><@spring.message '_portal.ui.navigation.next' />
         </a>
 
         <#if pagination.returnToResults??>
-            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="${pagination.returnToResults?html}" alt="<@spring.message '_action.return.to.results' />">
+            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="${pagination.returnToResults?html}">
                <span class="ui-icon ui-icon-circle-arrow-n"></span><@spring.message '_action.return.to.results' />
             </a>
         </#if>
@@ -845,15 +845,6 @@
     <#else>
         <#assign thumbnail = thumbnail.getFirst()/>
     </#if>
-    <#--<#assign imageRef = "#"/>-->
-    <#--<#assign isShownBy = result.fullDoc.getFieldValue("europeana_isShownBy")/>-->
-    <#--<#assign isShownAt = result.fullDoc.getFieldValue("europeana_isShownAt")/>-->
-
-    <#--<#if isShownBy.isNotEmpty()>-->
-        <#--<#assign imageRef = isShownBy.getFirst()/>-->
-    <#--<#elseif isShownAt.isNotEmpty()>-->
-        <#--<#assign imageRef = isShownAt.getFirst()/>-->
-    <#--</#if>-->
 
     <#assign overlayActive = false/>
     <#assign overlayUrl = result.fullDoc.getFieldValue("europeana_isShownBy").getFirst()/>
@@ -875,23 +866,16 @@
         <#assign overlayActive = false/>
     </#if>
 
-       <#--overlayURL: ${overlayUrl}<br/>-->
-    <#--originalContextUrl: ${originalContextUrl}-->
-   <#--<a href="/${portalName}/redirect.html?shownBy=${isShownAt.getFirst()}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"-->
-      <#--target="_blank"-->
-      <#--<#if overlayActive = true>-->
-      <#--class="overlay"-->
-      <#--</#if>-->
+    <!-- WHITESPACE ENCODING FOR HTML5 VALIDATION -->
+    <#assign qfprovider = result.fullDoc.europeanaProvider[0]?replace(' ','%20')/>
 
     <a class="<#if overlayActive>overlay</#if>"
-       href="/${portalName}/redirect.html?shownBy=${overlayUrl?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}.jpg"
+       href="/${portalName}/redirect.html?shownBy=${overlayUrl?url('utf-8')}&amp;provider=${qfprovider}&amp;id=${result.fullDoc.id}.jpg"
        target="_blank"
-       alt="<@spring.message '_action.view.in.original.context' /> <@spring.message '_action.OpenInNewWindow'/>"
     >
     <#if useCache="true">
         <img src="${cacheUrl}id=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
              class="full"
-             alt="${result.fullDoc.getAsString("dc_title")}"
              id="imgview"
              onload="checkSize(this.id,'full',this.width);"
              onerror="showDefaultImage(this,'${result.fullDoc.europeanaType}',this.src,'large')"
@@ -899,7 +883,6 @@
     <#else>
         <img
             src="${thumbnail}"
-            alt="${result.fullDoc.getAsString("dc_title")}
             id="imgview"
             onload="checkSize(this.id,'full',this.width);"
             onerror="showDefaultImage(this,'${result.fullDoc.europeanaType}',this.src,'large')"
@@ -912,9 +895,8 @@
     <#if !originalContextUrl?matches("")>
     <nav style="padding: 1em;">
     <a
-            href="/${portalName}/redirect.html?shownAt=${originalContextUrl?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
+            href="/${portalName}/redirect.html?shownAt=${originalContextUrl?url('utf-8')}&amp;provider=${qfprovider}&amp;id=${result.fullDoc.id}"
             target="_blank"
-            alt="<@spring.message '_action.view.in.original.context' /> - <@spring.message '_action.OpenInNewWindow'/>"
             title="<@spring.message '_action.view.in.original.context' /> - <@spring.message '_action.OpenInNewWindow'/>"
                       class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
             >
@@ -928,7 +910,7 @@
 </#macro>
 
 <#macro resultFullListCustom>
-    <table summary="This table contains the metadata for the object being viewed" width="100%">
+    <table>
         <caption>Object metadata</caption>
         <tbody>
             <@resultFullDataRow "dc_title"/>
@@ -952,7 +934,7 @@
 </#macro>
 
 <#macro resultFullList>
-    <table summary="This table contains the metadata for the object being viewed" width="100%">
+    <table>
         <caption>Object metadata</caption>
         <tbody>
 
@@ -969,7 +951,7 @@
 </#macro>
 
 <#macro resultFullListFormatted>
-    <table summary="This table contains the metadata for the object being viewed" width="100%" class="squash">
+    <table class="squash">
         <caption>Object metadata</caption>
         <#assign doc = result.fullDoc/>
         <tbody>

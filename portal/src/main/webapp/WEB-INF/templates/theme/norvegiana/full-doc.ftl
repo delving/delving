@@ -63,8 +63,8 @@
                 <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); showMessage('error','<@spring.message '_mine.user.notification.login.required'/>'); return false;"><@spring.message '_action.save.to.mine' /></a>
             </dd>
         </#if>
-        <div id="msg-save-item" class="msg-hide"></div>
     </dl>
+    <div id="msg-save-item" class="msg-hide"></div>
 </section>
 
 
