@@ -37,6 +37,7 @@
 
     <bean id="viewHtmlResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
         <property name="suffix" value=".ftl"/>
+        <property name="contentType" value="text/html; charset=utf-8"/>
         <property name="exposeSpringMacroHelpers" value="true"/>
         <property name="exposeSessionAttributes" value="true"/>
         <property name="exposeRequestAttributes" value="false"/>

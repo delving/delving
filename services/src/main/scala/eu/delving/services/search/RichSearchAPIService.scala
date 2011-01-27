@@ -16,6 +16,7 @@ class RichSearchAPIService(request: HttpServletRequest, beanQueryModelFactory: B
   val portalName = launchProperties.getProperty("portal.name")
   val briefDocSearch = portalBaseUrl + "/" + portalName + "/search"
   val prettyPrinter = new PrettyPrinter(150, 5)
+  implicit val formats = net.liftweb.json.DefaultFormats
 
 
   def getResultsFromSolr : BriefBeanView = {
@@ -29,7 +30,7 @@ class RichSearchAPIService(request: HttpServletRequest, beanQueryModelFactory: B
 
   def parseRequest() : String = {
     val response = try {
-      getResultResponse(true)
+      getXMLResultResponse(true)
     }
     catch {
       case ex : Exception =>
@@ -92,7 +93,7 @@ class RichSearchAPIService(request: HttpServletRequest, beanQueryModelFactory: B
     </facet>
   }
 
-  def getResultResponse(authorized : Boolean) : Elem = {
+  def getXMLResultResponse(authorized : Boolean) : Elem = {
     val briefResult = getResultsFromSolr
     val pagination = briefResult.getPagination
     val searchTerms = pagination.getPresentationQuery.getUserSubmittedQuery
@@ -135,11 +136,70 @@ class RichSearchAPIService(request: HttpServletRequest, beanQueryModelFactory: B
 
     if (authorized) response else errorResponse("Error", "Not authorized. Open Search is only available for authorized partners. Please contact info@delving.eu for more info.")
   }
+
+  def getJsonResultResponse : String = {
+    val briefResult = getResultsFromSolr
+    val output = briefResult.getBriefDocs.map(doc => renderJsonRecord(doc)).toList
+
+    import net.liftweb.json._
+    import net.liftweb.json.JsonAST._
+
+    val allItems = Map[String, List[Map[String, String]]]("items" -> output)
+    Printer.pretty(render(Extraction.decompose(allItems)))
+//    Serialization.write(allItems)
+  }
+
+  /*
+    {
+    "items": [
+     {
+     "type": "europeana:type",
+     "label": "dc:title",
+     "id": "dc:identifier",
+     "link": "europeana:isShownAt",
+     "county": "abm:county",
+     "geography": "dcterms:spatial",
+     "thumbnail": "europeana:object",
+     "description": "dc:description",
+     "created": "dcterms:created", // (if this is the field most often used for dates described)
+     "municipality": "dc:title"
+     },
+     { ... some more items ...
+     }
+    ]
+    }
+  */
+  def renderJsonRecord(doc : BriefDoc) : Map[String, String] = {
+    val recordMap = scala.collection.mutable.Map[String, String]()
+    val labelPairs = Map[String, String]("type" -> "europeana_type", "label" -> "dc_title", "id" -> "dc_identifier",
+        "link" -> "europeana_isShownAt", "county" -> "abm_county", "geography" -> "dcterms_spatial",
+        "thumbnail" -> "europeana_object", "description" -> "dc_description", "created" -> "dcterms_created",
+        "municipality" -> "abm_municipality")
+
+    labelPairs.foreach(label =>
+      {
+        val fieldValue = doc.getFieldValue(label._2)
+        if (fieldValue.isNotEmpty) {
+          recordMap.put(label._1, fieldValue.getFirst)
+        }
+      }
+    )
+    recordMap.toMap
+  }
+
 }
 
+
+
 object RichSearchAPIService {
-  def parseHttpServletRequest(request: HttpServletRequest, beanQueryModelFactory: BeanQueryModelFactory, launchProperties: Properties, queryAnalyzer: QueryAnalyzer) : String = {
-    val service = new RichSearchAPIService(request, beanQueryModelFactory, launchProperties, queryAnalyzer: QueryAnalyzer)
+
+  def getXmlResponse(request: HttpServletRequest, beanQueryModelFactory: BeanQueryModelFactory, launchProperties: Properties, queryAnalyzer: QueryAnalyzer) : String = {
+    val service = new RichSearchAPIService(request, beanQueryModelFactory, launchProperties, queryAnalyzer)
     service parseRequest
+  }
+
+  def getJsonResponse(request: HttpServletRequest, beanQueryModelFactory: BeanQueryModelFactory, launchProperties: Properties, queryAnalyzer: QueryAnalyzer) : String = {
+    val service = new RichSearchAPIService(request, beanQueryModelFactory, launchProperties, queryAnalyzer)
+    service getJsonResultResponse
   }
 }

@@ -118,8 +118,8 @@ object ImageCacheService {
     val httpClient = new HttpClient(multiThreadedHttpConnectionManager)
     val method = new GetMethod(url)
     httpClient executeMethod (method)
-    method.getResponseHeaders.foreach(header => println(header) )
-    println(method.getStatusText)
+    method.getResponseHeaders.foreach(header => log debug (header) )
+//    println(method.getStatusText)
     val storable = isStorable(method)
     WebResource(url, method.getResponseBodyAsStream, storable._1, storable._2)
   }
