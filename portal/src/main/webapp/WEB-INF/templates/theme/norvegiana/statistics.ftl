@@ -94,7 +94,7 @@ function scriptPieChart(facetName, drawTarget, height, width, dataArray){
 
         <#-- CREATE TABLE ROWS -->
         <#assign dataRows>
-             ${dataRows}<tr><td><a href="/${portalName}/search?query=*:*&qf=${facetName}:${facet.getName()}">${facet.getName()}</a></td><td>${facet.getCount()}</td></tr>
+             ${dataRows}<tr><td><a href="/${portalName}/search?query=*:*&amp;qf=${facetName}:${facet.getName()}">${facet.getName()}</a></td><td>${facet.getCount()}</td></tr>
         </#assign>
 
         <#-- CREATE GOOGLE API DATA ARRAY -->

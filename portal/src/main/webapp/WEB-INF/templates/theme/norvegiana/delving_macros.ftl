@@ -464,20 +464,22 @@
         <#if facet.links?size &gt; 0>
         <h4 class="trigger"><@spring.message '${facetLanguageTag}' /></h4>
         <div class="facets_container">
-        <table summary="A list of facets to help refine your search">
+        <table>
                 <#list facet.links?chunk(columnSize?int) as row>
                     <tr>
                         <#list row as link>
                             <td align="left" style="padding: 2px;" <#if (columnSize==2)>width="50%"</#if>>
+                            <#-- MUST DO THIS FOR HTML5 VALIDATION -->
+                            <#assign facetlink = link.url?replace(' ','%20')/>
                             <#-- DO NOT ENCODE link.url. This is already done in the java code. Encoding it will break functionality !!!  -->
                                 <#if !link.remove = true>
-                                    <input type="checkbox" value="" onclick="document.location.href='?query=${query?html}${link.url}'")}&amp;${defaultParams}';"/>
-                                    <a href="?query=${query}${link.url}")}&amp;${defaultParams}" title="${link.value}">
+                                    <input type="checkbox" value="?query=${query?html}${facetlink}&amp;${defaultParams}"/>
+                                    <a href="?query=${query}${facetlink}&amp;${defaultParams}" title="${link.value}">
                                         <@stringLimiter "${link.value}" "25"/><span>(${link.count})</span>
                                     </a>
                                 <#else>
-                                    <input type="checkbox" checked="checked" onclick="document.location.href='?query=${query?html}${link.url?url("utf-8")}&amp;${defaultParams}';"/>
-                                     <a href="?query=${query?html}${link.url?html}&amp;${defaultParams}" title="${link.value}">
+                                    <input type="checkbox" checked="checked" value="?query=${query?html}${facetlink}&amp;${defaultParams}"/>
+                                     <a href="?query=${query?html}${facetlink}&amp;${defaultParams}" title="${link.value}">
                                         <@stringLimiter "${link.value}" "25"/>(<span>${link.count})</span>
                                     </a>
                                 </#if>
