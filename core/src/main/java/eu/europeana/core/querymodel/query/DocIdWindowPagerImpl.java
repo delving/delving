@@ -180,7 +180,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
             final String[] filterQueries = httpParameters.get("qf");
             if (filterQueries != null) {
                 for (String filterQuery : filterQueries) {
-                    out.append("&qf=").append(filterQuery);
+                    out.append("&amp;qf=").append(filterQuery);
                 }
             }
         }
@@ -221,7 +221,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         final String[] filterQueries = httpParameters.get("qf");
         if (filterQueries != null) {
             for (String filterQuery : filterQueries) {
-                out.append("&qf=").append(filterQuery);
+                out.append("&amp;qf=").append(filterQuery);
             }
         }
         out.append("&start=").append(nextInt);
@@ -252,20 +252,20 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         final String[] filterQueries = httpParameters.get("qf");
         if (filterQueries != null) {
             for (String filterQuery : filterQueries) {
-                out.append("&qf=").append(filterQuery);
+                out.append("&amp;qf=").append(filterQuery);
             }
         }
-        out.append("&start=").append(previousInt);
-        out.append("&startPage=").append(startPage);
-        out.append("&pageId=").append(pageId);
-        out.append("&sortBy=").append(sortBy);
+        out.append("&amp;start=").append(previousInt);
+        out.append("&amp;startPage=").append(startPage);
+        out.append("&amp;pageId=").append(pageId);
+        out.append("&amp;sortBy=").append(sortBy);
         String view = fetchParameter(httpParameters, "view", "");
         if (view.isEmpty()) {
             view = "table";
         }
-        out.append("&view=").append(view);
+        out.append("&amp;view=").append(view);
         if (tab.isEmpty()) {
-            out.append("&tab=").append(tab);
+            out.append("&amp;tab=").append(tab);
         }
         previousFullDocUrl = out.toString();
     }
@@ -276,7 +276,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         final String[] facetQueries = SolrQueryUtil.getFilterQueriesWithoutPhrases(solrQuery);
         if (facetQueries != null) {
             for (String facetTerm : facetQueries) {
-                out.append("&qf=").append(facetTerm);
+                out.append("&amp;qf=").append(facetTerm);
             }
         }
         out.append("&startPage=").append(startPage);

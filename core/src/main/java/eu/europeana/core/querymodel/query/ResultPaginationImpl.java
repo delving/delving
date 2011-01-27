@@ -15,7 +15,7 @@ import java.util.List;
 
 
 public class ResultPaginationImpl implements ResultPagination {
-    private static final String FACET_PROMPT = "&qf=";
+    private static final String FACET_PROMPT = "&amp;qf=";
     private static final int MARGIN = 5;
     private static final int PAGE_NUMBER_THRESHOLD = 7;
     private SolrQuery solrQuery;
