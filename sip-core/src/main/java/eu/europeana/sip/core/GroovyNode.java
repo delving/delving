@@ -209,6 +209,9 @@ public class GroovyNode {
         for (Object child : children()) {
             if (child instanceof GroovyNode) {
                 GroovyNode childNode = (GroovyNode) child;
+                if (childNode.value() instanceof List && ((List)childNode.value).isEmpty()) {
+                    continue;
+                }
                 Object childNodeName = childNode.name();
                 if (childNodeName instanceof QName) {
                     QName qn = (QName) childNodeName;

@@ -52,6 +52,15 @@ import java.util.TreeSet;
 public class DataSetListModel extends AbstractListModel {
     private List<Integer> filterIndex;
     private List<Entry> entries = new ArrayList<Entry>();
+    private ConnectedStatus connectedStatus;
+
+    interface ConnectedStatus {
+        boolean isConnected();
+    }
+
+    public DataSetListModel(ConnectedStatus connectedStatus) {
+        this.connectedStatus = connectedStatus;
+    }
 
     public void setDataSetStore(FileStore.DataSetStore dataSetStore) {
         Entry entry = getEntry(dataSetStore.getSpec());
@@ -182,7 +191,12 @@ public class DataSetListModel extends AbstractListModel {
                 html.append("<p>Data Set is present in the repository as well as in the local file store.</p>");
             }
             else if (dataSetStore != null) {
-                html.append("<p>Data Set is in the local file store but not in the repository.</p>");
+                if (connectedStatus.isConnected()) {
+                    html.append("<p>Data Set is in the local file store but not in the repository.</p>");
+                }
+                else {
+                    html.append("<p>Data Set is available the local file store.</p>");
+                }
             }
             else if (dataSetInfo != null) {
                 html.append("<p>Data Set is present only in the repository, and not in the local file store.</p>");
