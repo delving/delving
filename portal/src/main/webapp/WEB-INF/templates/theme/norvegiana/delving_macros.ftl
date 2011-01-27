@@ -471,8 +471,8 @@
                             <td align="left" style="padding: 2px;" <#if (columnSize==2)>width="50%"</#if>>
                             <#-- DO NOT ENCODE link.url. This is already done in the java code. Encoding it will break functionality !!!  -->
                                 <#if !link.remove = true>
-                                    <input type="checkbox" value="" onclick="document.location.href='?query=${query?html}${link.url?replace("${link.value}","${link.value?url('utf-8')}")}&amp;${defaultParams}';"/>
-                                    <a href="?query=${query}${link.url?replace("${link.value}","${link.value?url('utf-8')}")}&amp;${defaultParams}" title="${link.value}">
+                                    <input type="checkbox" value="" onclick="document.location.href='?query=${query?html}${link.url}'")}&amp;${defaultParams}';"/>
+                                    <a href="?query=${query}${link.url}")}&amp;${defaultParams}" title="${link.value}">
                                         <@stringLimiter "${link.value}" "25"/><span>(${link.count})</span>
                                     </a>
                                 <#else>
