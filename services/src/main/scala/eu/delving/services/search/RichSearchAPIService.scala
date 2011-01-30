@@ -11,6 +11,7 @@ import collection.mutable.LinkedHashMap
 import javax.servlet.http. {HttpServletResponse, HttpServletRequest}
 import net.liftweb.json. {Printer, Extraction}
 import net.liftweb.json.JsonAST._
+import org.apache.log4j.Logger
 
 class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServletResponse,
                            beanQueryModelFactory: BeanQueryModelFactory, launchProperties: Properties,
@@ -22,6 +23,8 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
   val briefDocSearch = portalBaseUrl + "/" + portalName + "/search"
   val prettyPrinter = new PrettyPrinter(150, 5)
   val params = asScalaMap(request.getParameterMap.asInstanceOf[JMap[String, Array[String]]])
+
+  private val log : Logger = Logger.getLogger("RichSearchAPIService")
 
   def parseRequest() : String = {
     httpResponse setCharacterEncoding ("utf-8")
@@ -63,13 +66,17 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
   }
 
   private def renderFields(field : FieldValue) : Seq[Elem] = {
+    def encodeUrl(content : String) : String =
+      if (content.startsWith("http://")) content.replaceAll("&", "&amp;") else content
+
+
     field.getValueAsArray.map(value =>
       try {
-        XML.loadString(format("<%s>%s</%s>\n", field.getKeyAsXml, value, field.getKeyAsXml))
+        XML.loadString(format("<%s>%s</%s>\n", field.getKeyAsXml, encodeUrl(value), field.getKeyAsXml))
       }
       catch {
         case ex : Exception =>
-          println(value)
+          log error ("unable to parse " + value + "for field " + field.getKeyAsXml)
           <error/>
       }
     ).toSeq
