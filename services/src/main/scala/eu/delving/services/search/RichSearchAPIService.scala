@@ -1,6 +1,5 @@
 package eu.delving.services.search
 
-import javax.servlet.http.HttpServletRequest
 import eu.europeana.core.BeanQueryModelFactory
 import xml._
 import org.apache.solr.client.solrj.SolrQuery
@@ -8,53 +7,48 @@ import java.util.{Properties, Map => JMap}
 import scala.collection.JavaConversions._
 import eu.europeana.core.querymodel.query._
 import eu.delving.core.binding.FieldValue
+import collection.mutable.LinkedHashMap
+import javax.servlet.http. {HttpServletResponse, HttpServletRequest}
+import net.liftweb.json. {Printer, Extraction}
+import net.liftweb.json.JsonAST._
 
-class RichSearchAPIService(request: HttpServletRequest, beanQueryModelFactory: BeanQueryModelFactory, launchProperties: Properties, queryAnalyzer: QueryAnalyzer) {
+class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServletResponse,
+                           beanQueryModelFactory: BeanQueryModelFactory, launchProperties: Properties,
+                           queryAnalyzer: QueryAnalyzer) {
 
   val servicesUrl = launchProperties.getProperty("services.url")
   val portalBaseUrl = launchProperties.getProperty("portal.baseUrl")
   val portalName = launchProperties.getProperty("portal.name")
   val briefDocSearch = portalBaseUrl + "/" + portalName + "/search"
   val prettyPrinter = new PrettyPrinter(150, 5)
-  implicit val formats = net.liftweb.json.DefaultFormats
-
-
-  def getResultsFromSolr : BriefBeanView = {
-    val userQuery = request.getParameter("query")
-    require(userQuery != null)
-    val params = request.getParameterMap.asInstanceOf[JMap[String, Array[String]]]
-    val solrQuery : SolrQuery = SolrQueryUtil.createFromQueryParams(params, queryAnalyzer)
-    solrQuery.setFields("*,score")
-    beanQueryModelFactory.getBriefResultView(solrQuery, solrQuery.getQuery)
-  }
+  val params = asScalaMap(request.getParameterMap.asInstanceOf[JMap[String, Array[String]]])
 
   def parseRequest() : String = {
+    httpResponse setCharacterEncoding ("utf-8")
+
+    val format = params.getOrElse("format", Array[String]("default")).head
+
     val response = try {
-      getXMLResultResponse(true)
+      format match {
+        case "json" => getJsonResultResponse()
+        case "jsonp" =>
+          getJsonResultResponse(params.get("callback").getOrElse(Array[String]("delvingCallback")).head)
+        case _ => getXMLResultResponse(true)
+      }
     }
     catch {
       case ex : Exception =>
-      errorResponse(errorMessage = ex.getLocalizedMessage)
+        errorResponse(errorMessage = ex.getLocalizedMessage)
     }
-    prettyPrinter.format(response)
+    response
   }
 
-  def errorResponse(title : String = "", link: String = "", description: String = "", error: String = "",
-                    errorMessage: String = "") : Elem = {
-     <rss version="2.0" xmlns:openSearch="http://a9.com/-/spec/opensearch/1.1/">
-       <channel>
-         <title>{title}</title>
-         <link>{link}</link>
-         <description>{description}</description>
-         <openSearch:totalResults>1</openSearch:totalResults>
-         <openSearch:startIndex>1</openSearch:startIndex>
-         <openSearch:itemsPerPage>1</openSearch:itemsPerPage>
-         <item>
-           <title>{error}</title>
-           <description>{errorMessage}</description>
-         </item>
-       </channel>
-     </rss>
+  private def getResultsFromSolr : BriefBeanView = {
+    val userQuery = request.getParameter("query")
+    require(userQuery != null)
+    val solrQuery : SolrQuery = SolrQueryUtil.createFromQueryParams(request.getParameterMap.asInstanceOf[JMap[String, Array[String]]], queryAnalyzer)
+    solrQuery.setFields("*,score")
+    beanQueryModelFactory.getBriefResultView(solrQuery, solrQuery.getQuery)
   }
 
   private def renderRecord(doc : BriefDoc) : Elem = {
@@ -68,7 +62,7 @@ class RichSearchAPIService(request: HttpServletRequest, beanQueryModelFactory: B
     response
   }
 
-  def renderFields(field : FieldValue) : Seq[Elem] = {
+  private def renderFields(field : FieldValue) : Seq[Elem] = {
     field.getValueAsArray.map(value =>
       try {
         XML.loadString(format("<%s>%s</%s>\n", field.getKeyAsXml, value, field.getKeyAsXml))
@@ -81,19 +75,23 @@ class RichSearchAPIService(request: HttpServletRequest, beanQueryModelFactory: B
     ).toSeq
   }
 
-  def renderPageLink(pageLink : PageLink) : Elem = {
+  private def renderPageLink(pageLink : PageLink) : Elem = {
     <link start={pageLink.getStart.toString} isLinked={pageLink.isLinked.toString}>{pageLink.getDisplay}</link>
   }
 
-  def renderFacetQueryLinks(fql : FacetQueryLinks) : Elem = {
+  private def renderFacetQueryLinks(fql : FacetQueryLinks) : Elem = {
     <facet name={fql.getType} isSelected={fql.isSelected.toString}>
       {for (link <- fql.getLinks)
-        yield <link url={link.getUrl} value={link.getValue} count={link.getCount.toString}>{link.getValue} ({link.getCount})</link>
+        yield <link url={minusAmp(link.getUrl)} value={link.getValue} count={link.getCount.toString}>{link.getValue} ({link.getCount})</link>
         }
     </facet>
   }
 
-  def getXMLResultResponse(authorized : Boolean) : Elem = {
+  private def minusAmp(link : String) = link.replaceAll("amp;", "")
+
+  def getXMLResultResponse(authorized : Boolean) : String = {
+    httpResponse setContentType ("text/xml")
+
     val briefResult = getResultsFromSolr
     val pagination = briefResult.getPagination
     val searchTerms = pagination.getPresentationQuery.getUserSubmittedQuery
@@ -108,7 +106,7 @@ class RichSearchAPIService(request: HttpServletRequest, beanQueryModelFactory: B
         <query numFound={pagination.getNumFound.toString}>
             <terms>{searchTerms}</terms>
             <breadCrumbs>
-              {pagination.getBreadcrumbs.map(bc => <breadcrumb field={bc.getField} href={bc.getHref} value={bc.getValue}>{bc.getDisplay}</breadcrumb>)}
+              {pagination.getBreadcrumbs.map(bc => <breadcrumb field={bc.getField} href={minusAmp(bc.getHref)} value={bc.getValue}>{bc.getDisplay}</breadcrumb>)}
             </breadCrumbs>
         </query>
         <pagination>
@@ -134,72 +132,90 @@ class RichSearchAPIService(request: HttpServletRequest, beanQueryModelFactory: B
         </results>
         </xml>
 
-    if (authorized) response else errorResponse("Error", "Not authorized. Open Search is only available for authorized partners. Please contact info@delving.eu for more info.")
+    prettyPrinter.format(response)
   }
 
-  def getJsonResultResponse : String = {
-    val briefResult = getResultsFromSolr
-    val output = briefResult.getBriefDocs.map(doc => renderJsonRecord(doc)).toList
+  def errorResponse(title : String = "", link: String = "", description: String = "", error: String = "",
+                    errorMessage: String = "") : String = {
 
-    import net.liftweb.json._
-    import net.liftweb.json.JsonAST._
+    httpResponse setStatus (HttpServletResponse.SC_BAD_REQUEST)
 
-    val allItems = Map[String, List[Map[String, String]]]("items" -> output)
-    Printer.pretty(render(Extraction.decompose(allItems)))
-//    Serialization.write(allItems)
+     val response = <rss version="2.0" xmlns:openSearch="http://a9.com/-/spec/opensearch/1.1/">
+       <channel>
+         <title>{title}</title>
+         <link>{link}</link>
+         <description>{description}</description>
+         <openSearch:totalResults>1</openSearch:totalResults>
+         <openSearch:startIndex>1</openSearch:startIndex>
+         <openSearch:itemsPerPage>1</openSearch:itemsPerPage>
+         <item>
+           <title>{error}</title>
+           <description>{errorMessage}</description>
+         </item>
+       </channel>
+     </rss>
+
+    prettyPrinter.format(response)
   }
 
-  /*
-    {
-    "items": [
-     {
-     "type": "europeana:type",
-     "label": "dc:title",
-     "id": "dc:identifier",
-     "link": "europeana:isShownAt",
-     "county": "abm:county",
-     "geography": "dcterms:spatial",
-     "thumbnail": "europeana:object",
-     "description": "dc:description",
-     "created": "dcterms:created", // (if this is the field most often used for dates described)
-     "municipality": "dc:title"
-     },
-     { ... some more items ...
-     }
-    ]
+  def getJsonResultResponse(callback : String = "") : String = {
+    implicit val formats = net.liftweb.json.DefaultFormats
+    httpResponse setContentType ("text/javascript")
+
+    def jsonErrorResponse(message : String = "") : String = {
+      httpResponse setStatus (HttpServletResponse.SC_BAD_REQUEST)
+      val docMap = Map[String, String]("status" -> "error", "message" -> message)
+      Printer pretty (render (Extraction.decompose(docMap) ))
     }
-  */
-  def renderJsonRecord(doc : BriefDoc) : Map[String, String] = {
-    val recordMap = scala.collection.mutable.Map[String, String]()
-    val labelPairs = Map[String, String]("type" -> "europeana_type", "label" -> "dc_title", "id" -> "dc_identifier",
-        "link" -> "europeana_isShownAt", "county" -> "abm_county", "geography" -> "dcterms_spatial",
-        "thumbnail" -> "europeana_object", "description" -> "dc_description", "created" -> "dcterms_created",
-        "municipality" -> "abm_municipality")
 
-    labelPairs.foreach(label =>
+    try {
+      val output = getResultsFromSolr.getBriefDocs.map(doc => renderJsonRecord(doc)).toList
+
+      val allItems = Map[String, List[Map[String, Any]]]("items" -> output)
+      val outputJson = Printer.pretty(render(Extraction.decompose(allItems)))
+      if (!callback.isEmpty) {
+//        httpResponse setContentType ("application/jsonp")
+        format("%s(%s)", callback, outputJson)
+      }
+      else
+        outputJson
+    }
+    catch {
+      case ex: Exception =>
+      jsonErrorResponse(ex.getMessage)
+    }
+  }
+
+  def renderJsonRecord(doc : BriefDoc) : Map[String, Any] = {
+    val recordMap = LinkedHashMap[String, Any]()
+    val labelPairs = List[RecordLabel](
+      RecordLabel("type","europeana_type"), RecordLabel("label", "dc_title"), RecordLabel("id", "dc_identifier"),
+      RecordLabel("link", "europeana_isShownAt"), RecordLabel("county", "abm_county"),
+      RecordLabel("geography", "dcterms_spatial", true), RecordLabel("thumbnail", "europeana_object"),
+      RecordLabel("description", "dc_description", true), RecordLabel("created", "dcterms_created"),
+      RecordLabel("municipality", "abm_municipality")
+    )
+
+    labelPairs.sortBy(label => label.name < label.name).foreach(label =>
       {
-        val fieldValue = doc.getFieldValue(label._2)
+        val fieldValue = doc.getFieldValue(label.fieldValue)
         if (fieldValue.isNotEmpty) {
-          recordMap.put(label._1, fieldValue.getFirst)
+          if (label.multivalued) {recordMap.put(label.name, fieldValue.getValueAsArray)} else {recordMap.put(label.name, fieldValue.getFirst)}
         }
       }
     )
     recordMap.toMap
   }
-
 }
 
-
+case class RecordLabel(name : String, fieldValue : String, multivalued : Boolean = false)
 
 object RichSearchAPIService {
 
-  def getXmlResponse(request: HttpServletRequest, beanQueryModelFactory: BeanQueryModelFactory, launchProperties: Properties, queryAnalyzer: QueryAnalyzer) : String = {
-    val service = new RichSearchAPIService(request, beanQueryModelFactory, launchProperties, queryAnalyzer)
+  def processRequest(request: HttpServletRequest, response: HttpServletResponse, beanQueryModelFactory: BeanQueryModelFactory,
+                     launchProperties: Properties, queryAnalyzer: QueryAnalyzer) : String = {
+    val service = new RichSearchAPIService(request, response, beanQueryModelFactory, launchProperties, queryAnalyzer)
     service parseRequest
   }
 
-  def getJsonResponse(request: HttpServletRequest, beanQueryModelFactory: BeanQueryModelFactory, launchProperties: Properties, queryAnalyzer: QueryAnalyzer) : String = {
-    val service = new RichSearchAPIService(request, beanQueryModelFactory, launchProperties, queryAnalyzer)
-    service getJsonResultResponse
-  }
 }
