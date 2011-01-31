@@ -542,7 +542,7 @@
                 <#if link.linked>
                     <#assign lstart = link.start/>
                         <a
-                                href="?${queryStringForPresentation?html}&amp;start=${link.start?c}&amp;${queryParamList.getDefaultParamsFormatted()}"
+                                href="?${queryStringForPresentation}&amp;start=${link.start?c}&amp;${queryParamList.getDefaultParamsFormatted()}"
                                 class="fg-button ui-state-default ${uiClassBorder}"
                         >
                             ${link.display?c}
@@ -563,7 +563,7 @@
                 <#assign uiClassStateNext = "ui-state-disabled">
             </#if>
             <a
-                    href="?${queryStringForPresentation?html}&amp;start=${pagination.previousPage?c}&amp;${queryParamList.getDefaultParamsFormatted()}"
+                    href="?${queryStringForPresentation}&amp;start=${pagination.previousPage?c}&amp;${queryParamList.getDefaultParamsFormatted()}"
                     class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}"
                     title="<@spring.message '_action.alt.previous.page' />"
                     style="margin: 0 8px;"
@@ -571,7 +571,7 @@
                <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message '_action.previous' />
             </a>
             <a
-                    href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}&amp;${queryParamList.getDefaultParamsFormatted()}"
+                    href="?${queryStringForPresentation}&amp;start=${pagination.nextPage?c}&amp;${queryParamList.getDefaultParamsFormatted()}"
                     class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}"
                     title="<@spring.message '_action.alt.next.page' />"
                     >
@@ -827,7 +827,7 @@
         </a>
 
         <#if pagination.returnToResults??>
-            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="${pagination.returnToResults?html}" title="<@spring.message '_action.return.to.results' />">
+            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="${pagination.returnToResults}" title="<@spring.message '_action.return.to.results' />">
                <span class="ui-icon ui-icon-circle-arrow-n"></span><@spring.message '_action.return.to.results' />
             </a>
         </#if>
