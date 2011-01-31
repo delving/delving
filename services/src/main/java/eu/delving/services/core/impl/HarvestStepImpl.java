@@ -56,8 +56,8 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
     }
 
     @Override
-    public ObjectId getFirstId() {
-        return (ObjectId) object.get(FIRST_ID);
+    public boolean isFirst() {
+        return object.get(FIRST) != null;
     }
 
     @Override
@@ -123,7 +123,6 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
                 DBObject nextStep = new BasicDBObject(MetaRepo.HarvestStep.PMH_REQUEST, object.get(MetaRepo.HarvestStep.PMH_REQUEST));
                 nextStep.put(MetaRepo.HarvestStep.NAMESPACES, object.get(MetaRepo.HarvestStep.NAMESPACES));
                 nextStep.put(MetaRepo.HarvestStep.LIST_SIZE, object.get(MetaRepo.HarvestStep.LIST_SIZE));
-                nextStep.put(MetaRepo.HarvestStep.FIRST_ID, object.get(MetaRepo.HarvestStep.FIRST_ID));
                 nextStep.put(MetaRepo.HarvestStep.CURSOR, cursor);
                 nextStep.put(MetaRepo.HarvestStep.AFTER_ID, afterId);
                 implFactory.harvestSteps().save(nextStep);
@@ -206,6 +205,10 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
 
     public DBObject getObject() {
         return object;
+    }
+
+    public void setFirst() {
+        object.put(FIRST, true);
     }
 
     private static class PmhRequestImpl implements MetaRepo.PmhRequest {
