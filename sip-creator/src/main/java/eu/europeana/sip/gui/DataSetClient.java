@@ -15,6 +15,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
@@ -302,8 +303,13 @@ public class DataSetClient {
         try {
             return translate(httpClient.execute(httpGet));
         }
+        catch (HttpHostConnectException e) {
+            log.warn("Problem executing get (connecting)", e);
+            forceDisconnect();
+            return null;
+        }
         catch (IOException e) {
-            log.warn("Problem executing get", e);
+            log.warn("Problem executing get (I/O)", e);
             forceDisconnect();
             return null;
         }
