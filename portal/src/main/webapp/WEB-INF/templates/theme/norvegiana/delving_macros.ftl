@@ -696,19 +696,19 @@
     <div class="ui-tabs" style="padding:0 0 0 1em;">
         <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget" id="type-tabs">
             <li class="ui-state-default ui-corner-top <#if tab = 'all'>ui-state-active</#if>">
-                <a href="?${tabURL?trim?html}&amp;tab=all&amp;start=1" rel="nofollow"><@spring.message '_metadata.type.all'/></a>
+                <a href="?${tabURL?trim}&amp;tab=all&amp;start=1" rel="nofollow"><@spring.message '_metadata.type.all'/></a>
             </li>
             <li class="ui-state-default ui-corner-top <#if tab = 'images'>ui-state-active</#if>">
-                <a href="?${tabURL?trim?html}&amp;qf=TYPE:IMAGE&amp;tab=images&amp;start=1" rel="nofollow"><@spring.message '_metadata.type.images'/><span><@getFacetCount result "TYPE" "IMAGE"/></span></a>
+                <a href="?${tabURL?trim}&amp;qf=TYPE:IMAGE&amp;tab=images&amp;start=1" rel="nofollow"><@spring.message '_metadata.type.images'/><span><@getFacetCount result "TYPE" "IMAGE"/></span></a>
             </li>
             <li class="ui-state-default ui-corner-top <#if tab = 'texts'>ui-state-active</#if>">
-                <a href="?${tabURL?trim?html}&amp;qf=TYPE:TEXT&amp;tab=texts&amp;start=1" rel="nofollow"><@spring.message '_metadata.type.texts'/><span><@getFacetCount result "TYPE" "TEXT"/></span></a>
+                <a href="?${tabURL?trim}&amp;qf=TYPE:TEXT&amp;tab=texts&amp;start=1" rel="nofollow"><@spring.message '_metadata.type.texts'/><span><@getFacetCount result "TYPE" "TEXT"/></span></a>
             </li>
             <li class="ui-state-default ui-corner-top <#if tab = 'videos'>ui-state-active</#if>">
-                <a href="?${tabURL?trim?html}&amp;qf=TYPE:VIDEO&amp;tab=videos&amp;start=1" rel="nofollow"><@spring.message '_metadata.type.videos'/><span><@getFacetCount result "TYPE" "VIDEO"/></span></a>
+                <a href="?${tabURL?trim}&amp;qf=TYPE:VIDEO&amp;tab=videos&amp;start=1" rel="nofollow"><@spring.message '_metadata.type.videos'/><span><@getFacetCount result "TYPE" "VIDEO"/></span></a>
             </li>
             <li class="ui-state-default ui-corner-top <#if tab = 'sounds'>ui-state-active</#if>">
-                <a href="?${tabURL?trim?html}&amp;qf=TYPE:SOUND&amp;tab=sounds&amp;start=1" rel="nofollow"><@spring.message '_metadata.type.sounds'/><span><@getFacetCount result "TYPE" "SOUND"/></span></a>
+                <a href="?${tabURL?trim}&amp;qf=TYPE:SOUND&amp;tab=sounds&amp;start=1" rel="nofollow"><@spring.message '_metadata.type.sounds'/><span><@getFacetCount result "TYPE" "SOUND"/></span></a>
             </li>
         </ul>
     </div>
