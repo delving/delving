@@ -3,32 +3,19 @@ package eu.europeana.core.util.web;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
-import freemarker.template.TemplateException;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailPreparationException;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessagePreparator;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.mail.BodyPart;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Handle all email sending
@@ -38,219 +25,104 @@ import java.util.Map;
  */
 
 public class EmailSender {
-    public static final String FROM_EMAIL = "#fromEmail#";
-    public static final String TO_EMAIL = "#toEmail#";
-    public static final String SUBJECT = "#subject#";
-    private static final String TEMPLATE_NAME_AFFIX_TEXT = ".txt.ftl";
-    private static final String TEMPLATE_NAME_AFFIX_HTML = ".html.ftl";
+    private static final String FROM_EMAIL = "FROM_EMAIL";
+    private static final String TO_EMAIL = "TO_EMAIL";
+    private static final String SUBJECT = "SUBJECT";
+    private static final String TEMPLATE_PATTERN = "/email/%s.ftl";
     private Logger log = Logger.getLogger(getClass());
     private JavaMailSender mailSender;
-    private String fixedFromEmail, fixedToEmail, fixedSubject, template;
 
     @Autowired
     public void setMailSender(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
 
-    public void setTemplate(String templateName) {
-        this.template = templateName;
+    public Email create(String templateName) {
+        return new EmailImpl(templateName);
     }
 
-    public void setFromEmail(String fromEmail) {
-        this.fixedFromEmail = fromEmail;
+    public interface Email {
+        Email setFrom(String fromEmail);
+
+        Email setTo(String toEmail);
+
+        Email setSubject(String subject);
+
+        Email set(String key, Object value);
+
+        void send();
     }
 
-    public void setToEmail(String toEmail) {
-        this.fixedToEmail = toEmail;
-    }
+    private class EmailImpl implements Email {
+        private Map<String, Object> model = new TreeMap<String, Object>();
+        private String templateName;
 
-    public void setSubject(String subject) {
-        this.fixedSubject = subject;
-    }
-
-    public String getFromEmail() {
-        return fixedFromEmail;
-    }
-
-    public String getToEmail() {
-        return fixedToEmail;
-    }
-
-    public String getSubject() {
-        return fixedSubject;
-    }
-
-    public void sendEmail(final Map<String, Object> model) throws IOException, TemplateException {
-        final String toEmail = this.fixedToEmail != null ? this.fixedToEmail : (String) model.get(TO_EMAIL);
-        final String fromEmail = this.fixedFromEmail != null ? this.fixedFromEmail : (String) model.get(FROM_EMAIL);
-        final String subject = this.fixedSubject != null ? this.fixedSubject : (String) model.get(SUBJECT);
-
-        MimeMessagePreparator preparator = new MimeMessagePreparator() {
-            @Override
-            public void prepare(MimeMessage mimeMessage) throws MessagingException, IOException {
-                mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
-                mimeMessage.setFrom(new InternetAddress(fromEmail));
-                mimeMessage.setSubject(subject);
-
-                Multipart mp = new MimeMultipart("alternative");
-
-                // Create a "text" Multipart message
-                BodyPart textPart = new MimeBodyPart();
-                Template textTemplate = getResourceTemplate(template + TEMPLATE_NAME_AFFIX_TEXT);
-                final StringWriter textWriter = new StringWriter();
-                try {
-                    textTemplate.process(model, textWriter);
-                }
-                catch (TemplateException e) {
-                    throw new MailPreparationException("Can't generate text subscription mail", e);
-                }
-                textPart.setDataHandler(new DataHandler(new DataSource() {
-                    @Override
-                    public InputStream getInputStream() throws IOException {
-                        return new ByteArrayInputStream(textWriter.toString().getBytes("utf-8"));
-                    }
-
-                    @Override
-                    public OutputStream getOutputStream() throws IOException {
-                        throw new IOException("Read-only data");
-                    }
-
-                    @Override
-                    public String getContentType() {
-                        return "text/plain";
-                    }
-
-                    @Override
-                    public String getName() {
-                        return "main";
-                    }
-                }));
-                mp.addBodyPart(textPart);
-
-                // Create a "HTML" Multipart message
-                Multipart htmlContent = new MimeMultipart("related");
-                BodyPart htmlPage = new MimeBodyPart();
-                Template htmlTemplate = getResourceTemplate(template + TEMPLATE_NAME_AFFIX_HTML);
-                final StringWriter htmlWriter = new StringWriter();
-                try {
-                    htmlTemplate.process(model, htmlWriter);
-                }
-                catch (TemplateException e) {
-                    throw new MailPreparationException("Can't generate HTML subscription mail", e);
-                }
-                htmlPage.setDataHandler(new DataHandler(new DataSource() {
-                    @Override
-                    public InputStream getInputStream() throws IOException {
-                        return new ByteArrayInputStream(htmlWriter.toString().getBytes("utf-8"));
-                    }
-
-                    @Override
-                    public OutputStream getOutputStream() throws IOException {
-                        throw new IOException("Read-only data");
-                    }
-
-                    @Override
-                    public String getContentType() {
-                        return "text/html";
-                    }
-
-                    @Override
-                    public String getName() {
-                        return "main";
-                    }
-                }));
-                htmlContent.addBodyPart(htmlPage);
-                BodyPart htmlPart = new MimeBodyPart();
-                htmlPart.setContent(htmlContent);
-                mp.addBodyPart(htmlPart);
-
-                mimeMessage.setContent(mp);
-            }
-        };
-
-        try {
-            mailSender.send(preparator);
+        private EmailImpl(String templateName) {
+            this.templateName = templateName;
         }
-        catch (Exception e) {
-            log.error("to: "+toEmail);
-            log.error("subject: "+subject);
-            for (Map.Entry<String, Object> entry : model.entrySet()) {
-                log.error(MessageFormat.format("{0} = {1}", entry.getKey(), entry.getValue()));
+
+        public Email setFrom(String fromEmail) {
+            return set(FROM_EMAIL, fromEmail);
+        }
+
+        public Email setTo(String toEmail) {
+            return set(TO_EMAIL, toEmail);
+        }
+
+        public Email setSubject(String subject) {
+            return set(SUBJECT, subject);
+        }
+
+        public Email set(String key, Object value) {
+            model.put(key, value);
+            return this;
+        }
+
+        public void send() {
+            try {
+                String fileString = IOUtils.toString(getClass().getResourceAsStream(String.format(TEMPLATE_PATTERN, templateName)), "UTF-8");
+                int divider = fileString.indexOf("\n.\n");
+                if (divider > 0) {
+                    String propertiesString = fileString.substring(0, divider);
+                    for (String line : propertiesString.split("\n")) {
+                        int equals = line.indexOf("=");
+                        String key = line.substring(0, equals).trim();
+                        String value = line.substring(equals + 1).trim();
+                        model.put(key, value);
+                    }
+                    fileString = fileString.substring(divider + 1);
+                }
+                Template template = getTemplate(templateName, new StringReader(fileString));
+                StringWriter emailContent = new StringWriter();
+                template.process(model, emailContent);
+                SimpleMailMessage message = new SimpleMailMessage();
+                message.setSubject(getString(SUBJECT));
+                message.setTo(getString(TO_EMAIL));
+                message.setFrom(getString(FROM_EMAIL));
+                message.setText(emailContent.toString());
+                mailSender.send(message);
             }
-            throw new IOException("Unable to send email", e);
+            catch (Exception e) {
+                log.error("Failed to send email!", e);
+                for (Map.Entry<String, Object> entry : model.entrySet()) {
+                    log.error(MessageFormat.format("{0} = {1}", entry.getKey(), entry.getValue()));
+                }
+            }
+        }
+
+        private String getString(String key) {
+            String value = (String) model.get(key);
+            if (value == null) {
+                throw new IllegalArgumentException(String.format("Model must contain value for %s", key));
+            }
+            return value;
         }
     }
 
-    protected Template getResourceTemplate(String fileName) throws IOException {
-        return getTemplate(fileName, new InputStreamReader(getClass().getResourceAsStream(fileName)));
-    }
 
     private static Template getTemplate(String name, Reader reader) throws IOException {
         Configuration configuration = new Configuration();
         configuration.setObjectWrapper(new DefaultObjectWrapper());
-        return new Template(name, reader, configuration);
+        return new Template(name, reader, configuration, "UTF-8");
     }
-
-    /*
-       Multipart mp = new MimeMultipart("alternative");
-
-       // plain text email
-       Template templateText = getResourceTemplate(template + TEMPLATE_NAME_AFFIX_TEXT);
-       BodyPart textPart = new MimeBodyPart();
-       textPart.setDataHandler(new DataHandler(new DataSource() {
-           public InputStream getInputStream() throws IOException {
-               return new StringBufferInputStream(textWriter.toString());
-           }
-           public OutputStream getOutputStream() throws IOException {
-               throw new IOException("Read-only data");
-           }
-           public String getContentType() {
-               return "text/plain";
-           }
-           public String getName() {
-               return "main";
-           }
-       }));
-
-       mp.addBodyPart(textPart);
-
-       // html email
-       try {
-           Template templateHtml = getResourceTemplate(template + TEMPLATE_NAME_AFFIX_TEXT);
-           Multipart htmlContent = new MimeMultipart("related");
-           BodyPart htmlPage = new MimeBodyPart();
-           htmlPage.setDataHandler(new DataHandler(new DataSource() {
-               public InputStream getInputStream() throws IOException {
-                   return new StringBufferInputStream(htmlWriter.toString());
-               }
-               public OutputStream getOutputStream() throws IOException {
-                   throw new IOException("Read-only data");
-               }
-               public String getContentType() {
-                   return "text/html";
-               }
-               public String getName() {
-                   return "main";
-               }
-           }));
-           htmlContent.addBodyPart(htmlPage);
-           BodyPart htmlPart = new MimeBodyPart();
-           htmlPart.setContent(htmlContent);
-           mp.addBodyPart(htmlPart);
-       } catch (Exception e) {
-           // TODO: log if no html template found
-       }
-
-       mimeMessage.setContent(mp);
-
-
-       SimpleMailMessage message = new SimpleMailMessage();
-       message.setSubject(subject);
-       message.setFrom(fromEmail);
-       message.setTo(toEmail);
-       String emailText = createEmailText(model);
-       message.setText(emailText);
-       mailSender.send(message);
-    */
-
 }

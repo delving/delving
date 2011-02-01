@@ -31,7 +31,7 @@ import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.EmailSender;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
@@ -46,8 +46,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * During registration, users click on an email link to end up here with a "token" that allows them to
@@ -68,8 +66,13 @@ public class RegisterPageController {
     private TokenRepo tokenRepo;
 
     @Autowired
-    @Qualifier("emailSenderForRegisterNotify")
-    private EmailSender notifyEmailSender;
+    private EmailSender emailSender;
+
+    @Value("#{launchProperties['system.from']}")
+    private String fromEmail;
+
+    @Value("#{launchProperties['register.to']}")
+    private String toEmail;
 
     @Autowired
     private ClickStreamLogger clickStreamLogger;
@@ -108,20 +111,14 @@ public class RegisterPageController {
         user.setEnabled(true);
         user.setRole(User.Role.ROLE_USER);
         user.save();
-        sendNotificationEmail(user);
+        emailSender.
+                create("register-notify").
+                setFrom(fromEmail).
+                setTo(toEmail).
+                set("user", user).
+                send();
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.REGISTER_SUCCESS);
         return "register-success";
-    }
-
-    private void sendNotificationEmail(User user) {
-        try {
-            Map<String, Object> model = new TreeMap<String, Object>();
-            model.put("user", user);
-            notifyEmailSender.sendEmail(model);
-        }
-        catch (Exception e) {
-            log.warn("Unable to send email to " + notifyEmailSender.getToEmail(), e);
-        }
     }
 
     public static class RegistrationForm {

@@ -1,12 +1,8 @@
 package eu.europeana.core.util.web;
 
 import eu.delving.core.storage.TokenRepo;
-import freemarker.template.TemplateException;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.IOException;
-import java.util.Map;
-import java.util.TreeMap;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Handle registration email sending
@@ -15,25 +11,36 @@ import java.util.TreeMap;
  */
 
 public class TokenReplyEmailSender {
-    private Map<String,EmailSender> emailSenders;
 
     @Autowired
     private TokenRepo tokenRepo;
 
-    public void setEmailSenders(Map<String, EmailSender> emailSenders) {
-        this.emailSenders = emailSenders;
-    }
+    @Autowired
+    private EmailSender emailSender;
 
-    public String sendEmail(String emailAddress, String url, String action) throws IOException, TemplateException {
+    @Value("#{launchProperties['system.from']}")
+    private String fromEmail;
+
+    public String sendRegisterEmail(String emailAddress, String baseUrl) {
         TokenRepo.RegistrationToken token = tokenRepo.createRegistrationToken(emailAddress);
-        Map<String,Object> model = new TreeMap<String,Object>();
-        model.put("url", url + "?token=" + token.getId());
-        model.put(EmailSender.TO_EMAIL, emailAddress);
-        EmailSender sender = emailSenders.get(action);
-        if (sender == null) {
-            throw new IllegalArgumentException("No email sender for action ["+action+"]!");
-        }
-        sender.sendEmail(model);
+        emailSender.
+                create("confirmation").
+                setFrom(fromEmail).
+                setTo(emailAddress).
+                set("url", baseUrl + "?token=" + token.getId()).
+                send();
         return token.getId();
     }
+
+    public String sendForgotPasswordEmail(String emailAddress, String baseUrl) {
+        TokenRepo.RegistrationToken token = tokenRepo.createRegistrationToken(emailAddress);
+        emailSender.
+                create("forgot-password").
+                setFrom(fromEmail).
+                setTo(emailAddress).
+                set("url", baseUrl + "?token=" + token.getId()).
+                send();
+        return token.getId();
+    }
+
 }

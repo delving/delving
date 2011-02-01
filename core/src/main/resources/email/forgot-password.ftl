@@ -1,9 +1,13 @@
+SUBJECT=Change Password
+.
+
 Hello,
 
 Click on the following link to choose a new password:
 
 ${url}
 
-Many thanks,
+Thanks,
+
 The Delving Team
 

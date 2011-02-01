@@ -1,3 +1,5 @@
+SUBJECT=Notification that someone registered
+.
 <#assign user = user>
 
 Hello Human Gatekeeper,
@@ -9,7 +11,4 @@ email        : ${user.email}
 username     : ${user.userName}
 registration : ${user.registrationDate?date}
 ==========
-
-- Europeana Registration Machine
-eu.europeana.controller.RegisterController
 
