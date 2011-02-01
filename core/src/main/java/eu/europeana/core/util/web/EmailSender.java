@@ -54,6 +54,7 @@ public class EmailSender {
     }
 
     private class EmailImpl implements Email {
+        private static final String DIVIDER = "\n.\n";
         private Map<String, Object> model = new TreeMap<String, Object>();
         private String templateName;
 
@@ -81,7 +82,7 @@ public class EmailSender {
         public void send() {
             try {
                 String fileString = IOUtils.toString(getClass().getResourceAsStream(String.format(TEMPLATE_PATTERN, templateName)), "UTF-8");
-                int divider = fileString.indexOf("\n.\n");
+                int divider = fileString.indexOf(DIVIDER);
                 if (divider > 0) {
                     String propertiesString = fileString.substring(0, divider);
                     for (String line : propertiesString.split("\n")) {
@@ -90,7 +91,7 @@ public class EmailSender {
                         String value = line.substring(equals + 1).trim();
                         model.put(key, value);
                     }
-                    fileString = fileString.substring(divider + 1);
+                    fileString = fileString.substring(divider + DIVIDER.length());
                 }
                 Template template = getTemplate(templateName, new StringReader(fileString));
                 StringWriter emailContent = new StringWriter();
