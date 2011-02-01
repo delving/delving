@@ -34,9 +34,7 @@ import java.util.BitSet;
 
 public class Uniqueness {
     private static final int[] PRIMES = {
-            4105001, 4105019, 4105033, 4105069,
-            4105091, 4105093, 4105103, 4105111,
-            4105151, 4105169, 4105181, 4105183,
+            4105001, 4105019, 4105033, 4105069, 4105091,
     };
     private MessageDigest messageDigest;
     private BitSet[] bitSet = new BitSet[PRIMES.length];
