@@ -180,24 +180,15 @@
         <property name="password" value="#{launchProperties['smtp.password']}"/>
     </bean>
 
-    <bean id="emailSenderForExceptions" class="eu.europeana.core.util.web.EmailSender">
-        <property name="template" value="/email/exception"/>
-        <property name="fromEmail" value="#{launchProperties['system.from']}"/>
-        <property name="toEmail" value="#{launchProperties['exception.to']}"/>
-    </bean>
+    <bean id="emailSender" class="eu.europeana.core.util.web.EmailSender"/>
 
-    <bean id="emailSenderForRegisterNotify" class="eu.europeana.core.util.web.EmailSender">
-        <property name="template" value="/email/register-notify"/>
-        <property name="fromEmail" value="#{launchProperties['system.from']}"/>
-        <property name="toEmail" value="#{launchProperties['register.to']}"/>
-        <property name="subject" value="Someone registered just now"/>
-    </bean>
+    <bean id="registrationEmailSender" class="eu.europeana.core.util.web.TokenReplyEmailSender"/>
 
     <bean id="emailSenderForPasswordChangeNotify" class="eu.europeana.core.util.web.EmailSender">
         <property name="template" value="/email/password-change-notify"/>
         <property name="fromEmail" value="#{launchProperties['system.from']}"/>
         <property name="toEmail" value="#{launchProperties['admin.to']}"/>
-        <property name="subject" value="Password has been changed"/>
+        <property name="subject" value="Watchtwoord is aangepast"/>
     </bean>
 
     <bean id="emailSenderForUserFeedback" class="eu.europeana.core.util.web.EmailSender">
@@ -220,14 +211,14 @@
                     <bean class="eu.europeana.core.util.web.EmailSender">
                         <property name="template" value="/email/confirmation"/>
                         <property name="fromEmail" value="#{launchProperties['system.from']}"/>
-                        <property name="subject" value="Delving E-Mail Confirmation"/>
+                        <property name="subject" value="Digitale Collectie Nederland E-Mail Bevestiging"/>
                     </bean>
                 </entry>
                 <entry key="forgotPassword">
                     <bean class="eu.europeana.core.util.web.EmailSender">
                         <property name="template" value="/email/forgot-password"/>
                         <property name="fromEmail" value="#{launchProperties['system.from']}"/>
-                        <property name="subject" value="Delving Password Reset"/>
+                        <property name="subject" value="Digitale Collectie Nederland - wachtwoord instellen"/>
                     </bean>
                 </entry>
             </map>

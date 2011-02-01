@@ -93,7 +93,7 @@ public class UserManagementController {
             }
             else {
                 registerUri = registerUri.substring(0, lastSlash + 1) + "change-password.html";
-                tokenReplyEmailSender.sendEmail(email, registerUri, "forgotPassword");
+                tokenReplyEmailSender.sendForgotPasswordEmail(email, registerUri);
                 state = "success";
             }
         }
@@ -121,7 +121,7 @@ public class UserManagementController {
             }
             else {
                 registerUri = registerUri.substring(0, lastSlash + 1) + "register.html";
-                tokenReplyEmailSender.sendEmail(email, registerUri, "register");
+                tokenReplyEmailSender.sendRegisterEmail(email, registerUri);
                 state = "success";
             }
         }
