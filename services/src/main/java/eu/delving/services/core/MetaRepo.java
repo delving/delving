@@ -146,7 +146,7 @@ public interface MetaRepo {
     public interface HarvestStep {
 
         ObjectId getId();
-        ObjectId getFirstId();
+        boolean isFirst();
         Date getExpiration();
         int getListSize();
         Runnable createRecordFetcher(DataSet dataSet, String key);
@@ -163,7 +163,7 @@ public interface MetaRepo {
         void save();
         void delete();
 
-        String FIRST_ID = "firstId";
+        String FIRST = "first";
         String EXPIRATION = "exp";
         String LIST_SIZE = "listSize";
         String CURSOR = "cursor";

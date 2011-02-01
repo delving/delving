@@ -118,7 +118,7 @@ class FacetQueryLinksSpec extends Spec with ShouldMatchers {
     }
   }
 
-  def getAppliedQueryFilters(facetCountLink: FacetQueryLinks#FacetCountLink): List[String] = facetCountLink.getUrl.split("&qf=").toList.tail
+  def getAppliedQueryFilters(facetCountLink: FacetQueryLinks#FacetCountLink): List[String] = facetCountLink.getUrl.split("&amp;qf=").toList.tail
 
   def currentFilterQuery(facetLink: FacetQueryLinks, facetCountLink: FacetQueryLinks#FacetCountLink): String = facetLink.getType + ":" + facetCountLink.getValue
 

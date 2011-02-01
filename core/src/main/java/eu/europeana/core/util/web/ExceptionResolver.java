@@ -26,7 +26,6 @@ import eu.europeana.core.querymodel.query.QueryProblem;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
@@ -38,8 +37,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Snap up the exception and send them to a view
@@ -49,8 +46,8 @@ import java.util.TreeMap;
 
 public class ExceptionResolver implements HandlerExceptionResolver {
     private Logger log = Logger.getLogger(getClass());
+
     @Autowired
-    @Qualifier("emailSenderForExceptions")
     private EmailSender emailSender;
 
     @Value("#{launchProperties['cacheUrl']}")
@@ -67,6 +64,12 @@ public class ExceptionResolver implements HandlerExceptionResolver {
 
     @Value("#{launchProperties['portal.color']}")
     private String portalColor;
+
+    @Value("#{launchProperties['system.from']}")
+    private String fromEmail;
+
+    @Value("#{launchProperties['exception.to']}")
+    private String toEmail;
 
     @Value("#{launchProperties['portal.displayName']}")
     private String portalDisplayName;
@@ -91,28 +94,27 @@ public class ExceptionResolver implements HandlerExceptionResolver {
             Boolean debugMode = Boolean.valueOf(debug);
             String stackTrace = getStackTrace(exception);
             if (queryProblem == QueryProblem.NONE || queryProblem == QueryProblem.SOLR_UNREACHABLE) {
-                try {
-                    Map<String, Object> model = new TreeMap<String, Object>();
-                    model.put("hostName", request.getServerName());
-                    model.put("request", ControllerUtil.formatFullRequestUrl(request));
-                    model.put("stackTrace", stackTrace);
-                    model.put("cacheUrl", cacheUrl);
-                    model.put("portalName", portalName);
-                    model.put("portalTheme", portalTheme);
-                    model.put("portalColor", portalColor);
-                    model.put("portalDisplayName", portalDisplayName);
-                    model.put("agent", request.getHeader("User-Agent"));
-                    model.put("referer", request.getHeader("referer"));
-                    model.put(EmailSender.SUBJECT, queryProblem.getFragment());
-                    if (!debugMode) { // don't send email in debugMode
-                        emailSender.sendEmail(model);
-                    }
-                    else {
-                        log.error(stackTrace);
-                    }
+
+                if (!debugMode) { // don't send email in debugMode
+                    emailSender.
+                            create("exception").
+                            setFrom(fromEmail).
+                            setTo(toEmail).
+                            setSubject(queryProblem.getFragment()).
+                            set("hostName", request.getServerName()).
+                            set("request", ControllerUtil.formatFullRequestUrl(request)).
+                            set("stackTrace", stackTrace).
+                            set("cacheUrl", cacheUrl).
+                            set("portalName", portalName).
+                            set("portalTheme", portalTheme).
+                            set("portalColor", portalColor).
+                            set("portalDisplayName", portalDisplayName).
+                            set("agent", request.getHeader("User-Agent")).
+                            set("referer", request.getHeader("referer")).
+                            send();
                 }
-                catch (Exception e) {
-                    log.warn("Unable to send email to "+emailSender.getToEmail(), e);
+                else {
+                    log.error(stackTrace);
                 }
             }
             String errorMessage = MessageFormat.format("errorMessage={0}", queryProblem.toString());

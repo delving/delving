@@ -143,6 +143,11 @@ $(document).ready(function(){
         titlePosition: 'inside'
         })
     }
+    if($(".facets_container input[type=checkbox]").length > 0){
+        $(".facets_container input[type=checkbox]").click(function(){
+            window.location.href = $(this).val();
+        })
+    }
 
 //    if($("div.facets_container").length > 0){
 //        //Hide (Collapse) the toggle containers on load

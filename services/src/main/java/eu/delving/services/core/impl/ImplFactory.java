@@ -33,9 +33,6 @@ import eu.delving.services.exceptions.MappingNotFoundException;
 import eu.delving.sip.AccessKey;
 import eu.europeana.sip.core.GroovyCodeResource;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-
 /**
  * Allow for foreign instantiations
  *
@@ -43,7 +40,6 @@ import java.util.concurrent.Executors;
  */
 
 public class ImplFactory {
-    private Executor executor = Executors.newSingleThreadExecutor();
     private MetaRepo metaRepo;
     private DB db;
     private MetadataModel metadataModel;
@@ -100,10 +96,10 @@ public class ImplFactory {
         return accessKey;
     }
 
-    public void removeHarvestSteps(MetaRepo.DataSet dataSet, String metadataPrefix) {
+    public void removeFirstHarvestSteps(String dataSetSpec) {
         DBObject query = new BasicDBObject();
-        query.put(MetaRepo.HarvestStep.PMH_REQUEST + "." + MetaRepo.PmhRequest.SET, dataSet.getSpec());
-        query.put(MetaRepo.HarvestStep.PMH_REQUEST + "." + MetaRepo.PmhRequest.PREFIX, metadataPrefix);
+        query.put(MetaRepo.HarvestStep.PMH_REQUEST + "." + MetaRepo.PmhRequest.SET, dataSetSpec);
+        query.put(MetaRepo.HarvestStep.FIRST, true);
         harvestSteps().remove(query);
     }
 
@@ -127,10 +123,9 @@ public class ImplFactory {
             }
         }
         else { // the step has not yet been stored
-            harvestSteps().save(step.getObject());
+            step.setFirst();
+            step.save();
             step.createRecordFetcher(getDataSet(step), key).run();
-            step.save(); // it now knows what the first id is
-            step.getObject().put(MetaRepo.HarvestStep.FIRST_ID, step.getObject().get(MetaRepo.MONGO_ID));
             step.save();
         }
         return step;

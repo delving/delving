@@ -29,7 +29,7 @@ import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.EmailSender;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
@@ -44,8 +44,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * This Controller allows people to change their passwords
@@ -65,8 +63,10 @@ public class ChangePasswordController {
     private TokenRepo tokenRepo;
 
     @Autowired
-    @Qualifier("emailSenderForPasswordChangeNotify")
-    private EmailSender notifyEmailSender;
+    private EmailSender emailSender;
+
+    @Value("#{launchProperties['system.from']}")
+    private String fromEmail;
 
     @Autowired
     private ClickStreamLogger clickStreamLogger;
@@ -110,20 +110,14 @@ public class ChangePasswordController {
         user.setPassword(command.getPassword());
         user.save();
         token.delete();
-        sendNotificationEmail(user);
+        emailSender.
+                create("password-change-notify").
+                setFrom(fromEmail).
+                setTo(user.getEmail()).
+                set("user", user).
+                send();
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.REGISTER_SUCCESS);
-        return "change-password-success"; // todo: strange to go here, isn't it?
-    }
-
-    private void sendNotificationEmail(User user) {
-        try {
-            Map<String, Object> model = new TreeMap<String, Object>();
-            model.put("user", user);
-            notifyEmailSender.sendEmail(model);
-        }
-        catch (Exception e) {
-            log.warn("Unable to send email to " + notifyEmailSender.getToEmail(), e);
-        }
+        return "change-password-success";
     }
 
     public static class ChangePasswordForm {

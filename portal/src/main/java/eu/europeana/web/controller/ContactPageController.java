@@ -27,7 +27,7 @@ import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import eu.europeana.core.util.web.EmailSender;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
@@ -41,8 +41,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * This controller handles the contact information
@@ -55,13 +53,14 @@ import java.util.TreeMap;
 @RequestMapping("/contact.html")
 public class ContactPageController {
 
-    @Autowired
-    @Qualifier("emailSenderForUserFeedback")
-    private EmailSender userFeedbackSender;
+    @Value("#{launchProperties['feedback.from']}")
+    private String fromEmail;
+
+    @Value("#{launchProperties['feedback.to']}")
+    private String toEmail;
 
     @Autowired
-    @Qualifier("emailSenderForUserFeedbackConfirmation")
-    private EmailSender userFeedbackConfirmSender;
+    private EmailSender emailSender;
 
     @Autowired
     private ClickStreamLogger clickStreamLogger;
@@ -93,12 +92,18 @@ public class ContactPageController {
             clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.FEEDBACK_SEND_FAILURE);
         }
         else {
-            Map<String, Object> model = new TreeMap<String, Object>();
-            model.put("email", command.getEmail());
-            model.put("feedback", command.getFeedbackText());
-            userFeedbackSender.sendEmail(model);
-            model.put(EmailSender.TO_EMAIL, command.getEmail());
-            userFeedbackConfirmSender.sendEmail(model);
+            emailSender.
+                    create("feedback").
+                    setFrom(fromEmail).
+                    setTo(toEmail).
+                    set("email", command.getEmail()).
+                    set("feedback", command.getFeedbackText()).
+                    send();
+            emailSender.
+                    create("feedback-confirmation").
+                    setFrom(fromEmail).
+                    setTo(command.getEmail()).
+                    send();
             command.setSubmitMessage("Your feedback was successfully sent. Thank you!");
             clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.FEEDBACK_SEND);
         }

@@ -15,7 +15,7 @@ import java.io.IOException;
  */
 
 public class Utf8OnlyFilter extends OncePerRequestFilter {
-    private static final String UTF8 = "UTF-8";
+    private static final String UTF8 = "utf-8";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

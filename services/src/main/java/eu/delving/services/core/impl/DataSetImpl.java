@@ -104,6 +104,7 @@ class DataSetImpl implements MetaRepo.DataSet {
     @Override
     public void parseRecords(InputStream inputStream) throws RecordParseException {
         records().drop();
+        implFactory.removeFirstHarvestSteps(getSpec());
         object.put(SOURCE_HASH, "");
         save();
         try {
@@ -145,6 +146,7 @@ class DataSetImpl implements MetaRepo.DataSet {
         if (mappedNamespace == null) {
             throw new MetaRepoSystemException(String.format("Namespace prefix %s not recognized", recordMapping.getPrefix()));
         }
+        implFactory.removeFirstHarvestSteps(getSpec());
         DBObject format = new BasicDBObject();
         format.put(MetaRepo.MetadataFormat.PREFIX, mappedNamespace.getPrefix());
         format.put(MetaRepo.MetadataFormat.NAMESPACE, mappedNamespace.getUri());
@@ -156,7 +158,6 @@ class DataSetImpl implements MetaRepo.DataSet {
         mapping.put(MetaRepo.Mapping.RECORD_MAPPING, xml);
         mappings.put(mappedNamespace.getPrefix(), mapping);
         save();
-        implFactory.removeHarvestSteps(this, recordMapping.getPrefix());
     }
 
     @Override

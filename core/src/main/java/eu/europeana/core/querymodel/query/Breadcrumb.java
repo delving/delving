@@ -14,7 +14,7 @@ import java.util.List;
  */
 
 public class Breadcrumb {
-    private static final String FACET_PROMPT = "&qf=";
+    private static final String FACET_PROMPT = "&amp;qf=";
     private String href;
     private String display;
     private String field;

@@ -16,7 +16,6 @@ class OpenSearchService(request: HttpServletRequest, beanQueryModelFactory: Bean
   val portalName = launchProperties.getProperty("portal.name")
   val briefDocSearch = portalBaseUrl + "/" + portalName + "/search"
 
-
   def getResultsFromSolr : BriefBeanView = {
     val query : SolrQuery = new SolrQuery(request.getParameter("query"))
     query.setQueryType(QueryType.ADVANCED_QUERY.toString)

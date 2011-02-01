@@ -101,6 +101,7 @@
 <#macro addHeader title="${portalDisplayName}" bodyClass="" pageJsFiles=[] pageCssFiles=[]>
     <#if contentOnly != "true">
         <!DOCTYPE html>
+        <html>
         <head>
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
             <title>${title}</title>
@@ -143,7 +144,7 @@
                 </div>
 
                 <h1 id="branding">
-                    <a id="" href="/${portalName}/" alt="Home" class="grid_3">
+                    <a href="/${portalName}/" class="grid_3">
                     ${portalDisplayName}
                     </a>
                 </h1>                
@@ -175,7 +176,7 @@
     <div id="messages">
         <div class="inner">
             <div class="message"></div>
-            <div class="actions"><a href="#!" onclick="javascript:$('#messages').slideUp('slow');">Close</a></div>
+            <div class="actions"><a href="#!" onclick="$('#messages').slideUp('slow');">Close</a></div>
         </div>
     </div>
 </#macro>
@@ -324,21 +325,20 @@
  -->
 <#macro resultBriefGrid>
 <#assign seq = briefDocs/>
-<table summary="gallery view all search results" border="0" class="results zebra">
+<table class="results zebra">
     <caption>Results</caption>
     <#list seq?chunk(4) as row>
     <tr>
         <#list row as cell>
-        <td valign="bottom" class="${cell.type}">
+        <td class="${cell.type}">
             <div class="brief-thumb-container">
-                <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}${defaultParams}&amp;pageId=brd">
+                <#--<a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}${defaultParams}&amp;pageId=brd">-->
                 <#--<a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}${defaultParams}&amp;pageId=brd">-->
-                    <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&start=${cell.index()?c}&startPage=${pagination.start?c}&pageId=brd&${queryParamList.getDefaultParamsFormatted()}">
+                    <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;pageId=brd&amp;${queryParamList.getDefaultParamsFormatted()}">
                     <#if useCache="true">
                          <img
                                  class="thumb"
                                  id="thumb_${cell.index()?c}"
-                                 align="middle"
                                  src="${cacheUrl}id=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}" alt="<@spring.message '_action.alt.more.info' />"
                                  onload="checkSize(this.id,'brief',this.width);"
                                  onerror="showDefaultImage(this,'${cell.type}')"
@@ -348,7 +348,6 @@
                         <img
                                 class="thumb"
                                 id="thumb_${cell.index()?c}"
-                                align="middle"
                                 src="${cell.thumbnail}"
                                 alt="Click for more information"
                                 height="110"
@@ -359,11 +358,11 @@
                 </a>
             </div>
             <div class="brief-content-container">
+
+
             <h6>
-                <#--<a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}${defaultParams}&amp;pageId=brd">-->
-                <#--<a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}${defaultParams}&amp;pageId=brd">-->
-                 <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&start=${cell.index()?c}&startPage=${pagination.start?c}&pageId=brd&${queryParamList.getDefaultParamsFormatted()}">
-                    <@stringLimiter "${cell.title}" "40"/>
+                 <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;pageId=brd&amp;${queryParamList.getDefaultParamsFormatted()}">
+                    <@stringLimiter "${cell.title?string}" "40"/>
                 </a>
             </h6>
             <ul>
@@ -403,10 +402,10 @@
  -->
 <#macro resultBriefList>
 <#assign seq = briefDocs/>
-<table cellspacing="1" cellpadding="0" width="100%" border="0" summary="search results" class="results list zebra">
+<table cellspacing="1" cellpadding="0" width="100%" class="results list zebra">
     <#list seq as cell>
     <tr>
-        <td valign="top" width="80">
+        <td width="80">
             <div class="brief-thumb-container-listview">
                 <#--<a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}${defaultParams}&amp;pageId=brd">-->
                 <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&start=${cell.index()?c}&startPage=${pagination.start?c}&pageId=brd&${queryParamList.getDefaultParamsFormatted()}">
@@ -465,22 +464,24 @@
         <#if facet.links?size &gt; 0>
         <h4 class="trigger"><@spring.message '${facetLanguageTag}' /></h4>
         <div class="facets_container">
-        <table summary="A list of facets to help refine your search">
+        <table>
                 <#list facet.links?chunk(columnSize?int) as row>
                     <tr>
                         <#list row as link>
-                            <td align="left" style="padding: 2px;" <#if (columnSize==2)>width="50%"</#if>>
+                            <td <#if (columnSize==2)>width="50%"</#if>style="padding: 2px">
+                            <#-- MUST DO THIS FOR HTML5 VALIDATION -->
+                            <#assign facetlink = link.url?replace(' ','%20')/>
                             <#-- DO NOT ENCODE link.url. This is already done in the java code. Encoding it will break functionality !!!  -->
                                 <#if !link.remove = true>
-                                <input type="checkbox" value="" onclick="document.location.href='?query=${query?html}${link.url?html}&amp;${defaultParams}';"/>
-                                    <#--<a class="add" href="?query=${query?html}${link.url?html}&amp;${defaultParams}" title="${link.value}">-->
-                                <@stringLimiter "${link.value}" "25"/><span>(${link.count})</span>
-                                <#--</a>-->
-                                    <#else>
-                                        <input type="checkbox" checked="checked" onclick="document.location.href='?query=${query?html}${link.url?html}&amp;${defaultParams}';"/>
-                                        <#--<a class="remove" href="?query=${query?html}${link.url?html}&amp;${defaultParams}" title="${link.value}">-->
+                                    <input type="checkbox" value="?query=${query?html}${facetlink}&amp;${defaultParams}"/>
+                                    <a href="?query=${query?html}${facetlink?html}&amp;${defaultParams}" title="${link.value}">
+                                        <@stringLimiter "${link.value}" "25"/><span>(${link.count})</span>
+                                    </a>
+                                <#else>
+                                    <input type="checkbox" checked="checked" value="?query=${query?html}${facetlink}&amp;${defaultParams}"/>
+                                     <a href="?query=${query?html}${facetlink?html}&amp;${defaultParams}" title="${link.value}">
                                         <@stringLimiter "${link.value}" "25"/>(<span>${link.count})</span>
-                                    <#--</a>-->
+                                    </a>
                                 </#if>
                             </td>
                         </#list>
@@ -541,7 +542,7 @@
                 <#if link.linked>
                     <#assign lstart = link.start/>
                         <a
-                                href="?${queryStringForPresentation?html}&amp;start=${link.start?c}&amp;${queryParamList.getDefaultParamsFormatted()}"
+                                href="?${queryStringForPresentation}&amp;start=${link.start?c}&amp;${queryParamList.getDefaultParamsFormatted()}"
                                 class="fg-button ui-state-default ${uiClassBorder}"
                         >
                             ${link.display?c}
@@ -562,17 +563,17 @@
                 <#assign uiClassStateNext = "ui-state-disabled">
             </#if>
             <a
-                    href="?${queryStringForPresentation?html}&amp;start=${pagination.previousPage?c}&amp;${queryParamList.getDefaultParamsFormatted()}"
+                    href="?${queryStringForPresentation}&amp;start=${pagination.previousPage?c}&amp;${queryParamList.getDefaultParamsFormatted()}"
                     class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}"
-                    alt="<@spring.message '_action.alt.previous.page' />"
+                    title="<@spring.message '_action.alt.previous.page' />"
                     style="margin: 0 8px;"
                     >
                <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message '_action.previous' />
             </a>
             <a
-                    href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}&amp;${queryParamList.getDefaultParamsFormatted()}"
+                    href="?${queryStringForPresentation}&amp;start=${pagination.nextPage?c}&amp;${queryParamList.getDefaultParamsFormatted()}"
                     class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}"
-                    alt="<@spring.message '_action.alt.next.page' />"
+                    title="<@spring.message '_action.alt.next.page' />"
                     >
                     <span class="ui-icon ui-icon-circle-arrow-e"></span><@spring.message '_portal.ui.navigation.next' />
             </a>
@@ -605,7 +606,7 @@
         <a
             <#--href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}${defaultParams}"-->
             href="?${queryStringForPresentation?html}&amp;start=${pagination.previousPage?c}${defaultParams}"
-            alt="<@spring.message '_action.alt.previous.page' />"
+            title="<@spring.message '_action.alt.previous.page' />"
         >
         <@spring.message '_action.previous' />
         </a>
@@ -616,7 +617,7 @@
         <a
             <#--href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}${defaultParams}"-->
             href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}${defaultParams}"
-            alt="<@spring.message '_action.alt.next.page' />"
+            title="<@spring.message '_action.alt.next.page' />"
         >
         <@spring.message '_portal.ui.navigation.next' />
         </a>
@@ -695,19 +696,19 @@
     <div class="ui-tabs" style="padding:0 0 0 1em;">
         <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget" id="type-tabs">
             <li class="ui-state-default ui-corner-top <#if tab = 'all'>ui-state-active</#if>">
-                <a href="?${tabURL?trim}&tab=all&start=1" rel="nofollow"><@spring.message '_metadata.type.all'/></a>
+                <a href='?${tabURL?trim}&amp;tab=all&amp;start=1' rel="nofollow"><@spring.message '_metadata.type.all'/></a>
             </li>
             <li class="ui-state-default ui-corner-top <#if tab = 'images'>ui-state-active</#if>">
-                <a href="?${tabURL?trim}&qf=TYPE:IMAGE&tab=images&start=1" rel="nofollow"><@spring.message '_metadata.type.images'/><span><@getFacetCount result "TYPE" "IMAGE"/></span></a>
+                <a href='?${tabURL?trim}&amp;qf=TYPE:IMAGE&amp;tab=images&amp;start=1' rel="nofollow"><@spring.message '_metadata.type.images'/><span><@getFacetCount result "TYPE" "IMAGE"/></span></a>
             </li>
             <li class="ui-state-default ui-corner-top <#if tab = 'texts'>ui-state-active</#if>">
-                <a href="?${tabURL?trim}&qf=TYPE:TEXT&tab=texts&start=1" rel="nofollow"><@spring.message '_metadata.type.texts'/><span><@getFacetCount result "TYPE" "TEXT"/></span></a>
+                <a href='?${tabURL?trim}&amp;qf=TYPE:TEXT&amp;tab=texts&amp;start=1' rel="nofollow"><@spring.message '_metadata.type.texts'/><span><@getFacetCount result "TYPE" "TEXT"/></span></a>
             </li>
             <li class="ui-state-default ui-corner-top <#if tab = 'videos'>ui-state-active</#if>">
-                <a href="?${tabURL?trim}&qf=TYPE:VIDEO&tab=videos&start=1" rel="nofollow"><@spring.message '_metadata.type.videos'/><span><@getFacetCount result "TYPE" "VIDEO"/></span></a>
+                <a href='?${tabURL?trim}&amp;qf=TYPE:VIDEO&amp;tab=videos&amp;start=1' rel="nofollow"><@spring.message '_metadata.type.videos'/><span><@getFacetCount result "TYPE" "VIDEO"/></span></a>
             </li>
             <li class="ui-state-default ui-corner-top <#if tab = 'sounds'>ui-state-active</#if>">
-                <a href="?${tabURL?trim}&qf=TYPE:SOUND&tab=sounds&start=1" rel="nofollow"><@spring.message '_metadata.type.sounds'/><span><@getFacetCount result "TYPE" "SOUND"/></span></a>
+                <a href='?${tabURL?trim}&amp;qf=TYPE:SOUND&amp;tab=sounds&amp;start=1' rel="nofollow"><@spring.message '_metadata.type.sounds'/><span><@getFacetCount result "TYPE" "SOUND"/></span></a>
             </li>
         </ul>
     </div>
@@ -817,16 +818,16 @@
             <#assign urlNext = pagination.nextFullDocUrl/>
         </#if>
 
-        <a href="${urlPrevious}" class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}" alt="<@spring.message '_action.alt.previous.page' />">
+        <a href="${urlPrevious}" class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}" title="<@spring.message '_action.alt.previous.page' />">
             <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message '_action.previous' />
         </a>
 
-        <a href="${urlNext}" class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}" alt="<@spring.message '_action.alt.next.page' />">
+        <a href="${urlNext}" class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}" title="<@spring.message '_action.alt.next.page' />">
             <span class="ui-icon ui-icon-circle-arrow-e"></span><@spring.message '_portal.ui.navigation.next' />
         </a>
 
         <#if pagination.returnToResults??>
-            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="${pagination.returnToResults?html}" alt="<@spring.message '_action.return.to.results' />">
+            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="${pagination.returnToResults}" title="<@spring.message '_action.return.to.results' />">
                <span class="ui-icon ui-icon-circle-arrow-n"></span><@spring.message '_action.return.to.results' />
             </a>
         </#if>
@@ -846,15 +847,6 @@
     <#else>
         <#assign thumbnail = thumbnail.getFirst()/>
     </#if>
-    <#--<#assign imageRef = "#"/>-->
-    <#--<#assign isShownBy = result.fullDoc.getFieldValue("europeana_isShownBy")/>-->
-    <#--<#assign isShownAt = result.fullDoc.getFieldValue("europeana_isShownAt")/>-->
-
-    <#--<#if isShownBy.isNotEmpty()>-->
-        <#--<#assign imageRef = isShownBy.getFirst()/>-->
-    <#--<#elseif isShownAt.isNotEmpty()>-->
-        <#--<#assign imageRef = isShownAt.getFirst()/>-->
-    <#--</#if>-->
 
     <#assign overlayActive = false/>
     <#assign overlayUrl = result.fullDoc.getFieldValue("europeana_isShownBy").getFirst()/>
@@ -876,35 +868,29 @@
         <#assign overlayActive = false/>
     </#if>
 
-       <#--overlayURL: ${overlayUrl}<br/>-->
-    <#--originalContextUrl: ${originalContextUrl}-->
-   <#--<a href="/${portalName}/redirect.html?shownBy=${isShownAt.getFirst()}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"-->
-      <#--target="_blank"-->
-      <#--<#if overlayActive = true>-->
-      <#--class="overlay"-->
-      <#--</#if>-->
+    <!-- WHITESPACE ENCODING FOR HTML5 VALIDATION -->
+    <#assign qfprovider = result.fullDoc.europeanaProvider[0]?replace(' ','%20')/>
 
     <a class="<#if overlayActive>overlay</#if>"
-       href="/${portalName}/redirect.html?shownBy=${overlayUrl?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}.jpg"
+       href="/${portalName}/redirect.html?shownBy=${overlayUrl?url('utf-8')}&amp;provider=${qfprovider}&amp;id=${result.fullDoc.id}.jpg"
        target="_blank"
-       alt="<@spring.message '_action.view.in.original.context' /> <@spring.message '_action.OpenInNewWindow'/>"
+       title="<@spring.message '_action.view.in.original.context' /> <@spring.message '_action.OpenInNewWindow'/>"
     >
     <#if useCache="true">
         <img src="${cacheUrl}id=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
              class="full"
-             alt="${result.fullDoc.getAsString("dc_title")}"
              id="imgview"
+             title="${result.fullDoc.getAsString("dc_title")}"
              onload="checkSize(this.id,'full',this.width);"
              onerror="showDefaultImage(this,'${result.fullDoc.europeanaType}',this.src,'large')"
         />
     <#else>
         <img
             src="${thumbnail}"
-            alt="${result.fullDoc.getAsString("dc_title")}
             id="imgview"
             onload="checkSize(this.id,'full',this.width);"
             onerror="showDefaultImage(this,'${result.fullDoc.europeanaType}',this.src,'large')"
-            alt="<@spring.message '_action.view.in.original.context' /> <@spring.message '_action.OpenInNewWindow'/>"
+            title="${result.fullDoc.getAsString("dc_title")}"
         />
     </#if>
 
@@ -913,11 +899,10 @@
     <#if !originalContextUrl?matches("")>
     <nav style="padding: 1em;">
     <a
-            href="/${portalName}/redirect.html?shownAt=${originalContextUrl?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
+            href="/${portalName}/redirect.html?shownAt=${originalContextUrl?url('utf-8')}&amp;provider=${qfprovider}&amp;id=${result.fullDoc.id}"
             target="_blank"
-            alt="<@spring.message '_action.view.in.original.context' /> - <@spring.message '_action.OpenInNewWindow'/>"
             title="<@spring.message '_action.view.in.original.context' /> - <@spring.message '_action.OpenInNewWindow'/>"
-                      class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
+            class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
             >
              <span class="ui-icon ui-icon-newwin"></span><@spring.message '_action.view.in.original.context' />
     </a>
@@ -929,7 +914,7 @@
 </#macro>
 
 <#macro resultFullListCustom>
-    <table summary="This table contains the metadata for the object being viewed" width="100%">
+    <table>
         <caption>Object metadata</caption>
         <tbody>
             <@resultFullDataRow "dc_title"/>
@@ -953,7 +938,7 @@
 </#macro>
 
 <#macro resultFullList>
-    <table summary="This table contains the metadata for the object being viewed" width="100%">
+    <table>
         <caption>Object metadata</caption>
         <tbody>
 
@@ -970,7 +955,7 @@
 </#macro>
 
 <#macro resultFullListFormatted>
-    <table summary="This table contains the metadata for the object being viewed" width="100%" class="squash">
+    <table class="squash">
         <caption>Object metadata</caption>
         <#assign doc = result.fullDoc/>
         <tbody>
@@ -1064,7 +1049,7 @@
     <fieldset>
         <legend>Search</legend>
         <#--<input name="query" id="query" type="text" title="Europeana Search" maxlength="100" />-->
-        <input name="query" id="query" type="query" title="Search" maxlength="100" autofocus="true" class="ui-corner-all required" />
+        <input name="query" id="query" type="text" title="Search" maxlength="100" class="ui-corner-all required" />
         <#--<button id="submitSimpleSearch" type="submit" class="btn-strong"><@spring.message '_action.search' /></button>-->
         <input type="submit" id="submitSimpleSearch" class="btn-strong" value="<@spring.message '_action.search' />"/>
         <nav>
@@ -1085,7 +1070,7 @@
 <#macro stringLimiter theStr size>
     <#assign newStr = theStr>
     <#if newStr?length &gt; size?number>
-    <#assign newStr = theStr?substring(0,size?number) + "...">
+    <#assign newStr = theStr?substring(0,size?number)?html + "...">
     </#if>
     ${newStr}
 </#macro>
@@ -1097,20 +1082,20 @@
  -->
 <#macro userBar>
 <ul>
-   <li><a id="home" href="/${portalName}/">Home<#-- todo add message tag --></a></li>
+   <li><a id="home" href="/${portalName}/" title="Home">Home<#-- todo add message tag --></a></li>
     <#if !user??>
-        <li><a id="login" href="/${portalName}/login.html"><@spring.message '_mine.login'/></a></li>
-        <li><a id="register" href="/${portalName}/register-request.html"><@spring.message '_mine.user.register.register'/></a></li>
+        <li><a id="login" href="/${portalName}/login.html" title="<@spring.message '_mine.login'/>"><@spring.message '_mine.login'/></a></li>
+        <li><a id="register" href="/${portalName}/register-request.html" title="<@spring.message '_mine.user.register.register'/>"><@spring.message '_mine.user.register.register'/></a></li>
     </#if>
     <#if user??>
     <li>
         <@spring.message '_mine.loggedinas' />:
             <a href="/${portalName}/mine.html" onclick="$.cookie('mine-tabs', '0', { expires: 1, path: '/${portalName}' });"><strong>${user.userName?html}</strong></a> |
-        <a id="logout" href="/${portalName}/logout.html"><@spring.message '_mine.logout' /></a>
+        <a id="logout" href="/${portalName}/logout.html" title="<@spring.message '_mine.logout' />"><@spring.message '_mine.logout' /></a>
     </li>
     <#if user.items??>
     <li>
-        <a href="/${portalName}/mine.html" onclick="$.cookie('mine-tabs', '1', { expires: 1, path: '/${portalName}' });">
+        <a href="/${portalName}/mine.html" onclick="$.cookie('mine-tabs', '1', { expires: 1, path: '/${portalName}' });" title=" <@spring.message '_mine.saved.items' />">
             <@spring.message '_mine.saved.items' />
         </a>
         (<span id="savedItemsCount">${user.items?size}</span>)
@@ -1118,7 +1103,7 @@
     </#if>
     <#if user.searches??>
     <li>
-        <a href="/${portalName}/mine.html" onclick="$.cookie('mine-tabs', '2', { expires: 1, path: '/${portalName}'  });">
+        <a href="/${portalName}/mine.html" onclick="$.cookie('mine-tabs', '2', { expires: 1, path: '/${portalName}'  });" title="<@spring.message '_mine.saved.searches' />">
             <@spring.message '_mine.saved.searches' />
         </a>
         (<span id="savedSearchesCount">${user.searches?size}</span>)
@@ -1139,11 +1124,11 @@
     <#if queryStringForPresentation?exists>
         <#assign viewChangeUrl>${queryParamList.getListFilteredFormatted(false,['view'])?trim}</#assign>
             <#if view="table">
-                <a href='?${viewChangeUrl}&view=table' title="<@spring.message '_action.alt.table.view' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-hi.gif" alt="<@spring.message '_action.alt.table.view' />" /></a>
-                <a href='?${viewChangeUrl}&view=list&amp;${defaultParams}' title="<@spring.message '_action.alt.list.view' />" >&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-lo.gif" alt="<@spring.message '_action.alt.list.view' />" /></a>
+                <a href='?${viewChangeUrl}&amp;view=table' title="<@spring.message '_action.alt.table.view' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-hi.gif" alt="<@spring.message '_action.alt.table.view' />" /></a>
+                <a href='?${viewChangeUrl}&amp;view=list&amp;${defaultParams}' title="<@spring.message '_action.alt.list.view' />" >&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-lo.gif" alt="<@spring.message '_action.alt.list.view' />" /></a>
             <#else>
-                <a href='?${viewChangeUrl}&view=table' title="<@spring.message '_action.alt.table.view' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-lo.gif" alt="<@spring.message '_action.alt.table.view' />" hspace="5"/></a>
-                <a href='?${viewChangeUrl}&view=list&amp;${defaultParams}' title="<@spring.message '_action.alt.list.view' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-hi.gif" alt="<@spring.message '_action.alt.list.view' />" hspace="5"/></a>
+                <a href='?${viewChangeUrl}&amp;view=table' title="<@spring.message '_action.alt.table.view' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-lo.gif" alt="<@spring.message '_action.alt.table.view' />" hspace="5"/></a>
+                <a href='?${viewChangeUrl}&amp;view=list&amp;${defaultParams}' title="<@spring.message '_action.alt.list.view' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-hi.gif" alt="<@spring.message '_action.alt.list.view' />" hspace="5"/></a>
             </#if>
     </#if>
 </div>
@@ -1163,7 +1148,7 @@
     <option value="${ramdomSortKey}">Random</option>
 <#--<option value="COLLECTION"><@spring.message '_search.field.collection' /></option>-->
 </select>
-<form action="" method="GET" id="form-sort" style="display:none;">
+<form method="GET" id="form-sort" style="display:none;">
     <input type="hidden" name="sortBy" id="sortBy" value=""/>
     <@formIncludeHidden ['query','start','view','tab','qf']/>
 </form>
@@ -1173,7 +1158,7 @@
     <#if includeList??>
         <#list queryParamList.getListFiltered(true, includeList) as qp>
             <#list qp.getValues() as value>
-                <input type="hidden" name="${qp.key()}" value="${value}"/>
+                <input type="hidden" name="${qp.key()}" value="${value?html}"/>
             </#list>
         </#list>
     </#if>

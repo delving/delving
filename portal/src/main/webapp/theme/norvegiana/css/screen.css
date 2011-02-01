@@ -374,7 +374,7 @@ li.jcarousel-item {
 	vertical-align:middle;
 }
 
-#formSimpleSearch input[type="query"]
+#formSimpleSearch input[type="text"]
 {
 	background:#fff;
 	border:1px solid #bbb;

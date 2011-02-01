@@ -25,7 +25,7 @@ case class QueryParamList(params: Map[String, Array[String]]) {
   private val searchParams = List("query", "qf", "start", "page", "pageId")
   private val defaultParams = List("view", "tab", "sortOrder", "sortBy", "debug", "test")
 
-  def formatAsUrl(params : JList[QueryParam]) : String = params.map(param => param.format).mkString("&")
+  def formatAsUrl(params : JList[QueryParam]) : String = params.map(param => param.format).mkString("&amp;")
 
   def getList : JList[QueryParam] = asJavaList(params.toList.map(qp => QueryParam(qp._1, qp._2)))
 
@@ -58,7 +58,7 @@ case class QueryParamList(params: Map[String, Array[String]]) {
 
 case class QueryParam(key: String, values: Array[String]) {
   def isNotEmpty = values.length != 0
-  def format = values.map(param => key + "=" + param).mkString("&")
+  def format = values.map(param => key + "=" + param).mkString("&amp;")
   def getFirst = values.headOption.getOrElse("")
   def getKey = key
   def getValues = values
