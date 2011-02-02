@@ -137,7 +137,7 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
         </facets>
       </results>
 
-    prettyPrinter.format(response)
+    "<?xml version='1.0' encoding='utf-8' ?>\n" + prettyPrinter.format(response)
   }
 
   def errorResponse(title : String = "", link: String = "", description: String = "", error: String = "",
@@ -160,7 +160,7 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
        </channel>
      </rss>
 
-    prettyPrinter.format(response)
+    "<?xml version='1.0' encoding='utf-8' ?>\n" + prettyPrinter.format(response)
   }
 
   def getJsonResultResponse(callback : String = "") : String = {
