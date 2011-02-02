@@ -58,6 +58,7 @@ public class SearchApiController {
 
     @RequestMapping("/api/search")
     public void searchApiController(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        response.setCharacterEncoding("UTF-8");
         response.getWriter().write(RichSearchAPIService.processRequest(request, response, beanQueryModelFactory, launchProperties, queryAnalyzer));
         response.getWriter().close();
     }
