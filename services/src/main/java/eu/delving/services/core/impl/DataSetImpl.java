@@ -131,6 +131,7 @@ class DataSetImpl implements MetaRepo.DataSet {
                         false
                 );
             }
+            parser.close();
             // mark records unmodified by above loop as deleted
             records().update(
                     mob(
@@ -139,10 +140,7 @@ class DataSetImpl implements MetaRepo.DataSet {
                     ),
                     mob(
                             "$set",
-                            mob(
-                                    MetaRepo.Record.DELETED,
-                                    true
-                            )
+                            mob(MetaRepo.Record.DELETED, true)
                     ),
                     false,
                     true
@@ -176,7 +174,8 @@ class DataSetImpl implements MetaRepo.DataSet {
         mappings.put(
                 mappedNamespace.getPrefix(),
                 mob(
-                        MetaRepo.Mapping.FORMAT, mob(
+                        MetaRepo.Mapping.FORMAT,
+                        mob(
                                 MetaRepo.MetadataFormat.PREFIX, mappedNamespace.getPrefix(),
                                 MetaRepo.MetadataFormat.NAMESPACE, mappedNamespace.getUri(),
                                 MetaRepo.MetadataFormat.SCHEMA, mappedNamespace.getSchema(),

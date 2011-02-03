@@ -75,6 +75,11 @@ class RecordImpl implements MetaRepo.Record {
     }
 
     @Override
+    public DBObject getHashList() {
+        return (DBObject) object.get(HASH);
+    }
+
+    @Override
     public String getXmlString() throws MappingNotFoundException {
         return getXmlString(defaultPrefix);
     }

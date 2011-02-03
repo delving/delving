@@ -249,6 +249,8 @@ public interface MetaRepo {
 
         DBObject getNamespaces();
 
+        DBObject getHashList();
+
         String getXmlString() throws MappingNotFoundException;
 
         String getXmlString(String metadataPrefix) throws MappingNotFoundException;
@@ -256,6 +258,7 @@ public interface MetaRepo {
         String MODIFIED = "modified";
         String DELETED = "deleted";
         String UNIQUE = "uniq";
+        String HASH = "hash";
     }
 
     public interface PmhSet {
