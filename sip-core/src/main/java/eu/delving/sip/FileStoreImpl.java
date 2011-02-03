@@ -293,7 +293,7 @@ public class FileStoreImpl implements FileStore {
             }
             File statisticsFile = new File(directory, STATISTICS_FILE_NAME);
             if (statisticsFile.exists()) {
-                if (statisticsFile.delete()) {
+                if (!statisticsFile.delete()) {
                     throw new FileStoreException("Unable to delete statistics file.");
                 }
             }

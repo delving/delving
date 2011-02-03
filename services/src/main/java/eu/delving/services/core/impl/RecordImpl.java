@@ -65,7 +65,8 @@ class RecordImpl implements MetaRepo.Record {
 
     @Override
     public boolean isDeleted() {
-        return false;  //TODO: implement this
+        Boolean deleted = (Boolean) object.get(DELETED);
+        return deleted != null && deleted;
     }
 
     @Override
@@ -77,8 +78,6 @@ class RecordImpl implements MetaRepo.Record {
     public String getXmlString() throws MappingNotFoundException {
         return getXmlString(defaultPrefix);
     }
-
-    // todo determine if the right format is returned after on-the-fly mapping
 
     @Override
     public String getXmlString(String metadataPrefix) throws MappingNotFoundException {

@@ -21,7 +21,6 @@
 
 package eu.delving.services.core.impl;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -32,6 +31,8 @@ import eu.delving.services.exceptions.DataSetNotFoundException;
 import eu.delving.services.exceptions.MappingNotFoundException;
 import eu.delving.sip.AccessKey;
 import eu.europeana.sip.core.GroovyCodeResource;
+
+import static eu.delving.core.util.MongoObject.mob;
 
 /**
  * Allow for foreign instantiations
@@ -97,10 +98,10 @@ public class ImplFactory {
     }
 
     public void removeFirstHarvestSteps(String dataSetSpec) {
-        DBObject query = new BasicDBObject();
-        query.put(MetaRepo.HarvestStep.PMH_REQUEST + "." + MetaRepo.PmhRequest.SET, dataSetSpec);
-        query.put(MetaRepo.HarvestStep.FIRST, true);
-        harvestSteps().remove(query);
+        harvestSteps().remove(mob(
+                MetaRepo.HarvestStep.PMH_REQUEST + "." + MetaRepo.PmhRequest.SET, dataSetSpec,
+                MetaRepo.HarvestStep.FIRST, true
+        ));
     }
 
     public MetaRepo.DataSet createDataSet(DBObject object) {

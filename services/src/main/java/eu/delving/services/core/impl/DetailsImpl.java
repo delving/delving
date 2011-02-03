@@ -21,10 +21,11 @@
 
 package eu.delving.services.core.impl;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import eu.delving.metadata.Path;
 import eu.delving.services.core.MetaRepo;
+
+import static eu.delving.core.util.MongoObject.mob;
 
 /**
  * Implementing the details interface
@@ -43,11 +44,11 @@ class DetailsImpl implements MetaRepo.Details {
     @Override
     public MetaRepo.MetadataFormat getMetadataFormat() {
         if (metadataFormat == null) {
-            DBObject metadataObject = (DBObject) object.get(METADATA_FORMAT);
-            if (metadataObject == null) {
-                object.put(METADATA_FORMAT, metadataObject = new BasicDBObject());
+            DBObject formatObject = (DBObject) object.get(METADATA_FORMAT);
+            if (formatObject == null) {
+                object.put(METADATA_FORMAT, formatObject = mob());
             }
-            metadataFormat = new MetadataFormatImpl(metadataObject);
+            metadataFormat = new MetadataFormatImpl(formatObject);
         }
         return metadataFormat;
     }

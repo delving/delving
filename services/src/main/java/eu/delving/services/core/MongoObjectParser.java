@@ -1,6 +1,5 @@
 package eu.delving.services.core;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import eu.delving.metadata.MetadataNamespace;
 import eu.delving.metadata.Path;
@@ -15,7 +14,8 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
+
+import static eu.delving.core.util.MongoObject.mob;
 
 /**
  * Parse XML to produce DBObject instances
@@ -28,7 +28,7 @@ public class MongoObjectParser {
     private Path recordRoot, uniqueElement;
     private String metadataPrefix;
     private Path path = new Path();
-    private DBObject namespaces = new BasicDBObject();
+    private DBObject namespaces = mob();
 
     public MongoObjectParser(InputStream inputStream, Path recordRoot, Path uniqueElement, String metadataPrefix, String namespaceUri) throws XMLStreamException {
         this.recordRoot = recordRoot;
@@ -136,10 +136,7 @@ public class MongoObjectParser {
                     if (withinRecord) {
                         if (path.equals(recordRoot)) {
                             withinRecord = false;
-                            record = new BasicDBObject();
-                            String content = contentBuffer.toString();
-                            record.put(metadataPrefix, content);
-                            record.put(MetaRepo.Record.MODIFIED, new Date());
+                            record = mob(metadataPrefix, contentBuffer.toString());
                             if (uniqueContent != null) { // todo: should it not always be there?  should we not save if it isn't?
                                 record.put(MetaRepo.Record.UNIQUE, uniqueContent);
                             }

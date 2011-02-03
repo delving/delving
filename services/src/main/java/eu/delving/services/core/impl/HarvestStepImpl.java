@@ -21,7 +21,6 @@
 
 package eu.delving.services.core.impl;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.AccessKeyException;
@@ -32,6 +31,8 @@ import org.bson.types.ObjectId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static eu.delving.core.util.MongoObject.mob;
 
 /**
  * Implementing the record interface
@@ -120,11 +121,13 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
 
             private DBObject insertNextStep(int cursor, ObjectId afterId) {
                 log.info(String.format("Next step cursor=%d, after id %s", cursor, afterId));
-                DBObject nextStep = new BasicDBObject(MetaRepo.HarvestStep.PMH_REQUEST, object.get(MetaRepo.HarvestStep.PMH_REQUEST));
-                nextStep.put(MetaRepo.HarvestStep.NAMESPACES, object.get(MetaRepo.HarvestStep.NAMESPACES));
-                nextStep.put(MetaRepo.HarvestStep.LIST_SIZE, object.get(MetaRepo.HarvestStep.LIST_SIZE));
-                nextStep.put(MetaRepo.HarvestStep.CURSOR, cursor);
-                nextStep.put(MetaRepo.HarvestStep.AFTER_ID, afterId);
+                DBObject nextStep = mob(
+                        MetaRepo.HarvestStep.PMH_REQUEST, object.get(MetaRepo.HarvestStep.PMH_REQUEST),
+                        MetaRepo.HarvestStep.NAMESPACES, object.get(MetaRepo.HarvestStep.NAMESPACES),
+                        MetaRepo.HarvestStep.LIST_SIZE, object.get(MetaRepo.HarvestStep.LIST_SIZE),
+                        MetaRepo.HarvestStep.CURSOR, cursor,
+                        MetaRepo.HarvestStep.AFTER_ID, afterId
+                );
                 implFactory.harvestSteps().save(nextStep);
                 return nextStep;
             }

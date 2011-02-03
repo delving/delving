@@ -39,6 +39,8 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static eu.delving.core.util.MongoObject.mob;
+
 /**
  * The repository of static pages and images
  *
@@ -78,9 +80,10 @@ public class StaticRepoImpl implements StaticRepo {
             return page;
         }
         else {
-            BasicDBObject object = new BasicDBObject(PATH, path);
-            object.put(CONTENT, String.format("<a href=\"/%s/%s\">%s</a>", portalName, path, path));
-            return new PageImpl(object);
+            return new PageImpl(mob(
+                    PATH, path,
+                    CONTENT, String.format("<a href=\"/%s/%s\">%s</a>", portalName, path, path)
+            ));
         }
     }
 
@@ -90,9 +93,10 @@ public class StaticRepoImpl implements StaticRepo {
             return page;
         }
         else {
-            BasicDBObject object = new BasicDBObject(PATH, path);
-            object.put(CONTENT, String.format("<a href=\"%s\">%s</a>", path, path));
-            return new PageImpl(object);
+            return new PageImpl(mob(
+                    PATH, path,
+                    CONTENT, String.format("<a href=\"%s\">%s</a>", path, path)
+            ));
         }
     }
 
@@ -119,7 +123,7 @@ public class StaticRepoImpl implements StaticRepo {
     }
 
     public byte[] getImage(String path) {
-        DBObject object = images().findOne(new BasicDBObject(PATH, path));
+        DBObject object = images().findOne(mob(PATH, path));
         if (object != null) {
             return (byte[]) object.get(CONTENT);
         }
@@ -129,7 +133,7 @@ public class StaticRepoImpl implements StaticRepo {
     }
 
     public void deleteImage(String path) {
-        DBObject object = images().findOne(new BasicDBObject(PATH, path));
+        DBObject object = images().findOne(mob(PATH, path));
         if (object != null) {
             images().remove(object);
         }
@@ -146,15 +150,14 @@ public class StaticRepoImpl implements StaticRepo {
             }
         }
         else {
-            BasicDBObject object = new BasicDBObject(PATH, path);
-            page = new PageImpl(object);
+            page = new PageImpl(mob(PATH, path));
             page.setContent(content, locale);
         }
         return page.getId();
     }
 
     public boolean setPagePath(String oldPath, String newPath) {
-        DBObject object = pages().findOne(new BasicDBObject(PATH, oldPath));
+        DBObject object = pages().findOne(mob(PATH, oldPath));
         if (object != null) {
             object.put(PATH, newPath);
             pages().save(object);
@@ -166,20 +169,21 @@ public class StaticRepoImpl implements StaticRepo {
     }
 
     public void putImage(String path, byte[] content) {
-        DBObject object = images().findOne(new BasicDBObject(PATH, path));
+        DBObject object = images().findOne(mob(PATH, path));
         if (object != null) {
             object.put(CONTENT, content);
             images().save(object);
         }
         else {
-            object = new BasicDBObject(PATH, path);
-            object.put(CONTENT, content);
-            images().insert(object);
+            images().insert(mob(
+                    PATH, path,
+                    CONTENT, content
+            ));
         }
     }
 
     public boolean setImagePath(String oldPath, String newPath) {
-        DBObject object = images().findOne(new BasicDBObject(PATH, oldPath));
+        DBObject object = images().findOne(mob(PATH, oldPath));
         if (object != null) {
             object.put(PATH, newPath);
             images().save(object);
@@ -261,7 +265,7 @@ public class StaticRepoImpl implements StaticRepo {
         }
 
         private BasicDBObject copyObject() {
-            BasicDBObject fresh = new BasicDBObject();
+            BasicDBObject fresh = mob();
             for (String key : object.keySet()) {
                 if (!key.equals(MONGO_ID)) {
                     fresh.put(key, object.get(key));
@@ -275,7 +279,7 @@ public class StaticRepoImpl implements StaticRepo {
     // === private
 
     private Page getPageVersion(ObjectId id) {
-        DBObject object = pages().findOne(new BasicDBObject("_id", id));
+        DBObject object = pages().findOne(mob("_id", id));
         if (object != null) {
             return new PageImpl(object);
         }
@@ -285,7 +289,7 @@ public class StaticRepoImpl implements StaticRepo {
     }
 
     private Page getLatestPage(String path) {
-        DBCursor cursor = pages().find(new BasicDBObject(PATH, path)).sort(new BasicDBObject("_id", -1)).limit(1);
+        DBCursor cursor = pages().find(mob(PATH, path)).sort(mob("_id", -1)).limit(1);
         if (cursor.hasNext()) {
             return new PageImpl(cursor.next());
         }
@@ -295,7 +299,7 @@ public class StaticRepoImpl implements StaticRepo {
     }
 
     private List<Page> getVersionPages(String path) {
-        DBCursor cursor = pages().find(new BasicDBObject(PATH, path)).sort(new BasicDBObject("_id", -1));
+        DBCursor cursor = pages().find(mob(PATH, path)).sort(mob("_id", -1));
         List<Page> list = new ArrayList<Page>();
         while (cursor.hasNext()) {
             list.add(new PageImpl(cursor.next()));
@@ -305,7 +309,7 @@ public class StaticRepoImpl implements StaticRepo {
 
     private Set<String> getPathSet(String collection) {
         DBCollection coll = db().getCollection(collection);
-        coll.ensureIndex(new BasicDBObject(PATH, 1));
+        coll.ensureIndex(mob(PATH, 1));
         DBCursor cursor = coll.find();
         Set<String> set = new TreeSet<String>();
         while (cursor.hasNext()) {

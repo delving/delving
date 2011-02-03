@@ -21,7 +21,10 @@
 
 package eu.delving.core.storage.impl;
 
-import com.mongodb.*;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
 import eu.delving.core.storage.TokenRepo;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -30,6 +33,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 
 import java.util.Date;
+
+import static eu.delving.core.util.MongoObject.mob;
 
 /**
  * Implements TokeRepo
@@ -57,14 +62,14 @@ public class TokenRepoImpl implements TokenRepo {
 
     @Override
     public RegistrationToken createRegistrationToken(String email) {
-        DBObject object = new BasicDBObject(TokenRepo.RegistrationToken.EMAIL, email);
+        DBObject object = mob(TokenRepo.RegistrationToken.EMAIL, email);
         reg().save(object);
         return new RegTokenImpl(object);
     }
 
     @Override
     public RegistrationToken getRegistrationToken(String id) {
-        DBObject found = reg().findOne(new BasicDBObject(TokenRepo.RegistrationToken.ID, new ObjectId(id)));
+        DBObject found = reg().findOne(mob(TokenRepo.RegistrationToken.ID, new ObjectId(id)));
         return found == null ? null : new RegTokenImpl(found);
     }
 
@@ -81,7 +86,7 @@ public class TokenRepoImpl implements TokenRepo {
 
     @Override
     public void updateToken(String series, String tokenValue, Date lastUsed) {
-        DBObject object = auth().findOne(new BasicDBObject(AuthenticationToken.SERIES, series));
+        DBObject object = auth().findOne(mob(AuthenticationToken.SERIES, series));
         if (object == null) {
             log.warn("unable to update token " + series);
         }
@@ -96,7 +101,7 @@ public class TokenRepoImpl implements TokenRepo {
 
     @Override
     public PersistentRememberMeToken getTokenForSeries(String series) {
-        DBObject object = auth().findOne(new BasicDBObject(AuthenticationToken.SERIES, series));
+        DBObject object = auth().findOne(mob(AuthenticationToken.SERIES, series));
         if (object == null) {
             log.warn("unable to get token for series " + series);
             return null;
@@ -116,7 +121,7 @@ public class TokenRepoImpl implements TokenRepo {
     @Override
     public void removeUserTokens(String email) {
         log.info("removing token  for" + email);
-        auth().remove(new BasicDBObject(AuthenticationToken.EMAIL, email));
+        auth().remove(mob(AuthenticationToken.EMAIL, email));
     }
 
     private class RegTokenImpl implements RegistrationToken {
@@ -153,7 +158,7 @@ public class TokenRepoImpl implements TokenRepo {
         private DBObject object;
 
         private AuthTokenImpl() {
-            object = new BasicDBObject();
+            object = mob();
         }
 
         private AuthTokenImpl(DBObject object) {
@@ -211,8 +216,8 @@ public class TokenRepoImpl implements TokenRepo {
 
     private DBCollection auth() {
         DBCollection coll = db().getCollection(AUTHENTICATION_COLLECTION);
-        coll.ensureIndex(new BasicDBObject(AuthenticationToken.SERIES, 1));
-        coll.ensureIndex(new BasicDBObject(AuthenticationToken.EMAIL, 1));
+        coll.ensureIndex(mob(AuthenticationToken.SERIES, 1));
+        coll.ensureIndex(mob(AuthenticationToken.EMAIL, 1));
         return coll;
     }
 

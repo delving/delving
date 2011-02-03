@@ -88,5 +88,4 @@ public interface StaticRepo {
     String HIDDEN = "hidden";
     String DEFAULT_LANGUAGE = "en";
     String MONGO_ID = "_id";
-
 }
