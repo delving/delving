@@ -278,7 +278,13 @@ class DataSetImpl implements MetaRepo.DataSet {
         if (rawRecord != null) {
             MetaRepo.Mapping mapping = getMapping(prefix, accessKey);
             List<RecordImpl> list = new ArrayList<RecordImpl>();
-            list.add(new RecordImpl(records().findOne(object), getDetails().getMetadataFormat().getPrefix(), getNamespaces()));
+            RecordImpl rec = new RecordImpl(records(), rawRecord, getDetails().getMetadataFormat().getPrefix(), getNamespaces());
+            System.out.println("Fingerprint {");
+            for (Map.Entry<String, Integer> entry : rec.getFingerprint().entrySet()) {
+                System.out.println("   " + entry.getKey() + " => " + entry.getValue());
+            }
+            System.out.println("}");
+            list.add(rec);
             if (mapping != null) {
                 Map<String, String> namespaces = new TreeMap<String, String>();
                 DBObject namespacesObject = getNamespaces();
@@ -299,7 +305,7 @@ class DataSetImpl implements MetaRepo.DataSet {
         DBCursor cursor = createCursor(from, afterId, until).limit(count).sort(mob(MetaRepo.MONGO_ID, 1));
         while (cursor.hasNext()) {
             DBObject object = cursor.next();
-            list.add(new RecordImpl(object, getDetails().getMetadataFormat().getPrefix(), getNamespaces()));
+            list.add(new RecordImpl(records(), object, getDetails().getMetadataFormat().getPrefix(), getNamespaces()));
         }
         if (list.isEmpty()) {
             return null;

@@ -251,6 +251,8 @@ public interface MetaRepo {
 
         DBObject getHash();
 
+        Map<String,Integer> getFingerprint();
+
         String getXmlString() throws MappingNotFoundException;
 
         String getXmlString(String metadataPrefix) throws MappingNotFoundException;

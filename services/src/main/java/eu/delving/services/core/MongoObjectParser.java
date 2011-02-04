@@ -98,22 +98,20 @@ public class MongoObjectParser {
                         if (prefix != null && !prefix.isEmpty()) {
                             namespaces.put(prefix, uri);
                         }
-                        xmlBuffer.append("<").append(input.getPrefixedName());
-                        if (input.getAttributeCount() > 0) {
-                            for (int walk = 0; walk < input.getAttributeCount(); walk++) {
-                                QName qName = input.getAttributeName(walk);
-                                String attrName = qName.getLocalPart();
-//                                if (!qName.getPrefix().isEmpty()) {
-//                                    namespaces.put(qName.getPrefix(), input.getNamespaceURI());
-//                                    attrName = qName.getPrefix() + ":" + qName.getLocalPart();
-//                                }
-                                if (qName.getPrefix().isEmpty()) { // only accept unprefixed attributes
-                                    String value = input.getAttributeValue(walk);
-                                    xmlBuffer.append(' ').append(attrName).append("=\"").append(value).append("\"");
+                        if (!path.equals(recordRoot)) {
+                            xmlBuffer.append("<").append(input.getPrefixedName());
+                            if (input.getAttributeCount() > 0) {
+                                for (int walk = 0; walk < input.getAttributeCount(); walk++) {
+                                    QName qName = input.getAttributeName(walk);
+                                    String attrName = qName.getLocalPart();
+                                    if (qName.getPrefix().isEmpty()) { // only accept unprefixed attributes
+                                        String value = input.getAttributeValue(walk);
+                                        xmlBuffer.append(' ').append(attrName).append("=\"").append(value).append("\"");
+                                    }
                                 }
                             }
+                            xmlBuffer.append(">");
                         }
-                        xmlBuffer.append(">");
                     }
                     break;
                 case XMLEvent.CHARACTERS:
