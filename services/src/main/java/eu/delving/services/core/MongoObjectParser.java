@@ -1,6 +1,7 @@
 package eu.delving.services.core;
 
-import com.mongodb.BasicDBList;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.TreeMultimap;
 import com.mongodb.DBObject;
 import eu.delving.metadata.MetadataNamespace;
 import eu.delving.metadata.Path;
@@ -16,8 +17,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import static eu.delving.core.util.MongoObject.mob;
 
@@ -32,6 +31,7 @@ public class MongoObjectParser {
     private Path recordRoot, uniqueElement;
     private String metadataPrefix;
     private Path path = new Path();
+    private Path pathWithinRecord = new Path();
     private DBObject namespaces = mob();
     private Hasher hasher = new Hasher();
 
@@ -49,16 +49,31 @@ public class MongoObjectParser {
         this.namespaces.put(metadataPrefix, namespaceUri);
     }
 
+    public static class Record {
+        DBObject mob = mob();
+        Multimap<String, String> valueMap = TreeMultimap.create();
+
+        public Record() {
+        }
+
+        public DBObject getMob() {
+            return mob;
+        }
+
+        public Multimap<String, String> getValueMap() {
+            return valueMap;
+        }
+    }
+
     @SuppressWarnings("unchecked")
-    public synchronized DBObject nextRecord() throws XMLStreamException, IOException {
-        List<String> values = new ArrayList<String>();
-        DBObject record = null;
+    public Record nextRecord() throws XMLStreamException, IOException {
+        Record record = null;
         StringBuilder xmlBuffer = new StringBuilder();
         StringBuilder valueBuffer = new StringBuilder();
         StringBuilder uniqueBuffer = null;
         String uniqueContent = null;
-        boolean withinRecord = false;
-        while (record == null) {
+        boolean building = true;
+        while (building) {
             switch (input.getEventType()) {
                 case XMLEvent.START_DOCUMENT:
                     break;
@@ -67,12 +82,11 @@ public class MongoObjectParser {
                     break;
                 case XMLEvent.START_ELEMENT:
                     path.push(Tag.create(input.getName().getPrefix(), input.getName().getLocalPart()));
-                    if (!withinRecord) {
-                        if (path.equals(recordRoot)) {
-                            withinRecord = true;
-                        }
+                    if (record == null && path.equals(recordRoot)) {
+                        record = new Record();
                     }
-                    else {
+                    if (record != null) {
+                        pathWithinRecord.push(path.peek());
                         if (valueBuffer.length() > 0) {
                             throw new IOException("Content and subtags not permitted");
                         }
@@ -104,7 +118,7 @@ public class MongoObjectParser {
                     break;
                 case XMLEvent.CHARACTERS:
                 case XMLEvent.CDATA:
-                    if (withinRecord) {
+                    if (record != null) {
                         String text = input.getText().trim();
                         if (!text.isEmpty()) {
                             for (int walk = 0; walk < text.length(); walk++) { // return predeclared entities to escapes
@@ -136,16 +150,15 @@ public class MongoObjectParser {
                     }
                     break;
                 case XMLEvent.END_ELEMENT:
-                    if (withinRecord) {
+                    if (record != null) {
                         if (path.equals(recordRoot)) {
-                            withinRecord = false;
-                            record = mob(metadataPrefix, xmlBuffer.toString());
+                            record.getMob().put(metadataPrefix, xmlBuffer.toString());
                             if (uniqueContent != null) { // todo: should it not always be there?  should we not save if it isn't?
-                                record.put(MetaRepo.Record.UNIQUE, uniqueContent);
+                                record.getMob().put(MetaRepo.Record.UNIQUE, uniqueContent);
                             }
-                            record.put(MetaRepo.Record.HASH, createHashList(values));
-                            values.clear();
+                            record.getMob().put(MetaRepo.Record.HASH, createHashToPathMap(record.getValueMap()));
                             xmlBuffer.setLength(0);
+                            building = false;
                         }
                         else {
                             if (valueBuffer.length() > 0) {
@@ -158,11 +171,12 @@ public class MongoObjectParser {
                                 }
                                 String value = valueBuffer.toString();
                                 xmlBuffer.append(value);
-                                values.add(value);
+                                record.getValueMap().put(pathWithinRecord.toString(), value);
                             }
                             xmlBuffer.append("</").append(input.getPrefixedName()).append(">\n");
                             valueBuffer.setLength(0);
                         }
+                        pathWithinRecord.pop();
                     }
                     path.pop();
                     break;
@@ -177,16 +191,20 @@ public class MongoObjectParser {
         return record;
     }
 
-    public DBObject getNamespaces() {
-        return namespaces;
+    private Object createHashToPathMap(Multimap<String, String> valueMap) {
+        DBObject mob = mob();
+        for (String path : valueMap.keys()) {
+            int index = 0;
+            for (String value : valueMap.get(path)) {
+                mob.put(hasher.getHashString(value), index == 0 ? path : String.format("%s_%d", path, index++));
+                index++;
+            }
+        }
+        return mob;
     }
 
-    public BasicDBList createHashList(List<String> values) {
-        BasicDBList hashes = new BasicDBList();
-        for (String value : values) {
-            hashes.add(hasher.getHash(value));
-        }
-        return hashes;
+    public DBObject getNamespaces() {
+        return namespaces;
     }
 
     public void close() {
@@ -197,4 +215,5 @@ public class MongoObjectParser {
             e.printStackTrace(); // should never happen
         }
     }
+
 }

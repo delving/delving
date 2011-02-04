@@ -75,7 +75,7 @@ class RecordImpl implements MetaRepo.Record {
     }
 
     @Override
-    public DBObject getHashList() {
+    public DBObject getHash() {
         return (DBObject) object.get(HASH);
     }
 

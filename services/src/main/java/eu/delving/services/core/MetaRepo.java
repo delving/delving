@@ -249,7 +249,7 @@ public interface MetaRepo {
 
         DBObject getNamespaces();
 
-        DBObject getHashList();
+        DBObject getHash();
 
         String getXmlString() throws MappingNotFoundException;
 

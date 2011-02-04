@@ -116,17 +116,17 @@ class DataSetImpl implements MetaRepo.DataSet {
                     details.getMetadataFormat().getPrefix(),
                     details.getMetadataFormat().getNamespace()
             );
-            DBObject record;
+            MongoObjectParser.Record record;
             Date modified = new Date();
             object.put(NAMESPACES, parser.getNamespaces());
             while ((record = parser.nextRecord()) != null) {
-                record.put(MetaRepo.Record.MODIFIED, modified);
+                record.getMob().put(MetaRepo.Record.MODIFIED, modified);
                 records().update( // just match unique values for now
                         mob(
                                 MetaRepo.Record.UNIQUE,
-                                record.get(MetaRepo.Record.UNIQUE)
+                                record.getMob().get(MetaRepo.Record.UNIQUE)
                         ),
-                        record,
+                        record.getMob(),
                         true,
                         false
                 );
