@@ -106,9 +106,8 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
 
     val response : Elem = 
       <results xmlns:icn="http://www.icn.nl/" xmlns:europeana="http://www.europeana.eu/schemas/ese/" xmlns:dc="http://purl.org/dc/elements/1.1/"
-               xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"
                xmlns:raw="http://delving.eu/namespaces/raw" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:ese="http://www.europeana.eu/schemas/ese/"
-               xmlns:abm="http://to_be_decided/abm/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+               xmlns:abm="http://to_be_decided/abm/">
         <query numFound={pagination.getNumFound.toString}>
             <terms>{searchTerms}</terms>
             <breadCrumbs>
