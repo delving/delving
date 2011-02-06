@@ -874,7 +874,7 @@
     <a class="<#if overlayActive>overlay</#if>"
        href="/${portalName}/redirect.html?shownBy=${overlayUrl?url('utf-8')}&amp;provider=${qfprovider}&amp;id=${result.fullDoc.id}.jpg"
        target="_blank"
-       title="<@spring.message '_action.view.in.original.context' /> <@spring.message '_action.OpenInNewWindow'/>"
+       title="${result.fullDoc.getAsString("dc_title")}"
     >
     <#if useCache="true">
         <img src="${cacheUrl}id=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
