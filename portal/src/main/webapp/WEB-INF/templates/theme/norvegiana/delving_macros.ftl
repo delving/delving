@@ -474,12 +474,12 @@
                             <#-- DO NOT ENCODE link.url. This is already done in the java code. Encoding it will break functionality !!!  -->
                                 <#if !link.remove = true>
                                     <input type="checkbox" value="?query=${query?html}${facetlink}&amp;${defaultParams}"/>
-                                    <a href="?query=${query?html}${facetlink?html}&amp;${defaultParams}" title="${link.value}">
+                                    <a href="?query=${query?html}${facetlink}&amp;${defaultParams}" title="${link.value}">
                                         <@stringLimiter "${link.value}" "25"/><span>(${link.count})</span>
                                     </a>
                                 <#else>
                                     <input type="checkbox" checked="checked" value="?query=${query?html}${facetlink}&amp;${defaultParams}"/>
-                                     <a href="?query=${query?html}${facetlink?html}&amp;${defaultParams}" title="${link.value}">
+                                     <a href="?query=${query?html}${facetlink}&amp;${defaultParams}" title="${link.value}">
                                         <@stringLimiter "${link.value}" "25"/>(<span>${link.count})</span>
                                     </a>
                                 </#if>
