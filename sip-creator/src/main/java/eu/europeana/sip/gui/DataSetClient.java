@@ -184,7 +184,7 @@ public class DataSetClient {
             final int totalBlocks = (int) (file.length() / BLOCK_SIZE);
             progressListener.setTotal(totalBlocks);
             try {
-                file = Hasher.hashFile(file);
+                file = Hasher.ensureFileHashed(file);
                 log.info("Uploading " + file);
                 final DataSetResponse response = uploadFile();
                 boolean success = response != null && response.getResponseCode() == DataSetResponseCode.THANK_YOU;

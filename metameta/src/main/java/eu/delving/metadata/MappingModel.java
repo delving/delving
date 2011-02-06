@@ -45,14 +45,20 @@ public class MappingModel {
     }
 
     public void setFact(String path, String value) {
-        if (recordMapping == null) return;
-        if (value == null) {
-            recordMapping.facts.remove(path);
+        if (recordMapping != null) {
+            boolean changed = false;
+            if (value == null) {
+                changed = recordMapping.facts.containsKey(path);
+                recordMapping.facts.remove(path);
+            }
+            else {
+                changed = recordMapping.facts.containsKey(path) && !recordMapping.facts.get(path).equals(value);
+                recordMapping.facts.put(path, value);
+            }
+            if (changed) {
+                fireChangeEvent();
+            }
         }
-        else {
-            recordMapping.facts.put(path, value);
-        }
-        fireChangeEvent();
     }
 
     public void setMapping(String path, FieldMapping fieldMapping) {

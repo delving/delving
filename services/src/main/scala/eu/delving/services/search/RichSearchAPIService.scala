@@ -27,8 +27,6 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
   private val log : Logger = Logger.getLogger("RichSearchAPIService")
 
   def parseRequest() : String = {
-    httpResponse setCharacterEncoding ("utf-8")
-
     val format = params.getOrElse("format", Array[String]("default")).head
 
     val response = try {
@@ -43,6 +41,7 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
       case ex : Exception =>
         errorResponse(errorMessage = ex.getLocalizedMessage)
     }
+    httpResponse setCharacterEncoding ("UTF-8")
     response
   }
 

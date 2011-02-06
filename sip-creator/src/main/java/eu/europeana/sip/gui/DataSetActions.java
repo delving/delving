@@ -308,7 +308,7 @@ public class DataSetActions {
         if (entry.getDataSetInfo() == null) {
             return fileType == FileType.FACTS;
         }
-        String hash = Hasher.getHash(file.getName());
+        String hash = Hasher.extractHashFromFileName(file.getName());
         return !entry.getDataSetInfo().hasHash(hash);
     }
 

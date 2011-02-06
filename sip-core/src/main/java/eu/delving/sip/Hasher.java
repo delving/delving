@@ -24,6 +24,7 @@ package eu.delving.sip;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -38,7 +39,7 @@ public class Hasher {
     private static final int BLOCK_SIZE = 4096;
     private MessageDigest messageDigest;
 
-    public static String getName(File file) {
+    public static String extractFileName(File file) {
         String fileName = file.getName();
         int hashSeparator = fileName.indexOf(SEPARATOR);
         if (hashSeparator > 0) {
@@ -47,11 +48,11 @@ public class Hasher {
         return fileName;
     }
 
-    public static String getHash(File file) {
-        return getHash(file.getName());
+    public static String extractHash(File file) {
+        return extractHashFromFileName(file.getName());
     }
 
-    public static String getHash(String fileName) {
+    public static String extractHashFromFileName(String fileName) {
         int hashSeparator = fileName.indexOf(SEPARATOR);
         if (hashSeparator > 0) {
             return fileName.substring(0, hashSeparator);
@@ -61,14 +62,14 @@ public class Hasher {
         }
     }
 
-    public static File hashFile(File file) throws FileStoreException {
+    public static File ensureFileHashed(File file) throws FileStoreException {
         if (file.getName().contains(SEPARATOR)) {
             return file;
         }
         else {
             Hasher hasher = new Hasher();
             hasher.update(file);
-            File hashedFile = new File(file.getParentFile(), hasher.getHash() + SEPARATOR + file.getName());
+            File hashedFile = new File(file.getParentFile(), hasher.getHashString() + SEPARATOR + file.getName());
             if (!file.renameTo(hashedFile)) {
                 throw new FileStoreException(String.format("Unable to rename %s to %s", file.getAbsolutePath(), hashedFile.getAbsolutePath()));
             }
@@ -104,12 +105,30 @@ public class Hasher {
         }
     }
 
-    public String getHash() {
+    public byte [] getHash(String value) {
+        try {
+            return messageDigest.digest(value.getBytes("UTF-8"));
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getHashString(String value) {
+        try {
+            return toHexadecimal(messageDigest.digest(value.getBytes("UTF-8")));
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getHashString() {
         return toHexadecimal(messageDigest.digest());
     }
 
     public String toString() {
-        return getHash();
+        return getHashString();
     }
 
     static final String HEXES = "0123456789ABCDEF";

@@ -293,7 +293,7 @@ public class FileStoreImpl implements FileStore {
             }
             File statisticsFile = new File(directory, STATISTICS_FILE_NAME);
             if (statisticsFile.exists()) {
-                if (statisticsFile.delete()) {
+                if (!statisticsFile.delete()) {
                     throw new FileStoreException("Unable to delete statistics file.");
                 }
             }
@@ -415,7 +415,7 @@ public class FileStoreImpl implements FileStore {
         public List<String> getMappingPrefixes() {
             List<String> prefixes = new ArrayList<String>();
             for (File mappingFile : findMappingFiles(directory)) {
-                String name = Hasher.getName(mappingFile);
+                String name = Hasher.extractFileName(mappingFile);
                 name = name.substring(FileStore.MAPPING_FILE_PREFIX.length());
                 name = name.substring(0, name.length() - FileStore.MAPPING_FILE_SUFFIX.length());
                 prefixes.add(name);
@@ -537,7 +537,7 @@ public class FileStoreImpl implements FileStore {
                 return files[0];
             default:
                 for (File file : files) {
-                    if (Hasher.getHash(file) == null) {
+                    if (Hasher.extractHash(file) == null) {
                         return file;
                     }
                 }
@@ -554,7 +554,7 @@ public class FileStoreImpl implements FileStore {
                 return files[0];
             default:
                 for (File file : files) {
-                    if (Hasher.getHash(file) == null) {
+                    if (Hasher.extractHash(file) == null) {
                         return file;
                     }
                 }
@@ -603,27 +603,27 @@ public class FileStoreImpl implements FileStore {
     private class FactsFileFilter implements FileFilter {
         @Override
         public boolean accept(File file) {
-            return file.isFile() && FACTS_FILE_NAME.equals(Hasher.getName(file));
+            return file.isFile() && FACTS_FILE_NAME.equals(Hasher.extractFileName(file));
         }
     }
 
     private class SourceFileFilter implements FileFilter {
         @Override
         public boolean accept(File file) {
-            return file.isFile() && SOURCE_FILE_NAME.equals(Hasher.getName(file));
+            return file.isFile() && SOURCE_FILE_NAME.equals(Hasher.extractFileName(file));
         }
     }
 
     private class MappingFileFilter implements FileFilter {
         @Override
         public boolean accept(File file) {
-            String name = Hasher.getName(file);
+            String name = Hasher.extractFileName(file);
             return file.isFile() && name.startsWith(MAPPING_FILE_PREFIX) && name.endsWith(MAPPING_FILE_SUFFIX);
         }
     }
 
     private String getMetadataPrefix(File file) {
-        String name = Hasher.getName(file);
+        String name = Hasher.extractFileName(file);
         if (name.startsWith(MAPPING_FILE_PREFIX) && name.endsWith(MAPPING_FILE_SUFFIX)) {
             name = name.substring(MAPPING_FILE_PREFIX.length());
             name = name.substring(0, name.length() - MAPPING_FILE_SUFFIX.length());

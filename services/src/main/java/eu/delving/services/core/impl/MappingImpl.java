@@ -92,7 +92,7 @@ class MappingImpl implements MetaRepo.Mapping, MappingInternal, Comparable<MetaR
             while (walk.hasNext()) {
                 MetaRepo.Record record = walk.next();
                 try {
-                    MetadataRecord metadataRecord = factory.fromXml(record.getXmlString(dataSet.getDetails().getMetadataFormat().getPrefix()));
+                    MetadataRecord metadataRecord = factory.fromXml(record.getXmlString());
                     String recordString = mappingRunner.runMapping(metadataRecord);
                     List<String> problems = new ArrayList<String>();
                     String validated = recordValidator.validateRecord(recordString, problems);

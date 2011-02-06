@@ -76,38 +76,55 @@ public interface MetaRepo {
         String getSpec();
 
         boolean hasDetails();
+
         Details createDetails();
+
         Details getDetails();
+
         void setFactsHash(String sourceHash);
+
         DBObject getNamespaces();
 
         DataSetState getState(boolean fresh);
+
         String getErrorMessage();
+
         void setState(DataSetState dataSetState);
+
         void setErrorState(String message);
 
         void parseRecords(InputStream inputStream) throws RecordParseException;
+
         void setSourceHash(String hash);
 
         void setMapping(RecordMapping recordMapping, boolean accessKeyRequired);
+
         void setMappingHash(String metadataPrefix, String hash);
 
         int getRecordsIndexed();
+
         void setRecordsIndexed(int count);
+
         void incrementRecordsIndexed(int increment);
 
-        Map<String,Mapping> mappings();
+        Map<String, Mapping> mappings();
+
         int getRecordCount();
+
         Record getRecord(ObjectId id, String metadataPrefix, String accessKey) throws MappingNotFoundException, AccessKeyException;
 
         interface RecordFetch {
             List<? extends Record> getRecords();
+
             ObjectId getAfterId();
         }
+
         RecordFetch getRecords(String prefix, int count, Date from, ObjectId afterId, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException;
 
         List<String> getHashes();
+
         void save();
+
         void delete();
 
         String SPEC = "spec";
@@ -124,15 +141,25 @@ public interface MetaRepo {
 
     public interface Details {
         String getName();
+
         void setName(String value);
+
         String getProviderName();
+
         void setProviderName(String value);
+
         String getDescription();
+
         void setDescription(String value);
+
         Path getRecordRoot();
+
         void setRecordRoot(Path path);
+
         Path getUniqueElement();
+
         void setUniqueElement(Path path);
+
         MetadataFormat getMetadataFormat();
 
         String NAME = "name";
@@ -146,21 +173,37 @@ public interface MetaRepo {
     public interface HarvestStep {
 
         ObjectId getId();
+
         boolean isFirst();
+
         Date getExpiration();
+
         int getListSize();
+
         Runnable createRecordFetcher(DataSet dataSet, String key);
+
         int getCursor();
+
         int getRecordCount();
+
         List<? extends Record> getRecords();
+
         PmhRequest getPmhRequest();
+
         DBObject getNamespaces();
+
         boolean hasNext();
+
         String nextResumptionToken();
+
         ObjectId getAfterId();
+
         ObjectId getNextId();
+
         String getErrorMessage();
+
         void save();
+
         void delete();
 
         String FIRST = "first";
@@ -176,10 +219,15 @@ public interface MetaRepo {
 
     public interface PmhRequest {
         PmhVerb getVerb();
+
         String getSet();
+
         Date getFrom();
+
         Date getUntil();
+
         String getMetadataPrefix();
+
         String getIdentifier(); // Only used GetRecord
 
         String VERB = "verb";
@@ -192,24 +240,38 @@ public interface MetaRepo {
 
     public interface Record {
         ObjectId getId();
+
         String getUnique();
+
         Date getModifiedDate();
+
         boolean isDeleted();
+
         DBObject getNamespaces();
+
+        DBObject getHash();
+
+        Map<String,Integer> getFingerprint();
+
         String getXmlString() throws MappingNotFoundException;
+
         String getXmlString(String metadataPrefix) throws MappingNotFoundException;
 
-        String MODIFIED = "mod";
+        String MODIFIED = "modified";
+        String DELETED = "deleted";
         String UNIQUE = "uniq";
+        String HASH = "hash";
     }
 
     public interface PmhSet {
         String getSetSpec();
+
         String getSetName();
     }
 
     public interface Mapping {
         MetadataFormat getMetadataFormat();
+
         RecordMapping getRecordMapping();
 
         String RECORD_MAPPING = "recordMapping";
@@ -219,20 +281,31 @@ public interface MetaRepo {
 
     public interface MetaConfig {
         String getRepositoryName();
+
         String getAdminEmail();
+
         String getEarliestDateStamp();
+
         String getRepositoryIdentifier();
+
         String getSampleIdentifier();
     }
 
     public interface MetadataFormat {
         String getPrefix();
+
         void setPrefix(String value);
+
         String getSchema();
+
         void setSchema(String value);
+
         String getNamespace();
+
         void setNamespace(String value);
+
         boolean isAccessKeyRequired();
+
         void setAccessKeyRequired(boolean required);
 
         String PREFIX = "prefix";

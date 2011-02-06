@@ -21,7 +21,6 @@
 
 package eu.delving.services.core.impl;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
@@ -42,6 +41,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import static eu.delving.core.util.MongoObject.mob;
 
 /**
  * Implementing the data set interface
@@ -79,7 +80,7 @@ class DataSetImpl implements MetaRepo.DataSet {
     @Override
     public DataSetState getState(boolean fresh) {
         if (fresh) {
-            object = implFactory.dataSets().findOne(new BasicDBObject("_id", object.get("_id")));
+            object = implFactory.dataSets().findOne(mob("_id", object.get("_id")));
         }
         return DataSetState.get((String) object.get(DATA_SET_STATE));
     }
@@ -103,7 +104,6 @@ class DataSetImpl implements MetaRepo.DataSet {
 
     @Override
     public void parseRecords(InputStream inputStream) throws RecordParseException {
-        records().drop();
         implFactory.removeFirstHarvestSteps(getSpec());
         object.put(SOURCE_HASH, "");
         save();
@@ -116,11 +116,35 @@ class DataSetImpl implements MetaRepo.DataSet {
                     details.getMetadataFormat().getPrefix(),
                     details.getMetadataFormat().getNamespace()
             );
-            DBObject record;
-            while ((record = parser.nextRecord()) != null) {
-                records().insert(record);
-            }
+            MongoObjectParser.Record record;
+            Date modified = new Date();
             object.put(NAMESPACES, parser.getNamespaces());
+            while ((record = parser.nextRecord()) != null) {
+                record.getMob().put(MetaRepo.Record.MODIFIED, modified);
+                records().update( // just match unique values for now
+                        mob(
+                                MetaRepo.Record.UNIQUE,
+                                record.getMob().get(MetaRepo.Record.UNIQUE)
+                        ),
+                        record.getMob(),
+                        true,
+                        false
+                );
+            }
+            parser.close();
+            // mark records unmodified by above loop as deleted
+            records().update(
+                    mob(
+                            MetaRepo.Record.MODIFIED,
+                            mob("$lt", modified)
+                    ),
+                    mob(
+                            "$set",
+                            mob(MetaRepo.Record.DELETED, true)
+                    ),
+                    false,
+                    true
+            );
         }
         catch (Exception e) {
             throw new RecordParseException("Unable to parse records", e);
@@ -133,8 +157,7 @@ class DataSetImpl implements MetaRepo.DataSet {
     public void setMapping(RecordMapping recordMapping, boolean accessKeyRequired) {
         DBObject mappings = (DBObject) object.get(MAPPINGS);
         if (mappings == null) {
-            mappings = new BasicDBObject();
-            object.put(MAPPINGS, mappings);
+            mappings = mob(MAPPINGS, mappings);
         }
         MetadataNamespace mappedNamespace = null;
         for (MetadataNamespace namespace : MetadataNamespace.values()) {
@@ -147,16 +170,20 @@ class DataSetImpl implements MetaRepo.DataSet {
             throw new MetaRepoSystemException(String.format("Namespace prefix %s not recognized", recordMapping.getPrefix()));
         }
         implFactory.removeFirstHarvestSteps(getSpec());
-        DBObject format = new BasicDBObject();
-        format.put(MetaRepo.MetadataFormat.PREFIX, mappedNamespace.getPrefix());
-        format.put(MetaRepo.MetadataFormat.NAMESPACE, mappedNamespace.getUri());
-        format.put(MetaRepo.MetadataFormat.SCHEMA, mappedNamespace.getSchema());
-        format.put(MetaRepo.MetadataFormat.ACCESS_KEY_REQUIRED, accessKeyRequired);
-        DBObject mapping = new BasicDBObject();
-        mapping.put(MetaRepo.Mapping.FORMAT, format);
         String xml = RecordMapping.toXml(recordMapping);
-        mapping.put(MetaRepo.Mapping.RECORD_MAPPING, xml);
-        mappings.put(mappedNamespace.getPrefix(), mapping);
+        mappings.put(
+                mappedNamespace.getPrefix(),
+                mob(
+                        MetaRepo.Mapping.FORMAT,
+                        mob(
+                                MetaRepo.MetadataFormat.PREFIX, mappedNamespace.getPrefix(),
+                                MetaRepo.MetadataFormat.NAMESPACE, mappedNamespace.getUri(),
+                                MetaRepo.MetadataFormat.SCHEMA, mappedNamespace.getSchema(),
+                                MetaRepo.MetadataFormat.ACCESS_KEY_REQUIRED, accessKeyRequired
+                        ),
+                        MetaRepo.Mapping.RECORD_MAPPING, xml
+                )
+        );
         save();
     }
 
@@ -192,13 +219,13 @@ class DataSetImpl implements MetaRepo.DataSet {
     @Override
     public void incrementRecordsIndexed(int increment) {
         implFactory.dataSets().update(
-                new BasicDBObject(
+                mob(
                         MetaRepo.DataSet.SPEC,
                         getSpec()
                 ),
-                new BasicDBObject(
+                mob(
                         "$inc",
-                        new BasicDBObject(
+                        mob(
                                 RECORDS_INDEXED,
                                 increment
                         )
@@ -214,9 +241,9 @@ class DataSetImpl implements MetaRepo.DataSet {
 
     @Override
     public MetaRepo.Details createDetails() {
-        DBObject detailsObject = new BasicDBObject();
-        object.put(DETAILS, detailsObject);
-        return new DetailsImpl(detailsObject);
+        DBObject details = mob();
+        object.put(DETAILS, details);
+        return new DetailsImpl(details);
     }
 
     @Override
@@ -247,12 +274,17 @@ class DataSetImpl implements MetaRepo.DataSet {
 
     @Override
     public MetaRepo.Record getRecord(ObjectId id, String prefix, String accessKey) throws MappingNotFoundException, AccessKeyException { // if prefix is passed in, mapping can be done
-        DBObject object = new BasicDBObject(MetaRepo.MONGO_ID, id);
-        DBObject rawRecord = records().findOne(object);
+        DBObject rawRecord = records().findOne(mob(MetaRepo.MONGO_ID, id));
         if (rawRecord != null) {
             MetaRepo.Mapping mapping = getMapping(prefix, accessKey);
             List<RecordImpl> list = new ArrayList<RecordImpl>();
-            list.add(new RecordImpl(records().findOne(object), getDetails().getMetadataFormat().getPrefix(), getNamespaces()));
+            RecordImpl rec = new RecordImpl(records(), rawRecord, getDetails().getMetadataFormat().getPrefix(), getNamespaces());
+            System.out.println("Fingerprint {");
+            for (Map.Entry<String, Integer> entry : rec.getFingerprint().entrySet()) {
+                System.out.println("   " + entry.getKey() + " => " + entry.getValue());
+            }
+            System.out.println("}");
+            list.add(rec);
             if (mapping != null) {
                 Map<String, String> namespaces = new TreeMap<String, String>();
                 DBObject namespacesObject = getNamespaces();
@@ -270,16 +302,16 @@ class DataSetImpl implements MetaRepo.DataSet {
     public RecordFetch getRecords(String prefix, int count, Date from, ObjectId afterId, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException {
         MetaRepo.Mapping mapping = getMapping(prefix, accessKey);
         final List<RecordImpl> list = new ArrayList<RecordImpl>();
-        DBCursor cursor = createCursor(from, afterId, until).limit(count).sort(new BasicDBObject(MetaRepo.MONGO_ID, 1));
+        DBCursor cursor = createCursor(from, afterId, until).limit(count).sort(mob(MetaRepo.MONGO_ID, 1));
         while (cursor.hasNext()) {
             DBObject object = cursor.next();
-            list.add(new RecordImpl(object, getDetails().getMetadataFormat().getPrefix(), getNamespaces()));
+            list.add(new RecordImpl(records(), object, getDetails().getMetadataFormat().getPrefix(), getNamespaces()));
         }
         if (list.isEmpty()) {
             return null;
         }
         else {
-            final ObjectId nextAfterId = list.get(list.size()-1).getId();
+            final ObjectId nextAfterId = list.get(list.size() - 1).getId();
             if (mapping != null) {
                 Map<String, String> namespaces = new TreeMap<String, String>();
                 DBObject namespacesObject = (DBObject) object.get(NAMESPACES);
@@ -371,15 +403,15 @@ class DataSetImpl implements MetaRepo.DataSet {
     }
 
     private DBCursor createCursor(Date from, ObjectId afterId, Date until) {
-        DBObject query = new BasicDBObject();
+        DBObject query = mob();
         if (from != null) {
-            query.put(MetaRepo.Record.MODIFIED, new BasicDBObject("$gte", from));
+            query.put(MetaRepo.Record.MODIFIED, mob("$gte", from));
         }
         if (afterId != null) {
-            query.put(MetaRepo.MONGO_ID, new BasicDBObject("$gt", afterId));
+            query.put(MetaRepo.MONGO_ID, mob("$gt", afterId));
         }
         if (until != null) {
-            query.put(MetaRepo.Record.MODIFIED, new BasicDBObject("$lte", until));
+            query.put(MetaRepo.Record.MODIFIED, mob("$lte", until));
         }
         return records().find(query);
     }

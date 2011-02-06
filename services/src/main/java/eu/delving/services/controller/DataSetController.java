@@ -147,7 +147,7 @@ public class DataSetController {
             checkAccessKey(accessKey);
             FileType type = FileType.valueOf(fileType);
             log.info(String.format("accept type %s for %s: %s", type, dataSetSpec, fileName));
-            String hash = Hasher.getHash(fileName);
+            String hash = Hasher.extractHashFromFileName(fileName);
             if (hash == null) {
                 throw new RuntimeException("No hash available for file name " + fileName);
             }
