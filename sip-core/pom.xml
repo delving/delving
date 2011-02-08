@@ -64,7 +64,7 @@
         <name>Delving</name>
         <url>http://www.delving.eu</url>
     </organization>
-    
+
     <build>
         <plugins>
             <plugin>
@@ -83,6 +83,18 @@
             <groupId>eu.delving</groupId>
             <artifactId>metameta</artifactId>
             <version>0.1.7</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
