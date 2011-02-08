@@ -23,7 +23,6 @@ package eu.europeana.core.util.web;
 
 import eu.europeana.core.querymodel.query.EuropeanaQueryException;
 import eu.europeana.core.querymodel.query.QueryProblem;
-import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -136,7 +135,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
     }
 
     private ModelAndView ajaxFailure(HttpServletRequest request, HttpServletResponse response, Exception e) {
-        response.setStatus(HttpStatus.SC_NOT_FOUND);
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         ModelAndView page = ControllerUtil.createModelAndViewPage("xml/ajax");
         page.addObject("success", false);
         page.addObject("exception", getStackTrace(e));
