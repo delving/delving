@@ -157,7 +157,7 @@ class DataSetImpl implements MetaRepo.DataSet {
     public void setMapping(RecordMapping recordMapping, boolean accessKeyRequired) {
         DBObject mappings = (DBObject) object.get(MAPPINGS);
         if (mappings == null) {
-            mappings = mob(MAPPINGS, mappings);
+            object.put(MAPPINGS, mappings = mob());
         }
         MetadataNamespace mappedNamespace = null;
         for (MetadataNamespace namespace : MetadataNamespace.values()) {
