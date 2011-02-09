@@ -1,9 +1,14 @@
-package eu.delving.sip;
+package eu.delving.services;
 
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.MetadataModelImpl;
+import eu.delving.sip.FileStore;
+import eu.delving.sip.FileStoreException;
+import eu.delving.sip.FileStoreImpl;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 
 /**
@@ -29,8 +34,11 @@ public class MockFileStoreFactory {
             }
         }
         directory = new File(target, "file-store");
-        if (directory.exists()) {
-            delete(directory);
+        try {
+            FileUtils.deleteDirectory(directory);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
         }
         if (!directory.mkdirs()) {
             throw new RuntimeException("Unable to create directory " + directory.getAbsolutePath());
@@ -61,17 +69,11 @@ public class MockFileStoreFactory {
     }
 
     public void delete() {
-        delete(directory);
-    }
-
-    private void delete(File file) {
-        if (file.isDirectory()) {
-            for (File sub : file.listFiles()) {
-                delete(sub);
-            }
+        try {
+            FileUtils.deleteDirectory(directory);
         }
-        if (!file.delete()) {
-            throw new RuntimeException(String.format("Unable to delete %s", file.getAbsolutePath()));
+        catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

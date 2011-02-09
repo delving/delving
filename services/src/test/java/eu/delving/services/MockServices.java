@@ -21,10 +21,18 @@
 
 package eu.delving.services;
 
+import com.mongodb.DB;
+import com.mongodb.Mongo;
+import eu.delving.core.util.LaunchProperties;
 import eu.europeana.core.util.StarterUtil;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
+
+import java.io.File;
+import java.net.UnknownHostException;
+import java.util.Arrays;
 
 /**
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
@@ -32,15 +40,18 @@ import org.mortbay.jetty.webapp.WebAppContext;
 
 
 public class MockServices {
-
-    private static Server server = new Server(9999);
+    public static final int PORT = 9999;
+    private static Server server = new Server(PORT);
 
     public static void start() {
         try {
             String root = StarterUtil.getEuropeanaPath();
             System.setProperty("launch.properties", MockServices.class.getResource("/mock-launch.properties").getFile());
+            dropMongoDatabase();
             System.setProperty("solr.solr.home", root + "/core/src/test/solr/single-core");
-            System.setProperty("solr.data.dir", root + "/core/target/solrdata/mock_services");
+            String solrDataDir = root + "/core/target/solrdata/mock_services";
+            System.setProperty("solr.data.dir", solrDataDir);
+            FileUtils.deleteDirectory(new File(solrDataDir));
             server.addHandler(new WebAppContext(root + "/services/src/main/webapp", "/services"));
             server.addHandler(new WebAppContext(root + "/core/src/test/solr/solr-1.4.1.war", "/solr"));
             server.start();
@@ -48,6 +59,14 @@ public class MockServices {
         catch (Exception e) {
             throw new RuntimeException("Couldn't start server", e);
         }
+    }
+
+    private static void dropMongoDatabase() throws UnknownHostException {
+        LaunchProperties launchProperties = new LaunchProperties(Arrays.asList("services.mongo.dbName"));
+        String mongoName = launchProperties.getProperty("services.mongo.dbName");
+        Mongo mongo = new Mongo();
+        DB db = mongo.getDB(mongoName);
+        db.dropDatabase();
     }
 
     public static void stop() {

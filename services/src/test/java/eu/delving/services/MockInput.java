@@ -1,4 +1,4 @@
-package eu.delving.sip;
+package eu.delving.services;
 
 import java.io.File;
 import java.io.IOException;

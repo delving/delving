@@ -24,6 +24,7 @@ package eu.europeana.sip.gui;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.MetadataModelImpl;
 import eu.delving.sip.AppConfig;
+import eu.delving.sip.DataSetClient;
 import eu.delving.sip.DataSetInfo;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
@@ -117,7 +118,17 @@ public class SipCreatorGUI extends JFrame {
         });
         this.dataSetList = new JList(dataSetListModel);
         this.sipModel = new SipModel(fileStore, metadataModel, groovyCodeResource, new PopupExceptionHandler());
-        this.dataSetClient = new DataSetClient(sipModel, new DataSetClient.Listener() {
+        this.dataSetClient = new DataSetClient(new DataSetClient.Context() {
+
+            @Override
+            public String getServerUrl() {
+                return sipModel.getAppConfigModel().getServerUrl();
+            }
+
+            @Override
+            public String getAccessKey() {
+                return sipModel.getAppConfigModel().getAccessKey();
+            }
 
             @Override
             public void setInfo(DataSetInfo dataSetInfo) {
@@ -139,6 +150,11 @@ public class SipCreatorGUI extends JFrame {
                 else {
                     log.warn("received empty list from the server");
                 }
+            }
+
+            @Override
+            public void tellUser(String message) {
+                sipModel.getUserNotifier().tellUser(message);
             }
 
             @Override

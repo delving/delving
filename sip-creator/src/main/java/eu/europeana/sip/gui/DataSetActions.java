@@ -21,6 +21,7 @@
 
 package eu.europeana.sip.gui;
 
+import eu.delving.sip.DataSetClient;
 import eu.delving.sip.DataSetCommand;
 import eu.delving.sip.DataSetInfo;
 import eu.delving.sip.DataSetState;
@@ -329,7 +330,7 @@ public class DataSetActions {
                     }
                 };
                 sipModel.setDataSetStore(store);
-                dataSetClient.uploadFile(FileType.FACTS, store.getFactsFile(), progressListener);
+                dataSetClient.uploadFile(FileType.FACTS, store.getSpec(), store.getFactsFile(), progressListener);
             }
 
             @Override
@@ -353,7 +354,7 @@ public class DataSetActions {
                     }
                 };
                 sipModel.setDataSetStore(store);
-                dataSetClient.uploadFile(FileType.SOURCE, store.getSourceFile(), progressListener);
+                dataSetClient.uploadFile(FileType.SOURCE, store.getSpec(), store.getSourceFile(), progressListener);
             }
 
             @Override
@@ -377,7 +378,7 @@ public class DataSetActions {
                     }
                 };
                 sipModel.setDataSetStore(store);
-                dataSetClient.uploadFile(FileType.MAPPING, store.getMappingFile(prefix), progressListener);
+                dataSetClient.uploadFile(FileType.MAPPING, store.getSpec(), store.getMappingFile(prefix), progressListener);
             }
 
             @Override
