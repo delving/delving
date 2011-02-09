@@ -27,25 +27,27 @@ package eu.delving.sip;
  */
 
 import com.ctc.wstx.stax.WstxInputFactory;
-import eu.delving.metadata.Path;
-import eu.delving.metadata.Tag;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.lang.time.DurationFormatUtils;
 import org.apache.log4j.Logger;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLEventFactory;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.events.Characters;
+import javax.xml.stream.events.EndElement;
+import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.transform.Source;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamSource;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -62,6 +64,8 @@ public class Harvester {
     private Executor executor = Executors.newSingleThreadExecutor();
     private HttpClient httpClient = new HttpClient();
     private XMLInputFactory inputFactory = new WstxInputFactory();
+    private XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+    private XMLEventFactory eventFactory = XMLEventFactory.newInstance();
     private List<Engine> engines = new CopyOnWriteArrayList<Engine>();
 
     public interface Harvest {
@@ -72,6 +76,8 @@ public class Harvester {
         String getSpec();
 
         OutputStream getOutputStream();
+
+        void success();
 
         void failure(Exception e);
     }
@@ -92,9 +98,18 @@ public class Harvester {
 
     public class Engine implements Runnable {
         private Harvest harvest;
+        private XMLEventWriter out;
 
         public Engine(Harvest harvest) {
             this.harvest = harvest;
+            try {
+                out = outputFactory.createXMLEventWriter(new OutputStreamWriter(harvest.getOutputStream(), "UTF-8"));
+                out.add(eventFactory.createStartDocument());
+                out.add(eventFactory.createStartElement("", "", "harvest"));
+            }
+            catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
 
         @Override
@@ -111,6 +126,7 @@ public class Harvester {
                 InputStream inputStream = method.getResponseBodyAsStream();
                 String resumptionToken = harvestXML(inputStream);
                 while (!resumptionToken.isEmpty()) {
+                    log.info("Resumption " + resumptionToken);
                     method = new GetMethod(String.format(
                             "%s?verb=ListRecords&resumptionToken=%s",
                             harvest.getUrl(),
@@ -120,99 +136,95 @@ public class Harvester {
                     inputStream = method.getResponseBodyAsStream();
                     resumptionToken = harvestXML(inputStream);
                 }
+                out.add(eventFactory.createEndElement("", "", "harvest"));
+                out.add(eventFactory.createEndDocument());
+                out.flush();
                 log.info("Finished harvest of " + harvest.getUrl());
+                harvest.success();
             }
             catch (Exception e) {
                 log.warn("Problem harvesting " + harvest.getUrl(), e);
                 log.warn("Exception: " + exceptionToErrorString(e));
+                harvest.failure(e);
             }
             finally {
                 engines.remove(this);
             }
         }
 
-        private String harvestXML(InputStream inputStream) throws TransformerException, XMLStreamException, IOException, HarvestException {
+        private String harvestXML(InputStream inputStream) throws XMLStreamException {
             Source source = new StreamSource(inputStream, "UTF-8");
-            XMLStreamReader xml = inputFactory.createXMLStreamReader(source);
-            String resumptionToken = "";
-            int recordCount = 0;
-            boolean isInMetadataBlock = false;
-            long startTime = System.currentTimeMillis();
-            Path path = new Path();
+            XMLEventReader reader = inputFactory.createXMLEventReader(source);
+            StringBuilder resumptionToken = null;
+            StringBuilder errorString = null;
+            boolean withinListRecords = false;
             while (true) {
-                switch (xml.getEventType()) {
-                    case XMLStreamConstants.START_ELEMENT:
-                        if (isErrorElement(xml)) {
-                            throw new HarvestException(xml.getElementText());
-                        }
-                        else if (isMetadataElement(xml)) {
-                            isInMetadataBlock = true;
-                        }
-                        else if (isResumptionToken(xml)) {
-                            resumptionToken = xml.getElementText();
-                        }
-                        else if (isRecordElement(xml) && isInMetadataBlock) {
-                            path.push(Tag.create(xml.getName().getPrefix(), xml.getName().getLocalPart()));
-                        }
-                        else {
-                            path.push(Tag.create(xml.getName().getPrefix(), xml.getName().getLocalPart()));
-                            String text = xml.getElementText();
-                            if (xml.isEndElement()) {
-                                path.pop();
-                            }
-                        }
-                        break;
-
-                    case XMLEvent.CHARACTERS:
-                    case XMLEvent.CDATA:
-                        break;
-
-                    case XMLStreamConstants.END_ELEMENT:
-                        if (isRecordElement(xml) && isInMetadataBlock) {
-                            isInMetadataBlock = false;
-                            if (recordCount > 0 && recordCount % 500 == 0) {
-                                log.info(String.format("imported %d records in %s", recordCount, DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - startTime)));
-                            }
-                            recordCount++;
-                            path.pop();
-                        }
-                        else if (isMetadataElement(xml)) {
-                            isInMetadataBlock = false;
-                        }
-                        path.pop();
-                        break;
-
-                    case XMLStreamConstants.END_DOCUMENT:
-                        log.info(String.format("Document ended, fetched %d records", recordCount));
-                        break;
+                XMLEvent event = reader.nextEvent();
+                if (withinListRecords) {
+                    out.add(event);
                 }
-                if (!xml.hasNext()) {
-                    break;
+                else {
+                    switch (event.getEventType()) {
+                        case XMLEvent.START_ELEMENT:
+                            StartElement startElement = event.asStartElement();
+                            if (isErrorElement(startElement.getName())) {
+                                errorString = new StringBuilder();
+                            }
+                            else if (isResumptionToken(startElement.getName())) {
+                                resumptionToken = new StringBuilder();
+                            }
+                            else if (isListRecords(startElement.getName())) {
+                                withinListRecords = true;
+                            }
+                            break;
+                        case XMLEvent.CHARACTERS:
+                            Characters characters = event.asCharacters();
+                            if (!characters.isIgnorableWhiteSpace()) {
+                                if (resumptionToken != null) {
+                                    resumptionToken.append(characters.getData());
+                                }
+                                if (errorString != null) {
+                                    errorString.append(characters.getData());
+                                }
+                            }
+                            break;
+                        case XMLEvent.END_ELEMENT:
+                            EndElement endElement = event.asEndElement();
+                            if (isErrorElement(endElement.getName())) {
+                                throw new XMLStreamException("Error: " + errorString);
+                            }
+                            else if (isResumptionToken(endElement.getName())) {
+                                return "" + resumptionToken;
+                            }
+                            break;
+                    }
+                    event = reader.peek();
+                    switch (event.getEventType()) {
+                        case XMLEvent.END_ELEMENT:
+                            EndElement endElement = event.asEndElement();
+                            if (isListRecords(endElement.getName())) {
+                                withinListRecords = false;
+                            }
+                            break;
+                    }
                 }
-                xml.next();
             }
-            inputStream.close();
-            return resumptionToken;
         }
 
-        private boolean isRecordElement(XMLStreamReader xml) {
-            return "record".equals(xml.getName().getLocalPart());
+        private boolean isListRecords(QName name) {
+            return "ListRecords".equals(name.getLocalPart());
         }
 
-        private boolean isMetadataElement(XMLStreamReader xml) {
-            return "metadata".equals(xml.getName().getLocalPart());
+        private boolean isErrorElement(QName name) {
+            return "error".equals(name.getLocalPart());
         }
 
-        private boolean isErrorElement(XMLStreamReader xml) {
-            return "error".equals(xml.getName().getLocalPart());
-        }
-
-        private boolean isResumptionToken(XMLStreamReader xml) {
-            return "resumptionToken".equals(xml.getName().getLocalPart());
+        private boolean isResumptionToken(QName name) {
+            return "resumptionToken".equals(name.getLocalPart());
         }
     }
 
-    private static String exceptionToErrorString(Exception exception) {
+    static String exceptionToErrorString(Exception exception) {
         StringBuilder out = new StringBuilder();
         out.append(exception.getMessage());
         Throwable cause = exception.getCause();
@@ -224,9 +236,4 @@ public class Harvester {
         return out.toString();
     }
 
-    public class HarvestException extends Exception {
-        public HarvestException(String s) {
-            super(s);
-        }
-    }
 }
