@@ -474,12 +474,12 @@
                             <#-- DO NOT ENCODE link.url. This is already done in the java code. Encoding it will break functionality !!!  -->
                                 <#if !link.remove = true>
                                     <input type="checkbox" value="?query=${query?html}${facetlink}&amp;${defaultParams}"/>
-                                    <a href="?query=${query?html}${facetlink?html}&amp;${defaultParams}" title="${link.value}">
+                                    <a href="?query=${query?html}${facetlink}&amp;${defaultParams}" title="${link.value}">
                                         <@stringLimiter "${link.value}" "25"/><span>(${link.count})</span>
                                     </a>
                                 <#else>
                                     <input type="checkbox" checked="checked" value="?query=${query?html}${facetlink}&amp;${defaultParams}"/>
-                                     <a href="?query=${query?html}${facetlink?html}&amp;${defaultParams}" title="${link.value}">
+                                     <a href="?query=${query?html}${facetlink}&amp;${defaultParams}" title="${link.value}">
                                         <@stringLimiter "${link.value}" "25"/>(<span>${link.count})</span>
                                     </a>
                                 </#if>
@@ -874,7 +874,7 @@
     <a class="<#if overlayActive>overlay</#if>"
        href="/${portalName}/redirect.html?shownBy=${overlayUrl?url('utf-8')}&amp;provider=${qfprovider}&amp;id=${result.fullDoc.id}.jpg"
        target="_blank"
-       title="<@spring.message '_action.view.in.original.context' /> <@spring.message '_action.OpenInNewWindow'/>"
+       title="${result.fullDoc.getAsString("dc_title")}"
     >
     <#if useCache="true">
         <img src="${cacheUrl}id=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
