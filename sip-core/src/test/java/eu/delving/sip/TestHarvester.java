@@ -20,17 +20,22 @@ public class TestHarvester {
 
             @Override
             public String getUrl() {
-                return "http://collectie.museumrotterdam.nl/oai?verb=ListRecords&metadataPrefix=oai_dc";
+                return "http://collectiewijzer3.delving.org/services/oai-pmh";
             }
 
             @Override
             public String getMetadataPrefix() {
-                return "oai_dc";
+                return "icn";
             }
 
             @Override
             public String getSpec() {
-                return "hmr";
+                return "005_01_M_NL_joods_historisch";
+            }
+
+            @Override
+            public String getAccessKey() {
+                return "WISSINK-8C0D4964F7AC11A26788";
             }
 
             @Override

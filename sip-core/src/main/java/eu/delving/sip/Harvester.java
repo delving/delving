@@ -75,6 +75,8 @@ public class Harvester {
 
         String getSpec();
 
+        String getAccessKey();
+
         OutputStream getOutputStream();
 
         void success();
@@ -116,11 +118,13 @@ public class Harvester {
         public void run() {
             log.info("Harvesting " + harvest.getUrl());
             try {
+                String accessParam = harvest.getAccessKey().isEmpty() ? "" : String.format("&accessKey=%s", harvest.getAccessKey());
                 HttpMethod method = new GetMethod(String.format(
-                        "%s?verb=ListRecords&metadataPrefix=%s&set=%s",
+                        "%s?verb=ListRecords&metadataPrefix=%s&set=%s%s",
                         harvest.getUrl(),
                         harvest.getMetadataPrefix(),
-                        harvest.getSpec()
+                        harvest.getSpec(),
+                        accessParam
                 ));
                 httpClient.executeMethod(method);
                 InputStream inputStream = method.getResponseBodyAsStream();
@@ -128,9 +132,10 @@ public class Harvester {
                 while (!resumptionToken.isEmpty()) {
                     log.info("Resumption " + resumptionToken);
                     method = new GetMethod(String.format(
-                            "%s?verb=ListRecords&resumptionToken=%s",
+                            "%s?verb=ListRecords&resumptionToken=%s%s",
                             harvest.getUrl(),
-                            resumptionToken
+                            resumptionToken,
+                            accessParam
                     ));
                     httpClient.executeMethod(method);
                     inputStream = method.getResponseBodyAsStream();
@@ -160,53 +165,47 @@ public class Harvester {
             boolean withinListRecords = false;
             while (true) {
                 XMLEvent event = reader.nextEvent();
+                if (event.getEventType() == XMLEvent.END_ELEMENT) {
+                    EndElement endElement = event.asEndElement();
+                    if (isErrorElement(endElement.getName())) {
+                        throw new XMLStreamException("Error: " + errorString);
+                    }
+                    else if (isResumptionToken(endElement.getName())) {
+                        return "" + resumptionToken;
+                    }
+                    else if (isListRecords(endElement.getName())) {
+                        return "";
+                    }
+                }
                 if (withinListRecords) {
                     out.add(event);
                 }
-                else {
-                    switch (event.getEventType()) {
-                        case XMLEvent.START_ELEMENT:
-                            StartElement startElement = event.asStartElement();
-                            if (isErrorElement(startElement.getName())) {
-                                errorString = new StringBuilder();
+                switch (event.getEventType()) {
+                    case XMLEvent.START_ELEMENT:
+                        StartElement startElement = event.asStartElement();
+                        if (isErrorElement(startElement.getName())) {
+                            errorString = new StringBuilder();
+                        }
+                        else if (isResumptionToken(startElement.getName())) {
+                            resumptionToken = new StringBuilder();
+                        }
+                        else if (isListRecords(startElement.getName())) {
+                            withinListRecords = true;
+                        }
+                        break;
+                    case XMLEvent.CHARACTERS:
+                        Characters characters = event.asCharacters();
+                        if (!characters.isIgnorableWhiteSpace()) {
+                            if (resumptionToken != null) {
+                                resumptionToken.append(characters.getData());
                             }
-                            else if (isResumptionToken(startElement.getName())) {
-                                resumptionToken = new StringBuilder();
+                            if (errorString != null) {
+                                errorString.append(characters.getData());
                             }
-                            else if (isListRecords(startElement.getName())) {
-                                withinListRecords = true;
-                            }
-                            break;
-                        case XMLEvent.CHARACTERS:
-                            Characters characters = event.asCharacters();
-                            if (!characters.isIgnorableWhiteSpace()) {
-                                if (resumptionToken != null) {
-                                    resumptionToken.append(characters.getData());
-                                }
-                                if (errorString != null) {
-                                    errorString.append(characters.getData());
-                                }
-                            }
-                            break;
-                        case XMLEvent.END_ELEMENT:
-                            EndElement endElement = event.asEndElement();
-                            if (isErrorElement(endElement.getName())) {
-                                throw new XMLStreamException("Error: " + errorString);
-                            }
-                            else if (isResumptionToken(endElement.getName())) {
-                                return "" + resumptionToken;
-                            }
-                            break;
-                    }
-                    event = reader.peek();
-                    switch (event.getEventType()) {
-                        case XMLEvent.END_ELEMENT:
-                            EndElement endElement = event.asEndElement();
-                            if (isListRecords(endElement.getName())) {
-                                withinListRecords = false;
-                            }
-                            break;
-                    }
+                        }
+                        break;
+                    case XMLEvent.END_DOCUMENT:
+                        return "";
                 }
             }
         }
