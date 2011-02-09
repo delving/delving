@@ -10,7 +10,7 @@ import org.junit.Test;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class TestServiceAccessToken {
+public class TestAccessKey {
     private Logger log = Logger.getLogger(getClass());
 
     @Test

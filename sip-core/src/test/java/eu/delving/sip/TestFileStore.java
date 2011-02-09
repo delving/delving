@@ -25,8 +25,6 @@ import eu.delving.metadata.Facts;
 import eu.delving.metadata.FieldStatistics;
 import eu.delving.metadata.MappingModel;
 import eu.delving.metadata.MetadataException;
-import eu.delving.metadata.MetadataModel;
-import eu.delving.metadata.MetadataModelImpl;
 import eu.delving.metadata.Path;
 import eu.delving.metadata.RecordMapping;
 import org.apache.log4j.Logger;
@@ -35,11 +33,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -49,47 +45,33 @@ import java.util.List;
  */
 
 public class TestFileStore {
-    private static final File TARGET = new File("target");
-    private static final String SPEC = "spek";
-    private static final File DIR = new File(TARGET, "file-store");
-    private static final File SPEC_DIR = new File(DIR, SPEC);
     private Logger log = Logger.getLogger(getClass());
+    private MockFileStoreFactory mock;
     private FileStore fileStore;
-    public static final String METADATA_PREFIX = "abm";
 
     @Before
     public void createStore() throws FileStoreException, IOException, MetadataException {
-        if (!TARGET.exists()) {
-            throw new RuntimeException("Target directory " + TARGET.getAbsolutePath() + " not found");
-        }
-        if (DIR.exists()) {
-            delete(DIR);
-        }
-        if (!DIR.mkdirs()) {
-            throw new RuntimeException("Unable to create directory " + DIR.getAbsolutePath());
-        }
-        this.fileStore = new FileStoreImpl(DIR, getMetadataModel());
+        mock = new MockFileStoreFactory();
+        fileStore = mock.getFileStore();
     }
 
     @After
     public void deleteStore() {
-        if (DIR.exists()) {
-            delete(DIR);
-        }
+        mock.delete();
     }
 
     @Test
     public void createDelete() throws IOException, FileStoreException {
-        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC);
+        FileStore.DataSetStore store = mock.getDataSetStore();
         Assert.assertFalse(store.hasSource());
-        store.importFile(sampleFile(), null);
+        store.importFile(MockInput.sampleFile(), null);
         Assert.assertTrue(store.hasSource());
-        Assert.assertEquals("Should be one file", 1, DIR.listFiles().length);
+        Assert.assertEquals("Should be one file", 1, mock.getDirectory().listFiles().length);
         Assert.assertEquals("Should be one spec", 1, fileStore.getDataSetStores().size());
-        Assert.assertEquals("Should be one file", 1, new File(DIR, SPEC).listFiles().length);
-        log.info("Created " + new File(DIR, SPEC).listFiles()[0].getAbsolutePath());
-        InputStream inputStream = sampleInputStream();
-        InputStream storedStream = fileStore.getDataSetStores().get(SPEC).createXmlInputStream();
+        Assert.assertEquals("Should be one file", 1, mock.getSpecDirectory().listFiles().length);
+        log.info("Created " + mock.getSpecDirectory().listFiles()[0].getAbsolutePath());
+        InputStream inputStream = MockInput.sampleInputStream();
+        InputStream storedStream = mock.getDataSetStore().createXmlInputStream();
         int input = 0, stored;
         while (input != -1) {
             input = inputStream.read();
@@ -97,7 +79,7 @@ public class TestFileStore {
             Assert.assertEquals("Stream discrepancy", input, stored);
         }
         store.delete();
-        Assert.assertEquals("Should be zero files", 0, DIR.listFiles().length);
+        Assert.assertEquals("Should be zero files", 0, mock.getDirectory().listFiles().length);
     }
 
     @Test
@@ -112,27 +94,25 @@ public class TestFileStore {
 
     @Test
     public void manipulateMapping() throws IOException, FileStoreException, MetadataException {
-        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC);
-        store.importFile(sampleFile(), null);
-        Assert.assertEquals("Spec should be the same", SPEC, store.getSpec());
-        RecordMapping recordMapping = store.getRecordMapping(METADATA_PREFIX);
-        Assert.assertEquals("Prefixes should be the same", METADATA_PREFIX, recordMapping.getPrefix());
+        mock.getDataSetStore().importFile(MockInput.sampleFile(), null);
+        Assert.assertEquals("Spec should be the same", mock.getSpec(), mock.getDataSetStore().getSpec());
+        RecordMapping recordMapping = mock.getDataSetStore().getRecordMapping(mock.getMetadataPrefix());
+        Assert.assertEquals("Prefixes should be the same", mock.getMetadataPrefix(), recordMapping.getPrefix());
         log.info("Mapping created with prefix " + recordMapping.getPrefix());
         MappingModel mappingModel = new MappingModel();
         mappingModel.setRecordMapping(recordMapping);
         mappingModel.setFact("/some/path", "value");
-        fileStore.getDataSetStores().get(SPEC).setRecordMapping(recordMapping);
-        Assert.assertEquals("Should be two files", 2, new File(DIR, SPEC).listFiles().length);
-        recordMapping = fileStore.getDataSetStores().get(SPEC).getRecordMapping(METADATA_PREFIX);
+        mock.getDataSetStore().setRecordMapping(recordMapping);
+        Assert.assertEquals("Should be two files", 2, mock.getSpecDirectory().listFiles().length);
+        recordMapping = mock.getDataSetStore().getRecordMapping(mock.getMetadataPrefix());
         Assert.assertEquals("Should have held fact", "value", recordMapping.getFact("/some/path"));
     }
 
     @Test
     public void manipulateStatistics() throws IOException, FileStoreException {
-        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC);
-        store.importFile(sampleFile(), null);
-        List<FieldStatistics> stats = store.getStatistics();
-        Assert.assertEquals("Should be one files", 1, new File(DIR, SPEC).listFiles().length);
+        mock.getDataSetStore().importFile(MockInput.sampleFile(), null);
+        List<FieldStatistics> stats = mock.getDataSetStore().getStatistics();
+        Assert.assertEquals("Should be one files", 1, mock.getSpecDirectory().listFiles().length);
         Assert.assertNull("No stats should be here", stats);
         stats = new ArrayList<FieldStatistics>();
         FieldStatistics fieldStatistics = new FieldStatistics(new Path("/stat/path"));
@@ -140,70 +120,39 @@ public class TestFileStore {
         fieldStatistics.recordValue("booger");
         fieldStatistics.finish();
         stats.add(fieldStatistics);
-        store.setStatistics(stats);
-        Assert.assertEquals("Should be two files ", 2, new File(DIR, SPEC).listFiles().length);
-        stats = fileStore.getDataSetStores().get(SPEC).getStatistics();
+        mock.getDataSetStore().setStatistics(stats);
+        Assert.assertEquals("Should be two files ", 2, mock.getSpecDirectory().listFiles().length);
+        stats = mock.getDataSetStore().getStatistics();
         Assert.assertEquals("Should be one stat", 1, stats.size());
         Assert.assertEquals("Path discrepancy", "/stat/path", stats.get(0).getPath().toString());
     }
 
     @Test
     public void manipulateFacts() throws IOException, FileStoreException {
-        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC);
-        store.importFile(sampleFile(), null);
-        Facts facts = store.getFacts();
+        mock.getDataSetStore().importFile(MockInput.sampleFile(), null);
+        Facts facts = mock.getDataSetStore().getFacts();
         Assert.assertEquals("facts should be empty", "", facts.get("recordRootPath"));
         facts.set("recordRootPath", "Wingy");
-        store.setFacts(facts);
-        facts = fileStore.getDataSetStores().get(SPEC).getFacts();
+        mock.getDataSetStore().setFacts(facts);
+        facts = mock.getDataSetStore().getFacts();
         Assert.assertEquals("facts should be restored", "Wingy", facts.get("recordRootPath"));
     }
 
     @Test
     public void pretendNormalize() throws IOException, FileStoreException, MetadataException {
-        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC);
-        store.importFile(sampleFile(), null);
-        RecordMapping recordMapping = store.getRecordMapping(METADATA_PREFIX);
-        FileStore.MappingOutput mo = store.createMappingOutput(recordMapping, null);
+        mock.getDataSetStore().importFile(MockInput.sampleFile(), null);
+        RecordMapping recordMapping = mock.getDataSetStore().getRecordMapping(mock.getMetadataPrefix());
+        FileStore.MappingOutput mo = mock.getDataSetStore().createMappingOutput(recordMapping, null);
         mo.recordDiscarded();
         mo.recordNormalized();
         mo.recordNormalized();
-        Assert.assertEquals("Should be one file", 1, SPEC_DIR.listFiles().length);
+        Assert.assertEquals("Should be one file", 1, mock.getSpecDirectory().listFiles().length);
         mo.close(false);
-        store.setRecordMapping(recordMapping);
-        Assert.assertEquals("Should be two files", 2, SPEC_DIR.listFiles().length);
-        recordMapping = fileStore.getDataSetStores().get(SPEC).getRecordMapping(METADATA_PREFIX);
+        mock.getDataSetStore().setRecordMapping(recordMapping);
+        Assert.assertEquals("Should be two files", 2, mock.getSpecDirectory().listFiles().length);
+        recordMapping = mock.getDataSetStore().getRecordMapping(mock.getMetadataPrefix());
         Assert.assertEquals("Mapping should contain facts", 1, recordMapping.getRecordsDiscarded());
         Assert.assertEquals("Mapping should contain facts", 2, recordMapping.getRecordsNormalized());
     }
 
-//    private RecordDefinition getRecordDefinition() throws IOException, MetadataException {
-//        return getMetadataModel().getRecordDefinition();
-//    }
-//
-    private MetadataModel getMetadataModel() throws IOException, MetadataException {
-        MetadataModelImpl metadataModel = new MetadataModelImpl();
-        metadataModel.setRecordDefinitionResources(Arrays.asList("/abm-record-definition.xml"));
-        metadataModel.setDefaultPrefix(METADATA_PREFIX);
-        return metadataModel;
-    }
-
-    private File sampleFile() throws IOException {
-        return new File(getClass().getResource("/sample-input.xml").getFile());
-    }
-
-    private InputStream sampleInputStream() throws IOException {
-        return getClass().getResource("/sample-input.xml").openStream();
-    }
-
-    private void delete(File file) {
-        if (file.isDirectory()) {
-            for (File sub : file.listFiles()) {
-                delete(sub);
-            }
-        }
-        if (!file.delete()) {
-            throw new RuntimeException(String.format("Unable to delete %s", file.getAbsolutePath()));
-        }
-    }
 }

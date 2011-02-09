@@ -19,9 +19,10 @@
  *  permissions and limitations under the Licence.
  */
 
-package eu.delving.services.core;
+package eu.delving.services;
 
 import com.mongodb.Mongo;
+import eu.delving.services.core.MetaRepoImpl;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
