@@ -21,12 +21,15 @@
 
 package eu.delving.services;
 
+import eu.delving.metadata.Facts;
+import eu.delving.metadata.MetadataException;
 import eu.delving.sip.AccessKey;
 import eu.delving.sip.DataSetClient;
 import eu.delving.sip.DataSetInfo;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.FileType;
 import eu.delving.sip.Harvester;
+import eu.delving.sip.Hasher;
 import eu.delving.sip.ProgressListener;
 import eu.europeana.core.util.StarterUtil;
 import org.apache.log4j.Logger;
@@ -36,6 +39,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -49,13 +53,11 @@ import java.util.List;
 public class TestDataSetCycle {
     private Logger log = Logger.getLogger(getClass());
     private MockFileStoreFactory factory;
-    private File harvestedFile;
 
     @Before
     public void before() throws FileStoreException {
         factory = new MockFileStoreFactory();
         MockServices.start();
-        harvestedFile = new File(StarterUtil.getEuropeanaPath() + "/core/target/TestDataCycleHarvest.xml");
     }
 
     @After
@@ -65,22 +67,57 @@ public class TestDataSetCycle {
     }
 
     @Test
-    public void test() throws IOException, FileStoreException{
-        Ear importEar = new Ear("Import");
+    public void test() throws IOException, FileStoreException, MetadataException {
+        // import
+        Ear importEar = new Ear("Import First Time");
         factory.getDataSetStore().importFile(MockInput.sampleFile(), importEar);
-        Assert.assertTrue("import", importEar.waitUntilFinished());
-        DataSetClient client = new DataSetClient(new ClientContext());
+        Assert.assertTrue("import first time", importEar.waitUntilFinished());
         File factsFile = new File(getClass().getResource("/mock-facts.txt").getFile());
+        Facts facts = Facts.read(new FileInputStream(factsFile));
+        factory.getDataSetStore().setFacts(facts);
+        // upload
+        DataSetClient client = new DataSetClient(new ClientContext());
         Ear uploadFactsEar = new Ear("UploadFacts");
         client.uploadFile(FileType.FACTS, MockFileStoreFactory.SPEC, factsFile, uploadFactsEar);
         Assert.assertTrue("upload facts", uploadFactsEar.waitUntilFinished());
-        Ear uploadSourceEar = new Ear("UploadSource");
+        Ear uploadSourceEar = new Ear("UploadSource First Time");
         client.uploadFile(FileType.SOURCE, MockFileStoreFactory.SPEC, factory.getDataSetStore().getSourceFile(), uploadSourceEar);
-        Assert.assertTrue("upload source", uploadSourceEar.waitUntilFinished());
+        Assert.assertTrue("upload source first time", uploadSourceEar.waitUntilFinished());
+        // harvest
         Harvester harvester = new Harvester();
-        Harvey harvey = new Harvey();
+        Harvey harvey = new Harvey("first");
         harvester.perform(harvey);
         Assert.assertTrue("harvest", harvey.waitUntilFinished());
+        // import again
+        importEar = new Ear("Import Again");
+        factory.getDataSetStore().importFile(getHarvestedFile("first"), importEar);
+        Assert.assertTrue("import again", harvey.waitUntilFinished());
+        // change mapping!
+        facts = factory.getDataSetStore().getFacts();
+        String recordRootPath = facts.get("recordRootPath");
+        String uniqueElementPath = facts.get("uniqueElementPath");
+        Assert.assertEquals("first part of unique must be record root", recordRootPath, uniqueElementPath.substring(0, recordRootPath.length()));
+        String relativeUniqueElementPath = uniqueElementPath.substring(recordRootPath.length());
+        facts.set("recordRootPath", recordRootPath = "/harvest/ListRecords/record");
+        uniqueElementPath = recordRootPath + relativeUniqueElementPath;
+        facts.set("uniqueElementPath", uniqueElementPath);
+        factory.getDataSetStore().setFacts(facts);
+        uploadFactsEar = new Ear("UploadFacts Again");
+        client.uploadFile(FileType.FACTS, MockFileStoreFactory.SPEC, factory.getDataSetStore().getFactsFile(), uploadFactsEar);
+        Assert.assertTrue("upload facts", uploadFactsEar.waitUntilFinished());
+        // upload source again
+        uploadSourceEar = new Ear("UploadSource Again");
+        client.uploadFile(FileType.SOURCE, MockFileStoreFactory.SPEC, factory.getDataSetStore().getSourceFile(), uploadSourceEar);
+        Assert.assertTrue("upload source again", uploadSourceEar.waitUntilFinished());
+        // harvest again
+        harvey = new Harvey("again");
+        harvester.perform(harvey);
+        Assert.assertTrue("harvest again", harvey.waitUntilFinished());
+        // compare
+        Assert.assertEquals("harvested files different sizes", getHarvestedFile("first").length(), getHarvestedFile("again").length());
+        File hashedFirst = Hasher.ensureFileHashed(getHarvestedFile("first"));
+        File hashedAgain = Hasher.ensureFileHashed(getHarvestedFile("again"));
+        Assert.assertEquals("harvested files different contents", Hasher.extractHash(hashedFirst), Hasher.extractHash(hashedAgain));
     }
 
     // ==================
@@ -111,7 +148,7 @@ public class TestDataSetCycle {
 
         @Override
         public void tellUser(String message) {
-            log.info("USER!: "+message);
+            log.info("USER!: " + message);
         }
 
         @Override
@@ -122,6 +159,10 @@ public class TestDataSetCycle {
         private void info(String title, DataSetInfo info) {
             log.info(String.format("%s: DataSet(%s) = %s", title, info.spec, info.state));
         }
+    }
+
+    private File getHarvestedFile(String name) {
+        return new File(StarterUtil.getEuropeanaPath() + "/core/target/TestDataCycle-" + name + ".xml");
     }
 
     private String createAccessKey() {
@@ -140,18 +181,18 @@ public class TestDataSetCycle {
 
         @Override
         public void setTotal(int total) {
-            log.info(name+": Total = "+total);
+            log.info(name + ": Total = " + total);
         }
 
         @Override
         public boolean setProgress(int progress) {
-            log.info(name+": Progress = "+progress);
+            log.info(name + ": Progress = " + progress);
             return true;
         }
 
         @Override
         public void finished(boolean success) {
-            log.info(name+": Finished "+(success?"Successfully":"Unsuccessfully"));
+            log.info(name + ": Finished " + (success ? "Successfully" : "Unsuccessfully"));
             this.success = success;
         }
 
@@ -172,8 +213,8 @@ public class TestDataSetCycle {
         private Boolean success;
         private OutputStream outputStream;
 
-        private Harvey() throws FileNotFoundException {
-            outputStream = new FileOutputStream(harvestedFile);
+        private Harvey(String name) throws FileNotFoundException {
+            outputStream = new FileOutputStream(getHarvestedFile(name));
         }
 
         @Override
