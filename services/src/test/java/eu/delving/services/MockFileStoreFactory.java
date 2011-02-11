@@ -21,9 +21,7 @@ public class MockFileStoreFactory {
     public static final String SPEC = "spek";
     private String metadataPrefix = "abm";
     private File directory;
-    private File specDirectory;
     private FileStore fileStore;
-    private FileStore.DataSetStore dataSetStore;
 
     public MockFileStoreFactory() throws FileStoreException {
         File target = new File("sip-core/target");
@@ -43,29 +41,16 @@ public class MockFileStoreFactory {
         if (!directory.mkdirs()) {
             throw new RuntimeException("Unable to create directory " + directory.getAbsolutePath());
         }
-        specDirectory = new File(directory, SPEC);
         fileStore = new FileStoreImpl(directory, getMetadataModel());
-        dataSetStore = fileStore.createDataSetStore(SPEC);
     }
 
     public FileStore getFileStore() {
         return fileStore;
     }
 
-    public String getMetadataPrefix() {
-        return metadataPrefix;
-    }
-
-    public FileStore.DataSetStore getDataSetStore() {
-        return dataSetStore;
-    }
-
-    public File getDirectory() {
-        return directory;
-    }
-
-    public File getSpecDirectory() {
-        return specDirectory;
+    public FileStore.DataSetStore getDataSetStore() throws FileStoreException {
+        FileStore.DataSetStore store = fileStore.getDataSetStores().get(SPEC);
+        return store == null ? fileStore.createDataSetStore(SPEC) : store;
     }
 
     public void delete() {

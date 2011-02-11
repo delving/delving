@@ -29,11 +29,15 @@ import eu.delving.sip.DataSetInfo;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.FileType;
 import eu.delving.sip.Harvester;
+import eu.delving.sip.Hasher;
 import eu.delving.sip.ProgressListener;
 import eu.delving.sip.SourceStream;
 import eu.europeana.core.util.StarterUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.junit.After;
@@ -48,6 +52,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.zip.ZipInputStream;
 
 /**
  * @author Gerald de Jong <gerald@delving.eu>
@@ -56,21 +61,22 @@ import java.util.List;
 public class TestDataSetCycle {
     private Logger log = Logger.getLogger(getClass());
     private MockFileStoreFactory factory;
+    private HttpClient httpClient = new HttpClient();
 
     @Before
     public void before() throws FileStoreException {
         factory = new MockFileStoreFactory();
+        factory.delete();
         MockServices.start();
     }
 
     @After
     public void after() {
         MockServices.stop();
-        factory.delete();
     }
 
     @Test
-    public void test() throws IOException, FileStoreException, MetadataException {
+    public void testHarvestCycle() throws IOException, FileStoreException, MetadataException {
         // import
         Ear importEar = new Ear("Import First Time");
         factory.getDataSetStore().importFile(MockInput.sampleFile(), importEar);
@@ -79,7 +85,7 @@ public class TestDataSetCycle {
         Facts facts = Facts.read(new FileInputStream(factsFile));
         factory.getDataSetStore().setFacts(facts);
         // upload
-        DataSetClient client = new DataSetClient(new ClientContext());
+        DataSetClient client = new DataSetClient(CLIENT_CONTEXT);
         Ear uploadFactsEar = new Ear("UploadFacts");
         client.uploadFile(FileType.FACTS, MockFileStoreFactory.SPEC, factsFile, uploadFactsEar);
         Assert.assertTrue("upload facts", uploadFactsEar.waitUntilFinished());
@@ -95,7 +101,7 @@ public class TestDataSetCycle {
         importEar = new Ear("Import Again");
         factory.getDataSetStore().importFile(getHarvestedFile("first"), importEar);
         Assert.assertTrue("import again", harvey.waitUntilFinished());
-        // change mapping!
+        // change facts
         facts = factory.getDataSetStore().getFacts();
         SourceStream.adjustPathsForHarvest(facts);
         factory.getDataSetStore().setFacts(facts);
@@ -128,9 +134,39 @@ public class TestDataSetCycle {
         }
     }
 
+    @Test
+    public void testSipZipCycle() throws IOException, FileStoreException, MetadataException {
+        // import
+        Ear importEar = new Ear("Import First Time");
+        factory.getDataSetStore().importFile(MockInput.sampleFile(), importEar);
+        Assert.assertTrue("import first time", importEar.waitUntilFinished());
+        File factsFile = new File(getClass().getResource("/mock-facts.txt").getFile());
+        Facts facts = Facts.read(new FileInputStream(factsFile));
+        factory.getDataSetStore().setFacts(facts);
+        // upload
+        DataSetClient client = new DataSetClient(CLIENT_CONTEXT);
+        Ear uploadFactsEar = new Ear("UploadFacts");
+        client.uploadFile(FileType.FACTS, MockFileStoreFactory.SPEC, factsFile, uploadFactsEar);
+        Assert.assertTrue("upload facts", uploadFactsEar.waitUntilFinished());
+        Ear uploadSourceEar = new Ear("UploadSource First Time");
+        client.uploadFile(FileType.SOURCE, MockFileStoreFactory.SPEC, factory.getDataSetStore().getSourceFile(), uploadSourceEar);
+        Assert.assertTrue("upload source first time", uploadSourceEar.waitUntilFinished());
+        factory.getDataSetStore().delete();
+        factory.getFileStore().createDataSetStore(MockFileStoreFactory.SPEC);
+        HttpMethod method = new GetMethod(String.format(
+                "%s/fetch/%s-sip.zip?accessKey=%s",
+                CLIENT_CONTEXT.getServerUrl(),
+                MockFileStoreFactory.SPEC,
+                CLIENT_CONTEXT.getAccessKey()
+        ));
+        httpClient.executeMethod(method);
+        factory.getDataSetStore().acceptSipZip(new ZipInputStream(method.getResponseBodyAsStream()), new Ear("Unzip"));
+        Assert.assertTrue("Hash is wrong!", Hasher.checkHash(factory.getDataSetStore().getSourceFile()));
+    }
+
     // ==================
 
-    private class ClientContext implements DataSetClient.Context {
+    private DataSetClient.Context CLIENT_CONTEXT = new DataSetClient.Context() {
         @Override
         public String getServerUrl() {
             return String.format("http://localhost:%d/services/dataset", MockServices.PORT);
@@ -167,7 +203,7 @@ public class TestDataSetCycle {
         private void info(String title, DataSetInfo info) {
             log.info(String.format("%s: DataSet(%s) = %s", title, info.spec, info.state));
         }
-    }
+    };
 
     private File getHarvestedFile(String name) {
         return new File(StarterUtil.getEuropeanaPath() + "/core/target/TestDataCycle-" + name + ".xml");

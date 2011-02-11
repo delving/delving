@@ -26,10 +26,12 @@ import eu.delving.metadata.FieldStatistics;
 import eu.delving.metadata.RecordMapping;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipInputStream;
 
 /**
  * This interface describes how files are stored by the sip-creator
@@ -92,6 +94,8 @@ public interface FileStore {
         File getMappingFile(String metadataPrefix);
 
         List<String> getMappingPrefixes();
+
+        void acceptSipZip(ZipInputStream zipInputStream, ProgressListener progressListener) throws IOException, FileStoreException;
     }
 
     public interface MappingOutput {
