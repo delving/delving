@@ -117,8 +117,8 @@ public class MongoObjectParser {
                 case XMLEvent.CHARACTERS:
                 case XMLEvent.CDATA:
                     if (record != null) {
-                        String text = input.getText().trim();
-                        if (!text.isEmpty()) {
+                        String text = input.getText();
+                        if (!text.trim().isEmpty()) {
                             for (int walk = 0; walk < text.length(); walk++) { // return predeclared entities to escapes
                                 char c = text.charAt(walk);
                                 switch (c) {

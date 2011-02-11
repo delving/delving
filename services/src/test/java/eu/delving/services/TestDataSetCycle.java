@@ -29,9 +29,12 @@ import eu.delving.sip.DataSetInfo;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.FileType;
 import eu.delving.sip.Harvester;
-import eu.delving.sip.Hasher;
 import eu.delving.sip.ProgressListener;
+import eu.delving.sip.SourceStream;
 import eu.europeana.core.util.StarterUtil;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
@@ -94,13 +97,7 @@ public class TestDataSetCycle {
         Assert.assertTrue("import again", harvey.waitUntilFinished());
         // change mapping!
         facts = factory.getDataSetStore().getFacts();
-        String recordRootPath = facts.get("recordRootPath");
-        String uniqueElementPath = facts.get("uniqueElementPath");
-        Assert.assertEquals("first part of unique must be record root", recordRootPath, uniqueElementPath.substring(0, recordRootPath.length()));
-        String relativeUniqueElementPath = uniqueElementPath.substring(recordRootPath.length());
-        facts.set("recordRootPath", recordRootPath = "/harvest/ListRecords/record");
-        uniqueElementPath = recordRootPath + relativeUniqueElementPath;
-        facts.set("uniqueElementPath", uniqueElementPath);
+        SourceStream.adjustPathsForHarvest(facts);
         factory.getDataSetStore().setFacts(facts);
         uploadFactsEar = new Ear("UploadFacts Again");
         client.uploadFile(FileType.FACTS, MockFileStoreFactory.SPEC, factory.getDataSetStore().getFactsFile(), uploadFactsEar);
@@ -115,9 +112,20 @@ public class TestDataSetCycle {
         Assert.assertTrue("harvest again", harvey.waitUntilFinished());
         // compare
         Assert.assertEquals("harvested files different sizes", getHarvestedFile("first").length(), getHarvestedFile("again").length());
-        File hashedFirst = Hasher.ensureFileHashed(getHarvestedFile("first"));
-        File hashedAgain = Hasher.ensureFileHashed(getHarvestedFile("again"));
-        Assert.assertEquals("harvested files different contents", Hasher.extractHash(hashedFirst), Hasher.extractHash(hashedAgain));
+        List<String> firstLines = FileUtils.readLines(getHarvestedFile("first"), "UTF-8");
+        List<String> againLines = FileUtils.readLines(getHarvestedFile("again"), "UTF-8");
+        Predicate predicate = new Predicate() {
+            @Override
+            public boolean evaluate(Object o) {
+                return !((String)o).contains("<datestamp>");
+            }
+        };
+        CollectionUtils.filter(firstLines, predicate);
+        CollectionUtils.filter(againLines, predicate);
+        Assert.assertEquals("lines remaining are different", firstLines.size(), againLines.size());
+        for (int walk=0; walk<firstLines.size(); walk++) {
+            Assert.assertEquals("Line "+walk+" different", firstLines.get(walk), againLines.get(walk));
+        }
     }
 
     // ==================

@@ -33,11 +33,8 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.EndElement;
@@ -47,7 +44,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -64,8 +60,6 @@ public class Harvester {
     private Executor executor = Executors.newSingleThreadExecutor();
     private HttpClient httpClient = new HttpClient();
     private XMLInputFactory inputFactory = new WstxInputFactory();
-    private XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-    private XMLEventFactory eventFactory = XMLEventFactory.newInstance();
     private List<Engine> engines = new CopyOnWriteArrayList<Engine>();
 
     public interface Harvest {
@@ -100,14 +94,13 @@ public class Harvester {
 
     public class Engine implements Runnable {
         private Harvest harvest;
-        private XMLEventWriter out;
+        private SourceStream sourceStream;
 
         public Engine(Harvest harvest) {
             this.harvest = harvest;
             try {
-                out = outputFactory.createXMLEventWriter(new OutputStreamWriter(harvest.getOutputStream(), "UTF-8"));
-                out.add(eventFactory.createStartDocument());
-                out.add(eventFactory.createStartElement("", "", "harvest"));
+                sourceStream = new SourceStream(harvest.getOutputStream());
+                sourceStream.startEventStream();
             }
             catch (Exception e) {
                 throw new RuntimeException(e);
@@ -141,9 +134,7 @@ public class Harvester {
                     inputStream = method.getResponseBodyAsStream();
                     resumptionToken = harvestXML(inputStream);
                 }
-                out.add(eventFactory.createEndElement("", "", "harvest"));
-                out.add(eventFactory.createEndDocument());
-                out.flush();
+                sourceStream.endEventStream();
                 log.info("Finished harvest of " + harvest.getUrl());
                 harvest.success();
             }
@@ -178,7 +169,7 @@ public class Harvester {
                     }
                 }
                 if (withinListRecords) {
-                    out.add(event);
+                    sourceStream.addEvent(event);
                 }
                 switch (event.getEventType()) {
                     case XMLEvent.START_ELEMENT:
@@ -195,13 +186,11 @@ public class Harvester {
                         break;
                     case XMLEvent.CHARACTERS:
                         Characters characters = event.asCharacters();
-                        if (!characters.isIgnorableWhiteSpace()) {
-                            if (resumptionToken != null) {
-                                resumptionToken.append(characters.getData());
-                            }
-                            if (errorString != null) {
-                                errorString.append(characters.getData());
-                            }
+                        if (resumptionToken != null) {
+                            resumptionToken.append(characters.getData());
+                        }
+                        if (errorString != null) {
+                            errorString.append(characters.getData());
                         }
                         break;
                     case XMLEvent.END_DOCUMENT:

@@ -140,6 +140,7 @@ public interface MetaRepo {
     }
 
     public interface Details {
+
         String getName();
 
         void setName(String value);
@@ -162,12 +163,17 @@ public interface MetaRepo {
 
         MetadataFormat getMetadataFormat();
 
+        byte [] getFacts();
+
+        void setFacts(byte [] factBytes);
+
         String NAME = "name";
         String PROVIDER_NAME = "provider_name";
         String DESCRIPTION = "description";
         String RECORD_ROOT = "rec_root";
         String UNIQUE_ELEMENT = "unique_element";
         String METADATA_FORMAT = "metadata_format";
+        String FACT_BYTES = "fact_bytes";
     }
 
     public interface HarvestStep {
