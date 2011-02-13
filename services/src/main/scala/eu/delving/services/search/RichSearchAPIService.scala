@@ -93,7 +93,7 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
     </facet>
   }
 
-  private def minusAmp(link : String) = link.replaceAll("amp;", "").replaceAll(" ","%20")
+  private def minusAmp(link : String) = link.replaceAll("amp;", "").replaceAll(" ","%20").replaceAll("qf=","qf[]=")
 
   def getXMLResultResponse(authorized : Boolean) : String = {
     httpResponse setContentType ("text/xml")
