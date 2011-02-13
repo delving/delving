@@ -88,12 +88,12 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
   private def renderFacetQueryLinks(fql : FacetQueryLinks) : Elem = {
     <facet name={fql.getType} isSelected={fql.isSelected.toString}>
       {for (link <- fql.getLinks)
-        yield <link url={minusAmp(link.getUrl)} value={link.getValue} count={link.getCount.toString}>{link.getValue} ({link.getCount})</link>
+        yield <link url={minusAmp(link.getUrl)} isSelected={link.isRemove.toString} value={link.getValue} count={link.getCount.toString}>{link.getValue} ({link.getCount})</link>
         }
     </facet>
   }
 
-  private def minusAmp(link : String) = link.replaceAll("amp;", "")
+  private def minusAmp(link : String) = link.replaceAll("amp;", "").replaceAll(" ","%20")
 
   def getXMLResultResponse(authorized : Boolean) : String = {
     httpResponse setContentType ("text/xml")
