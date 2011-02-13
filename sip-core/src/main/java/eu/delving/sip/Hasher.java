@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.zip.GZIPInputStream;
 
 /**
  * This interface describes how files are stored by the sip-creator
@@ -77,6 +78,13 @@ public class Hasher {
         }
     }
 
+    public static boolean checkHash(File file) throws FileStoreException {
+        String hash = extractHash(file);
+        Hasher hasher = new Hasher();
+        hasher.update(file);
+        return hash.equals(hasher.getHashString());
+    }
+
     public Hasher() {
         try {
             this.messageDigest = MessageDigest.getInstance("MD5");
@@ -93,6 +101,9 @@ public class Hasher {
     public void update(File inputFile) throws FileStoreException {
         try {
             InputStream inputStream = new FileInputStream(inputFile);
+            if (inputFile.getName().endsWith(".gz")) {
+                inputStream = new GZIPInputStream(inputStream);
+            }
             byte[] buffer = new byte[BLOCK_SIZE];
             int bytesRead;
             while (-1 != (bytesRead = inputStream.read(buffer))) {

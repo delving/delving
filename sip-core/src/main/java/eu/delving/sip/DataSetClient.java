@@ -1,14 +1,6 @@
-package eu.europeana.sip.gui;
+package eu.delving.sip;
 
 import com.thoughtworks.xstream.XStream;
-import eu.delving.sip.DataSetCommand;
-import eu.delving.sip.DataSetInfo;
-import eu.delving.sip.DataSetResponse;
-import eu.delving.sip.DataSetResponseCode;
-import eu.delving.sip.FileType;
-import eu.delving.sip.Hasher;
-import eu.delving.sip.ProgressListener;
-import eu.europeana.sip.model.SipModel;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -45,22 +37,26 @@ public class DataSetClient {
     private static final int LIST_FETCH_DELAY_MILLIS = 5000;
     private Logger log = Logger.getLogger(getClass());
     private Executor executor = Executors.newSingleThreadExecutor();
-    private SipModel sipModel;
     private boolean fetching;
     private Timer periodicListFetchTimer;
-    private Listener listener;
+    private Context context;
 
-    public interface Listener {
+    public interface Context {
+        String getServerUrl();
+        
+        String getAccessKey();
+        
         void setInfo(DataSetInfo dataSetInfo);
 
         void setList(List<DataSetInfo> list);
+        
+        void tellUser(String message);
 
         void disconnected();
     }
 
-    public DataSetClient(SipModel sipModel, Listener listener) {
-        this.sipModel = sipModel;
-        this.listener = listener;
+    public DataSetClient(Context context) {
+        this.context = context;
         periodicListFetchTimer = new Timer(LIST_FETCH_DELAY_MILLIS, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -89,8 +85,8 @@ public class DataSetClient {
         executor.execute(new CommandSender(spec, command));
     }
 
-    public void uploadFile(FileType fileType, File file, ProgressListener progressListener) {
-        executor.execute(new FileUploader(fileType, file, progressListener));
+    public void uploadFile(FileType fileType, String spec, File file, ProgressListener progressListener) {
+        executor.execute(new FileUploader(fileType, spec, file, progressListener));
     }
 
     private class ListFetcher implements Runnable {
@@ -99,8 +95,8 @@ public class DataSetClient {
             fetching = true;
             String url = String.format(
                     "%s?accessKey=%s",
-                    sipModel.getAppConfigModel().getServerUrl(),
-                    sipModel.getAppConfigModel().getAccessKey()
+                    context.getServerUrl(),
+                    context.getAccessKey()
             );
             final DataSetResponse response = execute(new HttpGet(url));
             if (response != null) {
@@ -108,7 +104,7 @@ public class DataSetClient {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            listener.setList(response.getDataSetList());
+                            context.setList(response.getDataSetList());
                             periodicListFetchTimer.restart();
                         }
                     });
@@ -135,10 +131,10 @@ public class DataSetClient {
         public void run() {
             String url = String.format(
                     "%s/%s/%s?accessKey=%s",
-                    sipModel.getAppConfigModel().getServerUrl(),
+                    context.getServerUrl(),
                     spec,
                     command,
-                    sipModel.getAppConfigModel().getAccessKey()
+                    context.getAccessKey()
             );
             final DataSetResponse response = execute(new HttpGet(url));
             if (response != null) {
@@ -149,7 +145,7 @@ public class DataSetClient {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            listener.setInfo(response.getDataSetList().get(0));
+                            context.setInfo(response.getDataSetList().get(0));
                         }
                     });
                 }
@@ -170,11 +166,13 @@ public class DataSetClient {
         private static final int BLOCK_SIZE = 4096;
         private Logger log = Logger.getLogger(getClass());
         private File file;
+        private String spec;
         private FileType fileType;
         private ProgressListener progressListener;
 
-        public FileUploader(FileType fileType, File file, ProgressListener progressListener) {
+        public FileUploader(FileType fileType, String spec, File file, ProgressListener progressListener) {
             this.fileType = fileType;
+            this.spec = spec;
             this.file = file;
             this.progressListener = progressListener;
         }
@@ -215,11 +213,11 @@ public class DataSetClient {
         private String createRequestUrl() {
             return String.format(
                     "%s/submit/%s/%s/%s?accessKey=%s",
-                    sipModel.getAppConfigModel().getServerUrl(),
-                    sipModel.getDataSetStore().getSpec(),
+                    context.getServerUrl(),
+                    spec,
                     fileType,
                     file.getName(),
-                    sipModel.getAppConfigModel().getAccessKey()
+                    context.getAccessKey()
             );
         }
 
@@ -351,7 +349,8 @@ public class DataSetClient {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                sipModel.getUserNotifier().tellUser("Sorry, there was a problem communicating with Repository", exception);
+                log.warn("Problem communicating", exception);
+                context.tellUser("Sorry, there was a problem communicating with Repository");
                 forceDisconnect();
             }
         });
@@ -359,7 +358,7 @@ public class DataSetClient {
 
     private void forceDisconnect() {
         setListFetchingEnabled(false);
-        listener.disconnected();
+        context.disconnected();
     }
 
     private void notifyUser(DataSetResponse response) {
@@ -374,19 +373,19 @@ public class DataSetClient {
                 log.info("Received " + responseCode);
                 break;
             case ACCESS_KEY_FAILURE:
-                sipModel.getUserNotifier().tellUser("The Access Key is not correct for this Repository");
+                context.tellUser("The Access Key is not correct for this Repository");
                 break;
             case STATE_CHANGE_FAILURE:
-                sipModel.getUserNotifier().tellUser("Could not execute state change"); // todo
+                context.tellUser("Could not execute state change"); // todo
                 break;
             case DATA_SET_NOT_FOUND:
-                sipModel.getUserNotifier().tellUser("The Data Set was not found in the Repository");
+                context.tellUser("The Data Set was not found in the Repository");
                 break;
             case NEWORK_ERROR:
-                sipModel.getUserNotifier().tellUser("There was a network error while communicating with the Repository");
+                context.tellUser("There was a network error while communicating with the Repository");
                 break;
             case SYSTEM_ERROR:
-                sipModel.getUserNotifier().tellUser("Sorry, there was a system error in the Repository");
+                context.tellUser("Sorry, there was a system error in the Repository");
                 break;
             case UNKNOWN_RESPONSE:
                 log.error(responseCode.toString());

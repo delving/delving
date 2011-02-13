@@ -86,10 +86,6 @@
             <version>0.1.7</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-        </dependency>
-        <dependency>
             <groupId>javax.jnlp</groupId>
             <artifactId>jnlp-api</artifactId>
             <version>1.5.0</version>
@@ -109,12 +105,6 @@
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.jnlp</groupId>
-            <artifactId>jnlp-api</artifactId>
-            <version>1.5.0</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

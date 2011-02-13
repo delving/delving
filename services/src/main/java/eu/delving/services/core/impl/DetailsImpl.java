@@ -54,6 +54,16 @@ class DetailsImpl implements MetaRepo.Details {
     }
 
     @Override
+    public byte[] getFacts() {
+        return (byte[]) object.get(FACT_BYTES);
+    }
+
+    @Override
+    public void setFacts(byte[] factBytes) {
+        object.put(FACT_BYTES, factBytes);
+    }
+
+    @Override
     public Path getRecordRoot() {
         return new Path((String) (object.get(RECORD_ROOT)));
     }

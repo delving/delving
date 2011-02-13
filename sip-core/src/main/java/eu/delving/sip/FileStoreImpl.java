@@ -28,6 +28,7 @@ import eu.delving.metadata.MetadataException;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.RecordDefinition;
 import eu.delving.metadata.RecordMapping;
+import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.net.URL;
@@ -40,6 +41,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * This interface describes how files are stored by the sip-creator
@@ -168,9 +171,12 @@ public class FileStoreImpl implements FileStore {
     @Override
     public Map<String, DataSetStore> getDataSetStores() {
         Map<String, DataSetStore> map = new TreeMap<String, DataSetStore>();
-        for (File file : home.listFiles()) {
-            if (file.isDirectory()) {
-                map.put(file.getName(), new DataSetStoreImpl(file));
+        File[] list = home.listFiles();
+        if (list != null) {
+            for (File file : list) {
+                if (file.isDirectory()) {
+                    map.put(file.getName(), new DataSetStoreImpl(file));
+                }
             }
         }
         return map;
@@ -311,7 +317,7 @@ public class FileStoreImpl implements FileStore {
         }
 
         @Override
-        public List<FieldStatistics> getStatistics()  {
+        public List<FieldStatistics> getStatistics() {
             File statisticsFile = new File(directory, STATISTICS_FILE_NAME);
             if (statisticsFile.exists()) {
                 try {
@@ -421,6 +427,50 @@ public class FileStoreImpl implements FileStore {
                 prefixes.add(name);
             }
             return prefixes;
+        }
+
+        @Override
+        public void acceptSipZip(ZipInputStream zipInputStream, ProgressListener progressListener) throws FileStoreException {
+            ZipEntry zipEntry;
+            byte[] buffer = new byte[BLOCK_SIZE];
+            long totalBytesRead = 0;
+            int bytesRead;
+            boolean cancelled = false;
+            try {
+                while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                    String fileName = zipEntry.getName();
+                    File file = new File(directory, fileName);
+                    if (fileName.equals(FileStore.SOURCE_FILE_NAME)) {
+                        Hasher hasher = new Hasher();
+                        GZIPInputStream gzipInputStream = new GZIPInputStream(zipInputStream);
+                        GZIPOutputStream outputStream = new GZIPOutputStream(new FileOutputStream(file));
+                        while (!cancelled && -1 != (bytesRead = gzipInputStream.read(buffer))) {
+                            outputStream.write(buffer, 0, bytesRead);
+                            totalBytesRead += bytesRead;
+                            if (progressListener != null) {
+                                if (!progressListener.setProgress((int) (totalBytesRead / BLOCK_SIZE))) {
+                                    cancelled = true;
+                                    break;
+                                }
+                            }
+                            hasher.update(buffer, bytesRead);
+                        }
+                        if (progressListener != null) progressListener.finished(!cancelled);
+                        outputStream.close();
+                        String hash = hasher.toString();
+                        File hashedSource = new File(directory, hash + "__" + SOURCE_FILE_NAME);
+                        if (!file.renameTo(hashedSource)) {
+                            throw new FileStoreException(String.format("Unable to rename %s to %s", file.getAbsolutePath(), hashedSource.getAbsolutePath()));
+                        }
+                    }
+                    else {
+                        IOUtils.copy(zipInputStream, new FileOutputStream(file));
+                    }
+                }
+            }
+            catch (IOException e) {
+                throw new FileStoreException("Unable to accept SipZip file", e);
+            }
         }
 
         @Override
@@ -653,7 +703,7 @@ public class FileStoreImpl implements FileStore {
                 }
             });
             if (files.length > MAX_HASH_HISTORY) {
-                for (int walk = MAX_HASH_HISTORY; walk<files.length; walk++) {
+                for (int walk = MAX_HASH_HISTORY; walk < files.length; walk++) {
                     //noinspection ResultOfMethodCallIgnored
                     files[walk].delete();
                 }

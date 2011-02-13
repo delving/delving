@@ -3,6 +3,8 @@ package eu.delving.metadata;
 import com.thoughtworks.xstream.XStream;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -110,6 +112,17 @@ public class Facts {
         return listDefinition.factDefinitions;
     }
 
+    public static Facts fromBytes(byte [] array) throws MetadataException {
+        ByteArrayInputStream bais = new ByteArrayInputStream(array);
+        return read(bais);
+    }
+
+    public static byte [] toBytes(Facts facts) throws MetadataException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        write(facts, baos);
+        return baos.toByteArray();
+    }
+
     public static Facts read(InputStream inputStream) throws MetadataException {
         try {
             Facts facts = new Facts();
@@ -154,4 +167,14 @@ public class Facts {
         }
     }
 
+    public String getRelativeUniquePath() throws MetadataException {
+        if (!getRecordRootPath().equals(getUniqueElementPath().substring(0, getRecordRootPath().length()))) {
+            throw new MetadataException(String.format(
+                    "Unique element path %s does not lie within the record root path %s",
+                    getUniqueElementPath(),
+                    getRecordRootPath()
+            ));
+        }
+        return getUniqueElementPath().substring(getRecordRootPath().length());
+    }
 }

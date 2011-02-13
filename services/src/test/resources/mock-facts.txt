@@ -1,0 +1,13 @@
+spec=004_01_Col_NL_CM
+recordRootPath=/adlibXML/recordList/record
+recordCount=14141
+uniqueElementPath=/adlibXML/recordList/record/object_number
+name=Centraal Museum
+collectionType=all
+namespacePrefix=raw
+language=nl
+country=netherlands
+provider=Rijksdienst voor het Cultureel Erfgoed
+dataProvider=Centraal Museum
+rights=http://www.europeana.eu/rights/unknown/
+type=IMAGE
