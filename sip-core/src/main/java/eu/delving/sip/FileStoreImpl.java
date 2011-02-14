@@ -465,6 +465,7 @@ public class FileStoreImpl implements FileStore {
                     }
                     else {
                         IOUtils.copy(zipInputStream, new FileOutputStream(file));
+                        Hasher.ensureFileHashed(file);
                     }
                 }
             }
