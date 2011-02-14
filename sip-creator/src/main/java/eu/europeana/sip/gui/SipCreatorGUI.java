@@ -139,7 +139,7 @@ public class SipCreatorGUI extends JFrame {
             @Override
             public void setList(List<DataSetInfo> list) {
                 if (list != null) {
-                    Set<String> untouched = dataSetListModel.setDataSetInfo(list);
+                    Set<String> untouched = dataSetListModel.setDataSetInfoList(list);
                     if (!untouched.isEmpty()) {
                         dataSetActions.setUntouched(untouched);
                     }

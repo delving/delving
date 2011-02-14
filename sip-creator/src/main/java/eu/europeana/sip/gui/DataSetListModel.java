@@ -38,9 +38,7 @@ import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
@@ -73,18 +71,14 @@ public class DataSetListModel extends AbstractListModel {
         return entry;
     }
 
-    public Set<String> setDataSetInfo(List<DataSetInfo> dataSetInfoList) {
-        Map<String, DataSetInfo> map = new TreeMap<String, DataSetInfo>();
-        for (DataSetInfo info : dataSetInfoList) {
-            map.put(info.spec, info);
-        }
+    public Set<String> setDataSetInfoList(List<DataSetInfo> dataSetInfoList) {
         Set<String> untouched = new TreeSet<String>();
         for (Entry entry : entries) {
-            DataSetInfo freshInfo = map.get(entry.getSpec());
-            entry.setDataSetInfo(freshInfo);
-            if (freshInfo == null) {
-                untouched.add(entry.getSpec());
-            }
+            untouched.add(entry.getSpec());
+        }
+        for (DataSetInfo info : dataSetInfoList) {
+            setDataSetInfo(info);
+            untouched.remove(info.spec);
         }
         return untouched;
     }

@@ -26,6 +26,7 @@ import java.io.Reader;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.zip.ZipInputStream;
 
 /**
  * The tab related to interacting with the metadata repository
@@ -43,13 +44,13 @@ public class DataSetClient {
 
     public interface Context {
         String getServerUrl();
-        
+
         String getAccessKey();
-        
+
         void setInfo(DataSetInfo dataSetInfo);
 
         void setList(List<DataSetInfo> list);
-        
+
         void tellUser(String message);
 
         void disconnected();
@@ -87,6 +88,10 @@ public class DataSetClient {
 
     public void uploadFile(FileType fileType, String spec, File file, ProgressListener progressListener) {
         executor.execute(new FileUploader(fileType, spec, file, progressListener));
+    }
+
+    public void downloadDataSet(FileStore.DataSetStore dataSetStore, ProgressListener progressListener) {
+        executor.execute(new DataSetDownloader(dataSetStore, progressListener));
     }
 
     private class ListFetcher implements Runnable {
@@ -292,6 +297,42 @@ public class DataSetClient {
                 // File instance is considered immutable
                 // No need to make a copy of it
                 return super.clone();
+            }
+        }
+    }
+
+    private class DataSetDownloader implements Runnable {
+        private FileStore.DataSetStore dataSetStore;
+        private ProgressListener progressListener;
+
+        private DataSetDownloader(FileStore.DataSetStore dataSetStore, ProgressListener progressListener) {
+            this.dataSetStore = dataSetStore;
+            this.progressListener = progressListener;
+        }
+
+        @Override
+        public void run() {
+            HttpClient httpClient = new DefaultHttpClient();
+            try {
+                HttpGet method = new HttpGet(String.format(
+                        "%s/fetch/%s-sip.zip?accessKey=%s",
+                        context.getServerUrl(),
+                        dataSetStore.getSpec(),
+                        context.getAccessKey()
+                ));
+                HttpResponse httpResponse = httpClient.execute(method);
+                if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                    HttpEntity entity = httpResponse.getEntity();
+                    ZipInputStream zipInputStream = new ZipInputStream(entity.getContent());
+                    dataSetStore.acceptSipZip(zipInputStream, progressListener);
+                }
+                else {
+                    log.warn("Unable to download source. HTTP response "+httpResponse.getStatusLine().getReasonPhrase());
+                }
+            }
+            catch (Exception e) {
+                log.warn("Unable to download source", e);
+                context.tellUser("Unable to download source");
             }
         }
     }

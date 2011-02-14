@@ -186,6 +186,7 @@ public class DataSetActions {
 
     private void createLocalActions(SipModel sipModel) {
         localActions.clear();
+        localActions.add(createDownloadDataSetAction());
         localActions.add(createAnalyzeFactsAction());
         for (String metadataPrefix : sipModel.getAppConfigModel().getActiveMetadataPrefixes()) {
             localActions.add(createEditMappingAction(metadataPrefix));
@@ -240,6 +241,36 @@ public class DataSetActions {
         };
     }
 
+    private DataSetAction createDownloadDataSetAction() {
+        return new DataSetAction("Download Data Set") {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                DataSetInfo info = entry.getDataSetInfo();
+                ProgressMonitor progressMonitor = new ProgressMonitor(frame, "Downloading", String.format("Downloading source for %s", info.spec), 0, 100);
+                final ProgressListener progressListener = new ProgressListener.Adapter(progressMonitor) {
+                    @Override
+                    public void swingFinished(boolean success) {
+                        setEnabled(!success);
+                        setEntry(entry);
+                    }
+                };
+                try {
+                    FileStore.DataSetStore store = sipModel.getFileStore().createDataSetStore(info.spec);
+                    dataSetClient.downloadDataSet(store, progressListener);
+                    entry.setDataSetStore(store);
+                }
+                catch (FileStoreException e) {
+                    sipModel.getUserNotifier().tellUser(String.format("Unable to create data set %s", info.spec));
+                }
+            }
+
+            @Override
+            boolean isEnabled(DataSetListModel.Entry entry) {
+                return entry.getDataSetInfo() != null && entry.getDataSetStore() == null;
+            }
+        };
+    }
+
     private DataSetAction createAnalyzeFactsAction() {
         return new DataSetAction("Analyze Fields & Edit Facts") {
             @Override
@@ -287,7 +318,12 @@ public class DataSetActions {
                 if (doImport == JOptionPane.YES_OPTION) {
                     try {
                         entry.getDataSetStore().delete();
-                        refreshList.run();
+                        if (entry.getDataSetInfo() == null) {
+                            refreshList.run();
+                        }
+                        else {
+                            entry.setDataSetStore(null);
+                        }
                     }
                     catch (FileStoreException e) {
                         sipModel.getUserNotifier().tellUser("Unable to delete data set", e);
@@ -383,7 +419,8 @@ public class DataSetActions {
 
             @Override
             boolean isEnabled(DataSetListModel.Entry entry) {
-                return canUpload(FileType.MAPPING, entry.getDataSetStore().getMappingFile(prefix), entry);
+                FileStore.DataSetStore store = entry.getDataSetStore();
+                return store != null && canUpload(FileType.MAPPING, store.getMappingFile(prefix), entry);
             }
 
         };
