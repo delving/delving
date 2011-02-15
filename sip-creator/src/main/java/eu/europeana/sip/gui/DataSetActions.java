@@ -396,7 +396,9 @@ public class DataSetActions {
             @Override
             boolean isEnabled(DataSetListModel.Entry entry) {
                 FileStore.DataSetStore store = entry.getDataSetStore();
-                return store != null && canUpload(FileType.SOURCE, entry.getDataSetStore().getSourceFile(), entry);
+                return store != null &&
+                        canUpload(FileType.SOURCE, entry.getDataSetStore().getSourceFile(), entry) &&
+                        !canUpload(FileType.FACTS, entry.getDataSetStore().getFactsFile(), entry);
             }
         };
     }

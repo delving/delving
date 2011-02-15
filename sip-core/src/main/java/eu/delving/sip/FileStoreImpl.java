@@ -277,9 +277,7 @@ public class FileStoreImpl implements FileStore {
                 if (!source.delete()) {
                     throw new FileStoreException("Unable to delete " + source.getAbsolutePath());
                 }
-                if (!directory.delete()) {
-                    throw new FileStoreException("Unable to delete " + directory.getAbsolutePath());
-                }
+                clearSource();
             }
             else {
                 String hash = hasher.toString();
@@ -287,6 +285,10 @@ public class FileStoreImpl implements FileStore {
                 if (!source.renameTo(hashedSource)) {
                     throw new FileStoreException(String.format("Unable to rename %s to %s", source.getAbsolutePath(), hashedSource.getAbsolutePath()));
                 }
+                Facts facts = getFacts();
+                facts.setDownloadedSource(false);
+                setFacts(facts);
+                delete(new File(directory, STATISTICS_FILE_NAME));
             }
         }
 
