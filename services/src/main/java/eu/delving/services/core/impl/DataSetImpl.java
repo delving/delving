@@ -26,6 +26,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import eu.delving.metadata.Facts;
 import eu.delving.metadata.MetadataNamespace;
+import eu.delving.metadata.Path;
 import eu.delving.metadata.RecordMapping;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.core.MongoObjectParser;
@@ -34,7 +35,6 @@ import eu.delving.services.exceptions.MappingNotFoundException;
 import eu.delving.services.exceptions.MetaRepoSystemException;
 import eu.delving.services.exceptions.RecordParseException;
 import eu.delving.sip.DataSetState;
-import eu.delving.sip.SourceStream;
 import org.bson.types.ObjectId;
 
 import java.io.ByteArrayInputStream;
@@ -115,8 +115,8 @@ class DataSetImpl implements MetaRepo.DataSet {
             Facts facts = Facts.read(new ByteArrayInputStream(details.getFacts()));
             MongoObjectParser parser = new MongoObjectParser(
                     inputStream,
-                    SourceStream.getRecordRootPath(facts),
-                    SourceStream.getUniqueElementPath(facts),
+                    new Path(facts.getRecordRootPath()),
+                    new Path(facts.getUniqueElementPath()),
                     details.getMetadataFormat().getPrefix(),
                     details.getMetadataFormat().getNamespace()
             );

@@ -19,11 +19,7 @@
  *  permissions and limitations under the Licence.
  */
 
-package eu.delving.sip;
-
-import eu.delving.metadata.Facts;
-import eu.delving.metadata.MetadataException;
-import eu.delving.metadata.Path;
+package eu.delving.metadata;
 
 import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventWriter;
@@ -71,24 +67,6 @@ public class SourceStream {
         recordWriter.write(">");
     }
 
-
-    public static Path getRecordRootPath(Facts facts) {
-        if (facts.isDownloadedSource()) {
-            return new Path(String.format("/%s/%s", SourceStream.ENVELOPE_TAG, SourceStream.RECORD_TAG));
-        }
-        else {
-            return new Path(facts.getRecordRootPath());
-        }
-    }
-
-    public static Path getUniqueElementPath(Facts facts) throws MetadataException {
-        if (facts.isDownloadedSource()) {
-            return new Path(getRecordRootPath(facts) + facts.getRelativeUniquePath());
-        }
-        else {
-            return new Path(facts.getUniqueElementPath());
-        }
-    }
 
     public static void adjustPathsForHarvest(Facts facts) throws MetadataException {
         String recordRootPath = String.format("/%s/%s/metadata/record", SourceStream.ENVELOPE_TAG, SourceStream.RECORD_TAG);

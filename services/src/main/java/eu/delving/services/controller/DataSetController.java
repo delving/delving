@@ -22,11 +22,12 @@
 package eu.delving.services.controller;
 
 import eu.delving.metadata.Facts;
+import eu.delving.metadata.Hasher;
 import eu.delving.metadata.MetadataException;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.MetadataNamespace;
-import eu.delving.metadata.Path;
 import eu.delving.metadata.RecordMapping;
+import eu.delving.metadata.SourceStream;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.AccessKeyException;
 import eu.delving.services.exceptions.DataSetNotFoundException;
@@ -40,8 +41,6 @@ import eu.delving.sip.DataSetResponseCode;
 import eu.delving.sip.DataSetState;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileType;
-import eu.delving.sip.Hasher;
-import eu.delving.sip.SourceStream;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -298,8 +297,6 @@ public class DataSetController {
                 break;
             }
         }
-        details.setRecordRoot(new Path(facts.getRecordRootPath()));
-        details.setUniqueElement(new Path(facts.getUniqueElementPath()));
         dataSet.setFactsHash(hash);
         try {
             details.setFacts(Facts.toBytes(facts));

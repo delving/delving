@@ -22,7 +22,6 @@
 package eu.delving.services.core.impl;
 
 import com.mongodb.DBObject;
-import eu.delving.metadata.Path;
 import eu.delving.services.core.MetaRepo;
 
 import static eu.delving.core.util.MongoObject.mob;
@@ -61,26 +60,6 @@ class DetailsImpl implements MetaRepo.Details {
     @Override
     public void setFacts(byte[] factBytes) {
         object.put(FACT_BYTES, factBytes);
-    }
-
-    @Override
-    public Path getRecordRoot() {
-        return new Path((String) (object.get(RECORD_ROOT)));
-    }
-
-    @Override
-    public void setRecordRoot(Path path) {
-        object.put(RECORD_ROOT, path.toString());
-    }
-
-    @Override
-    public Path getUniqueElement() {
-        return new Path((String) (object.get(UNIQUE_ELEMENT)));
-    }
-
-    @Override
-    public void setUniqueElement(Path path) {
-        object.put(UNIQUE_ELEMENT, path.toString());
     }
 
     @Override

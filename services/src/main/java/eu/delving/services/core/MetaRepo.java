@@ -22,7 +22,6 @@
 package eu.delving.services.core;
 
 import com.mongodb.DBObject;
-import eu.delving.metadata.Path;
 import eu.delving.metadata.RecordMapping;
 import eu.delving.services.exceptions.AccessKeyException;
 import eu.delving.services.exceptions.BadArgumentException;
@@ -146,14 +145,6 @@ public interface MetaRepo {
 
         void setName(String value);
 
-        Path getRecordRoot();
-
-        void setRecordRoot(Path path);
-
-        Path getUniqueElement();
-
-        void setUniqueElement(Path path);
-
         MetadataFormat getMetadataFormat();
 
         byte [] getFacts();
@@ -161,8 +152,6 @@ public interface MetaRepo {
         void setFacts(byte [] factBytes);
 
         String NAME = "name";
-        String RECORD_ROOT = "record_root";
-        String UNIQUE_ELEMENT = "unique_element";
         String METADATA_FORMAT = "metadata_format";
         String FACT_BYTES = "fact_bytes";
     }

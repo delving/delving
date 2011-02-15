@@ -19,10 +19,11 @@
  *  permissions and limitations under the Licence.
  */
 
-package eu.delving.sip;
+package eu.delving.metadata;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -65,7 +66,7 @@ public class Hasher {
         }
     }
 
-    public static File ensureFileHashed(File file) throws FileStoreException {
+    public static File ensureFileHashed(File file) throws IOException {
         if (file.getName().contains(SEPARATOR)) {
             return file;
         }
@@ -74,13 +75,13 @@ public class Hasher {
             hasher.update(file);
             File hashedFile = new File(file.getParentFile(), hasher.getHashString() + SEPARATOR + file.getName());
             if (!file.renameTo(hashedFile)) {
-                throw new FileStoreException(String.format("Unable to rename %s to %s", file.getAbsolutePath(), hashedFile.getAbsolutePath()));
+                throw new IOException(String.format("Unable to rename %s to %s", file.getAbsolutePath(), hashedFile.getAbsolutePath())) ;
             }
             return hashedFile;
         }
     }
 
-    public static boolean checkHash(File file) throws FileStoreException {
+    public static boolean checkHash(File file) throws IOException {
         String hash = extractHash(file);
         Hasher hasher = new Hasher();
         hasher.update(file);
@@ -103,7 +104,7 @@ public class Hasher {
         messageDigest.update(buffer, 0, bytes);
     }
 
-    public void update(File inputFile) throws FileStoreException {
+    public void update(File inputFile) throws IOException {
         try {
             InputStream inputStream = new FileInputStream(inputFile);
             if (inputFile.getName().endsWith(".gz")) {
@@ -117,7 +118,7 @@ public class Hasher {
             inputStream.close();
         }
         catch (Exception e) {
-            throw new FileStoreException("Unable to get hash of " + inputFile.getAbsolutePath(), e);
+            throw new IOException("Unable to get hash of " + inputFile.getAbsolutePath(), e);
         }
     }
 

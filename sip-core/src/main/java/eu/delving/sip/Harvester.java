@@ -27,6 +27,7 @@ package eu.delving.sip;
  */
 
 import com.ctc.wstx.stax.WstxInputFactory;
+import eu.delving.metadata.SourceStream;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;

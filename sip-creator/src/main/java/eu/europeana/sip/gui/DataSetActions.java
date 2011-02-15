@@ -21,6 +21,7 @@
 
 package eu.europeana.sip.gui;
 
+import eu.delving.metadata.Hasher;
 import eu.delving.sip.DataSetClient;
 import eu.delving.sip.DataSetCommand;
 import eu.delving.sip.DataSetInfo;
@@ -28,7 +29,6 @@ import eu.delving.sip.DataSetState;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.FileType;
-import eu.delving.sip.Hasher;
 import eu.delving.sip.ProgressListener;
 import eu.europeana.sip.model.SipModel;
 

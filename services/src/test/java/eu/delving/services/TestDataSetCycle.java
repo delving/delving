@@ -22,16 +22,16 @@
 package eu.delving.services;
 
 import eu.delving.metadata.Facts;
+import eu.delving.metadata.Hasher;
 import eu.delving.metadata.MetadataException;
+import eu.delving.metadata.SourceStream;
 import eu.delving.sip.AccessKey;
 import eu.delving.sip.DataSetClient;
 import eu.delving.sip.DataSetInfo;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.FileType;
 import eu.delving.sip.Harvester;
-import eu.delving.sip.Hasher;
 import eu.delving.sip.ProgressListener;
-import eu.delving.sip.SourceStream;
 import eu.europeana.core.util.StarterUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -81,17 +81,17 @@ public class TestDataSetCycle {
         // import
         Ear importEar = new Ear("Import First Time");
         factory.getDataSetStore().importFile(MockInput.sampleFile(), importEar);
-        Assert.assertTrue("import first time", importEar.waitUntilFinished());
+        Assert.assertTrue("import first time", importEar.getResultBoolean());
         Facts facts = Facts.read(new FileInputStream(FACTS_FILE));
         factory.getDataSetStore().setFacts(facts);
         // upload
         DataSetClient client = new DataSetClient(new ClientContext());
         Ear uploadFactsEar = new Ear("UploadFacts");
         client.uploadFile(FileType.FACTS, MockFileStoreFactory.SPEC, FACTS_FILE, uploadFactsEar);
-        Assert.assertTrue("upload facts", uploadFactsEar.waitUntilFinished());
+        Assert.assertTrue("upload facts", uploadFactsEar.getResultBoolean());
         Ear uploadSourceEar = new Ear("UploadSource First Time");
         client.uploadFile(FileType.SOURCE, MockFileStoreFactory.SPEC, factory.getDataSetStore().getSourceFile(), uploadSourceEar);
-        Assert.assertTrue("upload source first time", uploadSourceEar.waitUntilFinished());
+        Assert.assertTrue("upload source first time", uploadSourceEar.getResultBoolean());
         // harvest
         Harvester harvester = new Harvester();
         Harvey harvey = new Harvey("first");
@@ -107,11 +107,11 @@ public class TestDataSetCycle {
         factory.getDataSetStore().setFacts(facts);
         uploadFactsEar = new Ear("UploadFacts Again");
         client.uploadFile(FileType.FACTS, MockFileStoreFactory.SPEC, factory.getDataSetStore().getFactsFile(), uploadFactsEar);
-        Assert.assertTrue("upload facts", uploadFactsEar.waitUntilFinished());
+        Assert.assertTrue("upload facts", uploadFactsEar.getResultBoolean());
         // upload source again
         uploadSourceEar = new Ear("UploadSource Again");
         client.uploadFile(FileType.SOURCE, MockFileStoreFactory.SPEC, factory.getDataSetStore().getSourceFile(), uploadSourceEar);
-        Assert.assertTrue("upload source again", uploadSourceEar.waitUntilFinished());
+        Assert.assertTrue("upload source again", uploadSourceEar.getResultBoolean());
         // harvest again
         harvey = new Harvey("again");
         harvester.perform(harvey);
@@ -140,17 +140,17 @@ public class TestDataSetCycle {
         // import
         Ear importEar = new Ear("Import First Time");
         factory.getDataSetStore().importFile(MockInput.sampleFile(), importEar);
-        Assert.assertTrue("import first time", importEar.waitUntilFinished());
+        Assert.assertTrue("import first time", importEar.getResultBoolean());
         Facts facts = Facts.read(new FileInputStream(FACTS_FILE));
         factory.getDataSetStore().setFacts(facts);
         // upload
         DataSetClient client = new DataSetClient(clientContext);
         Ear uploadFactsEar = new Ear("Upload facts first time");
         client.uploadFile(FileType.FACTS, MockFileStoreFactory.SPEC, FACTS_FILE, uploadFactsEar);
-        Assert.assertTrue("upload facts first time", uploadFactsEar.waitUntilFinished());
+        Assert.assertTrue("upload facts first time", uploadFactsEar.getResultBoolean());
         Ear uploadSourceEar = new Ear("Upload source First Time");
         client.uploadFile(FileType.SOURCE, MockFileStoreFactory.SPEC, factory.getDataSetStore().getSourceFile(), uploadSourceEar);
-        Assert.assertTrue("upload source first time", uploadSourceEar.waitUntilFinished());
+        Assert.assertTrue("upload source first time", uploadSourceEar.getResultBoolean());
         client.setListFetchingEnabled(true); /* run it once */ client.setListFetchingEnabled(false);
         // delete local store
         factory.getDataSetStore().delete();
@@ -158,7 +158,7 @@ public class TestDataSetCycle {
         factory.getFileStore().createDataSetStore(MockFileStoreFactory.SPEC);
         Thread.sleep(1000);
         Assert.assertNotNull("data set info missing", clientContext.dataSetInfo);
-        Assert.assertEquals(38L, (long)clientContext.dataSetInfo.recordCount);
+        Assert.assertEquals(38L, (long) clientContext.dataSetInfo.recordCount);
         clientContext.dataSetInfo = null;
         HttpMethod method = new GetMethod(String.format(
                 "%s/fetch/%s-sip.zip?accessKey=%s",
@@ -172,14 +172,10 @@ public class TestDataSetCycle {
         // upload this new version
         uploadFactsEar = new Ear("Upload facts Again");
         client.uploadFile(FileType.FACTS, MockFileStoreFactory.SPEC, factory.getDataSetStore().getFactsFile(), uploadFactsEar);
-        Assert.assertTrue("upload facts again", uploadFactsEar.waitUntilFinished());
+        Assert.assertTrue("upload facts again", uploadFactsEar.getResultBoolean());
         uploadSourceEar = new Ear("Upload source Again");
         client.uploadFile(FileType.SOURCE, MockFileStoreFactory.SPEC, factory.getDataSetStore().getSourceFile(), uploadSourceEar);
-        Assert.assertTrue("upload source again", uploadSourceEar.waitUntilFinished());
-        client.setListFetchingEnabled(true); /* run it once */ client.setListFetchingEnabled(false);
-        Thread.sleep(1000);
-        Assert.assertNotNull("data set info missing", clientContext.dataSetInfo);
-        Assert.assertEquals(38L, (long)clientContext.dataSetInfo.recordCount);
+        Assert.assertFalse("upload source again should have been deemed unnecessary", uploadSourceEar.getResultBoolean());
     }
 
     // ==================
@@ -262,7 +258,7 @@ public class TestDataSetCycle {
             this.success = success;
         }
 
-        public boolean waitUntilFinished() {
+        public boolean getResultBoolean() {
             while (success == null) {
                 try {
                     Thread.sleep(300);

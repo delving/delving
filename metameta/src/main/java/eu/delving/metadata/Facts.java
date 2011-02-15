@@ -65,10 +65,16 @@ public class Facts {
     }
 
     public String getRecordRootPath() {
-        return get(RECORD_ROOT_PATH);
+        if (isDownloadedSource()) {
+            return String.format("/%s/%s", SourceStream.ENVELOPE_TAG, SourceStream.RECORD_TAG);
+        }
+        else {
+            return get(RECORD_ROOT_PATH);
+        }
     }
 
     public void setRecordRootPath(String value) {
+        setDownloadedSource(false);
         set(RECORD_ROOT_PATH, value);
     }
 
@@ -81,10 +87,16 @@ public class Facts {
     }
 
     public String getUniqueElementPath() {
-        return get(UNIQUE_ELEMENT_PATH);
+        if (isDownloadedSource()) {
+            return getRecordRootPath() + getRelativeUniquePath();
+        }
+        else {
+            return get(UNIQUE_ELEMENT_PATH);
+        }
     }
 
     public void setUniqueElementPath(String value) {
+        setDownloadedSource(false);
         set(UNIQUE_ELEMENT_PATH, value);
     }
 
@@ -121,12 +133,12 @@ public class Facts {
         return listDefinition.factDefinitions;
     }
 
-    public static Facts fromBytes(byte [] array) throws MetadataException {
+    public static Facts fromBytes(byte[] array) throws MetadataException {
         ByteArrayInputStream bais = new ByteArrayInputStream(array);
         return read(bais);
     }
 
-    public static byte [] toBytes(Facts facts) throws MetadataException {
+    public static byte[] toBytes(Facts facts) throws MetadataException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         write(facts, baos);
         return baos.toByteArray();
@@ -144,7 +156,7 @@ public class Facts {
                     continue;
                 }
                 String fieldName = line.substring(0, equals).trim();
-                String value = line.substring(equals+1).trim();
+                String value = line.substring(equals + 1).trim();
                 if (FIELD_SET.contains(fieldName)) {
                     facts.set(fieldName, value);
                 }
@@ -176,14 +188,14 @@ public class Facts {
         }
     }
 
-    public String getRelativeUniquePath() throws MetadataException {
-        if (!getRecordRootPath().equals(getUniqueElementPath().substring(0, getRecordRootPath().length()))) {
-            throw new MetadataException(String.format(
-                    "Unique element path %s does not lie within the record root path %s",
-                    getUniqueElementPath(),
-                    getRecordRootPath()
-            ));
+    public String getRelativeUniquePath() {
+        String recordRootPath = get(RECORD_ROOT_PATH);
+        String uniqueElementPath = get(UNIQUE_ELEMENT_PATH);
+        if (recordRootPath.equals(uniqueElementPath.substring(0, recordRootPath.length()))) {
+            return uniqueElementPath.substring(recordRootPath.length());
         }
-        return getUniqueElementPath().substring(getRecordRootPath().length());
+        else {
+            return uniqueElementPath; // this is a very improper answer
+        }
     }
 }

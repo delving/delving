@@ -1,6 +1,7 @@
 package eu.delving.sip;
 
 import com.thoughtworks.xstream.XStream;
+import eu.delving.metadata.Hasher;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;

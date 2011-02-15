@@ -3,10 +3,10 @@ package eu.delving.services.core;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultimap;
 import com.mongodb.DBObject;
+import eu.delving.metadata.Hasher;
 import eu.delving.metadata.MetadataNamespace;
 import eu.delving.metadata.Path;
 import eu.delving.metadata.Tag;
-import eu.delving.sip.Hasher;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 

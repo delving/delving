@@ -24,6 +24,7 @@ package eu.delving.sip;
 import com.thoughtworks.xstream.XStream;
 import eu.delving.metadata.Facts;
 import eu.delving.metadata.FieldStatistics;
+import eu.delving.metadata.Hasher;
 import eu.delving.metadata.MetadataException;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.RecordDefinition;

@@ -26,7 +26,7 @@
     <artifactId>metameta</artifactId>
     <packaging>jar</packaging>
     <name>Meta-Meta</name>
-    <version>0.1.7</version>
+    <version>0.1.8</version>
     <description>Core Metadata Classes</description>
     <inceptionYear>2010</inceptionYear>
 
