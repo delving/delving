@@ -93,25 +93,5 @@ class DetailsImpl implements MetaRepo.Details {
         object.put(NAME, value);
     }
 
-    @Override
-    public String getProviderName() {
-        return (String) object.get(PROVIDER_NAME);
-    }
-
-    @Override
-    public void setProviderName(String value) {
-        object.put(PROVIDER_NAME, value);
-    }
-
-    @Override
-    public String getDescription() {
-        return (String) object.get(DESCRIPTION);
-    }
-
-    @Override
-    public void setDescription(String value) {
-        object.put(DESCRIPTION, value);
-    }
-
 }
 

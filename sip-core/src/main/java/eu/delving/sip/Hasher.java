@@ -24,7 +24,9 @@ package eu.delving.sip;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.zip.GZIPInputStream;
@@ -94,6 +96,9 @@ public class Hasher {
         }
     }
 
+    public DigestOutputStream createDigestOutputStream(OutputStream outputStream) {
+        return new DigestOutputStream(outputStream, messageDigest);
+    }
     public void update(byte[] buffer, int bytes) {
         messageDigest.update(buffer, 0, bytes);
     }
@@ -151,4 +156,5 @@ public class Hasher {
         }
         return hex.toString();
     }
+
 }

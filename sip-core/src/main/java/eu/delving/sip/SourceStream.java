@@ -23,6 +23,7 @@ package eu.delving.sip;
 
 import eu.delving.metadata.Facts;
 import eu.delving.metadata.MetadataException;
+import eu.delving.metadata.Path;
 
 import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventWriter;
@@ -34,6 +35,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
 /**
@@ -48,7 +50,8 @@ public class SourceStream {
     private XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
     private XMLEventFactory eventFactory = XMLEventFactory.newInstance();
     private OutputStream outputStream;
-    private GZIPOutputStream zipOut;
+    private Hasher hasher = new Hasher();
+    private GZIPOutputStream gzipOutputStream;
     private Writer recordWriter;
     private XMLEventWriter xmlEventWriter;
 
@@ -56,19 +59,34 @@ public class SourceStream {
         this.outputStream = outputStream;
     }
 
-    public void startZipStream() throws XMLStreamException, IOException {
-        zipOut = new GZIPOutputStream(outputStream);
-        recordWriter = new OutputStreamWriter(zipOut, "UTF-8");
+    public void startZipStream(Map map) throws XMLStreamException, IOException {
+        gzipOutputStream = new GZIPOutputStream(outputStream);
+        recordWriter = new OutputStreamWriter(hasher.createDigestOutputStream(gzipOutputStream), "UTF-8");
         recordWriter.write("<?xml version=\"1.0\"?>\n");
-        recordWriter.write(String.format("<%s>\n", ENVELOPE_TAG));
+        recordWriter.write(String.format("<%s\n", ENVELOPE_TAG));
+        for (Object entryObject : map.entrySet()) {
+            Map.Entry entry = (Map.Entry)entryObject;
+            recordWriter.write(String.format("   xmlns:%s=\"%s\"\n", entry.getKey(), entry.getValue()));
+        }
+        recordWriter.write(">");
     }
 
-    public static void adjustPathsForEnvelope(Facts facts) throws MetadataException {
-        String recordRootPath = String.format("/%s/%s", SourceStream.ENVELOPE_TAG, SourceStream.RECORD_TAG);
-        if (!facts.getRecordRootPath().equals(recordRootPath)) {
-            String relativeUniquePath = facts.getRelativeUniquePath();
-            facts.setRecordRootPath(recordRootPath);
-            facts.setUniqueElementPath(recordRootPath+relativeUniquePath);
+
+    public static Path getRecordRootPath(Facts facts) {
+        if (facts.isDownloadedSource()) {
+            return new Path(String.format("/%s/%s", SourceStream.ENVELOPE_TAG, SourceStream.RECORD_TAG));
+        }
+        else {
+            return new Path(facts.getRecordRootPath());
+        }
+    }
+
+    public static Path getUniqueElementPath(Facts facts) throws MetadataException {
+        if (facts.isDownloadedSource()) {
+            return new Path(getRecordRootPath(facts) + facts.getRelativeUniquePath());
+        }
+        else {
+            return new Path(facts.getUniqueElementPath());
         }
     }
 
@@ -77,7 +95,7 @@ public class SourceStream {
         if (!facts.getRecordRootPath().equals(recordRootPath)) {
             String relativeUniquePath = facts.getRelativeUniquePath();
             facts.setRecordRootPath(recordRootPath);
-            facts.setUniqueElementPath(recordRootPath+relativeUniquePath);
+            facts.setUniqueElementPath(recordRootPath + relativeUniquePath);
         }
     }
 
@@ -87,10 +105,11 @@ public class SourceStream {
         recordWriter.write(String.format("</%s>\n", RECORD_TAG));
     }
 
-    public void endZipStream() throws XMLStreamException, IOException {
+    public String endZipStream() throws XMLStreamException, IOException {
         recordWriter.write(String.format("</%s>\n", ENVELOPE_TAG));
         recordWriter.flush();
-        zipOut.finish();
+        gzipOutputStream.finish();
+        return hasher.getHashString();
     }
 
     public void startEventStream() throws UnsupportedEncodingException, XMLStreamException {

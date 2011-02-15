@@ -212,11 +212,11 @@ public class DataSetController {
         ZipOutputStream zos = new ZipOutputStream(outputStream);
         zos.putNextEntry(new ZipEntry(FileStore.FACTS_FILE_NAME));
         Facts facts = Facts.fromBytes(dataSet.getDetails().getFacts());
-        SourceStream.adjustPathsForEnvelope(facts);
+        facts.setDownloadedSource(true);
         zos.write(Facts.toBytes(facts));
         zos.closeEntry();
         zos.putNextEntry(new ZipEntry(FileStore.SOURCE_FILE_NAME));
-        writeSourceStream(dataSet, zos, accessKey);
+        String sourceHash = writeSourceStream(dataSet, zos, accessKey);
         zos.closeEntry();
         for (MetaRepo.Mapping mapping : dataSet.mappings().values()) {
             RecordMapping recordMapping = mapping.getRecordMapping();
@@ -226,11 +226,13 @@ public class DataSetController {
         }
         zos.finish();
         zos.close();
+        dataSet.setSourceHash(sourceHash, true);
+        dataSet.save();
     }
 
-    private void writeSourceStream(MetaRepo.DataSet dataSet, ZipOutputStream zos, String accessKey) throws MappingNotFoundException, AccessKeyException, XMLStreamException, IOException {
+    private String writeSourceStream(MetaRepo.DataSet dataSet, ZipOutputStream zos, String accessKey) throws MappingNotFoundException, AccessKeyException, XMLStreamException, IOException {
         SourceStream sourceStream = new SourceStream(zos);
-        sourceStream.startZipStream();
+        sourceStream.startZipStream(dataSet.getNamespaces().toMap());
         ObjectId afterId = null;
         while (true) {
             MetaRepo.DataSet.RecordFetch fetch = dataSet.getRecords(
@@ -245,7 +247,7 @@ public class DataSetController {
                 sourceStream.addRecord(record.getXmlString());
             }
         }
-        sourceStream.endZipStream();
+        return sourceStream.endZipStream();
     }
 
     private DataSetResponseCode receiveMapping(RecordMapping recordMapping, String dataSetSpec, String hash) {
@@ -271,7 +273,7 @@ public class DataSetController {
             return DataSetResponseCode.GOT_IT_ALREADY;
         }
         dataSet.parseRecords(inputStream);
-        dataSet.setSourceHash(hash);
+        dataSet.setSourceHash(hash, false);
         dataSet.save();
         return DataSetResponseCode.THANK_YOU;
     }
@@ -286,8 +288,6 @@ public class DataSetController {
         }
         MetaRepo.Details details = dataSet.createDetails();
         details.setName(facts.get("name"));
-        details.setProviderName(facts.get("provider"));
-        details.setDescription(facts.get("name"));
         String prefix = facts.get("namespacePrefix");
         for (MetadataNamespace metadataNamespace : MetadataNamespace.values()) {
             if (metadataNamespace.getPrefix().equals(prefix)) {
@@ -443,11 +443,11 @@ public class DataSetController {
     private DataSetInfo getInfo(MetaRepo.DataSet dataSet) {
         DataSetInfo info = new DataSetInfo();
         info.spec = dataSet.getSpec();
+        info.name = dataSet.getDetails().getName();
         info.state = dataSet.getState(false).toString();
         info.recordCount = dataSet.getRecordCount();
         info.errorMessage = dataSet.getErrorMessage();
         info.recordsIndexed = dataSet.getRecordsIndexed();
-        info.name = dataSet.getDetails().getName();
         info.hashes = dataSet.getHashes();
         return info;
     }

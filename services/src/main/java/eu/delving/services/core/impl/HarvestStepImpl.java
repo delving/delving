@@ -57,11 +57,6 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
     }
 
     @Override
-    public boolean isFirst() {
-        return object.get(FIRST) != null;
-    }
-
-    @Override
     public Date getExpiration() {
         Date expiration = (Date) object.get(EXPIRATION);
         if (expiration == null) {
@@ -192,11 +187,6 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
         implFactory.harvestSteps().save(object);
     }
 
-    @Override
-    public void delete() {
-        implFactory.harvestSteps().remove(object);
-    }
-
     private int addRecord(MetaRepo.Record record) {
         records.add(record);
         return records.size();
@@ -247,10 +237,6 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
             return (String) object.get(PREFIX);
         }
 
-        @Override
-        public String getIdentifier() {
-            return (String) object.get(IDENTIFIER);
-        }
     }
 
 }

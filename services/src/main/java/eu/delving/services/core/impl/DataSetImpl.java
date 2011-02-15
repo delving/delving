@@ -24,6 +24,7 @@ package eu.delving.services.core.impl;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import eu.delving.metadata.Facts;
 import eu.delving.metadata.MetadataNamespace;
 import eu.delving.metadata.RecordMapping;
 import eu.delving.services.core.MetaRepo;
@@ -33,8 +34,10 @@ import eu.delving.services.exceptions.MappingNotFoundException;
 import eu.delving.services.exceptions.MetaRepoSystemException;
 import eu.delving.services.exceptions.RecordParseException;
 import eu.delving.sip.DataSetState;
+import eu.delving.sip.SourceStream;
 import org.bson.types.ObjectId;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
@@ -109,10 +112,11 @@ class DataSetImpl implements MetaRepo.DataSet {
         save();
         try {
             MetaRepo.Details details = getDetails();
+            Facts facts = Facts.read(new ByteArrayInputStream(details.getFacts()));
             MongoObjectParser parser = new MongoObjectParser(
                     inputStream,
-                    details.getRecordRoot(),
-                    details.getUniqueElement(),
+                    SourceStream.getRecordRootPath(facts),
+                    SourceStream.getUniqueElementPath(facts),
                     details.getMetadataFormat().getPrefix(),
                     details.getMetadataFormat().getNamespace()
             );
@@ -121,6 +125,7 @@ class DataSetImpl implements MetaRepo.DataSet {
             object.put(NAMESPACES, parser.getNamespaces());
             while ((record = parser.nextRecord()) != null) {
                 record.getMob().put(MetaRepo.Record.MODIFIED, modified);
+                record.getMob().put(MetaRepo.Record.DELETED, false);
                 records().update( // just match unique values for now
                         mob(
                                 MetaRepo.Record.UNIQUE,
@@ -193,8 +198,8 @@ class DataSetImpl implements MetaRepo.DataSet {
     }
 
     @Override
-    public void setSourceHash(String sourceHash) {
-        object.put(SOURCE_HASH, sourceHash);
+    public void setSourceHash(String sourceHash, boolean downloaded) {
+        object.put(downloaded ? DOWNLOADED_SOURCE_HASH : SOURCE_HASH, sourceHash);
     }
 
     @Override
@@ -269,7 +274,7 @@ class DataSetImpl implements MetaRepo.DataSet {
 
     @Override
     public int getRecordCount() {
-        return (int) records().count();
+        return records().find(mob(MetaRepo.Record.DELETED, false)).count();
     }
 
     @Override
@@ -340,6 +345,7 @@ class DataSetImpl implements MetaRepo.DataSet {
         List<String> hashes = new ArrayList<String>();
         addHash(FACTS_HASH, hashes);
         addHash(SOURCE_HASH, hashes);
+        addHash(DOWNLOADED_SOURCE_HASH, hashes);
         for (String metadataPrefix : implFactory.getMetadataModel().getPrefixes()) {
             addHash(MAPPING_HASH_PREFIX + metadataPrefix, hashes);
         }

@@ -26,6 +26,7 @@ import java.util.TreeSet;
  */
 
 public class Facts {
+    private static final String DOWNLOADED_SOURCE = "downloadedSource";
     private static final String RECORD_ROOT_PATH = "recordRootPath";
     private static final String UNIQUE_ELEMENT_PATH = "uniqueElementPath";
     private static final String RECORD_COUNT = "recordCount";
@@ -53,6 +54,14 @@ public class Facts {
             map.put(name, value = "");
         }
         return value;
+    }
+
+    public boolean isDownloadedSource() {
+        return get(DOWNLOADED_SOURCE).equalsIgnoreCase("true");
+    }
+
+    public void setDownloadedSource(boolean downloadedSource) {
+        set(DOWNLOADED_SOURCE, String.valueOf(downloadedSource));
     }
 
     public String getRecordRootPath() {

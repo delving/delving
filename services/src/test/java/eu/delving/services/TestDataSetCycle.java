@@ -59,6 +59,7 @@ import java.util.zip.ZipInputStream;
  */
 
 public class TestDataSetCycle {
+    private static final File FACTS_FILE = new File(TestDataSetCycle.class.getResource("/CDA1A777C398F6373F8DA8C66F1C1FDB__mock-facts.txt").getFile());
     private Logger log = Logger.getLogger(getClass());
     private MockFileStoreFactory factory;
     private HttpClient httpClient = new HttpClient();
@@ -81,13 +82,12 @@ public class TestDataSetCycle {
         Ear importEar = new Ear("Import First Time");
         factory.getDataSetStore().importFile(MockInput.sampleFile(), importEar);
         Assert.assertTrue("import first time", importEar.waitUntilFinished());
-        File factsFile = new File(getClass().getResource("/mock-facts.txt").getFile());
-        Facts facts = Facts.read(new FileInputStream(factsFile));
+        Facts facts = Facts.read(new FileInputStream(FACTS_FILE));
         factory.getDataSetStore().setFacts(facts);
         // upload
-        DataSetClient client = new DataSetClient(CLIENT_CONTEXT);
+        DataSetClient client = new DataSetClient(new ClientContext());
         Ear uploadFactsEar = new Ear("UploadFacts");
-        client.uploadFile(FileType.FACTS, MockFileStoreFactory.SPEC, factsFile, uploadFactsEar);
+        client.uploadFile(FileType.FACTS, MockFileStoreFactory.SPEC, FACTS_FILE, uploadFactsEar);
         Assert.assertTrue("upload facts", uploadFactsEar.waitUntilFinished());
         Ear uploadSourceEar = new Ear("UploadSource First Time");
         client.uploadFile(FileType.SOURCE, MockFileStoreFactory.SPEC, factory.getDataSetStore().getSourceFile(), uploadSourceEar);
@@ -135,38 +135,59 @@ public class TestDataSetCycle {
     }
 
     @Test
-    public void testSipZipCycle() throws IOException, FileStoreException, MetadataException {
+    public void testSipZipCycle() throws Exception {
+        ClientContext clientContext = new ClientContext();
         // import
         Ear importEar = new Ear("Import First Time");
         factory.getDataSetStore().importFile(MockInput.sampleFile(), importEar);
         Assert.assertTrue("import first time", importEar.waitUntilFinished());
-        File factsFile = new File(getClass().getResource("/mock-facts.txt").getFile());
-        Facts facts = Facts.read(new FileInputStream(factsFile));
+        Facts facts = Facts.read(new FileInputStream(FACTS_FILE));
         factory.getDataSetStore().setFacts(facts);
         // upload
-        DataSetClient client = new DataSetClient(CLIENT_CONTEXT);
-        Ear uploadFactsEar = new Ear("UploadFacts");
-        client.uploadFile(FileType.FACTS, MockFileStoreFactory.SPEC, factsFile, uploadFactsEar);
-        Assert.assertTrue("upload facts", uploadFactsEar.waitUntilFinished());
-        Ear uploadSourceEar = new Ear("UploadSource First Time");
+        DataSetClient client = new DataSetClient(clientContext);
+        Ear uploadFactsEar = new Ear("Upload facts first time");
+        client.uploadFile(FileType.FACTS, MockFileStoreFactory.SPEC, FACTS_FILE, uploadFactsEar);
+        Assert.assertTrue("upload facts first time", uploadFactsEar.waitUntilFinished());
+        Ear uploadSourceEar = new Ear("Upload source First Time");
         client.uploadFile(FileType.SOURCE, MockFileStoreFactory.SPEC, factory.getDataSetStore().getSourceFile(), uploadSourceEar);
         Assert.assertTrue("upload source first time", uploadSourceEar.waitUntilFinished());
+        client.setListFetchingEnabled(true); /* run it once */ client.setListFetchingEnabled(false);
+        // delete local store
         factory.getDataSetStore().delete();
+        // download a new version
         factory.getFileStore().createDataSetStore(MockFileStoreFactory.SPEC);
+        Thread.sleep(1000);
+        Assert.assertNotNull("data set info missing", clientContext.dataSetInfo);
+        Assert.assertEquals(38L, (long)clientContext.dataSetInfo.recordCount);
+        clientContext.dataSetInfo = null;
         HttpMethod method = new GetMethod(String.format(
                 "%s/fetch/%s-sip.zip?accessKey=%s",
-                CLIENT_CONTEXT.getServerUrl(),
+                clientContext.getServerUrl(),
                 MockFileStoreFactory.SPEC,
-                CLIENT_CONTEXT.getAccessKey()
+                clientContext.getAccessKey()
         ));
         httpClient.executeMethod(method);
         factory.getDataSetStore().acceptSipZip(new ZipInputStream(method.getResponseBodyAsStream()), new Ear("Unzip"));
         Assert.assertTrue("Hash is wrong!", Hasher.checkHash(factory.getDataSetStore().getSourceFile()));
+        // upload this new version
+        uploadFactsEar = new Ear("Upload facts Again");
+        client.uploadFile(FileType.FACTS, MockFileStoreFactory.SPEC, factory.getDataSetStore().getFactsFile(), uploadFactsEar);
+        Assert.assertTrue("upload facts again", uploadFactsEar.waitUntilFinished());
+        uploadSourceEar = new Ear("Upload source Again");
+        client.uploadFile(FileType.SOURCE, MockFileStoreFactory.SPEC, factory.getDataSetStore().getSourceFile(), uploadSourceEar);
+        Assert.assertTrue("upload source again", uploadSourceEar.waitUntilFinished());
+        client.setListFetchingEnabled(true); /* run it once */ client.setListFetchingEnabled(false);
+        Thread.sleep(1000);
+        Assert.assertNotNull("data set info missing", clientContext.dataSetInfo);
+        Assert.assertEquals(38L, (long)clientContext.dataSetInfo.recordCount);
     }
 
     // ==================
 
-    private DataSetClient.Context CLIENT_CONTEXT = new DataSetClient.Context() {
+    private class ClientContext implements DataSetClient.Context {
+
+        private DataSetInfo dataSetInfo;
+
         @Override
         public String getServerUrl() {
             return String.format("http://localhost:%d/services/dataset", MockServices.PORT);
@@ -180,14 +201,15 @@ public class TestDataSetCycle {
         @Override
         public void setInfo(DataSetInfo dataSetInfo) {
             info("Single", dataSetInfo);
+            this.dataSetInfo = dataSetInfo;
         }
 
         @Override
         public void setList(List<DataSetInfo> list) {
-            int index = 0;
-            for (DataSetInfo info : list) {
-                info(String.format("#%d", index++), info);
+            if (list.size() != 1) {
+                throw new RuntimeException("Expected just one!");
             }
+            setInfo(list.get(0));
         }
 
         @Override
@@ -203,7 +225,7 @@ public class TestDataSetCycle {
         private void info(String title, DataSetInfo info) {
             log.info(String.format("%s: DataSet(%s) = %s", title, info.spec, info.state));
         }
-    };
+    }
 
     private File getHarvestedFile(String name) {
         return new File(StarterUtil.getEuropeanaPath() + "/core/target/TestDataCycle-" + name + ".xml");

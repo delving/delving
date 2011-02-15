@@ -95,7 +95,7 @@ public interface MetaRepo {
 
         void parseRecords(InputStream inputStream) throws RecordParseException;
 
-        void setSourceHash(String hash);
+        void setSourceHash(String hash, boolean downloaded);
 
         void setMapping(RecordMapping recordMapping, boolean accessKeyRequired);
 
@@ -131,6 +131,7 @@ public interface MetaRepo {
         String NAMESPACES = "namespaces";
         String MAPPINGS = "mappings";
         String MAPPING_HASH_PREFIX = "mapping_hash_";
+        String DOWNLOADED_SOURCE_HASH = "downloaded_source_hash";
         String SOURCE_HASH = "source_hash";
         String FACTS_HASH = "facts_hash";
         String ERROR_MESSAGE = "error";
@@ -144,14 +145,6 @@ public interface MetaRepo {
         String getName();
 
         void setName(String value);
-
-        String getProviderName();
-
-        void setProviderName(String value);
-
-        String getDescription();
-
-        void setDescription(String value);
 
         Path getRecordRoot();
 
@@ -168,9 +161,7 @@ public interface MetaRepo {
         void setFacts(byte [] factBytes);
 
         String NAME = "name";
-        String PROVIDER_NAME = "provider_name";
-        String DESCRIPTION = "description";
-        String RECORD_ROOT = "rec_root";
+        String RECORD_ROOT = "record_root";
         String UNIQUE_ELEMENT = "unique_element";
         String METADATA_FORMAT = "metadata_format";
         String FACT_BYTES = "fact_bytes";
@@ -179,8 +170,6 @@ public interface MetaRepo {
     public interface HarvestStep {
 
         ObjectId getId();
-
-        boolean isFirst();
 
         Date getExpiration();
 
@@ -210,10 +199,8 @@ public interface MetaRepo {
 
         void save();
 
-        void delete();
-
         String FIRST = "first";
-        String EXPIRATION = "exp";
+        String EXPIRATION = "exporatopm";
         String LIST_SIZE = "listSize";
         String CURSOR = "cursor";
         String PMH_REQUEST = "pmhRequest";
@@ -234,14 +221,11 @@ public interface MetaRepo {
 
         String getMetadataPrefix();
 
-        String getIdentifier(); // Only used GetRecord
-
         String VERB = "verb";
         String SET = "set";
         String FROM = "from";
         String UNTIL = "until";
         String PREFIX = "prefix";
-        String IDENTIFIER = "id";
     }
 
     public interface Record {
@@ -267,12 +251,6 @@ public interface MetaRepo {
         String DELETED = "deleted";
         String UNIQUE = "uniq";
         String HASH = "hash";
-    }
-
-    public interface PmhSet {
-        String getSetSpec();
-
-        String getSetName();
     }
 
     public interface Mapping {

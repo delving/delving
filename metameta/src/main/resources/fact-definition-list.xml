@@ -5,6 +5,11 @@
         <toolTip>The reference identifier of this data set</toolTip>
         <automatic>true</automatic>
     </fact-definition>
+    <fact-definition name="downloadedSource">
+        <prompt>Downloaded Source</prompt>
+        <toolTip>This indicates whether the source file is downloaded or imported.</toolTip>
+        <automatic>true</automatic>
+    </fact-definition>
     <fact-definition name="recordRootPath">
         <prompt>Record Path</prompt>
         <toolTip>This path indicates where the record boundaries are in the input XML.</toolTip>
