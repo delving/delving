@@ -288,7 +288,10 @@ public class FileStoreImpl implements FileStore {
                 Facts facts = getFacts();
                 facts.setDownloadedSource(false);
                 setFacts(facts);
-                delete(new File(directory, STATISTICS_FILE_NAME));
+                File statisticsFile = new File(directory, STATISTICS_FILE_NAME);
+                if (statisticsFile.exists()) {
+                    delete();
+                }
             }
         }
 
