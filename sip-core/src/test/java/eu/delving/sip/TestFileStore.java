@@ -63,6 +63,7 @@ public class TestFileStore {
     @Test
     public void createDelete() throws IOException, FileStoreException {
         FileStore.DataSetStore store = mock.getDataSetStore();
+        Assert.assertEquals("Should be no files", 0, mock.getSpecDirectory().listFiles().length);
         Assert.assertFalse(store.hasSource());
         store.importFile(MockFileStoreInput.sampleFile(), null);
         Assert.assertTrue(store.hasSource());

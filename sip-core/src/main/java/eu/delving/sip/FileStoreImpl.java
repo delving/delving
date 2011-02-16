@@ -286,8 +286,10 @@ public class FileStoreImpl implements FileStore {
                     throw new FileStoreException(String.format("Unable to rename %s to %s", source.getAbsolutePath(), hashedSource.getAbsolutePath()));
                 }
                 Facts facts = getFacts();
-                facts.setDownloadedSource(false);
-                setFacts(facts);
+                if (facts.isDownloadedSource()) {
+                    facts.setDownloadedSource(false);
+                    setFacts(facts);
+                }
                 File statisticsFile = new File(directory, STATISTICS_FILE_NAME);
                 if (statisticsFile.exists()) {
                     delete();
