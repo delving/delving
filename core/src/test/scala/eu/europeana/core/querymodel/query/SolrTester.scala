@@ -16,7 +16,9 @@ import java.lang.System
 trait SolrTester {
 
   val dir = System.getProperty("user.dir");
-  System.setProperty("solr.solr.home", dir + "/src/test/solr/single-core")
+  println("CURRENT WORKING DIRECTORY IS " + dir)
+
+  System.setProperty("solr.solr.home", dir + "/core/src/test/solr/single-core")
   System.setProperty("solr.data.dir", "/tmp/solr-test/")
   val initializer: CoreContainer.Initializer  = new CoreContainer.Initializer();
   val coreContainer: CoreContainer = initializer.initialize();
