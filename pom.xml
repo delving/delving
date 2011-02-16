@@ -56,7 +56,7 @@
         <repository>
             <id>delving-nexus</id>
             <name>delving</name>
-            <url>http://delving.eu:8081/nexus/content/groups/public</url>
+            <url>http://development.delving.org:8081/nexus/content/groups/public</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
