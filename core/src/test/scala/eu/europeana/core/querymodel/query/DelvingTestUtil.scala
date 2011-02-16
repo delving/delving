@@ -13,7 +13,7 @@ trait DelvingTestUtil {
   private val metadataModel = new MetadataModelImpl("/abm-record-definition.xml", "abm")
   private val analyzerBean = new QueryAnalyzer(metadataModel)
 
-  def getQueryAnalyserFromBean = analyzerBean
+  def getQueryAnalyser = analyzerBean
 
   // RequestBased helpers
   def createParamsMap(params: List[(String, String)]) = {
