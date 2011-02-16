@@ -3,6 +3,8 @@ package eu.delving.core.binding
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.Spec
 import scala.collection.JavaConversions._
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
 /**
  *
@@ -10,6 +12,7 @@ import scala.collection.JavaConversions._
  * @since 1/2/11 1:12 PM  
  */
 
+@RunWith(classOf[JUnitRunner])
 class FreemarkerUtilSpec extends Spec with ShouldMatchers {
   
   describe("A FreemarkerUtil") {
