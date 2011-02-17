@@ -21,17 +21,17 @@
 -->
 <project>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>eu.europeana</groupId>
+    <groupId>eu.delving</groupId>
     <artifactId>core</artifactId>
     <packaging>jar</packaging>
-    <name>Europeana Core</name>
+    <name>Delving Core</name>
     <version>0.1.8-SNAPSHOT</version>
     <description>Core classes for Europeana</description>
     <inceptionYear>2008</inceptionYear>
 
     <parent>
-        <groupId>eu.europeana</groupId>
-        <artifactId>europeana</artifactId>
+        <groupId>eu.delving</groupId>
+        <artifactId>parent</artifactId>
         <version>1</version>
     </parent>
 

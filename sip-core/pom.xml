@@ -31,8 +31,8 @@
     <inceptionYear>2010</inceptionYear>
 
     <parent>
-        <groupId>eu.europeana</groupId>
-        <artifactId>europeana</artifactId>
+        <groupId>eu.delving</groupId>
+        <artifactId>parent</artifactId>
         <version>1</version>
     </parent>
 

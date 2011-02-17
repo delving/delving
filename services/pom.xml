@@ -8,8 +8,8 @@
     <version>0.1.8</version>
     <inceptionYear>2010</inceptionYear>
     <parent>
-        <groupId>eu.europeana</groupId>
-        <artifactId>europeana</artifactId>
+        <groupId>eu.delving</groupId>
+        <artifactId>parent</artifactId>
         <version>1</version>
     </parent>
 
@@ -122,7 +122,7 @@
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>eu.europeana</groupId>
+            <groupId>eu.delving</groupId>
             <artifactId>core</artifactId>
             <version>0.1.8-SNAPSHOT</version>
         </dependency>
