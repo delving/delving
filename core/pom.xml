@@ -25,7 +25,7 @@
     <artifactId>core</artifactId>
     <packaging>jar</packaging>
     <name>Europeana Core</name>
-    <version>0.1.7</version>
+    <version>0.1.8-SNAPSHOT</version>
     <description>Core classes for Europeana</description>
     <inceptionYear>2008</inceptionYear>
 
@@ -112,7 +112,7 @@
         <dependency>
             <groupId>eu.delving</groupId>
             <artifactId>metameta</artifactId>
-            <version>0.1.8</version>
+            <version>0.1.8-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

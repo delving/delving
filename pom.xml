@@ -72,6 +72,21 @@
         </repository>
     </repositories>
 
+    <distributionManagement>
+        <!-- use the following if you're not using a snapshot version. -->
+        <repository>
+            <id>releases</id>
+            <name>Delving Nexus</name>
+            <url>http://development.delving.org:8081/nexus/content/repositories/releases</url>
+        </repository>
+        <!-- use the following if you ARE using a snapshot version. -->
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>Delving Nexus</name>
+            <url>http://development.delving.org:8081/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <pluginRepositories/>
 
     <modules>
