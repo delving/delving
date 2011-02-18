@@ -27,7 +27,7 @@
         >
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>eu.europeana</groupId>
+    <groupId>eu.delving</groupId>
     <artifactId>sip-creator</artifactId>
     <packaging>jar</packaging>
     <name>SIP-Creator</name>
