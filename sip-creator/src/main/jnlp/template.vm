@@ -18,8 +18,5 @@
         <property name="jnlp.versionEnabled" value="false"/>
         $dependencies
     </resources>
-    <application-desc main-class="$mainClass">
-        <argument>??? AllFieldBean fully-qualified ???</argument>
-        <argument>??? MetaRepo submit URL ???</argument>
-    </application-desc>
+    <application-desc main-class="$mainClass"/>
 </jnlp>

@@ -43,6 +43,13 @@ public class QueryAnalyzer {
     @Autowired
     private MetadataModel metadataModel;
 
+    public QueryAnalyzer() {
+    }
+
+    public QueryAnalyzer(MetadataModel metadataModel) {
+        this.metadataModel = metadataModel;
+    }
+
     public QueryType findSolrQueryType(String query) throws EuropeanaQueryException {
         String[] terms = query.split("\\s+");
         for (String term : terms) {

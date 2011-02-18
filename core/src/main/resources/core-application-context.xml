@@ -46,7 +46,6 @@
                 <value>solr.updateUrl</value>
                 <value>solr.timeout</value>
                 <value>solr.retries</value>
-                <value>solr.chunkSize</value>
                 <value>smtp.host</value>
                 <value>smtp.username</value>
                 <value>smtp.password</value>
@@ -139,7 +138,7 @@
                 <value>/ese-record-definition.xml</value>
             </list>
         </property>
-        <property name="defaultPrefix" value="abm"/>
+        <property name="defaultPrefix" value="#{launchProperties['services.harvindexing.prefix']}"/>
     </bean>
 
     <bean id="connectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
@@ -181,59 +180,9 @@
         <property name="password" value="#{launchProperties['smtp.password']}"/>
     </bean>
 
-    <bean id="emailSenderForExceptions" class="eu.europeana.core.util.web.EmailSender">
-        <property name="template" value="/email/exception"/>
-        <property name="fromEmail" value="#{launchProperties['system.from']}"/>
-        <property name="toEmail" value="#{launchProperties['exception.to']}"/>
-    </bean>
+    <bean id="emailSender" class="eu.europeana.core.util.web.EmailSender"/>
 
-    <bean id="emailSenderForRegisterNotify" class="eu.europeana.core.util.web.EmailSender">
-        <property name="template" value="/email/register-notify"/>
-        <property name="fromEmail" value="#{launchProperties['system.from']}"/>
-        <property name="toEmail" value="#{launchProperties['register.to']}"/>
-        <property name="subject" value="Someone registered just now"/>
-    </bean>
-
-    <bean id="emailSenderForPasswordChangeNotify" class="eu.europeana.core.util.web.EmailSender">
-        <property name="template" value="/email/password-change-notify"/>
-        <property name="fromEmail" value="#{launchProperties['system.from']}"/>
-        <property name="toEmail" value="#{launchProperties['admin.to']}"/>
-        <property name="subject" value="Password has been changed"/>
-    </bean>
-
-    <bean id="emailSenderForUserFeedback" class="eu.europeana.core.util.web.EmailSender">
-        <property name="template" value="/email/feedback"/>
-        <property name="fromEmail" value="#{launchProperties['feedback.from']}"/>
-        <property name="toEmail" value="#{launchProperties['feedback.to']}"/>
-        <property name="subject" value="User Feedback"/>
-    </bean>
-
-    <bean id="emailSenderForUserFeedbackConfirmation" class="eu.europeana.core.util.web.EmailSender">
-        <property name="template" value="/email/feedback-confirmation"/>
-        <property name="fromEmail" value="#{launchProperties['feedback.from']}"/>
-        <property name="subject" value="User Feedback"/>
-    </bean>
-
-    <bean id="registrationEmailSender" class="eu.europeana.core.util.web.TokenReplyEmailSender">
-        <property name="emailSenders">
-            <map>
-                <entry key="register">
-                    <bean class="eu.europeana.core.util.web.EmailSender">
-                        <property name="template" value="/email/confirmation"/>
-                        <property name="fromEmail" value="#{launchProperties['system.from']}"/>
-                        <property name="subject" value="Delving E-Mail Confirmation"/>
-                    </bean>
-                </entry>
-                <entry key="forgotPassword">
-                    <bean class="eu.europeana.core.util.web.EmailSender">
-                        <property name="template" value="/email/forgot-password"/>
-                        <property name="fromEmail" value="#{launchProperties['system.from']}"/>
-                        <property name="subject" value="Delving Password Reset"/>
-                    </bean>
-                </entry>
-            </map>
-        </property>
-    </bean>
+    <bean id="registrationEmailSender" class="eu.europeana.core.util.web.TokenReplyEmailSender"/>
 
     <bean id="log4jInitialization" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="targetClass" value="org.springframework.util.Log4jConfigurer"/>

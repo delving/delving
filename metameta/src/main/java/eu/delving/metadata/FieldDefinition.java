@@ -25,6 +25,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * An XStream approach for replacing the annotated beans.
  *
@@ -33,6 +36,10 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 @XStreamAlias("field")
 public class FieldDefinition implements Comparable<FieldDefinition> {
+
+    public FieldDefinition() {
+        fullDoc = true;
+    }
 
     @XStreamAsAttribute
     public String prefix;
@@ -112,11 +119,6 @@ public class FieldDefinition implements Comparable<FieldDefinition> {
         return path.compareTo(fieldDefinition.path);
     }
 
-    private Object readResolve() {
-        fullDoc = true;
-        return this;
-    }
-
     public String addOptionalConverter(String variable) {
         if (validation != null && validation.converter != null) {
             return variable + validation.converter.call;
@@ -128,6 +130,11 @@ public class FieldDefinition implements Comparable<FieldDefinition> {
 
     @XStreamAlias("validation")
     public static class Validation {
+
+        public Validation() {
+            multivalued = true;
+            required = true;
+        }
 
         @XStreamAsAttribute
         public String factName;
@@ -156,15 +163,61 @@ public class FieldDefinition implements Comparable<FieldDefinition> {
         @XStreamAsAttribute
         public boolean required;
 
-        @XStreamOmitField
-        public FactDefinition factDefinition;
+        public List<String> options;
 
         public Converter converter;
 
-        private Object readResolve() {
-            multivalued = true;
-            required = true;
-            return this;
+        @XStreamOmitField
+        public FactDefinition factDefinition;
+
+        public boolean hasOptions() {
+            return options != null || factDefinition != null && factDefinition.options != null;
+        }
+
+        public boolean allowOption(String value) {
+            for (String option : getOptions()) {
+                if (option.endsWith(":")) {
+                    int colon = value.indexOf(':');
+                    if (colon > 0) {
+                        if (option.equals(value.substring(0, colon + 1))) {
+                            return true;
+                        }
+                    }
+                    else {
+                        if (option.equals(value) || option.substring(0, option.length() - 1).equals(value)) {
+                            return true;
+                        }
+                    }
+                }
+                else if (option.equals(value)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public String getOptionsString() {
+            StringBuilder enumString = new StringBuilder();
+            Iterator<String> walk = getOptions().iterator();
+            while (walk.hasNext()) {
+                enumString.append(walk.next());
+                if (walk.hasNext()) {
+                    enumString.append(',');
+                }
+            }
+            return enumString.toString();
+        }
+
+        public List<String> getOptions() {
+            if (options != null) {
+                return options;
+            }
+            else if (factDefinition != null) {
+                return factDefinition.options;
+            }
+            else {
+                return null;
+            }
         }
     }
 

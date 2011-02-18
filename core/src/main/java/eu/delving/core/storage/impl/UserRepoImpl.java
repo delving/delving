@@ -22,7 +22,6 @@
 package eu.delving.core.storage.impl;
 
 import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
@@ -38,6 +37,8 @@ import org.springframework.security.authentication.encoding.MessageDigestPasswor
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static eu.delving.core.util.MongoObject.mob;
 
 /**
  * @author Gerald de Jong <gerald@delving.eu>
@@ -65,28 +66,28 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public User createUser(String email) {
-        DBObject object = new BasicDBObject(User.EMAIL, email);
+        DBObject object = mob(User.EMAIL, email);
         return new UserImpl(object);
     }
 
     @Override
     public void removeUser(String id) {
-        users().remove(new BasicDBObject(User.ID, new ObjectId(id)));
+        users().remove(mob(User.ID, new ObjectId(id)));
     }
 
     @Override
     public User authenticate(String email, String password) {
-        users().ensureIndex(new BasicDBObject(User.EMAIL, 1));
-        DBObject query = new BasicDBObject();
-        query.put(User.EMAIL, email);
-        query.put(User.PASSWORD, hashPassword(password));
-        DBObject userObject = users().findOne(query);
+        users().ensureIndex(mob(User.EMAIL, 1));
+        DBObject userObject = users().findOne(mob(
+                User.EMAIL, email,
+                User.PASSWORD, hashPassword(password)
+        ));
         return userObject != null ? new UserImpl(userObject) : null;
     }
 
     @Override
     public boolean isExistingUserName(String userName) {
-        return users().findOne(new BasicDBObject(User.USER_NAME, userName)) != null;
+        return users().findOne(mob(User.USER_NAME, userName)) != null;
     }
 
     @Override
@@ -117,8 +118,8 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public User byEmail(String email) {
-        users().ensureIndex(new BasicDBObject(User.EMAIL, 1));
-        DBObject personObject = users().findOne(new BasicDBObject(User.EMAIL, email));
+        users().ensureIndex(mob(User.EMAIL, 1));
+        DBObject personObject = users().findOne(mob(User.EMAIL, email));
         return personObject != null ? new UserImpl(personObject) : null;
     }
 
@@ -308,7 +309,7 @@ public class UserRepoImpl implements UserRepo {
         }
 
         public ItemImpl(UserImpl person, int index) {
-            this(person, new BasicDBObject(DATE_SAVED, new Date()), index);
+            this(person, mob(DATE_SAVED, new Date()), index);
         }
 
         public void setAuthor(String author) {
@@ -406,7 +407,7 @@ public class UserRepoImpl implements UserRepo {
         }
 
         public SearchImpl(UserImpl person, int index) {
-            this(person, new BasicDBObject(DATE_SAVED, new Date()), index);
+            this(person, mob(DATE_SAVED, new Date()), index);
         }
 
         public void setQuery(String query) {

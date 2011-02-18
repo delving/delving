@@ -314,7 +314,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     }
 
     private String createFullDocUrl(String europeanaId) {
-        return MessageFormat.format("/{0}/record/{1}.html", portalName, europeanaId);
+        return MessageFormat.format("/{0}/object/{1}.html", portalName, europeanaId);
     }
 
     private class FullBeanViewImpl implements FullBeanView {
@@ -452,12 +452,17 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             solrQuery.setFacet(true);
             solrQuery.setFacetMinCount(1);
             solrQuery.setFacetLimit(100);
-            solrQuery.setRows(12); // todo replace with annotation later
+            if (solrQuery.getRows() ==  null) {
+                solrQuery.setRows(12);
+            }
             solrQuery.addFacetField(metadataModel.getRecordDefinition().getFacetFieldStrings());
             // todo now hard-coded but these values must be retrieved from the RecordDefinition later
-            solrQuery.setFields("europeana_uri,title,europeana_object,creator,YEAR,PROVIDER,DATAPROVIDER,LANGUAGE,TYPE");
+            if (solrQuery.getFields() == null) {
+                solrQuery.setFields("europeana_uri,dc_title,europeana_object,dc_creator,europeana_year,europeana_provider," +
+                        "europeana_dataProvider,europeana_language,europeana_type,dc_description");
 //            solrQuery.setFields("*,score");
 //            solrQuery.setFields(metadataModel.getRecordDefinition().getFieldStrings());
+            }
             if (solrQuery.getQueryType().equalsIgnoreCase(QueryType.SIMPLE_QUERY.toString())) {
                 solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery()).toString());
             }

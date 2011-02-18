@@ -7,6 +7,11 @@ import org.oclc.oai.harvester.verb.ListRecords;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -103,41 +108,34 @@ public class HarvestWorker implements Runnable {
                         if (continueFlag && listRecords != null) {
                             continueFlag = false;
                         }
-                        if (task.hasLastToken()) {
-                            NodeList errors = listRecords.getErrors();
-                            if (errors != null && errors.getLength() > 0) {
-                                log.warn("Found errors");
-                                int length = errors.getLength();
-                                for (int i = 0; i < length; ++i) {
-                                    Node item = errors.item(i);
-                                    log.warn(item);
-                                }
-                                log.info("Error record: " + listRecords.toString());
-                                task.abort();
-                                break;
+                        NodeList errors = listRecords.getErrors();
+                        if (errors != null && errors.getLength() > 0) {
+                            log.warn("Found errors");
+                            int length = errors.getLength();
+                            for (int i = 0; i < length; ++i) {
+                                Node item = errors.item(i);
+                                log.warn(item);
                             }
+                            log.info("Error record: " + listRecords.toString());
+                            task.abort();
+                            break;
                         }
                         hit++;
                         String token = "";
-                        if (task.hasLastToken()) {
-                            String records = listRecords.toString();
-                            int recordCount = countRecordOccurrences(records);
-                            totalRecordCount += recordCount;
-                            log.info("Records created: " + recordCount + ", total is " + totalRecordCount);
-                            writer.write(records);
-                            writer.write("\n");
+                        String records = listRecords.toString();
+                        int recordCount = countRecordOccurrences(records);
+                        totalRecordCount += recordCount;
+                        log.info("Records created: " + recordCount + ", total is " + totalRecordCount);
+                        writer.write(records);
+                        writer.write("\n");
 
-                            token = listRecords.getResumptionToken();
-                            if (token == null) {
-                                token = task.getLastToken();
-                            }
-                            if (token.trim().length() == 0) {
-                                token = null;
-                                continueFlag = false;
-                            }
+                        token = listRecords.getResumptionToken();
+                        if (token == null) {
+                            token = task.getLastToken();
                         }
-                        else {
-                            token = listRecords.getResumptionToken();
+                        if (token == null || token.trim().isEmpty()) {
+                            token = null;
+                            continueFlag = false;
                         }
                         if (token == null || token.isEmpty()) {
                             listRecords = null;
@@ -157,7 +155,7 @@ public class HarvestWorker implements Runnable {
                                 listRecords = new ListRecords(
                                         task.getBaseUrl(),
                                         task.getLastToken(),
-                                        task.getSpec(), 
+                                        task.getSpec(),
                                         task.getPrefix());
                             }
                             catch (Exception e) {

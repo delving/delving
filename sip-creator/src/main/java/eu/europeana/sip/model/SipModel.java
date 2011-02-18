@@ -117,7 +117,8 @@ public class SipModel {
 
     public SipModel(FileStore fileStore, MetadataModel metadataModel, GroovyCodeResource groovyCodeResource, UserNotifier userNotifier) throws FileStoreException {
         this.fileStore = fileStore;
-        this.appConfigModel = new AppConfigModel(fileStore.getAppConfig(), new AppConfigModel.Listener() {
+        this.appConfigModel = new AppConfigModel(fileStore.getAppConfig());
+        this.appConfigModel.addListener(new AppConfigModel.Listener() {
             @Override
             public void appConfigUpdated(AppConfig appConfig) {
                 executor.execute(new AppConfigSetter(appConfig));
@@ -208,28 +209,23 @@ public class SipModel {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        final List<FieldStatistics> statistics = dataSetStore.getStatistics();
-                        final Facts facts = dataSetStore.getFacts();
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                SipModel.this.facts = facts;
-                                factModel.clear();
-                                factModel.setFacts(facts, dataSetStore.getSpec());
-                                mappingModel.setRecordMapping(null);
-                                setStatisticsList(statistics);
-                                variableListModel.clear();
-                                AnalysisTree.setUniqueElement(analysisTreeModel, getUniqueElement());
-                                for (UpdateListener updateListener : updateListeners) {
-                                    updateListener.updatedDataSetStore(dataSetStore);
-                                }
+                    final List<FieldStatistics> statistics = dataSetStore.getStatistics();
+                    final Facts facts = dataSetStore.getFacts();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            SipModel.this.facts = facts;
+                            factModel.clear();
+                            factModel.setFacts(facts, dataSetStore.getSpec());
+                            mappingModel.setRecordMapping(null);
+                            setStatisticsList(statistics);
+                            variableListModel.clear();
+                            AnalysisTree.setUniqueElement(analysisTreeModel, getUniqueElement());
+                            for (UpdateListener updateListener : updateListeners) {
+                                updateListener.updatedDataSetStore(dataSetStore);
                             }
-                        });
-                    }
-                    catch (FileStoreException e) {
-                        userNotifier.tellUser("Unable to select Data Set " + dataSetStore, e);
-                    }
+                        }
+                    });
                 }
             });
         }
@@ -297,6 +293,7 @@ public class SipModel {
         }
         else {
             try {
+                template.apply(getRecordDefinition());
                 mappingModel.applyTemplate(template);
                 seekRecord(1, null);
             }
@@ -582,6 +579,9 @@ public class SipModel {
         analysisTreeModel.setRoot(analysisTree.getRoot());
         if (getRecordRoot() != null) {
             AnalysisTree.setRecordRoot(analysisTreeModel, getRecordRoot());
+        }
+        if (getUniqueElement() != null) {
+            AnalysisTree.setUniqueElement(analysisTreeModel, getUniqueElement());
         }
         setStatistics(null);
     }

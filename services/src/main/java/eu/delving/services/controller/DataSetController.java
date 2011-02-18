@@ -22,13 +22,16 @@
 package eu.delving.services.controller;
 
 import eu.delving.metadata.Facts;
+import eu.delving.metadata.Hasher;
+import eu.delving.metadata.MetadataException;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.MetadataNamespace;
-import eu.delving.metadata.Path;
 import eu.delving.metadata.RecordMapping;
+import eu.delving.metadata.SourceStream;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.AccessKeyException;
 import eu.delving.services.exceptions.DataSetNotFoundException;
+import eu.delving.services.exceptions.MappingNotFoundException;
 import eu.delving.services.exceptions.RecordParseException;
 import eu.delving.sip.AccessKey;
 import eu.delving.sip.DataSetCommand;
@@ -36,13 +39,15 @@ import eu.delving.sip.DataSetInfo;
 import eu.delving.sip.DataSetResponse;
 import eu.delving.sip.DataSetResponseCode;
 import eu.delving.sip.DataSetState;
+import eu.delving.sip.FileStore;
 import eu.delving.sip.FileType;
-import eu.delving.sip.Hasher;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,10 +56,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Provide a REST interface for managing datasets.
@@ -73,7 +83,7 @@ import java.util.zip.GZIPInputStream;
 
 @Controller
 public class DataSetController {
-
+    private static final int RECORD_STREAM_CHUNK = 1000;
     private Logger log = Logger.getLogger(getClass());
 
     @Autowired
@@ -147,7 +157,7 @@ public class DataSetController {
             checkAccessKey(accessKey);
             FileType type = FileType.valueOf(fileType);
             log.info(String.format("accept type %s for %s: %s", type, dataSetSpec, fileName));
-            String hash = Hasher.getHash(fileName);
+            String hash = Hasher.extractHashFromFileName(fileName);
             if (hash == null) {
                 throw new RuntimeException("No hash available for file name " + fileName);
             }
@@ -173,6 +183,72 @@ public class DataSetController {
         }
     }
 
+    @RequestMapping(value = "/dataset/fetch/{dataSetSpec}-sip.zip", method = RequestMethod.GET)
+    public void fetchSIP(
+            @PathVariable String dataSetSpec,
+            @RequestParam(required = false) String accessKey,
+            HttpServletResponse response
+    ) {
+        try {
+            checkAccessKey(accessKey);
+            log.info(String.format("requested %s-sip.zip", dataSetSpec));
+            response.setContentType("application/zip");
+            writeSipZip(dataSetSpec, response.getOutputStream(), accessKey);
+            response.setStatus(HttpStatus.OK.value());
+            log.info(String.format("returned %s-sip.zip", dataSetSpec));
+        }
+        catch (Exception e) {
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            log.warn("Problem building sip.zip", e);
+        }
+    }
+
+    private void writeSipZip(String dataSetSpec, OutputStream outputStream, String accessKey) throws IOException, MappingNotFoundException, AccessKeyException, XMLStreamException, MetadataException {
+        MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
+        if (dataSet == null) {
+            throw new IOException("Data Set not found"); // IOException?
+        }
+        ZipOutputStream zos = new ZipOutputStream(outputStream);
+        zos.putNextEntry(new ZipEntry(FileStore.FACTS_FILE_NAME));
+        Facts facts = Facts.fromBytes(dataSet.getDetails().getFacts());
+        facts.setDownloadedSource(true);
+        zos.write(Facts.toBytes(facts));
+        zos.closeEntry();
+        zos.putNextEntry(new ZipEntry(FileStore.SOURCE_FILE_NAME));
+        String sourceHash = writeSourceStream(dataSet, zos, accessKey);
+        zos.closeEntry();
+        for (MetaRepo.Mapping mapping : dataSet.mappings().values()) {
+            RecordMapping recordMapping = mapping.getRecordMapping();
+            zos.putNextEntry(new ZipEntry(String.format(FileStore.MAPPING_FILE_PATTERN, recordMapping.getPrefix())));
+            RecordMapping.write(recordMapping, zos);
+            zos.closeEntry();
+        }
+        zos.finish();
+        zos.close();
+        dataSet.setSourceHash(sourceHash, true);
+        dataSet.save();
+    }
+
+    private String writeSourceStream(MetaRepo.DataSet dataSet, ZipOutputStream zos, String accessKey) throws MappingNotFoundException, AccessKeyException, XMLStreamException, IOException {
+        SourceStream sourceStream = new SourceStream(zos);
+        sourceStream.startZipStream(dataSet.getNamespaces().toMap());
+        ObjectId afterId = null;
+        while (true) {
+            MetaRepo.DataSet.RecordFetch fetch = dataSet.getRecords(
+                    dataSet.getDetails().getMetadataFormat().getPrefix(),
+                    RECORD_STREAM_CHUNK, null, afterId, null, accessKey
+            );
+            if (fetch == null) {
+                break;
+            }
+            afterId = fetch.getAfterId();
+            for (MetaRepo.Record record : fetch.getRecords()) {
+                sourceStream.addRecord(record.getXmlString());
+            }
+        }
+        return sourceStream.endZipStream();
+    }
+
     private DataSetResponseCode receiveMapping(RecordMapping recordMapping, String dataSetSpec, String hash) {
         MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
         if (dataSet == null) {
@@ -196,7 +272,7 @@ public class DataSetController {
             return DataSetResponseCode.GOT_IT_ALREADY;
         }
         dataSet.parseRecords(inputStream);
-        dataSet.setSourceHash(hash);
+        dataSet.setSourceHash(hash, false);
         dataSet.save();
         return DataSetResponseCode.THANK_YOU;
     }
@@ -211,8 +287,6 @@ public class DataSetController {
         }
         MetaRepo.Details details = dataSet.createDetails();
         details.setName(facts.get("name"));
-        details.setProviderName(facts.get("provider"));
-        details.setDescription(facts.get("name"));
         String prefix = facts.get("namespacePrefix");
         for (MetadataNamespace metadataNamespace : MetadataNamespace.values()) {
             if (metadataNamespace.getPrefix().equals(prefix)) {
@@ -223,9 +297,13 @@ public class DataSetController {
                 break;
             }
         }
-        details.setRecordRoot(new Path(facts.getRecordRootPath()));
-        details.setUniqueElement(new Path(facts.getUniqueElementPath()));
         dataSet.setFactsHash(hash);
+        try {
+            details.setFacts(Facts.toBytes(facts));
+        }
+        catch (MetadataException e) {
+            return DataSetResponseCode.SYSTEM_ERROR;
+        }
         dataSet.save();
         return DataSetResponseCode.THANK_YOU;
     }
@@ -248,9 +326,10 @@ public class DataSetController {
                 throw new DataSetNotFoundException(String.format("String %s does not exist", dataSetSpec));
             }
             DataSetCommand command = DataSetCommand.valueOf(commandString);
+            DataSetState state = dataSet.getState(false);
             switch (command) {
                 case DISABLE:
-                    switch (dataSet.getState()) {
+                    switch (state) {
                         case QUEUED:
                         case INDEXING:
                         case ERROR:
@@ -264,7 +343,7 @@ public class DataSetController {
                             return view(DataSetResponseCode.STATE_CHANGE_FAILURE);
                     }
                 case INDEX:
-                    switch (dataSet.getState()) {
+                    switch (state) {
                         case DISABLED:
                         case UPLOADED:
                             dataSet.setState(DataSetState.QUEUED);
@@ -274,7 +353,7 @@ public class DataSetController {
                             return view(DataSetResponseCode.STATE_CHANGE_FAILURE);
                     }
                 case REINDEX:
-                    switch (dataSet.getState()) {
+                    switch (state) {
                         case ENABLED:
                             dataSet.setRecordsIndexed(0);
                             dataSet.setState(DataSetState.QUEUED);
@@ -284,7 +363,7 @@ public class DataSetController {
                             return view(DataSetResponseCode.STATE_CHANGE_FAILURE);
                     }
                 case DELETE:
-                    switch (dataSet.getState()) {
+                    switch (state) {
                         case INCOMPLETE:
                         case DISABLED:
                         case ERROR:
@@ -361,11 +440,11 @@ public class DataSetController {
     private DataSetInfo getInfo(MetaRepo.DataSet dataSet) {
         DataSetInfo info = new DataSetInfo();
         info.spec = dataSet.getSpec();
-        info.state = dataSet.getState().toString();
+        info.name = dataSet.getDetails().getName();
+        info.state = dataSet.getState(false).toString();
         info.recordCount = dataSet.getRecordCount();
         info.errorMessage = dataSet.getErrorMessage();
         info.recordsIndexed = dataSet.getRecordsIndexed();
-        info.name = dataSet.getDetails().getName();
         info.hashes = dataSet.getHashes();
         return info;
     }

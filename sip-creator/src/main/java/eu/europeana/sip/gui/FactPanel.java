@@ -127,7 +127,7 @@ public class FactPanel extends JPanel {
                     setValue();
                 }
             });
-            if (factDefinition.automatic != null && factDefinition.automatic) {
+            if (factDefinition.automatic) {
                 textField.setEditable(false);
             }
             JLabel label = new JLabel(factDefinition.prompt, JLabel.RIGHT);

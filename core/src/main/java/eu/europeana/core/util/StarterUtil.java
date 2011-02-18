@@ -65,7 +65,7 @@ public class StarterUtil {
         if (here == null) {
             throw new RuntimeException("Couldn't find europeana root");
         }
-        else if (isEuropeanaRoot(here)) {
+        else if (isProjectParentDir(here)) {
             LOG.info("Europeana Root: " + here.getAbsolutePath());
             return here;
         }
@@ -97,8 +97,8 @@ public class StarterUtil {
         return checkFor(here, "image-annotation-frontend");
     }
 
-    private static boolean isEuropeanaRoot(File here) {
-        return checkFor(here, "core", "services", "portal");
+    private static boolean isProjectParentDir(File here) {
+        return checkFor(here, "core", "services");
     }
 
     private static boolean checkFor(File here, String... subDirectories) {

@@ -54,9 +54,7 @@
         <property name="repeatInterval" value="#{launchProperties['services.pmh.harvestStepCleanupDelay']}"/>
     </bean>
 
-    <bean id="harvindexer" class="eu.delving.services.core.Harvindexer">
-        <property name="chunkSize" value="#{launchProperties['solr.chunkSize']}"/>
-    </bean>
+    <bean id="harvindexer" class="eu.delving.services.core.Harvindexer"/>
 
     <bean id="indexJobRunner" class="eu.delving.services.core.IndexJobRunner"/>
 

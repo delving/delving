@@ -35,13 +35,11 @@ public class CodeGenerator {
 
     public static boolean isDictionaryPossible(FieldDefinition fieldDefinition, AnalysisTree.Node node) {
         return fieldDefinition.validation != null &&
-                fieldDefinition.validation.factDefinition != null &&
-                fieldDefinition.validation.factDefinition.options != null &&
+                fieldDefinition.validation.hasOptions() &&
                 node.getStatistics().getHistogramValues() != null;
     }
 
     public List<FieldMapping> createObviousMappings(List<FieldDefinition> unmappedFieldDefinitions, List<SourceVariable> variables) {
-        System.out.println("Field definitions: "+unmappedFieldDefinitions.size()); // todo: remove
         List<FieldMapping> fieldMappings = new ArrayList<FieldMapping>();
         FieldMapping uniqueMapping = createUniqueMapping(unmappedFieldDefinitions, variables);
         if (uniqueMapping != null) {
@@ -71,8 +69,10 @@ public class CodeGenerator {
     }
 
     public void generateCodeFor(FieldMapping fieldMapping, SourceVariable sourceVariable, boolean dictionaryPreferred) {
+        fieldMapping.clearCode();
         if (isDictionaryPossible(fieldMapping.getDefinition(), sourceVariable.getNode()) && dictionaryPreferred) {
-            lineDictionary(fieldMapping, sourceVariable.getNode());
+            eachLookupBlock(fieldMapping, sourceVariable.getVariableName());
+            fieldMapping.createDictionary(sourceVariable.getNode().getStatistics().getHistogramValues());
         }
         else {
             eachBlock(fieldMapping, sourceVariable.getNode().getVariableName());
@@ -153,13 +153,21 @@ public class CodeGenerator {
         fieldMapping.addCodeLine("}");
     }
 
-    private void lineConstant(FieldMapping fieldMapping, String constantValue) {
-        line(fieldMapping, String.format("'%s'", constantValue));
+    private void eachLookupBlock(FieldMapping fieldMapping, String source) {
+        fieldMapping.addCodeLine(String.format("%s * {", fieldMapping.getDefinition().addOptionalConverter(source)));
+        fieldMapping.addCodeLine(
+                String.format(
+                        "%s.%s %s_lookup(it)",
+                        fieldMapping.getDefinition().getPrefix(),
+                        fieldMapping.getDefinition().getLocalName(),
+                        fieldMapping.getDefinition().getFieldNameString()
+                )
+        );
+        fieldMapping.addCodeLine("}");
     }
 
-    private void lineDictionary(FieldMapping fieldMapping, AnalysisTree.Node node) {
-        line(fieldMapping, String.format("%s_lookup(%s)", fieldMapping.getDefinition().getFieldNameString(), node.getVariableName()));
-        fieldMapping.createDictionary(node.getStatistics().getHistogramValues());
+    private void lineConstant(FieldMapping fieldMapping, String constantValue) {
+        line(fieldMapping, String.format("'%s'", constantValue));
     }
 
     private void line(FieldMapping fieldMapping, String parameter) {

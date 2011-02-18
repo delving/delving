@@ -23,6 +23,7 @@ package eu.delving.metadata;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,6 +39,20 @@ public class MetadataModelImpl implements MetadataModel {
 
     private Map<String, RecordDefinition> recordDefinitions = new TreeMap<String, RecordDefinition>();
     private String defaultPrefix;
+
+    public MetadataModelImpl() {
+    }
+
+    public MetadataModelImpl(String path, String prefix) {
+            try {
+                setRecordDefinitionResources(Arrays.asList(new String[]{path}));
+                setDefaultPrefix(prefix);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+    }
 
     public void setRecordDefinitionResources(List<String> paths) throws IOException, MetadataException {
         for (String path : paths) {
@@ -65,7 +80,7 @@ public class MetadataModelImpl implements MetadataModel {
     public RecordDefinition getRecordDefinition(String prefix) {
         RecordDefinition definition = recordDefinitions.get(prefix);
         if (definition == null) {
-            throw new RuntimeException("Expected to find a record definition for prefix "+prefix);
+            throw new RuntimeException("Expected to find a record definition for prefix " + prefix);
         }
         return definition;
     }

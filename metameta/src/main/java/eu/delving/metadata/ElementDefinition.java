@@ -124,7 +124,9 @@ public class ElementDefinition {
     public void getMappableFields(List<FieldDefinition> fieldDefinitions) {
         if (this.fields != null) {
             for (FieldDefinition fieldDefinition : this.fields) {
-                fieldDefinitions.add(fieldDefinition);
+                if (!fieldDefinition.systemField) {
+                    fieldDefinitions.add(fieldDefinition);
+                }
             }
         }
         if (elements != null) {

@@ -1,6 +1,5 @@
 package eu.delving.services.core;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -28,6 +27,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+
+import static eu.delving.core.util.MongoObject.mob;
 
 /**
  * Wrap the mongo database so that what goes in and comes out is managed.
@@ -87,11 +88,10 @@ public class MetaRepoImpl implements MetaRepo {
 
     @Override
     public DataSet createDataSet(String spec) {
-        DBObject object = new BasicDBObject();
-        object.put(DataSet.SPEC, spec);
-        object.put(DataSet.DATA_SET_STATE, DataSetState.INCOMPLETE.toString());
-
-        DataSet dataSet = factory().createDataSet(object);
+        DataSet dataSet = factory().createDataSet(mob(
+                DataSet.SPEC, spec,
+                DataSet.DATA_SET_STATE, DataSetState.INCOMPLETE.toString()
+        ));
         dataSet.save();
         return dataSet;
     }
@@ -113,7 +113,7 @@ public class MetaRepoImpl implements MetaRepo {
     @Override
     public DataSet getDataSet(String spec) {
         DBCollection collection = db().getCollection(DATASETS_COLLECTION);
-        DBObject object = collection.findOne(new BasicDBObject(DataSet.SPEC, spec));
+        DBObject object = collection.findOne(mob(DataSet.SPEC, spec));
         if (object == null) {
             return null;
         }
@@ -123,7 +123,7 @@ public class MetaRepoImpl implements MetaRepo {
     @Override
     public DataSet getFirstDataSet(DataSetState dataSetState) {
         DBCollection collection = db().getCollection(DATASETS_COLLECTION);
-        DBObject object = collection.findOne(new BasicDBObject(DataSet.DATA_SET_STATE, dataSetState.toString()));
+        DBObject object = collection.findOne(mob(DataSet.DATA_SET_STATE, dataSetState.toString()));
         if (object == null) {
             return null;
         }
@@ -166,19 +166,21 @@ public class MetaRepoImpl implements MetaRepo {
             log.error(errorMessage);
             throw new DataSetNotFoundException(errorMessage);
         }
-        DBObject req = new BasicDBObject();
-        req.put(PmhRequest.VERB, verb.toString());
-        req.put(PmhRequest.SET, set);
-        req.put(PmhRequest.FROM, from);
-        req.put(PmhRequest.UNTIL, until);
-        req.put(PmhRequest.PREFIX, metadataPrefix);
         // sort by expiration date and get first One
-        DBObject step = new BasicDBObject(HarvestStep.PMH_REQUEST, req);
-        step.put(HarvestStep.LIST_SIZE, dataSet.getRecordCount()); // todo: not if some records don't validate
-        step.put(HarvestStep.NAMESPACES, dataSet.getNamespaces());
-        step.put(HarvestStep.EXPIRATION, null);
-        step.put(HarvestStep.CURSOR, 0);
-        final DBCursor dbCursor = factory().harvestSteps().find(step).sort(new BasicDBObject(MetaRepo.MONGO_ID, 1)).limit(1);
+        DBObject step = mob(
+                HarvestStep.PMH_REQUEST, mob(
+                    PmhRequest.VERB, verb.toString(),
+                    PmhRequest.SET, set,
+                    PmhRequest.FROM, from,
+                    PmhRequest.UNTIL, until,
+                    PmhRequest.PREFIX, metadataPrefix
+                ),
+                HarvestStep.LIST_SIZE, dataSet.getRecordCount(),
+                HarvestStep.NAMESPACES, dataSet.getNamespaces(),
+                HarvestStep.EXPIRATION, null,
+                HarvestStep.CURSOR, 0
+        );
+        final DBCursor dbCursor = factory().harvestSteps().find(step).sort(mob(MetaRepo.MONGO_ID, 1)).limit(1);
         if (dbCursor.count() == 1) {
             return factory().createHarvestStep(dbCursor.next(), accessKey);
         }
@@ -190,7 +192,7 @@ public class MetaRepoImpl implements MetaRepo {
     @Override
     public HarvestStep getHarvestStep(String resumptionToken, String accessKey) throws ResumptionTokenNotFoundException, DataSetNotFoundException, MappingNotFoundException, AccessKeyException {
         ObjectId objectId = new ObjectId(resumptionToken);
-        DBObject step = factory().harvestSteps().findOne(new BasicDBObject(MONGO_ID, objectId));
+        DBObject step = factory().harvestSteps().findOne(mob(MONGO_ID, objectId));
         if (step == null) {
             throw new ResumptionTokenNotFoundException("Unable to find resumptionToken: " + resumptionToken);
         }
@@ -199,10 +201,7 @@ public class MetaRepoImpl implements MetaRepo {
 
     @Override
     public void removeExpiredHarvestSteps() {
-        DBCollection steps = db().getCollection(HARVEST_STEPS_COLLECTION);
-        Date now = new Date();
-        DBObject query = new BasicDBObject(HarvestStep.EXPIRATION, new BasicDBObject("$lt", now));
-        steps.remove(query);
+        db().getCollection(HARVEST_STEPS_COLLECTION).remove(mob(HarvestStep.EXPIRATION, mob("$lt", new Date())));
     }
 
     @Override

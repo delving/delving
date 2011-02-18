@@ -40,6 +40,7 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class GroovyList extends ArrayList<Object> {
     public GroovyList() {
+        super(4);
     }
 
     public GroovyList(Collection<Object> collection) {

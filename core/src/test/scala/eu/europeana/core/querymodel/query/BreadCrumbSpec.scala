@@ -19,7 +19,7 @@ import collection.immutable.List
 class BreadCrumbSpec extends Spec with ShouldMatchers {
   val queryString = "single query"
   val encodedQueryString = URLEncoder.encode(queryString, "utf-8")
-  val filterPrefix = "&qf="
+  val filterPrefix = "&amp;qf="
   val queryPrefix = "query=" + encodedQueryString;
 
   describe("A List of BreadCrumbs") {
@@ -99,7 +99,7 @@ class BreadCrumbSpec extends Spec with ShouldMatchers {
         list.size should equal(2)
         val lastBreadCrumb: Breadcrumb = list.last
         lastBreadCrumb.isLast should be(true)
-        lastBreadCrumb.getHref should equal(queryPrefix + "&qf=LANGUAGE:en")
+        lastBreadCrumb.getHref should equal(queryPrefix + "&amp;qf=LANGUAGE:en")
       }
     }
   }

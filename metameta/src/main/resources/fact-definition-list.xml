@@ -5,6 +5,11 @@
         <toolTip>The reference identifier of this data set</toolTip>
         <automatic>true</automatic>
     </fact-definition>
+    <fact-definition name="downloadedSource">
+        <prompt>Downloaded Source</prompt>
+        <toolTip>This indicates whether the source file is downloaded or imported.</toolTip>
+        <automatic>true</automatic>
+    </fact-definition>
     <fact-definition name="recordRootPath">
         <prompt>Record Path</prompt>
         <toolTip>This path indicates where the record boundaries are in the input XML.</toolTip>
@@ -659,10 +664,20 @@
     </fact-definition>
     <fact-definition name="rights">
         <prompt>Rights</prompt>
-        <toolTip>What can you do with it?</toolTip>
+        <toolTip>What can you do with it? See http://version1.europeana.eu/c/document_library/get_file?uuid=06e63d96-0358-4be8-9422-d63df3218510&amp;groupId=10602 for an explanation.</toolTip>
         <options>
-            <string>UNKNOWN</string>
-            <string>CREATIVE_COMMONS</string>
+            <string>http://creativecommons.org/publicdomain/mark/1.0/</string>
+            <string>http://creativecommons.org/publicdomain/zero/1.0/</string>
+            <string>http://creativecommons.org/licenses/by/3.0/</string>
+            <string>http://creativecommons.org/licenses/by-sa/3.0/nl/</string>
+            <string>http://creativecommons.org/licenses/by-nc/3.0/de/</string>
+            <string>http://creativecommons.org/licenses/by-nc-sa/2.0/fr/</string>
+            <string>http://creativecommons.org/licenses/by-nd/2.0/es/</string>
+            <string>http://creativecommons.org/licenses/by-nc-nd/1.0/fi/</string>
+            <string>http://www.europeana.eu/rights/rr-f/</string>
+            <string>http://www.europeana.eu/rights/rr-p/</string>
+            <string>http://www.europeana.eu/rights/rr-r/</string>
+            <string>http://www.europeana.eu/rights/unknown/</string>
         </options>
     </fact-definition>
     <fact-definition name="type">

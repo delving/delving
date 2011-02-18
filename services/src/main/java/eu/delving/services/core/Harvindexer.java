@@ -14,8 +14,10 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.SolrInputField;
 import org.joda.time.DateTime;
@@ -39,8 +41,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -48,12 +48,9 @@ import java.util.concurrent.Executors;
  */
 
 public class Harvindexer {
-    private SolrServer solrServer;
     private SolrServer solrStreamingServer;
     private XMLInputFactory inputFactory = new WstxInputFactory();
-    private Executor executor = Executors.newSingleThreadExecutor();
     private Logger log = Logger.getLogger(getClass());
-    private int chunkSize = 1000;
     private HttpClient httpClient;
     private List<Processor> processors = new CopyOnWriteArrayList<Processor>();
 
@@ -76,17 +73,8 @@ public class Harvindexer {
     }
 
     @Autowired
-    public void setSolrServer(@Qualifier("solrUpdateServer") SolrServer solrServer) {
-        this.solrServer = solrServer;
-    }
-
-    @Autowired
     public void setSolrStreamingServer(@Qualifier("solrStreamingUpdateServer") SolrServer solrStreamingServer) {
         this.solrStreamingServer = solrStreamingServer;
-    }
-
-    public void setChunkSize(int chunkSize) {
-        this.chunkSize = chunkSize;
     }
 
     public void commenceImport(MetaRepo.DataSet dataSet) {
@@ -135,19 +123,6 @@ public class Harvindexer {
             }
         }
 
-        public void stop() {
-            if (thread != null) {
-                Thread threadToJoin = thread;
-                thread = null;
-                try {
-                    threadToJoin.join();
-                }
-                catch (InterruptedException e) {
-                    log.error("Interrupted!", e);
-                }
-            }
-        }
-
         @Override
         public void run() {
             log.info("Importing " + dataSet);
@@ -164,6 +139,9 @@ public class Harvindexer {
                         solrStreamingServer.deleteByQuery("europeana_collectionName:" + dataSet.getSpec() + " AND timestamp:[* TO " + fmt.print(now) + "]");
                         solrStreamingServer.commit(); // todo maybe add manual commit
                         log.info("deleting orphaned entries from the SolrIndex for collection" + dataSet.getSpec());
+                        final QueryResponse response = solrStreamingServer.query(new SolrQuery("europeana_collectionName:" + dataSet.getSpec()));
+                        final long numFound = response.getResults().getNumFound();
+                        dataSet.setRecordsIndexed((int) numFound);
                         break;
                     }
                     catch (SolrServerException e) {
@@ -192,7 +170,8 @@ public class Harvindexer {
                 }
                 else {
                     log.info("Aborted importing " + dataSet);
-                    dataSet.setState(DataSetState.INCOMPLETE);
+                    dataSet.setState(DataSetState.DISABLED);
+                    solrStreamingServer.rollback();
                 }
                 dataSet.save();
             }
@@ -212,6 +191,13 @@ public class Harvindexer {
             log.warn("Problem importing " + dataSet + ", to ERROR state.", ex);
             dataSet.setErrorState(ex.getMessage());
             dataSet.save();
+            try {
+                solrStreamingServer.rollback();
+            } catch (SolrServerException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         private void importPmh(MetaRepo.DataSet dataSet) throws HarvindexingException, IOException, TransformerException, XMLStreamException, SolrServerException {
@@ -225,11 +211,9 @@ public class Harvindexer {
             );
             HttpMethod method = new GetMethod(url);
             httpClient.executeMethod(method);
-            Indexer indexer = new Indexer(dataSet);
             InputStream inputStream = method.getResponseBodyAsStream();
-            String resumptionToken = importXmlInternal(inputStream, indexer);
+            String resumptionToken = importXmlInternal(inputStream);
             while (!resumptionToken.isEmpty()) {
-                log.info(String.format("So far %d records, resumption token %s", indexer.getRecordCount(), resumptionToken));
                 method = new GetMethod(String.format(
                         "%s/oai-pmh?verb=ListRecords&resumptionToken=%s&accessKey=%s",
                         servicesUrl,
@@ -238,23 +222,15 @@ public class Harvindexer {
                 ));
                 httpClient.executeMethod(method);
                 inputStream = method.getResponseBodyAsStream();
-                resumptionToken = importXmlInternal(inputStream, indexer);
-                if (dataSet.getState() != DataSetState.INDEXING) {
+                resumptionToken = importXmlInternal(inputStream);
+                if (dataSet.getState(true) != DataSetState.INDEXING) {
+                    thread = null;
                     break;
                 }
-                if (indexer.isFull()) {
-                    log.info(String.format("Indexer full with %d records", indexer.getRecordCount()));
-                    executor.execute(indexer);
-                    indexer = new Indexer(dataSet);
-                }
-            }
-            if (indexer.hasRecords()) {
-                log.info(String.format("Harvest finished with %d records to index", indexer.getRecordCount()));
-                executor.execute(indexer);
             }
         }
 
-        private String importXmlInternal(InputStream inputStream, Indexer indexer) throws TransformerException, XMLStreamException, IOException, SolrServerException, HarvindexingException {
+        private String importXmlInternal(InputStream inputStream) throws TransformerException, XMLStreamException, IOException, SolrServerException, HarvindexingException {
             Source source = new StreamSource(inputStream, "UTF-8");
             XMLStreamReader xml = inputFactory.createXMLStreamReader(source);
             String pmhId = null;
@@ -328,9 +304,11 @@ public class Harvindexer {
                             else {
                                 solrInputDocument.addField("europeana_hasDigitalObject", false);
                             }
-                            if (!solrInputDocument.containsKey("europeana_collectionName")) {
-                                solrInputDocument.addField("europeana_collectionName", dataSet.getSpec()); // todo: can't just use a string field name here
+                            if (solrInputDocument.containsKey("europeana_collectionName")) {
+                                log.warn("Mapping should not contain europeana_collectionName because we want to set it to spec");
+                                solrInputDocument.remove("europeana_collectionName");
                             }
+                            solrInputDocument.addField("europeana_collectionName", dataSet.getSpec()); // todo: can't just use a string field name here
 //                            indexer.add(solrInputDocument); // this is the old way
                             solrStreamingServer.add(solrInputDocument);
 //                            record.save(); todo: or something like it, to replace consoleDao.saveEuropeanaId(europeanaId);
@@ -401,45 +379,4 @@ public class Harvindexer {
         return out.toString();
     }
 
-    private class Indexer implements Runnable {
-        private MetaRepo.DataSet dataSet;
-        private List<SolrInputDocument> recordList = new ArrayList<SolrInputDocument>();
-
-        private Indexer(MetaRepo.DataSet dataSet) {
-            this.dataSet = dataSet;
-        }
-
-        public void add(SolrInputDocument record) {
-            recordList.add(record);
-        }
-
-        public boolean hasRecords() {
-            return !recordList.isEmpty();
-        }
-
-        public boolean isFull() {
-            return recordList.size() >= chunkSize;
-        }
-
-        @Override
-        public void run() {
-            try {
-                log.info("sending " + recordList.size() + " records to solr");
-                solrServer.add(recordList);
-                dataSet.incrementRecordsIndexed(recordList.size());
-            }
-            catch (SolrServerException e) {
-                log.error("unable to index this batch");
-                log.error(recordList.toString());
-                e.printStackTrace();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        public int getRecordCount() {
-            return recordList.size();
-        }
-    }
 }

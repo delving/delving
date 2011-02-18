@@ -61,7 +61,7 @@ public class ServiceController {
         else {
             String[] parts = pathInfo.split("/");
             if (parts.length != 4 || !"record".equals(parts[1])) {
-                report(response, "Expected path like /resolve/record/*/*");
+                report(response, "Expected path like /resolve/object/*/*");
             }
             else {
                 String uri = resolverUrlPrefix + request.getRequestURI();

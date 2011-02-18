@@ -34,9 +34,9 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.events.XMLEvent;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Analyze xml input and compile statistics.
@@ -49,7 +49,7 @@ public class AnalysisParser implements Runnable {
     private static final int ELEMENT_STEP = 10000;
     private final Logger LOG = Logger.getLogger(getClass());
     private Path path = new Path();
-    private Map<Path, FieldStatistics> statisticsMap = new TreeMap<Path, FieldStatistics>();
+    private Map<Path, FieldStatistics> statisticsMap = new HashMap<Path, FieldStatistics>();
     private Listener listener;
     private FileStore.DataSetStore dataSetStore;
     private boolean abort;

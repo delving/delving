@@ -32,8 +32,7 @@ import eu.delving.services.exceptions.MappingNotFoundException;
 import eu.delving.sip.AccessKey;
 import eu.europeana.sip.core.GroovyCodeResource;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import static eu.delving.core.util.MongoObject.mob;
 
 /**
  * Allow for foreign instantiations
@@ -42,7 +41,6 @@ import java.util.concurrent.Executors;
  */
 
 public class ImplFactory {
-    private Executor executor = Executors.newSingleThreadExecutor();
     private MetaRepo metaRepo;
     private DB db;
     private MetadataModel metadataModel;
@@ -99,6 +97,13 @@ public class ImplFactory {
         return accessKey;
     }
 
+    public void removeFirstHarvestSteps(String dataSetSpec) {
+        harvestSteps().remove(mob(
+                MetaRepo.HarvestStep.PMH_REQUEST + "." + MetaRepo.PmhRequest.SET, dataSetSpec,
+                MetaRepo.HarvestStep.FIRST, true
+        ));
+    }
+
     public MetaRepo.DataSet createDataSet(DBObject object) {
         return new DataSetImpl(this, object);
     }
@@ -115,15 +120,14 @@ public class ImplFactory {
                 if (step.getErrorMessage() != null) {
                     throw new RuntimeException(step.getErrorMessage());
                 }
-                executor.execute(step.createRecordSaver());
+                step.save();
             }
         }
         else { // the step has not yet been stored
-            harvestSteps().save(step.getObject());
+            step.setFirst();
+            step.save();
             step.createRecordFetcher(getDataSet(step), key).run();
-            step.createRecordSaver().run();
-            step.getObject().put(MetaRepo.HarvestStep.FIRST_ID, step.getObject().get(MetaRepo.MONGO_ID));
-            step.createRecordSaver().run();
+            step.save();
         }
         return step;
     }

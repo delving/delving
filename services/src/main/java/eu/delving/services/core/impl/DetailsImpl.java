@@ -21,10 +21,10 @@
 
 package eu.delving.services.core.impl;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import eu.delving.metadata.Path;
 import eu.delving.services.core.MetaRepo;
+
+import static eu.delving.core.util.MongoObject.mob;
 
 /**
  * Implementing the details interface
@@ -43,33 +43,23 @@ class DetailsImpl implements MetaRepo.Details {
     @Override
     public MetaRepo.MetadataFormat getMetadataFormat() {
         if (metadataFormat == null) {
-            DBObject metadataObject = (DBObject) object.get(METADATA_FORMAT);
-            if (metadataObject == null) {
-                object.put(METADATA_FORMAT, metadataObject = new BasicDBObject());
+            DBObject formatObject = (DBObject) object.get(METADATA_FORMAT);
+            if (formatObject == null) {
+                object.put(METADATA_FORMAT, formatObject = mob());
             }
-            metadataFormat = new MetadataFormatImpl(metadataObject);
+            metadataFormat = new MetadataFormatImpl(formatObject);
         }
         return metadataFormat;
     }
 
     @Override
-    public Path getRecordRoot() {
-        return new Path((String) (object.get(RECORD_ROOT)));
+    public byte[] getFacts() {
+        return (byte[]) object.get(FACT_BYTES);
     }
 
     @Override
-    public void setRecordRoot(Path path) {
-        object.put(RECORD_ROOT, path.toString());
-    }
-
-    @Override
-    public Path getUniqueElement() {
-        return new Path((String) (object.get(UNIQUE_ELEMENT)));
-    }
-
-    @Override
-    public void setUniqueElement(Path path) {
-        object.put(UNIQUE_ELEMENT, path.toString());
+    public void setFacts(byte[] factBytes) {
+        object.put(FACT_BYTES, factBytes);
     }
 
     @Override
@@ -80,26 +70,6 @@ class DetailsImpl implements MetaRepo.Details {
     @Override
     public void setName(String value) {
         object.put(NAME, value);
-    }
-
-    @Override
-    public String getProviderName() {
-        return (String) object.get(PROVIDER_NAME);
-    }
-
-    @Override
-    public void setProviderName(String value) {
-        object.put(PROVIDER_NAME, value);
-    }
-
-    @Override
-    public String getDescription() {
-        return (String) object.get(DESCRIPTION);
-    }
-
-    @Override
-    public void setDescription(String value) {
-        object.put(DESCRIPTION, value);
     }
 
 }

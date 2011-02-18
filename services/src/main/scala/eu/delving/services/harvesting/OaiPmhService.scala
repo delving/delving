@@ -24,7 +24,7 @@ import org.joda.time.DateTime
  * @since Jun 16, 2010 12:06:56 AM
  */
 
-class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
+class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo, accessKey: String = "") {
 
   private val log = Logger.getLogger(getClass());
 
@@ -337,6 +337,9 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   def createPmhRequest(params: HashMap[String, String], verb: PmhVerb): PmhRequestEntry = {
     def getParam(key: String) = params.getOrElse(key, "")
+
+    val accessKeyParam : String = if (accessKey.isEmpty) getParam("accessKey") else accessKey
+
     val pmh = PmhRequestItem(
       verb,
       getParam("set"),
@@ -344,7 +347,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
       getParam("until"),
       getParam("metadataPrefix"),
       getParam("identifier"),
-      getParam("accessKey")
+      accessKeyParam
       )
     PmhRequestEntry(pmh, getParam("resumptionToken"))
   }
@@ -391,8 +394,8 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
 }
 object OaiPmhService {
-   def parseHttpServletRequest(request: HttpServletRequest, metaRepo: MetaRepo) : String = {
-     val service = new OaiPmhService(request, metaRepo)
+   def parseHttpServletRequest(request: HttpServletRequest, metaRepo: MetaRepo, accessKey : String = "") : String = {
+     val service = new OaiPmhService(request, metaRepo, accessKey)
      service parseRequest
    }
  }

@@ -260,7 +260,6 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
             String mappingCode;
             if (editedCode == null) {
                 mappingCode = getCompileCode();
-                log.info("Edited code null, so get existing code");
             }
             else {
                 mappingCode = getCompileCode(editedCode);
