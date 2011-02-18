@@ -88,7 +88,6 @@
 
     <build>
         <defaultGoal>package</defaultGoal>
-        <finalName>${project.artifactId}</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
