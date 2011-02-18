@@ -168,7 +168,12 @@ public class ElementDefinition {
         if (fields != null) {
             for (FieldDefinition fieldDefinition : fields) {
                 if (fieldDefinition.facetPrefix != null) {
-                    facetFieldStrings.add(String.format("{!ex=%s}%s", fieldDefinition.facetPrefix, fieldDefinition.getFacetName()));
+                    if (fieldDefinition.facetName != null) {
+                        facetFieldStrings.add(String.format("{!ex=%s}%s", fieldDefinition.facetPrefix, fieldDefinition.facetName.toUpperCase()));
+                    }
+                    else {
+                        facetFieldStrings.add(String.format("{!ex=%s}%s", fieldDefinition.facetPrefix, fieldDefinition.getFacetName()));
+                    }
                 }
             }
         }

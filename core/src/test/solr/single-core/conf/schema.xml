@@ -739,10 +739,6 @@
 
    <!-- Europeana copy fields -->
    <!-- Text copy-to-field -->
-   <copyField source="dc_*" dest="text"/>
-   <copyField source="dcterms_*" dest="text"/>
-   <copyField source="abm_*" dest="text"/>
-   <copyField source="icn_*" dest="text"/>
    <copyField source="europeana_isShownBy" dest="text" />
    <copyField source="europeana_isShownAt" dest="text" />
    <copyField source="europeana_type" dest="text" />
@@ -791,6 +787,8 @@
    <copyField source="europeana_hasDigitalObject" dest="HASDIGITALOBJECT" />
    <copyField source="europeana_dataProvider" dest="DATAPROVIDER" />
    <copyField source="europeana_collectionTitle" dest="COLLECTION" />
+   <!-- ICN Facets -->
+   <copyField source="icn_technique" dest="TECHNIQUE" />
    <!-- ABM Facets -->
    <copyField source="abm_landedProperty" dest="LANDEDPROPERTY" />
    <copyField source="abm_municipality" dest="MUNICIPALITY" />
@@ -798,10 +796,16 @@
    <copyField source="abm_county" dest="COUNTY" />
    <copyField source="abm_namedPlace" dest="NAMEDPLACE" />
 
-   <!-- Above, multiple source fields are copied to the [text] field.
-	  Another way to map multiple source fields to the same
-	  destination field is to use the dynamic field syntax.
-	  copyField also supports a maxChars to copy setting.  -->
+    <copyField source="dc_*" dest="text"/>
+    <copyField source="dcterms_*" dest="text"/>
+    <copyField source="abm_*" dest="text"/>
+    <copyField source="icn_*" dest="text"/>
+
+
+    <!-- Above, multiple source fields are copied to the [text] field.
+       Another way to map multiple source fields to the same
+       destination field is to use the dynamic field syntax.
+       copyField also supports a maxChars to copy setting.  -->
 
    <!-- <copyField source="*_t" dest="text" maxChars="3000"/> -->
 

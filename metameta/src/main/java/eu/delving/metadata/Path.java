@@ -110,7 +110,7 @@ public class Path implements Comparable<Path>, Serializable {
 
     public String toString() {
         if (string == null) {
-            StringBuilder builder = new StringBuilder(300);
+            StringBuilder builder = new StringBuilder(150);
             for (Tag tag : stack) {
                 builder.append('/');
                 builder.append(tag);

@@ -29,6 +29,15 @@
         <prompt>Name</prompt>
         <toolTip>The name given to this data set</toolTip>
     </fact-definition>
+    <fact-definition name="collectionType">
+        <prompt>Collection Type</prompt>
+        <toolTip>Classification of collections</toolTip>
+        <options>
+            <string>all</string>
+            <string>portal</string>
+            <string>mm</string>
+        </options>
+    </fact-definition>
     <fact-definition name="namespacePrefix">
         <prompt>Prefix</prompt>
         <toolTip>The prefix to denote this namespace</toolTip>

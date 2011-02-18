@@ -67,13 +67,7 @@
             </validation>
         </field>
         <field prefix="icn" localName="collectionType">
-            <validation>
-                <options>
-                    <string>all</string>
-                    <string>portal</string>
-                    <string>mm</string>
-                </options>
-            </validation>
+            <validation factName="collectionType"/>
         </field>
         <field prefix="icn" localName="acquisitionYear"/>
         <field prefix="icn" localName="purchasePrice"/>
@@ -93,7 +87,7 @@
         <field prefix="dc" localName="source"/>
         <field prefix="dc" localName="subject" facetName="subject" searchField="what,subject"/>
         <field prefix="dc" localName="title" sortable="true"/>
-        <field prefix="dc" localName="type" facetPrefix="type"/>
+        <field prefix="dc" localName="type" facetPrefix="dct" facetName="dctype"/>
         <field prefix="dcterms" localName="alternative"/>
         <field prefix="dcterms" localName="conformsTo"/>
         <field prefix="dcterms" localName="created" searchField="when,date"/>

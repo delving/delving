@@ -74,11 +74,8 @@ public class FieldMapping implements Comparable<FieldMapping> {
                 Matcher matcher = VARIABLE_PATTERN.matcher(line);
                 while (matcher.find()) {
                     String var = matcher.group(0);
-                    for (String toRemove : TO_REMOVE) {
-                        if (var.endsWith(toRemove)) {
-                            var = var.substring(0, var.length() - toRemove.length());
-                            break;
-                        }
+                    if (var.endsWith("(")) {
+                        var = var.substring(0, var.lastIndexOf('.'));
                     }
                     variables.add(var);
                 }
@@ -125,11 +122,7 @@ public class FieldMapping implements Comparable<FieldMapping> {
         }
     }
 
-    private static final Pattern VARIABLE_PATTERN = Pattern.compile("input(\\.\\w+)+"); // todo: doesn't catch facts
-    private static final String [] TO_REMOVE = {
-            ".each",
-            ".split"
-    };
+    private static final Pattern VARIABLE_PATTERN = Pattern.compile("input(\\.\\w+)+[\\(]?"); // todo: doesn't catch facts
 
     @Override
     public int compareTo(FieldMapping fieldMapping) {

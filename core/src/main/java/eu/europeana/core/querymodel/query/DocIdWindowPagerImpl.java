@@ -43,6 +43,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     private String sortBy;
     private List<Breadcrumb> breadcrumbs;
     private int fullDocUriInt;
+    private int numFound;
 
     @Value("#{launchProperties['portal.name']}")
     private String portalName;
@@ -77,6 +78,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         this.breadcrumbs = Breadcrumb.createList(originalBriefSolrQuery); // todo comment out
         int offset = (int) response.getStart();
         int numFound = (int) response.getNumFound();
+        this.numFound = numFound;
         setNextAndPrevious(fullDocUriInt, list, offset, numFound);
         this.docIdWindow = new DocIdWindowImpl(list, offset, numFound);
         if (this.hasNext) {
@@ -318,6 +320,11 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     @Override
     public List<Breadcrumb> getBreadcrumbs() {
         return breadcrumbs;
+    }
+
+    @Override
+    public int getNumFound() {
+        return numFound;
     }
 
     @Override

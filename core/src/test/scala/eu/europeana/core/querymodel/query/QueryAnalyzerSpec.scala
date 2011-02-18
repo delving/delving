@@ -16,8 +16,8 @@ import java.util.{Map => JMap, HashMap => JHashMap}
  */
 
 @RunWith(classOf[JUnitRunner])
-class QueryAnalyzerSpec extends Spec with ShouldMatchers with DelvingTestUtil {
-  val qa = getQueryAnalyser
+class QueryAnalyzerSpec extends Spec with ShouldMatchers {
+  val qa = createQueryAnalyzer
 
   describe("A QueryAnalyzer") {
 
@@ -129,6 +129,11 @@ class QueryAnalyzerSpec extends Spec with ShouldMatchers with DelvingTestUtil {
       }
 
     }
+  }
+
+  def createQueryAnalyzer: QueryAnalyzer = {
+    val queryAnalyzer = new QueryAnalyzer
+    queryAnalyzer
   }
 
   implicit def createParameterMap(params: List[(String, String)]): JMap[String, Array[String]] = {

@@ -49,6 +49,8 @@ public interface DocIdWindowPager {
 
     List<Breadcrumb> getBreadcrumbs();
 
+    int getNumFound();
+
     int getFullDocUriInt();
 
     void setPortalName(String portalName);

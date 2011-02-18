@@ -63,6 +63,9 @@ public class FieldDefinition implements Comparable<FieldDefinition> {
     public String facetPrefix;
 
     @XStreamAsAttribute
+    public String facetName;
+
+    @XStreamAsAttribute
     public String searchField;
 
     public Validation validation;
