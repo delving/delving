@@ -1,9 +1,29 @@
+/*
+ * Copyright 2010 DELVING BV
+ *
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
+ */
+
 package eu.delving.services.search
 
 import eu.europeana.core.BeanQueryModelFactory
 import xml._
 import org.apache.solr.client.solrj.SolrQuery
-import java.util.{Properties, Map => JMap}
 import scala.collection.JavaConversions._
 import eu.europeana.core.querymodel.query._
 import eu.delving.core.binding.FieldValue
@@ -12,6 +32,7 @@ import javax.servlet.http. {HttpServletResponse, HttpServletRequest}
 import net.liftweb.json. {Printer, Extraction}
 import net.liftweb.json.JsonAST._
 import org.apache.log4j.Logger
+import java.util.{Properties, Map => JMap}
 
 class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServletResponse,
                            beanQueryModelFactory: BeanQueryModelFactory, launchProperties: Properties,
@@ -48,9 +69,10 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
   private def getResultsFromSolr : BriefBeanView = {
     val userQuery = request.getParameter("query")
     require(userQuery != null)
-    val solrQuery : SolrQuery = SolrQueryUtil.createFromQueryParams(request.getParameterMap.asInstanceOf[JMap[String, Array[String]]], queryAnalyzer)
+    val jParams = request.getParameterMap.asInstanceOf[JMap[String, Array[String]]]
+    val solrQuery : SolrQuery = SolrQueryUtil.createFromQueryParams(jParams, queryAnalyzer)
     solrQuery.setFields("*,score")
-    beanQueryModelFactory.getBriefResultView(solrQuery, solrQuery.getQuery)
+    beanQueryModelFactory.getBriefResultView(solrQuery, solrQuery.getQuery, jParams)
   }
 
   private def renderRecord(doc : BriefDoc) : Elem = {

@@ -109,9 +109,14 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     }
 
     @Override
-    public BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString) throws EuropeanaQueryException, UnsupportedEncodingException {
-        QueryResponse queryResponse = getSolrResponse(solrQuery, true);
+    public BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString, Map<String, String[]> params) throws EuropeanaQueryException, UnsupportedEncodingException {
+        QueryResponse queryResponse = getSolrResponse(solrQuery, true, params);
         return new BriefBeanViewImpl(solrQuery, queryResponse, requestQueryString);
+    }
+
+    @Override
+    public BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString) throws EuropeanaQueryException, UnsupportedEncodingException {
+        return getBriefResultView(solrQuery, requestQueryString, null);
     }
 
     @Override
@@ -123,7 +128,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.setQuery("europeana_uri:\"" + europeanaUri + "\"");
         solrQuery.setQueryType(QueryType.MORE_LIKE_THIS_QUERY.toString());
-        return new FullBeanViewImpl(solrQuery, getSolrResponse(solrQuery, false), params);
+        return new FullBeanViewImpl(solrQuery, getSolrResponse(solrQuery, false, params), params);
     }
 
     // todo remove maybe use FullBeanView.getFullDoc instead
@@ -433,7 +438,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     }
 
     @Override
-    public QueryResponse getSolrResponse(SolrQuery solrQuery, boolean isBriefDoc) throws EuropeanaQueryException { // add bean to ???
+    public QueryResponse getSolrResponse(SolrQuery solrQuery, boolean isBriefDoc, Map<String, String[]> params) throws EuropeanaQueryException { // add bean to ???
         // since we make a defensive copy before the start is decremented we must do it here
         if (solrQuery.getStart() != null && solrQuery.getStart() > 0) {
             solrQuery.setStart(solrQuery.getStart() - 1);
@@ -467,12 +472,18 @@ public class BeanQueryModelFactory implements QueryModelFactory {
                 solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery()).toString());
             }
         }
-        SolrQuery dCopy = copySolrQuery(solrQuery);
+        SolrQuery dCopy = copySolrQuery(solrQuery, params);
         return getSolrResponseFromServer(dCopy, false);
     }
 
-    private SolrQuery copySolrQuery(SolrQuery solrQuery) {
+    private SolrQuery copySolrQuery(SolrQuery solrQuery, Map<String, String[]> params) {
         SolrQuery dCopy = solrQuery.getCopy();
+        if (params != null && params.containsKey("hqf")) {
+            final String[] hqf_fields = params.get("hqf");
+            for (String hqf_field : hqf_fields) {
+                dCopy.addFilterQuery(hqf_field);
+            }
+        }
         dCopy.setFilterQueries(SolrQueryUtil.getFilterQueriesAsOrQueries(solrQuery, metadataModel.getRecordDefinition().getFacetMap()));
         return dCopy;
     }

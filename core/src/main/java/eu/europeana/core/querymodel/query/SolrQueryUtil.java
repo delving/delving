@@ -165,12 +165,12 @@ public class SolrQueryUtil {
         }
 
         //set constraints
-        String[] filterQueries = null;
+        List<String> filterQueries = new ArrayList<String>();
         if (params.containsKey("qf")) {
-            filterQueries = params.get("qf");
+            Collections.addAll(filterQueries, params.get("qf"));
         }
-        else if (params.containsKey("qf[]")) {
-            filterQueries = params.get("qf[]");
+        if (params.containsKey("qf[]")) {
+            Collections.addAll(filterQueries, params.get("qf[]"));
         }
         if (filterQueries != null) {
             for (String filterQuery : filterQueries) {
