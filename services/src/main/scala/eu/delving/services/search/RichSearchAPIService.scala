@@ -33,6 +33,7 @@ import net.liftweb.json. {Printer, Extraction}
 import net.liftweb.json.JsonAST._
 import org.apache.log4j.Logger
 import java.util.{Properties, Map => JMap}
+import java.net.URLEncoder
 
 class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServletResponse,
                            beanQueryModelFactory: BeanQueryModelFactory, launchProperties: Properties,
@@ -40,6 +41,7 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
 
   val servicesUrl = launchProperties.getProperty("services.url")
   val portalBaseUrl = launchProperties.getProperty("portal.baseUrl")
+  val cacheUrl = launchProperties.getProperty("cacheUrl") + "id="
   val portalName = launchProperties.getProperty("portal.name")
   val briefDocSearch = portalBaseUrl + "/" + portalName + "/search"
   val prettyPrinter = new PrettyPrinter(150, 5)
@@ -60,6 +62,7 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
     }
     catch {
       case ex : Exception =>
+        log.error(ex)
         errorResponse(errorMessage = ex.getLocalizedMessage)
     }
     httpResponse setCharacterEncoding ("UTF-8")
@@ -94,8 +97,13 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
   }
 
   private def renderFields(field : FieldValue) : Seq[Elem] = {
-    def encodeUrl(content : String) : String =
-      if (content.startsWith("http://")) content.replaceAll("&", "&amp;") else content
+    def encodeUrl(content : String) : String = {
+      if (params.getOrElse("cache", Array[String]("false")).head.contains("true") && field.getKey == "europeana_object")
+        cacheUrl + URLEncoder.encode(content, "utf-8")
+      else if (content.startsWith("http://")) content.replaceAll("&", "&amp;")
+      else content
+
+    }
 
 
     field.getValueAsArray.map(value =>
