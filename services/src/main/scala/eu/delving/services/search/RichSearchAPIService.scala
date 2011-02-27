@@ -108,14 +108,12 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
   }
 
   private def renderFields(field : FieldValue) : Seq[Elem] = {
-    def encodeUrl(content : String) : String = {
+    def encodeUrl(content: String): String = {
       if (params.getOrElse("cache", Array[String]("false")).head.contains("true") && field.getKey == "europeana_object")
         cacheUrl + URLEncoder.encode(content, "utf-8")
       else if (content.startsWith("http://")) content.replaceAll("&", "&amp;")
       else content
-
     }
-
 
     field.getValueAsArray.map(value =>
       try {
@@ -244,10 +242,26 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
     }
 
     try {
-      val output = getBriefResultsFromSolr.getBriefDocs.map(doc => renderJsonRecord(doc)).toList
+      val output : List[Map[String, Any]] = if (params.containsKey("id") && !params.get("id").isEmpty) {
+        val recordMap = LinkedHashMap[String, Any]()
+        getFullResultsFromSolr.getFullDoc.getFieldValuesFiltered(false, Array("delving_pmhId")).foreach{
+          fieldValue =>
+            if (fieldValue.isNotEmpty) {
+              if (fieldValue.getValueAsArray.size > 1) {
+                recordMap.put(fieldValue.getKeyAsXml, encodeUrl(fieldValue.getValueAsArray, fieldValue.getKey))
+              }
+              else {
+                recordMap.put(fieldValue.getKeyAsXml, encodeUrl(fieldValue))
+              }
+            }
+        }
+        List(recordMap.toMap)
+      }
+      else getBriefResultsFromSolr.getBriefDocs.map(doc => renderJsonRecord(doc)).toList
 
       val allItems = Map[String, List[Map[String, Any]]]("items" -> output)
       val outputJson = Printer.pretty(render(Extraction.decompose(allItems)))
+
       if (!callback.isEmpty) {
 //        httpResponse setContentType ("application/jsonp")
         format("%s(%s)", callback, outputJson)
@@ -261,7 +275,20 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
     }
   }
 
+  private def encodeUrl(field: FieldValue): String = {
+    if (params.getOrElse("cache", Array[String]("false")).head.contains("true") && field.getKey == "europeana_object")
+      cacheUrl + URLEncoder.encode(field.getFirst, "utf-8")
+    else field.getFirst
+  }
+
+  private def encodeUrl(fields: Array[String], label: String): Array[String] = {
+    if (params.getOrElse("cache", Array[String]("false")).head.contains("true") && label == "europeana_object")
+      fields.map(fieldEntry => cacheUrl + URLEncoder.encode(fieldEntry, "utf-8"))
+    else fields
+  }
+
   def renderJsonRecord(doc : BriefDoc) : Map[String, Any] = {
+
     val recordMap = LinkedHashMap[String, Any]()
     val labelPairs = List[RecordLabel](
       RecordLabel("type","europeana_type"), RecordLabel("label", "dc_title"), RecordLabel("id", "dc_identifier"),
@@ -275,7 +302,7 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
       {
         val fieldValue = doc.getFieldValue(label.fieldValue)
         if (fieldValue.isNotEmpty) {
-          if (label.multivalued) {recordMap.put(label.name, fieldValue.getValueAsArray)} else {recordMap.put(label.name, fieldValue.getFirst)}
+          if (label.multivalued) {recordMap.put(label.name, fieldValue.getValueAsArray)} else {recordMap.put(label.name, encodeUrl(fieldValue))}
         }
       }
     )
