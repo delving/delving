@@ -34,13 +34,17 @@ import net.liftweb.json.JsonAST._
 import org.apache.log4j.Logger
 import java.util.{Properties, Map => JMap}
 import java.net.URLEncoder
+import eu.delving.sip.AccessKey
+import eu.europeana.core.util.web.ClickStreamLogger
+import eu.delving.services.exceptions.AccessKeyException
 
 class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServletResponse,
                            beanQueryModelFactory: BeanQueryModelFactory, launchProperties: Properties,
-                           queryAnalyzer: QueryAnalyzer) {
-
+                           queryAnalyzer: QueryAnalyzer, accessKey: AccessKey, clickStreamLogger: ClickStreamLogger
+                                  ) {
   val servicesUrl = launchProperties.getProperty("services.url")
   val portalBaseUrl = launchProperties.getProperty("portal.baseUrl")
+  val restrictedApiAccess = launchProperties.getProperty("services.api.useAccessKey").toBoolean
   val cacheUrl = launchProperties.getProperty("cacheUrl") + "id="
   val portalName = launchProperties.getProperty("portal.name")
   val briefDocSearch = portalBaseUrl + "/" + portalName + "/search"
@@ -53,6 +57,13 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
     val format = params.getOrElse("format", Array[String]("default")).head
 
     val response = try {
+      if (restrictedApiAccess) {
+        val wskey = params.getOrElse("wskey", Array[String]("unknown")).head
+        if (!accessKey.checkKey(wskey)) {
+          log.warn(String.format("Service Access Key %s invalid!", wskey));
+          throw new AccessKeyException(String.format("Access Key %s not accepted", wskey));
+        }
+      }
       format match {
         case "json" => getJsonResultResponse()
         case "jsonp" =>
@@ -132,7 +143,7 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
 
   private def minusAmp(link : String) = link.replaceAll("amp;", "").replaceAll(" ","%20").replaceAll("qf=","qf[]=")
 
-  def getXMLResultResponse(authorized : Boolean) : String = {
+  def getXMLResultResponse(authorized : Boolean = true) : String = {
     httpResponse setContentType ("text/xml")
     require(params.contains("query") || params.contains("id"))
     val response = if (params.containsKey("id") && !params.get("id").isEmpty) {
@@ -277,8 +288,9 @@ case class RecordLabel(name : String, fieldValue : String, multivalued : Boolean
 object RichSearchAPIService {
 
   def processRequest(request: HttpServletRequest, response: HttpServletResponse, beanQueryModelFactory: BeanQueryModelFactory,
-                     launchProperties: Properties, queryAnalyzer: QueryAnalyzer) : String = {
-    val service = new RichSearchAPIService(request, response, beanQueryModelFactory, launchProperties, queryAnalyzer)
+                     launchProperties: Properties, queryAnalyzer: QueryAnalyzer, accessKey: AccessKey,
+                     clickStreamLogger : ClickStreamLogger) : String = {
+    val service = new RichSearchAPIService(request, response, beanQueryModelFactory, launchProperties, queryAnalyzer, accessKey, clickStreamLogger)
     service parseRequest
   }
 

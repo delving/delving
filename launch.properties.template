@@ -1,7 +1,7 @@
 #
-# Copyright 2010 Delving BV
+# Copyright 2010 DELVING BV
 #
-# Licensed under the EUPL, Version 1.1 or as soon they
+# Licensed under the EUPL, Version 1.1 or as soon they
 # will be approved by the European Commission - subsequent
 # versions of the EUPL (the "Licence");
 # you may not use this work except in compliance with the
@@ -60,6 +60,10 @@ services.harvindexing.prefix = ese
 # The secrect password that is used to generate the accesskeys for OAI-PMH, Sip-Creator, and other Servcicse
 
 services.password = something
+
+# Allow access to search API via accessKey or completely open
+
+services.api.useAccessKey = false
 
 
 ###############################################

@@ -23,6 +23,7 @@ package eu.delving.services.controller;
 
 import eu.delving.services.search.OpenSearchService;
 import eu.delving.services.search.RichSearchAPIService;
+import eu.delving.sip.AccessKey;
 import eu.europeana.core.BeanQueryModelFactory;
 import eu.europeana.core.querymodel.query.QueryAnalyzer;
 import eu.europeana.core.util.web.ClickStreamLogger;
@@ -56,10 +57,13 @@ public class SearchApiController {
     @Autowired
     private Properties launchProperties;
 
+    @Autowired
+    private AccessKey accessKey;
+
     @RequestMapping("/api/search")
     public void searchApiController(HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(RichSearchAPIService.processRequest(request, response, beanQueryModelFactory, launchProperties, queryAnalyzer));
+        response.getWriter().write(RichSearchAPIService.processRequest(request, response, beanQueryModelFactory, launchProperties, queryAnalyzer, accessKey, clickStreamLogger));
         response.getWriter().close();
     }
 
