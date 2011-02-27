@@ -86,14 +86,18 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
     val jParams = request.getParameterMap.asInstanceOf[JMap[String, Array[String]]]
     val solrQuery: SolrQuery = SolrQueryUtil.createFromQueryParams(jParams, queryAnalyzer)
     solrQuery.setFields("*,score")
-    beanQueryModelFactory.getBriefResultView(solrQuery, solrQuery.getQuery, jParams)
+    val briefResultView = beanQueryModelFactory.getBriefResultView(solrQuery, solrQuery.getQuery, jParams)
+    clickStreamLogger.logApiBriefView(request, briefResultView, solrQuery)
+    briefResultView
   }
 
   private def getFullResultsFromSolr : FullBeanView = {
     val idQuery = request.getParameter("id")
     require(!idQuery.isEmpty)
     val jParams = request.getParameterMap.asInstanceOf[JMap[String, Array[String]]]
-    beanQueryModelFactory.getFullResultView(jParams)
+    val fullView = beanQueryModelFactory.getFullResultView(jParams)
+    clickStreamLogger.logApiFullView(request, fullView, idQuery)
+    fullView
   }
 
   private def renderRecord(doc : BriefDoc) : Elem = {
