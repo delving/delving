@@ -66,13 +66,20 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
     response
   }
 
-  private def getResultsFromSolr : BriefBeanView = {
-    val userQuery = request.getParameter("query") || request.getParameter("id")
-    require(userQuery != null)
+  private def getBriefResultsFromSolr: BriefBeanView = {
+    val userQuery = request.getParameter("query")
+    require(!userQuery.isEmpty)
     val jParams = request.getParameterMap.asInstanceOf[JMap[String, Array[String]]]
-    val solrQuery : SolrQuery = SolrQueryUtil.createFromQueryParams(jParams, queryAnalyzer)
+    val solrQuery: SolrQuery = SolrQueryUtil.createFromQueryParams(jParams, queryAnalyzer)
     solrQuery.setFields("*,score")
     beanQueryModelFactory.getBriefResultView(solrQuery, solrQuery.getQuery, jParams)
+  }
+
+  private def getFullResultsFromSolr : FullBeanView = {
+    val idQuery = request.getParameter("id")
+    require(!idQuery.isEmpty)
+    val jParams = request.getParameterMap.asInstanceOf[JMap[String, Array[String]]]
+    beanQueryModelFactory.getFullResultView(jParams)
   }
 
   private def renderRecord(doc : BriefDoc) : Elem = {
@@ -119,13 +126,38 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
 
   def getXMLResultResponse(authorized : Boolean) : String = {
     httpResponse setContentType ("text/xml")
+    require(params.contains("query") || params.contains("id"))
+    val response = if (params.containsKey("id") && !params.get("id").isEmpty) {
+      renderFullResult(authorized)
+    }
+    else renderBriefResult(authorized)
+    "<?xml version='1.0' encoding='utf-8' ?>\n" + prettyPrinter.format(response)
+  }
 
-    val briefResult = getResultsFromSolr
+  def renderFullResult(authorized : Boolean) : Elem = {
+    val fullResult = getFullResultsFromSolr
+
+    val response : Elem =
+      <result xmlns:icn="http://www.icn.nl/" xmlns:europeana="http://www.europeana.eu/schemas/ese/" xmlns:dc="http://purl.org/dc/elements/1.1/"
+               xmlns:raw="http://delving.eu/namespaces/raw" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:ese="http://www.europeana.eu/schemas/ese/"
+               xmlns:abm="http://to_be_decided/abm/">
+        <item>
+        {
+        for (field <- fullResult.getFullDoc.getFieldValuesFiltered(false, Array("delving_pmhId")).sortWith((fv1, fv2) => fv1.getKey < fv2.getKey)) yield
+        renderFields(field)
+        }
+        </item>
+      </result>
+    response
+  }
+
+  def renderBriefResult(authorized : Boolean) : Elem = {
+    val briefResult = getBriefResultsFromSolr
     val pagination = briefResult.getPagination
     val searchTerms = pagination.getPresentationQuery.getUserSubmittedQuery
     val startPage = pagination.getStart
 
-    val response : Elem = 
+    val response : Elem =
       <results xmlns:icn="http://www.icn.nl/" xmlns:europeana="http://www.europeana.eu/schemas/ese/" xmlns:dc="http://purl.org/dc/elements/1.1/"
                xmlns:raw="http://delving.eu/namespaces/raw" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:ese="http://www.europeana.eu/schemas/ese/"
                xmlns:abm="http://to_be_decided/abm/">
@@ -156,8 +188,7 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
             renderFacetQueryLinks(facetQuerytLink)}
         </facets>
       </results>
-
-    "<?xml version='1.0' encoding='utf-8' ?>\n" + prettyPrinter.format(response)
+    response
   }
 
   def errorResponse(title : String = "", link: String = "", description: String = "", error: String = "",
@@ -194,7 +225,7 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
     }
 
     try {
-      val output = getResultsFromSolr.getBriefDocs.map(doc => renderJsonRecord(doc)).toList
+      val output = getBriefResultsFromSolr.getBriefDocs.map(doc => renderJsonRecord(doc)).toList
 
       val allItems = Map[String, List[Map[String, Any]]]("items" -> output)
       val outputJson = Printer.pretty(render(Extraction.decompose(allItems)))

@@ -142,7 +142,9 @@ public class SolrQueryUtil {
                 // number exception is thrown take default setting 12 (hardening parameter handling)
             }
         }
-        solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery()).toString());
+        if (solrQuery.getQueryType() == null) {
+            solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery()).toString());
+        }
 
         // set sort field
         if (params.containsKey("sortBy") && !params.get("sortBy")[0].isEmpty()) {
