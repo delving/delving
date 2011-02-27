@@ -67,7 +67,7 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
   }
 
   private def getResultsFromSolr : BriefBeanView = {
-    val userQuery = request.getParameter("query")
+    val userQuery = request.getParameter("query") || request.getParameter("id")
     require(userQuery != null)
     val jParams = request.getParameterMap.asInstanceOf[JMap[String, Array[String]]]
     val solrQuery : SolrQuery = SolrQueryUtil.createFromQueryParams(jParams, queryAnalyzer)
