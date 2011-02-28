@@ -177,7 +177,7 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
     val searchTerms = pagination.getPresentationQuery.getUserSubmittedQuery
     val startPage = pagination.getStart
 
-    val layoutMap = Map[String, String]("#thumbnail" -> "europeana:object", "#title" -> "dc:title", "#uri" -> "europeana:uri",
+    val layoutMap = LinkedHashMap[String, String]("#thumbnail" -> "europeana:object", "#title" -> "dc:title", "#uri" -> "europeana:uri",
       "#isShownAt" -> "europeana:isShownAt", "Creator" -> "dc:creator", "Description" -> "dc:description",
       "Subject(s)" -> "dc:subject", "County" -> "abm:county", "Municipality" -> "abm:municipality", "Place" -> "abm:namedPlace",
       "Person(s)" -> "abm:aboutPerson")
