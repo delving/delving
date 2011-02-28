@@ -1,7 +1,7 @@
 /*
- * Copyright 2007 EDL FOUNDATION
+ * Copyright 2010 DELVING BV
  *
- * Licensed under the EUPL, Version 1.1 or - as soon they
+ * Licensed under the EUPL, Version 1.1 or as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * you may not use this work except in compliance with the
@@ -82,12 +82,20 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     @Autowired
     private MetadataModel metadataModel;
 
+    public MetadataModel getMetadataModel() {
+        return metadataModel;
+    }
+
     public void setSolrServer(CommonsHttpSolrServer solrServer) {
         this.solrServer = solrServer;
     }
 
     @Autowired
     private QueryAnalyzer queryAnalyzer;
+
+    public QueryAnalyzer getQueryAnalyzer() {
+        return queryAnalyzer;
+    }
 
     /**
      * create solr query from http query parameters

@@ -147,10 +147,9 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
 
   def getXMLResultResponse(authorized : Boolean = true) : String = {
     httpResponse setContentType ("text/xml")
-    require(params.contains("query") || params.contains("id"))
-    val response = if (params.containsKey("id") && !params.get("id").isEmpty) {
-      renderFullResult(authorized)
-    }
+    require(params.contains("query") || params.contains("id") || params.contains("explain"))
+    val response = if (params.contains("explain")) renderExplainInXml
+    else if (params.containsKey("id") && !params.get("id").isEmpty) renderFullResult(authorized)
     else renderBriefResult(authorized)
     "<?xml version='1.0' encoding='utf-8' ?>\n" + prettyPrinter.format(response)
   }
@@ -178,6 +177,11 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
     val searchTerms = pagination.getPresentationQuery.getUserSubmittedQuery
     val startPage = pagination.getStart
 
+    val layoutMap = Map[String, String]("#thumbnail" -> "europeana:object", "#title" -> "dc:title", "#uri" -> "europeana:uri",
+      "#isShownAt" -> "europeana:isShownAt", "Creator" -> "dc:creator", "Description" -> "dc:description",
+      "Subject(s)" -> "dc:subject", "County" -> "abm:county", "Municipality" -> "abm:municipality", "Place" -> "abm:namedPlace",
+      "Person(s)" -> "abm:aboutPerson")
+
     val response : Elem =
       <results xmlns:icn="http://www.icn.nl/" xmlns:europeana="http://www.europeana.eu/schemas/ese/" xmlns:dc="http://purl.org/dc/elements/1.1/"
                xmlns:raw="http://delving.eu/namespaces/raw" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:ese="http://www.europeana.eu/schemas/ese/"
@@ -200,6 +204,17 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
               renderPageLink(pageLink)}
             </links>
         </pagination>
+        <layout>
+          <drupal>
+            {layoutMap.map(item =>
+              <field>
+                <key>{item._1}</key>
+                <value>{item._2}</value>
+              </field>
+              )
+            }
+          </drupal>
+        </layout>
         <items>
           {for (item <- briefResult.getBriefDocs) yield
             renderRecord(item)}
@@ -311,6 +326,33 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
       }
     )
     recordMap.toMap
+  }
+
+  private def renderExplainBlock(label: String, options: List[String], description: String = "") : Elem = {
+    <element>
+            <label>{label}</label>
+            {if (!options.isEmpty) <options>{options.map(option => <option>{option}</option>)}</options>}
+            {if (!description.isEmpty) <description>{description}</description>}
+    </element>
+  }
+
+  def renderExplainInXml : Elem = {
+    <results>
+      <api>
+       <parameters>
+         {renderExplainBlock("query", List("all string"))}
+         {renderExplainBlock("format", List("xml", "json", "jsonp"))}
+         {renderExplainBlock("cache", List("true", "false"))}
+         {renderExplainBlock("id", List("valid europeana_uri identifier"), "Will output a full-view")}
+        </parameters>
+        <search-fields>
+          {renderExplainBlock("dc_title", List("all text"))}
+        </search-fields>
+        <facets>
+          {renderExplainBlock("MUNICIPALITY", List("all text"))}
+        </facets>
+      </api>
+    </results>
   }
 }
 
