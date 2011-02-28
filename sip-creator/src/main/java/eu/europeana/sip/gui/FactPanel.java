@@ -150,6 +150,9 @@ public class FactPanel extends JPanel {
         public void getValue() {
             String text = factModel.get(factDefinition);
             if (textField != null) {
+                if (text == null) {
+                    text = factDefinition.defaultValue;
+                }
                 textField.setText(text);
             }
             else {

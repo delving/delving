@@ -41,6 +41,7 @@ public class FactDefinition {
     public String prompt;
     public String toolTip;
     public boolean automatic;
+    public String defaultValue;
     public java.util.List<String> options;
 
     @XStreamAlias("fact-definition-list")
