@@ -227,25 +227,18 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
     response
   }
 
-  def errorResponse(title : String = "", link: String = "", description: String = "", error: String = "",
-                    errorMessage: String = "") : String = {
+  def errorResponse(error : String = "Unable to respond to the API request",
+                    errorMessage: String = "Unable to determine the cause of the Failure") : String = {
 
     httpResponse setStatus (HttpServletResponse.SC_BAD_REQUEST)
 
-     val response = <rss version="2.0" xmlns:openSearch="http://a9.com/-/spec/opensearch/1.1/">
-       <channel>
-         <title>{title}</title>
-         <link>{link}</link>
-         <description>{description}</description>
-         <openSearch:totalResults>1</openSearch:totalResults>
-         <openSearch:startIndex>1</openSearch:startIndex>
-         <openSearch:itemsPerPage>1</openSearch:itemsPerPage>
-         <item>
+     val response =
+       <results>
+         <error>
            <title>{error}</title>
            <description>{errorMessage}</description>
-         </item>
-       </channel>
-     </rss>
+         </error>
+       </results>
 
     "<?xml version='1.0' encoding='utf-8' ?>\n" + prettyPrinter.format(response)
   }
@@ -328,7 +321,7 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
     recordMap.toMap
   }
 
-  private def renderExplainBlock(label: String, options: List[String], description: String = "") : Elem = {
+  private def renderExplainBlock(label: String, options: List[String] = List(), description: String = "") : Elem = {
     <element>
             <label>{label}</label>
             {if (!options.isEmpty) <options>{options.map(option => <option>{option}</option>)}</options>}
@@ -337,19 +330,23 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
   }
 
   def renderExplainInXml : Elem = {
+    val excludeList = List("europeana_unstored", "europeana_source", "europeana_userTag", "europeana_collectionTitle")
     <results>
       <api>
        <parameters>
          {renderExplainBlock("query", List("all string"))}
          {renderExplainBlock("format", List("xml", "json", "jsonp"))}
-         {renderExplainBlock("cache", List("true", "false"))}
+         {renderExplainBlock("cache", List("true", "false"), "Use Services Module cache for retrieving the europeana:object")}
          {renderExplainBlock("id", List("valid europeana_uri identifier"), "Will output a full-view")}
+         {renderExplainBlock("start", List("non negative integer"))}
+         {renderExplainBlock("qf", List("any valid Facet as defined in the facets block"))}
         </parameters>
         <search-fields>
-          {renderExplainBlock("dc_title", List("all text"))}
+          {beanQueryModelFactory.getMetadataModel.getRecordDefinition.getFieldNameList.
+                filterNot(field => excludeList.contains(field)).map(facet => renderExplainBlock(facet))}
         </search-fields>
         <facets>
-          {renderExplainBlock("MUNICIPALITY", List("all text"))}
+          {beanQueryModelFactory.getMetadataModel.getRecordDefinition.getFacetMap.map(facet => renderExplainBlock(facet._1))}
         </facets>
       </api>
     </results>
