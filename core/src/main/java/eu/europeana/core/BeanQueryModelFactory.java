@@ -493,12 +493,12 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     private SolrQuery copySolrQuery(SolrQuery solrQuery, Map<String, String[]> params) {
         SolrQuery dCopy = solrQuery.getCopy();
         if (params != null && params.containsKey("hqf")) {
-            final String[] hqf_fields = params.get("hqf");
+            final String[] hqf_fields = SolrQueryUtil.getFilterQueriesAsPhrases(params.get("hqf"));
             for (String hqf_field : hqf_fields) {
                 dCopy.addFilterQuery(hqf_field);
             }
         }
-        dCopy.setFilterQueries(SolrQueryUtil.getFilterQueriesAsOrQueries(solrQuery, metadataModel.getRecordDefinition().getFacetMap()));
+        dCopy.setFilterQueries(SolrQueryUtil.getFilterQueriesAsOrQueries(dCopy, metadataModel.getRecordDefinition().getFacetMap()));
         return dCopy;
     }
 
