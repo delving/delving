@@ -116,7 +116,7 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
       if (params.getOrElse("cache", Array[String]("false")).head.contains("true") && field.getKey == "europeana_object")
         cacheUrl + URLEncoder.encode(content, "utf-8")
       else if (content.startsWith("http://")) content.replaceAll("&", "&amp;")
-      else content
+      else content.replaceAll(" & ", "&amp;")
     }
 
     field.getValueAsArray.map(value =>
@@ -334,12 +334,18 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
     <results>
       <api>
        <parameters>
-         {renderExplainBlock("query", List("all string"))}
+         {renderExplainBlock("query", List("any string"), "Will output a summary result set. Any valid Lucene or Solr Query syntax will work.")}
          {renderExplainBlock("format", List("xml", "json", "jsonp"))}
          {renderExplainBlock("cache", List("true", "false"), "Use Services Module cache for retrieving the europeana:object")}
-         {renderExplainBlock("id", List("valid europeana_uri identifier"), "Will output a full-view")}
-         {renderExplainBlock("start", List("non negative integer"))}
+         {renderExplainBlock("id", List("any valid europeana_uri identifier"), "Will output a full-view")}
+         {renderExplainBlock("start", List("any non negative integer"))}
          {renderExplainBlock("qf", List("any valid Facet as defined in the facets block"))}
+         {renderExplainBlock("hqf", List("any valid Facet as defined in the facets block"), "This link is not used for the display part of the API." +
+              "It is used to send hidden constraints to the API to create custom API views")}
+         {renderExplainBlock("explain", List("all"))}
+         {renderExplainBlock("lang", List("any valid iso 2 letter lang codes"), "Feature still experimental. In the future it will allow you to get " +
+               "localised strings back for the metadata fields, search fields and facets blocks")}
+         {renderExplainBlock("wskey", List("any valid webservices key"), "When the API has been marked as closed")}
         </parameters>
         <search-fields>
           {beanQueryModelFactory.getMetadataModel.getRecordDefinition.getFieldNameList.
