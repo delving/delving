@@ -95,14 +95,14 @@ public class AnalysisParser implements Runnable {
                             }
                         }
                         path.push(Tag.create(input.getName().getPrefix(),input.getName().getLocalPart()));
-                        if (input.getAttributeCount() > 0) {
-                            for (int walk = 0; walk < input.getAttributeCount(); walk++) {
-                                QName attributeName = input.getAttributeName(walk);
-                                path.push(Tag.create(attributeName.getPrefix(), attributeName.getLocalPart()));
-                                recordValue(input.getAttributeValue(walk));
-                                path.pop();
-                            }
-                        }
+//                        if (input.getAttributeCount() > 0) {
+//                            for (int walk = 0; walk < input.getAttributeCount(); walk++) {
+//                                QName attributeName = input.getAttributeName(walk);
+//                                path.push(Tag.create(attributeName.getPrefix(), attributeName.getLocalPart()));
+//                                recordValue(input.getAttributeValue(walk));
+//                                path.pop();
+//                            }
+//                        }
                         break;
                     case XMLEvent.CHARACTERS:
                         text.append(input.getText());
