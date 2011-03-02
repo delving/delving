@@ -104,6 +104,10 @@
 
     <bean id="cslInterceptor" class="eu.delving.core.util.ClickStreamLoggerInterceptor"/>
 
+    <bean id="imageCacheService" class="eu.delving.services.cache.image.ImageCacheService">
+        <constructor-arg ref="mongoDb"/>
+    </bean>
+
     <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
         <property name="interceptors" ref="cslInterceptor"/>
     </bean>

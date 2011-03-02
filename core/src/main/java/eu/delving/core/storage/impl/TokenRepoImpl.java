@@ -1,22 +1,22 @@
 /*
  * Copyright 2010 DELVING BV
  *
- *  Licensed under the EUPL, Version 1.0 or? as soon they
- *  will be approved by the European Commission - subsequent
- *  versions of the EUPL (the "Licence");
- *  you may not use this work except in compliance with the
- *  Licence.
- *  You may obtain a copy of the Licence at:
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
  *
- *  http://ec.europa.eu/idabc/eupl
+ * http://ec.europa.eu/idabc/eupl
  *
- *  Unless required by applicable law or agreed to in
- *  writing, software distributed under the Licence is
- *  distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *  express or implied.
- *  See the Licence for the specific language governing
- *  permissions and limitations under the Licence.
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
  */
 
 package eu.delving.core.storage.impl;
@@ -24,8 +24,8 @@ package eu.delving.core.storage.impl;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
 import eu.delving.core.storage.TokenRepo;
+import eu.delving.core.util.MongoFactory;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,10 +50,10 @@ public class TokenRepoImpl implements TokenRepo {
     private String databaseName;
 
     @Autowired
-    private Mongo mongo;
+    private MongoFactory mongoFactory;
 
-    public void setMongo(Mongo mongo) {
-        this.mongo = mongo;
+    public void setMongoFactory(MongoFactory mongoFactory) {
+        this.mongoFactory = mongoFactory;
     }
 
     public void setDatabaseName(String databaseName) {
@@ -223,7 +223,7 @@ public class TokenRepoImpl implements TokenRepo {
 
     private synchronized DB db() {
         if (mongoDatabase == null) {
-            mongoDatabase = mongo.getDB(databaseName);
+            mongoDatabase = mongoFactory.getMongo().getDB(databaseName);
         }
         return mongoDatabase;
     }

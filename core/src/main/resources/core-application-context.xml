@@ -91,7 +91,25 @@
         <property name="properties" ref="launchProperties"/>
     </bean>
 
-    <bean id="mongo" class="com.mongodb.Mongo"/>
+    <bean id="mongoDb" class="eu.delving.core.util.MongoFactory">
+        <property name="testContext" value="${mongo.test.context}"/>
+        <property name="mongoAddresses">
+            <list value-type="com.mongodb.ServerAddress">
+                <bean class="com.mongodb.ServerAddress">
+                    <constructor-arg index="0" value="${mongo.server1.host}"/>
+                    <constructor-arg index="1" value="${mongo.server1.port}"/>
+                </bean>
+                <bean class="com.mongodb.ServerAddress">
+                    <constructor-arg index="0" value="${mongo.server2.host}"/>
+                    <constructor-arg index="1" value="${mongo.server2.port}"/>
+                </bean>
+                <bean class="com.mongodb.ServerAddress">
+                    <constructor-arg index="0" value="${mongo.server3.host}"/>
+                    <constructor-arg index="1" value="${mongo.server3.port}"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
 
     <bean id="userRepo" class="eu.delving.core.storage.impl.UserRepoImpl"/>
 
