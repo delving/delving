@@ -1,46 +1,34 @@
 /*
  * Copyright 2010 DELVING BV
  *
- *  Licensed under the EUPL, Version 1.0 or? as soon they
- *  will be approved by the European Commission - subsequent
- *  versions of the EUPL (the "Licence");
- *  you may not use this work except in compliance with the
- *  Licence.
- *  You may obtain a copy of the Licence at:
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
  *
- *  http://ec.europa.eu/idabc/eupl
+ * http://ec.europa.eu/idabc/eupl
  *
- *  Unless required by applicable law or agreed to in
- *  writing, software distributed under the Licence is
- *  distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *  express or implied.
- *  See the Licence for the specific language governing
- *  permissions and limitations under the Licence.
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
  */
 
 package eu.delving.services.controller;
 
-import eu.delving.metadata.Facts;
-import eu.delving.metadata.Hasher;
-import eu.delving.metadata.MetadataException;
-import eu.delving.metadata.MetadataModel;
-import eu.delving.metadata.MetadataNamespace;
-import eu.delving.metadata.RecordMapping;
-import eu.delving.metadata.SourceStream;
+import eu.delving.core.util.MongoFactory;
+import eu.delving.metadata.*;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.AccessKeyException;
 import eu.delving.services.exceptions.DataSetNotFoundException;
 import eu.delving.services.exceptions.MappingNotFoundException;
 import eu.delving.services.exceptions.RecordParseException;
-import eu.delving.sip.AccessKey;
-import eu.delving.sip.DataSetCommand;
-import eu.delving.sip.DataSetInfo;
-import eu.delving.sip.DataSetResponse;
-import eu.delving.sip.DataSetResponseCode;
-import eu.delving.sip.DataSetState;
-import eu.delving.sip.FileStore;
-import eu.delving.sip.FileType;
+import eu.delving.sip.*;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -69,14 +57,9 @@ import java.util.zip.ZipOutputStream;
 /**
  * Provide a REST interface for managing datasets.
  * <p/>
- * - API Key authentication
- * - list all collections (some details: size, indexing status, available formats)
- * - for each collection
- * - enable/disable for indexing
- * - abort indexing
- * - enable/disable for harvesting
- * - enable/disable per metadata format
- * - full statistics
+ * - API Key authentication - list all collections (some details: size, indexing status, available formats) - for each
+ * collection - enable/disable for indexing - abort indexing - enable/disable for harvesting - enable/disable per
+ * metadata format - full statistics
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
@@ -95,6 +78,10 @@ public class DataSetController {
     @Autowired
     private AccessKey accessKey;
 
+    @Qualifier("mongoDb")
+    @Autowired
+    private MongoFactory mongoFactory;
+
     @Autowired
     @Qualifier("solrUpdateServer")
     private SolrServer solrServer;
@@ -103,8 +90,7 @@ public class DataSetController {
     public ModelAndView secureListAll() {
         try {
             return view(metaRepo.getDataSets());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return view(e);
         }
     }
@@ -116,8 +102,7 @@ public class DataSetController {
         try {
             checkAccessKey(accessKey);
             return view(metaRepo.getDataSets());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return view(e);
         }
     }
@@ -139,8 +124,7 @@ public class DataSetController {
         try {
             checkAccessKey(accessKey);
             return indexingControlInternal(dataSetSpec, command);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return view(e);
         }
     }
@@ -177,8 +161,7 @@ public class DataSetController {
                     break;
             }
             return view(response);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return view(e);
         }
     }
@@ -196,8 +179,7 @@ public class DataSetController {
             writeSipZip(dataSetSpec, response.getOutputStream(), accessKey);
             response.setStatus(HttpStatus.OK.value());
             log.info(String.format("returned %s-sip.zip", dataSetSpec));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             log.warn("Problem building sip.zip", e);
         }
@@ -273,6 +255,9 @@ public class DataSetController {
         }
         dataSet.parseRecords(inputStream);
         dataSet.setSourceHash(hash, false);
+        final MetaRepo.Details details = dataSet.getDetails();
+        details.setTotalRecordCount(dataSet.getRecordCount());
+        details.setDeletedRecordCount(details.getTotalRecordCount() - details.getUploadedRecordCount());
         dataSet.save();
         return DataSetResponseCode.THANK_YOU;
     }
@@ -287,6 +272,9 @@ public class DataSetController {
         }
         MetaRepo.Details details = dataSet.createDetails();
         details.setName(facts.get("name"));
+        details.setUploadedRecordCount(Integer.parseInt(facts.getRecordCount()));
+        details.setTotalRecordCount(-1);
+        details.setDeletedRecordCount(-1);
         String prefix = facts.get("namespacePrefix");
         for (MetadataNamespace metadataNamespace : MetadataNamespace.values()) {
             if (metadataNamespace.getPrefix().equals(prefix)) {
@@ -300,8 +288,7 @@ public class DataSetController {
         dataSet.setFactsHash(hash);
         try {
             details.setFacts(Facts.toBytes(facts));
-        }
-        catch (MetadataException e) {
+        } catch (MetadataException e) {
             return DataSetResponseCode.SYSTEM_ERROR;
         }
         dataSet.save();
@@ -377,8 +364,7 @@ public class DataSetController {
                 default:
                     throw new RuntimeException();
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return view(e);
         }
     }
@@ -442,7 +428,7 @@ public class DataSetController {
         info.spec = dataSet.getSpec();
         info.name = dataSet.getDetails().getName();
         info.state = dataSet.getState(false).toString();
-        info.recordCount = dataSet.getRecordCount();
+        info.recordCount = dataSet.getDetails().getUploadedRecordCount();
         info.errorMessage = dataSet.getErrorMessage();
         info.recordsIndexed = dataSet.getRecordsIndexed();
         info.hashes = dataSet.getHashes();
