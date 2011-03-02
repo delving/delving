@@ -78,6 +78,13 @@
                 <value>services.pmh.sampleIdentifier</value>
                 <value>services.pmh.responseListSize</value>
                 <value>services.mongo.dbName</value>
+                <value>mongo.test.context</value>
+                <value>mongo.server1.host</value>
+                <value>mongo.server1.port</value>
+                <value>mongo.server2.host</value>
+                <value>mongo.server2.port</value>
+                <value>mongo.server3.host</value>
+                <value>mongo.server3.port</value>
                 <value>googleAnalytics.trackingCode</value>
                 <value>addThis.trackingCode</value>
             </list>
@@ -212,6 +219,21 @@
                 <value>#{launchProperties['log4j.xml']}</value>
             </list>
         </property>
+    </bean>
+
+    <bean id="exposedKeysMessageSource" class="eu.delving.core.util.ExposedKeysMessageSource">
+        <property name="useCodeAsDefaultMessage" value="true"/>
+        <property name="basename" value="classpath:/i18n/messages"/>
+        <property name="fileEncodings" value="UTF-8"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+    </bean>
+
+    <bean id="bidirectionalMetadataFieldNameMap" class="eu.delving.core.util.MultilingualAccessTranslator">
+        <property name="exposedKeysMessageSource" ref="exposedKeysMessageSource"/>
+    </bean>
+
+    <bean id="messageSource" class="eu.delving.core.util.MessageSourceRepo">
+        <property name="parentMessageSource" ref="exposedKeysMessageSource"/>
     </bean>
 
 </beans>

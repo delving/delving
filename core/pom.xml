@@ -32,7 +32,7 @@
     <artifactId>core</artifactId>
     <packaging>jar</packaging>
     <name>Delving Shared Core Classes</name>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.2.1-SNAPSHOT</version>
     <description>
         This module contains the lion's share of the Delving Framework code
     </description>
