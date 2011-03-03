@@ -1,22 +1,22 @@
 /*
  * Copyright 2010 DELVING BV
  *
- *  Licensed under the EUPL, Version 1.0 or? as soon they
- *  will be approved by the European Commission - subsequent
- *  versions of the EUPL (the "Licence");
- *  you may not use this work except in compliance with the
- *  Licence.
- *  You may obtain a copy of the Licence at:
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
  *
- *  http://ec.europa.eu/idabc/eupl
+ * http://ec.europa.eu/idabc/eupl
  *
- *  Unless required by applicable law or agreed to in
- *  writing, software distributed under the Licence is
- *  distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *  express or implied.
- *  See the Licence for the specific language governing
- *  permissions and limitations under the Licence.
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
  */
 
 package eu.delving.services.core.impl;
@@ -60,6 +60,54 @@ class DetailsImpl implements MetaRepo.Details {
     @Override
     public void setFacts(byte[] factBytes) {
         object.put(FACT_BYTES, factBytes);
+    }
+
+    @Override
+    public int getTotalRecordCount() {
+        final Object count = object.get(TOTAL_RECORDS);
+        int totalCount = 0;
+        if (count != null) {
+            totalCount = Integer.parseInt(String.valueOf(count));
+        }
+        return totalCount;
+    }
+
+
+    @Override
+    public void setTotalRecordCount(int count) {
+        object.put(TOTAL_RECORDS, count);
+    }
+
+
+    @Override
+    public int getDeletedRecordCount() {
+        final Object count = object.get(DELETED_RECORDS);
+        int deletedCount = 0;
+        if (count != null) {
+            deletedCount = Integer.parseInt(String.valueOf(count));
+        }
+        return deletedCount;
+    }
+
+    @Override
+    public void setDeletedRecordCount(int count) {
+        object.put(DELETED_RECORDS, count);
+    }
+
+
+    @Override
+    public int getUploadedRecordCount() {
+        final Object count = object.get(UPLOADED_RECORDS);
+        int uploadedCount = 0;
+        if (count != null) {
+            uploadedCount = Integer.parseInt(String.valueOf(count));
+        }
+        return uploadedCount;
+    }
+
+    @Override
+    public void setUploadedRecordCount(int count) {
+        object.put(UPLOADED_RECORDS, count);
     }
 
     @Override

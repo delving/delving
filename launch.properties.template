@@ -104,6 +104,16 @@ services.pmh.harvestStepCleanupDelay = 15000
 
 services.mongo.dbName = MetaRepo
 
+# The locations of the cluster of mongo servers
+
+mongo.test.context = true
+mongo.server1.host = localhost
+mongo.server1.port = 27017
+mongo.server2.host = localhost
+mongo.server2.port = 27018
+mongo.server3.host = localhost
+mongo.server3.port = 27019
+
 
 ###############################################
 #                                             #

@@ -1,11 +1,16 @@
 
-  
+# Initiate the ReplicaSet
+
+new_config = {_id: 'delving', members: [
+                          {_id: 0, host: 'localhost:27017'},
+                          {_id: 1, host: 'localhost:27018'},
+                          {_id: 2, host: 'localhost:27019', arbiterOnly: true}]
+           }
 
   
 
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>

@@ -1,27 +1,28 @@
 /*
  * Copyright 2010 DELVING BV
  *
- *  Licensed under the EUPL, Version 1.0 or? as soon they
- *  will be approved by the European Commission - subsequent
- *  versions of the EUPL (the "Licence");
- *  you may not use this work except in compliance with the
- *  Licence.
- *  You may obtain a copy of the Licence at:
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
  *
- *  http://ec.europa.eu/idabc/eupl
+ * http://ec.europa.eu/idabc/eupl
  *
- *  Unless required by applicable law or agreed to in
- *  writing, software distributed under the Licence is
- *  distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *  express or implied.
- *  See the Licence for the specific language governing
- *  permissions and limitations under the Licence.
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
  */
 package eu.delving.core.storage;
 
 import com.mongodb.Mongo;
 import eu.delving.core.storage.impl.StaticRepoImpl;
+import eu.delving.core.util.MongoFactory;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Assert;
@@ -29,7 +30,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.net.UnknownHostException;
 import java.util.Locale;
 
 /**
@@ -48,10 +48,13 @@ public class TestStaticRepo {
     private StaticRepoImpl repo;
 
     @Before
-    public void before() throws UnknownHostException {
-        mongo = new Mongo();
+    public void before() throws Exception {
         repo = new StaticRepoImpl();
-        repo.setMongo(mongo);
+        final MongoFactory mongoFactory = new MongoFactory();
+        mongoFactory.setTestContext("true");
+        mongoFactory.afterPropertiesSet();
+        repo.setMongoFactory(mongoFactory);
+        mongo = mongoFactory.getMongo();
         repo.setDatabaseName(TEST_DB_NAME);
         mongo.dropDatabase(TEST_DB_NAME);
     }
