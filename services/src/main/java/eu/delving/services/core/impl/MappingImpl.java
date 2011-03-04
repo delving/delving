@@ -101,7 +101,7 @@ class MappingImpl implements MetaRepo.Mapping, MappingInternal, Comparable<MetaR
                         recordImpl.addFormat(getMetadataFormat(), validated);
                     }
                     else {
-                        log.info("invalid record: " + recordString);
+//                        log.info("invalid record: " + recordString);
                         invalidCount++;
                         walk.remove(); // todo: separate fetching from mapping
                     }
