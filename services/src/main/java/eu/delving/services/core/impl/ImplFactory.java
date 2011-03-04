@@ -75,9 +75,9 @@ public class ImplFactory {
     }
 
     public DBCollection records(String spec) {
-
         final DBCollection recordsColl = db.getCollection(MetaRepo.RECORD_COLLECTION_PREFIX + spec);
-        recordsColl.ensureIndex(new BasicDBObject("deleted", 1));
+        recordsColl.ensureIndex(new BasicDBObject(MetaRepo.Record.DELETED, 1));
+        recordsColl.ensureIndex(new BasicDBObject(MetaRepo.Record.UNIQUE, 1));
         return recordsColl;
     }
 
