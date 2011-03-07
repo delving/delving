@@ -48,15 +48,17 @@ public class TestMultilingualAccessTranslator {
 
     @Test
     public void backAndForth() {
-        String title = multilingualAccessTranslator.toLocalizedName("dc_title", Locale.ENGLISH);
+        final Locale english = new Locale("en");
+        String title = multilingualAccessTranslator.toLocalizedName("dc_title", english);
         Assert.assertEquals("Title", title);
-        String fieldName = multilingualAccessTranslator.toFieldName(title, Locale.ENGLISH);
+        String fieldName = multilingualAccessTranslator.toFieldName(title, english);
         Assert.assertEquals("dc_title", fieldName);
     }
 
     @Test
     public void multiWord() {
-        String fieldName = multilingualAccessTranslator.toFieldName("isreferENCedby", Locale.ENGLISH);
+        final Locale english = new Locale("en");
+        String fieldName = multilingualAccessTranslator.toFieldName("isreferENCedby", english);
         Assert.assertEquals("dcterms_isReferencedBy", fieldName);
     }
 }

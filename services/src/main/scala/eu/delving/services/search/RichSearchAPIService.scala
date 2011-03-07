@@ -32,17 +32,20 @@ import javax.servlet.http. {HttpServletResponse, HttpServletRequest}
 import net.liftweb.json. {Printer, Extraction}
 import net.liftweb.json.JsonAST._
 import org.apache.log4j.Logger
-import java.util.{Properties, Map => JMap}
 import java.net.URLEncoder
 import eu.delving.sip.AccessKey
 import eu.europeana.core.util.web.ClickStreamLogger
 import org.springframework.beans.factory.annotation.Autowired
 import reflect.BeanProperty
 import eu.delving.services.exceptions.AccessKeyException
+import java.util.{Locale, Properties, Map => JMap}
+import eu.delving.core.util.MultilingualAccessTranslator
+import java.lang.String
 
 class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServletResponse,
                            beanQueryModelFactory: BeanQueryModelFactory, launchProperties: Properties,
-                           queryAnalyzer: QueryAnalyzer, accessKey: AccessKey, clickStreamLogger: ClickStreamLogger
+                           queryAnalyzer: QueryAnalyzer, accessKey: AccessKey, clickStreamLogger: ClickStreamLogger,
+                           bidirectionalMetadataFieldNameMap : MultilingualAccessTranslator
                                   ) {
 
   val servicesUrl = launchProperties.getProperty("services.url")
@@ -179,6 +182,14 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
     val pagination = briefResult.getPagination
     val searchTerms = pagination.getPresentationQuery.getUserSubmittedQuery
     val startPage = pagination.getStart
+    val language = params.getOrElse("lang", Array[String]("en")).head
+
+
+    def localiseKey(metadataField : String, defaultLabel : String = "unknown", language : String = "en") : String = {
+      val locale = new Locale(language)
+      val localizedName: String = bidirectionalMetadataFieldNameMap.toLocalizedName(metadataField.replace(":", "_"), locale)
+      if (localizedName != null && !defaultLabel.startsWith("#")) localizedName else defaultLabel
+    }
 
     val layoutMap = LinkedHashMap[String, String]("#thumbnail" -> "europeana:object", "#title" -> "dc:title", "#uri" -> "europeana:uri",
       "#isShownAt" -> "europeana:isShownAt", "Creator" -> "dc:creator", "Description" -> "dc:description",
@@ -211,7 +222,7 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
           <drupal>
             {layoutMap.map(item =>
               <field>
-                <key>{item._1}</key>
+                <key>{localiseKey(item._2, item._1, language)}</key>
                 <value>{item._2}</value>
               </field>
               )
@@ -372,9 +383,11 @@ class RichSearchAPIServiceFactory {
   @Autowired @BeanProperty var queryAnalyzer: QueryAnalyzer = _
   @Autowired @BeanProperty var accessKey: AccessKey = _
   @Autowired @BeanProperty var clickStreamLogger : ClickStreamLogger = _
+  @Autowired @BeanProperty var bidirectionalMetadataFieldNameMap : MultilingualAccessTranslator = _
 
   def getApiResponse(request: HttpServletRequest, response: HttpServletResponse) : String = {
-    RichSearchAPIService.processRequest(request, response, beanQueryModelFactory, launchProperties, queryAnalyzer, accessKey, clickStreamLogger)
+    RichSearchAPIService.processRequest(request, response, beanQueryModelFactory, launchProperties, queryAnalyzer, accessKey,
+      clickStreamLogger, bidirectionalMetadataFieldNameMap)
   }
 }
 
@@ -382,8 +395,9 @@ object RichSearchAPIService {
 
   def processRequest(request: HttpServletRequest, response: HttpServletResponse, beanQueryModelFactory: BeanQueryModelFactory,
                      launchProperties: Properties, queryAnalyzer: QueryAnalyzer, accessKey: AccessKey,
-                     clickStreamLogger : ClickStreamLogger) : String = {
-    val service = new RichSearchAPIService(request, response, beanQueryModelFactory, launchProperties, queryAnalyzer, accessKey, clickStreamLogger)
+                     clickStreamLogger : ClickStreamLogger, bidirectionalMetadataFieldNameMap : MultilingualAccessTranslator) : String = {
+    val service = new RichSearchAPIService(request, response, beanQueryModelFactory, launchProperties, queryAnalyzer, accessKey,
+      clickStreamLogger, bidirectionalMetadataFieldNameMap)
     service parseRequest
   }
 
