@@ -23,6 +23,7 @@ package eu.delving.core.util;
 import eu.delving.core.storage.StaticRepo;
 import eu.delving.core.storage.impl.StaticRepoImpl;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -48,6 +50,9 @@ import java.util.Properties;
 
 public class StaticKickstarter implements ResourceLoaderAware {
     private static final String FILE_NAME = "kickstarter";
+    private static final String TITLE_PREFIX = "title:";
+    private static final String MENU_NAME_PREFIX = "menuName:";
+    private static final String MENU_PRIORITY_PREFIX = "menuPriority:";
     private Logger log = Logger.getLogger(getClass());
     private StaticRepo staticRepo;
     private boolean kicked;
@@ -86,24 +91,54 @@ public class StaticKickstarter implements ResourceLoaderAware {
                         case HTML:
                             StaticRepo.Page page = staticRepo.getPage(repoPath);
                             if (page.getId() == null) {
-                                String content = IOUtils.toString(resource.getInputStream(), "UTF-8");
-                                page.setContent(content, null);
+                                List<String> lines = IOUtils.readLines(resource.getInputStream(), "UTF-8");
+                                String title = "";
+                                String menuName = null;
+                                int menuPriority = 1;
+                                Iterator<String> walk = lines.iterator();
+                                while (walk.hasNext()) {
+                                    String line = walk.next().trim();
+                                    if (!line.isEmpty()) {
+                                        if (line.startsWith("<")) {
+                                            break;
+                                        }
+                                        if (line.startsWith(TITLE_PREFIX)) {
+                                            title = line.substring(TITLE_PREFIX.length()).trim();
+                                        }
+                                        else if (line.startsWith(MENU_NAME_PREFIX)) {
+                                            menuName = line.substring(MENU_NAME_PREFIX.length()).trim();
+                                        }
+                                        else if (line.startsWith(MENU_PRIORITY_PREFIX)) {
+                                            menuPriority = Integer.parseInt(line.substring(MENU_PRIORITY_PREFIX.length()).trim());
+                                        }
+                                        else {
+                                            log.warn("Did not understand: " + line);
+                                        }
+                                    }
+                                    walk.remove();
+                                }
+                                StringBuilder content = new StringBuilder();
+                                for (String line : lines) {
+                                    content.append(line).append('\n');
+                                }
+                                page.setContent(title, content.toString(), null);
+                                if (menuName != null) {
+                                    page.setMenu(menuName, menuPriority);
+                                }
                             }
                             else {
                                 log.info(String.format("Page %s is already in the static repository, so cancelling kickstart", repoPath));
                                 return;
                             }
                             break;
-                        case MENU:
-                            break;
                         case PNG:
                         case JPG:
                         case GIF:
-                            byte [] image = IOUtils.toByteArray(resource.getInputStream());
+                            byte[] image = IOUtils.toByteArray(resource.getInputStream());
                             staticRepo.putImage(repoPath, image);
                             break;
                         default:
-                            throw new RuntimeException("Unknown resource type "+resourceType);
+                            throw new RuntimeException("Unknown resource type " + resourceType);
                     }
                     log.info(String.format("Put %s in static repo at %s", file, repoPath));
                 }
@@ -116,7 +151,6 @@ public class StaticKickstarter implements ResourceLoaderAware {
 
     private enum ResourceType {
         HTML(".html", ".dml"),
-        MENU(".menu", ".dml"),
         PNG(".png", ".png.img"),
         JPG(".jpg", ".jpg.img"),
         GIF(".gif", ".gif.img");
@@ -131,18 +165,18 @@ public class StaticKickstarter implements ResourceLoaderAware {
 
         String fileToRepoPath(String filePath) {
             if (!filePath.endsWith(fileSuffix)) {
-                throw new RuntimeException("File suffix not recognized: "+filePath);
+                throw new RuntimeException("File suffix not recognized: " + filePath);
             }
             return filePath.substring(0, filePath.length() - fileSuffix.length()) + pageSurfix;
         }
 
         static ResourceType find(String filePath) {
-            for (ResourceType type: values()) {
+            for (ResourceType type : values()) {
                 if (filePath.endsWith(type.fileSuffix)) {
                     return type;
                 }
             }
-            throw new RuntimeException("File suffix not recognized: "+filePath);
+            throw new RuntimeException("File suffix not recognized: " + filePath);
         }
     }
 }
