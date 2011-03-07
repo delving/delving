@@ -3,6 +3,8 @@ package eu.delving.metadata;
 import com.thoughtworks.xstream.XStream;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -24,6 +26,7 @@ import java.util.TreeSet;
  */
 
 public class Facts {
+    private static final String DOWNLOADED_SOURCE = "downloadedSource";
     private static final String RECORD_ROOT_PATH = "recordRootPath";
     private static final String UNIQUE_ELEMENT_PATH = "uniqueElementPath";
     private static final String RECORD_COUNT = "recordCount";
@@ -53,11 +56,25 @@ public class Facts {
         return value;
     }
 
+    public boolean isDownloadedSource() {
+        return get(DOWNLOADED_SOURCE).equalsIgnoreCase("true");
+    }
+
+    public void setDownloadedSource(boolean downloadedSource) {
+        set(DOWNLOADED_SOURCE, String.valueOf(downloadedSource));
+    }
+
     public String getRecordRootPath() {
-        return get(RECORD_ROOT_PATH);
+        if (isDownloadedSource()) {
+            return String.format("/%s/%s", SourceStream.ENVELOPE_TAG, SourceStream.RECORD_TAG);
+        }
+        else {
+            return get(RECORD_ROOT_PATH);
+        }
     }
 
     public void setRecordRootPath(String value) {
+        setDownloadedSource(false);
         set(RECORD_ROOT_PATH, value);
     }
 
@@ -70,10 +87,16 @@ public class Facts {
     }
 
     public String getUniqueElementPath() {
-        return get(UNIQUE_ELEMENT_PATH);
+        if (isDownloadedSource()) {
+            return getRecordRootPath() + getRelativeUniquePath();
+        }
+        else {
+            return get(UNIQUE_ELEMENT_PATH);
+        }
     }
 
     public void setUniqueElementPath(String value) {
+        setDownloadedSource(false);
         set(UNIQUE_ELEMENT_PATH, value);
     }
 
@@ -110,6 +133,17 @@ public class Facts {
         return listDefinition.factDefinitions;
     }
 
+    public static Facts fromBytes(byte[] array) throws MetadataException {
+        ByteArrayInputStream bais = new ByteArrayInputStream(array);
+        return read(bais);
+    }
+
+    public static byte[] toBytes(Facts facts) throws MetadataException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        write(facts, baos);
+        return baos.toByteArray();
+    }
+
     public static Facts read(InputStream inputStream) throws MetadataException {
         try {
             Facts facts = new Facts();
@@ -122,7 +156,7 @@ public class Facts {
                     continue;
                 }
                 String fieldName = line.substring(0, equals).trim();
-                String value = line.substring(equals+1).trim();
+                String value = line.substring(equals + 1).trim();
                 if (FIELD_SET.contains(fieldName)) {
                     facts.set(fieldName, value);
                 }
@@ -154,4 +188,14 @@ public class Facts {
         }
     }
 
+    public String getRelativeUniquePath() {
+        String recordRootPath = get(RECORD_ROOT_PATH);
+        String uniqueElementPath = get(UNIQUE_ELEMENT_PATH);
+        if (recordRootPath.equals(uniqueElementPath.substring(0, recordRootPath.length()))) {
+            return uniqueElementPath.substring(recordRootPath.length());
+        }
+        else {
+            return uniqueElementPath; // this is a very improper answer
+        }
+    }
 }

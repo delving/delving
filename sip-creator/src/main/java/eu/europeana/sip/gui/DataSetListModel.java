@@ -38,9 +38,7 @@ import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
@@ -50,8 +48,17 @@ import java.util.TreeSet;
  */
 
 public class DataSetListModel extends AbstractListModel {
-
+    private List<Integer> filterIndex;
     private List<Entry> entries = new ArrayList<Entry>();
+    private ConnectedStatus connectedStatus;
+
+    interface ConnectedStatus {
+        boolean isConnected();
+    }
+
+    public DataSetListModel(ConnectedStatus connectedStatus) {
+        this.connectedStatus = connectedStatus;
+    }
 
     public void setDataSetStore(FileStore.DataSetStore dataSetStore) {
         Entry entry = getEntry(dataSetStore.getSpec());
@@ -64,46 +71,75 @@ public class DataSetListModel extends AbstractListModel {
         return entry;
     }
 
-    public void setDataSetInfo(List<DataSetInfo> list) {
-        Map<String, DataSetInfo> map = new TreeMap<String, DataSetInfo>();
-        for (DataSetInfo info : list) {
-            map.put(info.spec, info);
-        }
-        Set<String> touched = new TreeSet<String>();
+    public Set<String> setDataSetInfoList(List<DataSetInfo> dataSetInfoList) {
+        Set<String> untouched = new TreeSet<String>();
         for (Entry entry : entries) {
-            DataSetInfo freshInfo = map.get(entry.getSpec());
-            entry.setDataSetInfo(freshInfo);
-            touched.add(entry.getSpec());
+            untouched.add(entry.getSpec());
         }
-        Set<String> untouchedSet = new TreeSet<String>(map.keySet());
-        untouchedSet.removeAll(touched);
-        if (!untouchedSet.isEmpty()) {
-            for (Entry entry : entries) {
-                if (untouchedSet.contains(entry.spec)) {
-                    entry.setDataSetInfo(null);
-                }
-            }
+        for (DataSetInfo info : dataSetInfoList) {
+            setDataSetInfo(info);
+            untouched.remove(info.spec);
         }
+        return untouched;
     }
 
-    public Entry getEntry(int i) {
-        return entries.get(i);
+    public void setPattern(String pattern) {
+        int beforeSize = getSize();
+        if (pattern.isEmpty()) {
+            filterIndex = null;
+        }
+        else {
+            String sought = pattern.toLowerCase();
+            List<Integer> list = new ArrayList<Integer>();
+            int actual = 0;
+            for (Entry entry : entries) {
+                if (entry.getSpec().toLowerCase().contains(sought)) {
+                    list.add(actual);
+                }
+                else {
+                    entry.index = -1;
+                }
+                actual++;
+            }
+            filterIndex = list;
+        }
+        int afterSize = getSize();
+        if (afterSize < beforeSize) {
+            fireIntervalRemoved(this, 0, beforeSize - afterSize);
+        }
+        else if (afterSize > beforeSize) {
+            fireIntervalAdded(this, 0, afterSize - beforeSize);
+        }
+        reportContentChanges();
+    }
+
+    public Entry getEntry(int rowIndex) {
+        return (Entry) getElementAt(rowIndex);
     }
 
     public void clear() {
         int before = getSize();
+        filterIndex = null;
         entries.clear();
         fireIntervalRemoved(this, 0, before);
     }
 
     @Override
     public int getSize() {
-        return entries.size();
+        if (filterIndex != null) {
+            return filterIndex.size();
+        }
+        else {
+            return entries.size();
+        }
     }
 
     @Override
-    public Object getElementAt(int i) {
-        return entries.get(i);
+    public Object getElementAt(int rowIndex) {
+        if (filterIndex != null) {
+            rowIndex = filterIndex.get(rowIndex);
+        }
+        return entries.get(rowIndex);
     }
 
     public class Entry implements Comparable<Entry> {
@@ -118,7 +154,9 @@ public class DataSetListModel extends AbstractListModel {
 
         public void setDataSetStore(FileStore.DataSetStore dataSetStore) {
             this.dataSetStore = dataSetStore;
-            fireContentsChanged(DataSetListModel.this, index, index);
+            if (index >= 0) {
+                fireContentsChanged(DataSetListModel.this, index, index);
+            }
         }
 
         public String getSpec() {
@@ -136,21 +174,23 @@ public class DataSetListModel extends AbstractListModel {
         public void setDataSetInfo(DataSetInfo dataSetInfo) {
             if (this.dataSetInfo == null && dataSetInfo == null) return;
             this.dataSetInfo = dataSetInfo;
-            fireContentsChanged(DataSetListModel.this, index, index);
+            if (index >= 0) {
+                fireContentsChanged(DataSetListModel.this, index, index);
+            }
         }
 
         public String toHtml() throws FileStoreException {
-            StringBuilder html = new StringBuilder(
-                    String.format(
-                            "<html><table><tr><td width=220><h2>%s</h2></td><td>",
-                            spec
-                    )
-            );
+            StringBuilder html = new StringBuilder(String.format("<html><table><tr><td width=250><b>%s</b></td><td>", spec));
             if (dataSetStore != null && dataSetInfo != null) {
                 html.append("<p>Data Set is present in the repository as well as in the local file store.</p>");
             }
             else if (dataSetStore != null) {
-                html.append("<p>Data Set is in the local file store but not in the repository.</p>");
+                if (connectedStatus.isConnected()) {
+                    html.append("<p>Data Set is in the local file store but not in the repository.</p>");
+                }
+                else {
+                    html.append("<p>Data Set is available the local file store.</p>");
+                }
             }
             else if (dataSetInfo != null) {
                 html.append("<p>Data Set is present only in the repository, and not in the local file store.</p>");
@@ -206,7 +246,7 @@ public class DataSetListModel extends AbstractListModel {
                         break;
                     case INDEXING:
                         html.append(String.format(
-                                "<p>Data set is busy indexing, with %d records indexed so far of %d.</p>",
+                                "<p>Data set is busy indexing, with %d records processed so far of %d.</p>",
                                 dataSetInfo.recordsIndexed,
                                 dataSetInfo.recordCount
                         ));
@@ -254,15 +294,31 @@ public class DataSetListModel extends AbstractListModel {
         entries.add(fresh);
         fireIntervalAdded(this, added, added);
         Collections.sort(entries);
-        int index = 0;
-        for (Entry entry : entries) {
-            if (entry.index != index) {
-                entry.index = index;
-                fireContentsChanged(this, index, index);
-            }
-            index++;
-        }
+        reportContentChanges();
         return fresh;
+    }
+
+    private void reportContentChanges() {
+        int index = 0;
+        if (filterIndex != null) {
+            for (int filter : filterIndex) {
+                Entry entry = entries.get(filter);
+                if (entry.index != index) {
+                    entry.index = index;
+                    fireContentsChanged(this, index, index);
+                }
+                index++;
+            }
+        }
+        else {
+            for (Entry entry : entries) {
+                if (entry.index != index) {
+                    entry.index = index;
+                    fireContentsChanged(this, index, index);
+                }
+                index++;
+            }
+        }
     }
 
     public static class Cell implements ListCellRenderer {

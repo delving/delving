@@ -1,8 +1,7 @@
 package eu.europeana.core.querymodel.query
 
 import org.springframework.mock.web.MockHttpServletRequest
-import org.springframework.context.support.ClassPathXmlApplicationContext
-
+import eu.delving.metadata._
 /**
  *
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -11,11 +10,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext
 
 trait DelvingTestUtil {
 
-  // spring-based wiring
-  private val context = new ClassPathXmlApplicationContext("/core-application-context.xml")
-  private val analyzerBean = context.getBean("queryAnalyser").asInstanceOf[QueryAnalyzer]
+  private val metadataModel = new MetadataModelImpl("/abm-record-definition.xml", "abm")
+  private val analyzerBean = new QueryAnalyzer(metadataModel)
 
-  def getQueryAnalyserFromBean = analyzerBean
+  def getQueryAnalyser = analyzerBean
 
   // RequestBased helpers
   def createParamsMap(params: List[(String, String)]) = {

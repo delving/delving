@@ -34,9 +34,9 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.events.XMLEvent;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Analyze xml input and compile statistics.
@@ -49,7 +49,7 @@ public class AnalysisParser implements Runnable {
     private static final int ELEMENT_STEP = 10000;
     private final Logger LOG = Logger.getLogger(getClass());
     private Path path = new Path();
-    private Map<Path, FieldStatistics> statisticsMap = new TreeMap<Path, FieldStatistics>();
+    private Map<Path, FieldStatistics> statisticsMap = new HashMap<Path, FieldStatistics>();
     private Listener listener;
     private FileStore.DataSetStore dataSetStore;
     private boolean abort;
@@ -95,14 +95,14 @@ public class AnalysisParser implements Runnable {
                             }
                         }
                         path.push(Tag.create(input.getName().getPrefix(),input.getName().getLocalPart()));
-                        if (input.getAttributeCount() > 0) {
-                            for (int walk = 0; walk < input.getAttributeCount(); walk++) {
-                                QName attributeName = input.getAttributeName(walk);
-                                path.push(Tag.create(attributeName.getPrefix(), attributeName.getLocalPart()));
-                                recordValue(input.getAttributeValue(walk));
-                                path.pop();
-                            }
-                        }
+//                        if (input.getAttributeCount() > 0) {
+//                            for (int walk = 0; walk < input.getAttributeCount(); walk++) {
+//                                QName attributeName = input.getAttributeName(walk);
+//                                path.push(Tag.create(attributeName.getPrefix(), attributeName.getLocalPart()));
+//                                recordValue(input.getAttributeValue(walk));
+//                                path.pop();
+//                            }
+//                        }
                         break;
                     case XMLEvent.CHARACTERS:
                         text.append(input.getText());

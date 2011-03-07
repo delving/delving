@@ -24,6 +24,7 @@ package eu.delving.metadata;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+import com.thoughtworks.xstream.converters.reflection.PureJavaReflectionProvider;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -112,7 +113,7 @@ public class RecordDefinition {
     }
 
     private static XStream stream() {
-        XStream stream = new XStream();
+        XStream stream = new XStream(new PureJavaReflectionProvider());
         stream.processAnnotations(new Class[]{
                 RecordDefinition.class,
                 ElementDefinition.class,

@@ -1,7 +1,7 @@
 #
-# Copyright 2010 Delving BV
+# Copyright 2010 DELVING BV
 #
-# Licensed under the EUPL, Version 1.1 or as soon they
+# Licensed under the EUPL, Version 1.1 or as soon they
 # will be approved by the European Commission - subsequent
 # versions of the EUPL (the "Licence");
 # you may not use this work except in compliance with the
@@ -34,10 +34,6 @@ solr.selectUrl = http://localhost:8983/solr
 
 solr.updateUrl = http://localhost:8983/solr
 
-# Number of records that will be send to Solr as indexing batch. Default 1000 is good in most situations
-
-solr.chunkSize = 1000
-
 # The timeout for SolrJ connectionPool
 
 solr.timeout = 60000
@@ -64,6 +60,10 @@ services.harvindexing.prefix = ese
 # The secrect password that is used to generate the accesskeys for OAI-PMH, Sip-Creator, and other Servcicse
 
 services.password = something
+
+# Allow access to search API via accessKey or completely open
+
+services.api.useAccessKey = false
 
 
 ###############################################
@@ -103,6 +103,16 @@ services.pmh.harvestStepCleanupDelay = 15000
 # The name of the OAI-PMH  reposistory database in mongodb. This db is created when the application starts up the first time.
 
 services.mongo.dbName = MetaRepo
+
+# The locations of the cluster of mongo servers
+
+mongo.test.context = true
+mongo.server1.host = localhost
+mongo.server1.port = 27017
+mongo.server2.host = localhost
+mongo.server2.port = 27018
+mongo.server3.host = localhost
+mongo.server3.port = 27019
 
 
 ###############################################

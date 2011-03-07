@@ -21,13 +21,14 @@
 
 package eu.europeana.sip.gui;
 
+import eu.delving.metadata.Hasher;
+import eu.delving.sip.DataSetClient;
 import eu.delving.sip.DataSetCommand;
 import eu.delving.sip.DataSetInfo;
 import eu.delving.sip.DataSetState;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.FileType;
-import eu.delving.sip.Hasher;
 import eu.delving.sip.ProgressListener;
 import eu.europeana.sip.model.SipModel;
 
@@ -59,6 +60,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * All the actions that can be launched when a data set is selected
@@ -89,7 +91,6 @@ public class DataSetActions {
         this.recordStatisticsDialog = new RecordStatisticsDialog(sipModel);
         this.analysisFactsDialog = new AnalysisFactsDialog(sipModel);
         this.mappingDialog = new MappingDialog(sipModel);
-        setEntry(null);
     }
 
     public JPanel getPanel() {
@@ -142,6 +143,13 @@ public class DataSetActions {
         }
     }
 
+    public void setUntouched(Set<String> untouched) {
+        if (entry != null && untouched.contains(entry.getSpec())) {
+            entry.setDataSetInfo(null);
+            setEntry(entry);
+        }
+    }
+
     private void buildPanel() {
         createLocalActions(sipModel);
         createRemoteActions();
@@ -155,6 +163,7 @@ public class DataSetActions {
         panel.add(Box.createVerticalGlue());
         panel.add(remote);
         panel.add(Box.createVerticalGlue());
+        setEntry(entry);
     }
 
     private JPanel createRemotePanel() {
@@ -177,6 +186,7 @@ public class DataSetActions {
 
     private void createLocalActions(SipModel sipModel) {
         localActions.clear();
+        localActions.add(createDownloadDataSetAction());
         localActions.add(createAnalyzeFactsAction());
         for (String metadataPrefix : sipModel.getAppConfigModel().getActiveMetadataPrefixes()) {
             localActions.add(createEditMappingAction(metadataPrefix));
@@ -231,6 +241,36 @@ public class DataSetActions {
         };
     }
 
+    private DataSetAction createDownloadDataSetAction() {
+        return new DataSetAction("Download Data Set") {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                DataSetInfo info = entry.getDataSetInfo();
+                ProgressMonitor progressMonitor = new ProgressMonitor(frame, "Downloading", String.format("Downloading source for %s", info.spec), 0, 100);
+                final ProgressListener progressListener = new ProgressListener.Adapter(progressMonitor) {
+                    @Override
+                    public void swingFinished(boolean success) {
+                        setEnabled(!success);
+                        setEntry(entry);
+                    }
+                };
+                try {
+                    FileStore.DataSetStore store = sipModel.getFileStore().createDataSetStore(info.spec);
+                    dataSetClient.downloadDataSet(store, progressListener);
+                    entry.setDataSetStore(store);
+                }
+                catch (FileStoreException e) {
+                    sipModel.getUserNotifier().tellUser(String.format("Unable to create data set %s", info.spec));
+                }
+            }
+
+            @Override
+            boolean isEnabled(DataSetListModel.Entry entry) {
+                return entry.getDataSetInfo() != null && entry.getDataSetStore() == null;
+            }
+        };
+    }
+
     private DataSetAction createAnalyzeFactsAction() {
         return new DataSetAction("Analyze Fields & Edit Facts") {
             @Override
@@ -257,7 +297,7 @@ public class DataSetActions {
 
             @Override
             boolean isEnabled(DataSetListModel.Entry entry) {
-                return entry.getDataSetStore() != null;
+                return entry.getDataSetStore() != null && entry.getDataSetStore().hasSource() && entry.getDataSetStore().getStatistics() != null;
             }
         };
     }
@@ -278,7 +318,12 @@ public class DataSetActions {
                 if (doImport == JOptionPane.YES_OPTION) {
                     try {
                         entry.getDataSetStore().delete();
-                        refreshList.run();
+                        if (entry.getDataSetInfo() == null) {
+                            refreshList.run();
+                        }
+                        else {
+                            entry.setDataSetStore(null);
+                        }
                     }
                     catch (FileStoreException e) {
                         sipModel.getUserNotifier().tellUser("Unable to delete data set", e);
@@ -294,13 +339,13 @@ public class DataSetActions {
     }
 
     private boolean canUpload(FileType fileType, File file, DataSetListModel.Entry entry) {
-        if (!dataSetClient.isConnected() || file == null) {
+        if (!dataSetClient.isConnected() || file == null || !file.exists()) {
             return false;
         }
         if (entry.getDataSetInfo() == null) {
             return fileType == FileType.FACTS;
         }
-        String hash = Hasher.getHash(file.getName());
+        String hash = Hasher.extractHashFromFileName(file.getName());
         return !entry.getDataSetInfo().hasHash(hash);
     }
 
@@ -321,7 +366,7 @@ public class DataSetActions {
                     }
                 };
                 sipModel.setDataSetStore(store);
-                dataSetClient.uploadFile(FileType.FACTS, store.getFactsFile(), progressListener);
+                dataSetClient.uploadFile(FileType.FACTS, store.getSpec(), store.getFactsFile(), progressListener);
             }
 
             @Override
@@ -345,13 +390,15 @@ public class DataSetActions {
                     }
                 };
                 sipModel.setDataSetStore(store);
-                dataSetClient.uploadFile(FileType.SOURCE, store.getSourceFile(), progressListener);
+                dataSetClient.uploadFile(FileType.SOURCE, store.getSpec(), store.getSourceFile(), progressListener);
             }
 
             @Override
             boolean isEnabled(DataSetListModel.Entry entry) {
                 FileStore.DataSetStore store = entry.getDataSetStore();
-                return store != null && canUpload(FileType.SOURCE, entry.getDataSetStore().getSourceFile(), entry);
+                return store != null &&
+                        canUpload(FileType.SOURCE, entry.getDataSetStore().getSourceFile(), entry) &&
+                        !canUpload(FileType.FACTS, entry.getDataSetStore().getFactsFile(), entry);
             }
         };
     }
@@ -369,12 +416,13 @@ public class DataSetActions {
                     }
                 };
                 sipModel.setDataSetStore(store);
-                dataSetClient.uploadFile(FileType.MAPPING, store.getMappingFile(prefix), progressListener);
+                dataSetClient.uploadFile(FileType.MAPPING, store.getSpec(), store.getMappingFile(prefix), progressListener);
             }
 
             @Override
             boolean isEnabled(DataSetListModel.Entry entry) {
-                return canUpload(FileType.MAPPING, entry.getDataSetStore().getMappingFile(prefix), entry);
+                FileStore.DataSetStore store = entry.getDataSetStore();
+                return store != null && canUpload(FileType.MAPPING, store.getMappingFile(prefix), entry);
             }
 
         };

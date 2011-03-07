@@ -1,4 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2010 DELVING BV
+  ~
+  ~ Licensed under the EUPL, Version 1.1 or as soon they
+  ~ will be approved by the European Commission - subsequent
+  ~ versions of the EUPL (the "Licence");
+  ~ you may not use this work except in compliance with the
+  ~ Licence.
+  ~ You may obtain a copy of the Licence at:
+  ~
+  ~ http://ec.europa.eu/idabc/eupl
+  ~
+  ~ Unless required by applicable law or agreed to in
+  ~ writing, software distributed under the Licence is
+  ~ distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+  ~ express or implied.
+  ~ See the Licence for the specific language governing
+  ~ permissions and limitations under the Licence.
+  -->
+
 <beans
         xmlns="http://www.springframework.org/schema/beans"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -29,6 +50,8 @@
 
     <tx:annotation-driven proxy-target-class="true"/>
 
+    <context:component-scan base-package="eu.delving.services.controller"/>
+
     <bean id="accessKey" class="eu.delving.sip.AccessKey">
         <property name="servicesPassword" value="#{launchProperties['services.password']}"/>
     </bean>
@@ -54,9 +77,7 @@
         <property name="repeatInterval" value="#{launchProperties['services.pmh.harvestStepCleanupDelay']}"/>
     </bean>
 
-    <bean id="harvindexer" class="eu.delving.services.core.Harvindexer">
-        <property name="chunkSize" value="#{launchProperties['solr.chunkSize']}"/>
-    </bean>
+    <bean id="harvindexer" class="eu.delving.services.core.Harvindexer"/>
 
     <bean id="indexJobRunner" class="eu.delving.services.core.IndexJobRunner"/>
 
@@ -79,6 +100,18 @@
                 <ref bean="cleanupTrigger"/>
             </list>
         </property>
+    </bean>
+
+    <bean id="cslInterceptor" class="eu.delving.core.util.ClickStreamLoggerInterceptor"/>
+
+    <bean id="imageCacheService" class="eu.delving.services.cache.image.ImageCacheService">
+        <constructor-arg ref="mongoDb"/>
+    </bean>
+
+    <bean id="searchAPIServiceFactory" class="eu.delving.services.search.RichSearchAPIServiceFactory"/>
+
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="interceptors" ref="cslInterceptor"/>
     </bean>
 
     <security:authentication-manager alias="authenticationManager">

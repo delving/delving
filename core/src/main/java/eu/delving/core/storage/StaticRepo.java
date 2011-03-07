@@ -26,6 +26,7 @@ import org.bson.types.ObjectId;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -35,6 +36,8 @@ import java.util.Set;
  */
 
 public interface StaticRepo {
+
+    Map<String, List<MenuItem>> getMenus(Locale locale);
 
     Set<String> getPagePaths();
 
@@ -54,7 +57,7 @@ public interface StaticRepo {
 
     void deleteImage(String path);
 
-    ObjectId putPage(String path, String content, Locale locale);
+    Page createPage(String path);
 
     boolean setPagePath(String oldPath, String newPath);
 
@@ -72,21 +75,75 @@ public interface StaticRepo {
 
         void setHidden(boolean hidden);
 
+        String getMenuName();
+
+        int getMenuPriority();
+
+        String getTitle(Locale locale);
+
         String getContent(Locale locale);
 
         Date getDate();
 
-        void setContent(String content, Locale locale);
+        void setContent(String title, String content, Locale locale);
+
+        void setMenu(String menuName, int menuPriority);
 
         void remove();
+
+        String PATH = "path";
+        String TITLE = "title";
+        String CONTENT = "content";
+        String MENU_NAME = "menuName";
+        String MENU_PRIORITY = "menuPriority";
+        String HIDDEN = "hidden";
+    }
+
+    public class MenuItem implements Comparable<MenuItem>{
+        private String menuName;
+        private int menuPriority;
+        private String title;
+        private String path;
+
+        public MenuItem(String menuName, int menuPriority, String title, String path) {
+            this.menuName = menuName;
+            this.menuPriority = menuPriority;
+            this.title = title;
+            this.path = path;
+        }
+
+        public String getMenuName() {
+            return menuName;
+        }
+
+        public int getMenuPriority() {
+            return menuPriority;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        @Override
+        public int compareTo(StaticRepo.MenuItem menuItem) {
+            if (menuPriority > menuItem.menuPriority) {
+                return 11;
+            }
+            else if (menuPriority < menuItem.menuPriority) {
+                return -1;
+            }
+            else {
+                return 0;
+            }
+        }
     }
 
     String PAGES_COLLECTION = "pages";
     String IMAGES_COLLECTION = "images";
-    String PATH = "path";
-    String CONTENT = "content";
-    String HIDDEN = "hidden";
     String DEFAULT_LANGUAGE = "en";
     String MONGO_ID = "_id";
-
 }

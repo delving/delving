@@ -31,7 +31,6 @@ import eu.europeana.sip.model.SipModel;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -66,7 +65,7 @@ public class AnalysisFactsPanel extends JPanel {
     private JButton selectRecordRootButton = new JButton("Select Record Root >> ");
     private JButton selectUniqueElementButton = new JButton("Select Unique Element >> ");
     private JButton analyzeButton = new JButton(RUN_ANALYSIS);
-    private JEditorPane statisticsView = new JEditorPane();
+    private FieldStatisticsPanel fieldStatisticsPanel = new FieldStatisticsPanel();
     private JTree statisticsJTree;
     private SipModel sipModel;
 
@@ -76,7 +75,8 @@ public class AnalysisFactsPanel extends JPanel {
         this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         JPanel left = new JPanel(new GridLayout(0, 1, 5, 5));
         left.add(createTreePanel());
-        left.add(createStatisticsPanel());
+        fieldStatisticsPanel.setPreferredSize(new Dimension(300, 500));
+        left.add(fieldStatisticsPanel);
         JPanel center = new JPanel(new GridLayout(1, 0, 5, 5));
         center.add(left);
         center.add(new FactPanel(sipModel.getFactModel()));
@@ -108,14 +108,6 @@ public class AnalysisFactsPanel extends JPanel {
         return bp;
     }
 
-    private JPanel createStatisticsPanel() {
-        JPanel p = new JPanel(new BorderLayout(5, 5));
-        p.setBorder(BorderFactory.createTitledBorder("Field Statistics"));
-        statisticsView.setContentType("text/html");
-        p.add(scroll(statisticsView), BorderLayout.CENTER);
-        return p;
-    }
-
     private JScrollPane scroll(JComponent content) {
         JScrollPane scroll = new JScrollPane(content);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -138,18 +130,7 @@ public class AnalysisFactsPanel extends JPanel {
 
             @Override
             public void updatedStatistics(final FieldStatistics fieldStatistics) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (fieldStatistics == null) {
-                            statisticsView.setText("<html><h3>No Statistics</h3>");
-                        }
-                        else {
-                            statisticsView.setText(fieldStatistics.toHtml());
-                        }
-                        statisticsView.setCaretPosition(0);
-                    }
-                });
+                fieldStatisticsPanel.setStatistics(fieldStatistics);
             }
 
             @Override
@@ -169,8 +150,8 @@ public class AnalysisFactsPanel extends JPanel {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            selectRecordRootButton.setEnabled(node.couldBeRecordRoot());
-                            selectUniqueElementButton.setEnabled(!node.couldBeRecordRoot());
+                            selectRecordRootButton.setEnabled(node.couldBeRecordRoot() && !sipModel.getFacts().isDownloadedSource());
+                            selectUniqueElementButton.setEnabled(!node.couldBeRecordRoot() && !sipModel.getFacts().isDownloadedSource());
                             sipModel.setStatistics(node.getStatistics());
                         }
                     });

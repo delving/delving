@@ -1,33 +1,32 @@
 /*
  * Copyright 2010 DELVING BV
  *
- *  Licensed under the EUPL, Version 1.0 or? as soon they
- *  will be approved by the European Commission - subsequent
- *  versions of the EUPL (the "Licence");
- *  you may not use this work except in compliance with the
- *  Licence.
- *  You may obtain a copy of the Licence at:
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
  *
- *  http://ec.europa.eu/idabc/eupl
+ * http://ec.europa.eu/idabc/eupl
  *
- *  Unless required by applicable law or agreed to in
- *  writing, software distributed under the Licence is
- *  distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *  express or implied.
- *  See the Licence for the specific language governing
- *  permissions and limitations under the Licence.
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
  */
 
 package eu.delving.core.storage.impl;
 
 import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
 import eu.delving.core.storage.User;
 import eu.delving.core.storage.UserRepo;
+import eu.delving.core.util.MongoFactory;
 import eu.delving.domain.Language;
 import eu.europeana.core.querymodel.query.DocType;
 import org.bson.types.ObjectId;
@@ -39,6 +38,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static eu.delving.core.util.MongoObject.mob;
+
 /**
  * @author Gerald de Jong <gerald@delving.eu>
  */
@@ -49,10 +50,10 @@ public class UserRepoImpl implements UserRepo {
     private String databaseName;
 
     @Autowired
-    private Mongo mongo;
+    private MongoFactory mongoFactory;
 
-    public void setMongo(Mongo mongo) {
-        this.mongo = mongo;
+    public void setMongoFactory(MongoFactory mongoFactory) {
+        this.mongoFactory = mongoFactory;
     }
 
     public void setDatabaseName(String databaseName) {
@@ -60,33 +61,33 @@ public class UserRepoImpl implements UserRepo {
     }
 
     private DBCollection users() {
-        return mongo.getDB(databaseName).getCollection(USERS_COLLECTION);
+        return mongoFactory.getMongo().getDB(databaseName).getCollection(USERS_COLLECTION);
     }
 
     @Override
     public User createUser(String email) {
-        DBObject object = new BasicDBObject(User.EMAIL, email);
+        DBObject object = mob(User.EMAIL, email);
         return new UserImpl(object);
     }
 
     @Override
     public void removeUser(String id) {
-        users().remove(new BasicDBObject(User.ID, new ObjectId(id)));
+        users().remove(mob(User.ID, new ObjectId(id)));
     }
 
     @Override
     public User authenticate(String email, String password) {
-        users().ensureIndex(new BasicDBObject(User.EMAIL, 1));
-        DBObject query = new BasicDBObject();
-        query.put(User.EMAIL, email);
-        query.put(User.PASSWORD, hashPassword(password));
-        DBObject userObject = users().findOne(query);
+        users().ensureIndex(mob(User.EMAIL, 1));
+        DBObject userObject = users().findOne(mob(
+                User.EMAIL, email,
+                User.PASSWORD, hashPassword(password)
+        ));
         return userObject != null ? new UserImpl(userObject) : null;
     }
 
     @Override
     public boolean isExistingUserName(String userName) {
-        return users().findOne(new BasicDBObject(User.USER_NAME, userName)) != null;
+        return users().findOne(mob(User.USER_NAME, userName)) != null;
     }
 
     @Override
@@ -117,8 +118,8 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public User byEmail(String email) {
-        users().ensureIndex(new BasicDBObject(User.EMAIL, 1));
-        DBObject personObject = users().findOne(new BasicDBObject(User.EMAIL, email));
+        users().ensureIndex(mob(User.EMAIL, 1));
+        DBObject personObject = users().findOne(mob(User.EMAIL, email));
         return personObject != null ? new UserImpl(personObject) : null;
     }
 
@@ -308,7 +309,7 @@ public class UserRepoImpl implements UserRepo {
         }
 
         public ItemImpl(UserImpl person, int index) {
-            this(person, new BasicDBObject(DATE_SAVED, new Date()), index);
+            this(person, mob(DATE_SAVED, new Date()), index);
         }
 
         public void setAuthor(String author) {
@@ -406,7 +407,7 @@ public class UserRepoImpl implements UserRepo {
         }
 
         public SearchImpl(UserImpl person, int index) {
-            this(person, new BasicDBObject(DATE_SAVED, new Date()), index);
+            this(person, mob(DATE_SAVED, new Date()), index);
         }
 
         public void setQuery(String query) {

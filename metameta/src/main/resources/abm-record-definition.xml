@@ -49,21 +49,20 @@
         <field prefix="dcterms" localName="medium" searchField="format"/>
         <field prefix="dcterms" localName="provenance"/>
         <field prefix="dcterms" localName="references"/>
+        <field prefix="dcterms" localName="rightsHolder"/>
         <field prefix="dcterms" localName="replaces" searchField="relation"/>
         <field prefix="dcterms" localName="requires" searchField="relation"/>
         <field prefix="dcterms" localName="spatial" searchField="where,location,subject"/>
         <field prefix="dcterms" localName="tableOfContents" searchField="description"/>
         <field prefix="dcterms" localName="temporal" searchField="what,subject"/>
-        <field prefix="europeana" localName="collectionName" systemField="true" fulldoc="false">
-            <validation requiredGroup="Collection Name" factName="name"/>
-        </field>
-        <field prefix="europeana" localName="collectionTitle" systemField="true" fulldoc="false">
+        <field prefix="europeana" localName="collectionName" systemField="true" fulldoc="false"/>
+        <field prefix="europeana" localName="collectionTitle" fulldoc="false">
             <validation requiredGroup="Collection Title" factName="name"/>
         </field>
-        <field prefix="europeana" localName="country" systemField="true" fulldoc="false"> <!-- facetPrefix="count"-->
+        <field prefix="europeana" localName="country" fulldoc="false"> <!-- facetPrefix="count"-->
             <validation requiredGroup="Country" factName="country"/>
         </field>
-        <field prefix="europeana" localName="dataProvider" facetPrefix="dapr" systemField="true" fulldoc="true" briefdoc="true">
+        <field prefix="europeana" localName="dataProvider" facetPrefix="dapr" fulldoc="true" briefdoc="true">
             <validation requiredGroup="Data Provider" factName="dataProvider"/>
         </field>
         <field prefix="europeana" localName="isShownAt" fulldoc="true" fieldType="string">
@@ -86,7 +85,7 @@
         </field>
         <field prefix="europeana" localName="source"/> <!-- to be deleted is unused -->
         <field prefix="europeana" localName="type" fieldType="string" facetPrefix="tp" facetName="type">
-            <validation type="true" factName="type" requiredGroup="Type"/>
+            <validation type="true" factName="type" multivalued="false" requiredGroup="Type"/>
         </field>
         <field prefix="europeana" localName="unstored" fieldType="text" fulldoc="false">
             <description>This field is not stored only indexed </description>

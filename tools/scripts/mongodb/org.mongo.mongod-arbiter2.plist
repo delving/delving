@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Label</key>
+        <string>org.mongo.mongod-arbiter2</string>
+        <key>RunAtLoad</key>
+        <true/>
+        <key>ProgramArguments</key>
+        <array>
+            <string>/opt/local/bin/mongod</string>
+            <string>--dbpath</string>
+            <string>/opt/local/var/db/mongodb_arb2</string>
+            <string>--logpath</string>
+            <string>/opt/local/var/log/mongodb_arb2.log</string>
+            <string>--port</string>
+            <string>27020</string>
+            <string>--replSet</string>
+            <string>delving</string>
+        </array>
+    </dict>
+</plist>
+

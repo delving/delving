@@ -1,43 +1,36 @@
 /*
  * Copyright 2010 DELVING BV
  *
- *  Licensed under the EUPL, Version 1.0 or? as soon they
- *  will be approved by the European Commission - subsequent
- *  versions of the EUPL (the "Licence");
- *  you may not use this work except in compliance with the
- *  Licence.
- *  You may obtain a copy of the Licence at:
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
  *
- *  http://ec.europa.eu/idabc/eupl
+ * http://ec.europa.eu/idabc/eupl
  *
- *  Unless required by applicable law or agreed to in
- *  writing, software distributed under the Licence is
- *  distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *  express or implied.
- *  See the Licence for the specific language governing
- *  permissions and limitations under the Licence.
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
  */
 
 package eu.delving.core.storage.impl;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import com.mongodb.*;
 import eu.delving.core.storage.StaticRepo;
+import eu.delving.core.util.MongoFactory;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
+
+import static eu.delving.core.util.MongoObject.mob;
 
 /**
  * The repository of static pages and images
@@ -48,7 +41,11 @@ import java.util.TreeSet;
 public class StaticRepoImpl implements StaticRepo {
 
     @Autowired
-    private Mongo mongo;
+    private MongoFactory mongoFactory;
+
+    public void setMongoFactory(MongoFactory mongoFactory) {
+        this.mongoFactory = mongoFactory;
+    }
 
     @Value("#{launchProperties['portal.name']}")
     private String portalName = "";
@@ -56,46 +53,75 @@ public class StaticRepoImpl implements StaticRepo {
     @Value("#{launchProperties['portal.mongo.dbName']}")
     private String databaseName;
 
-    public void setMongo(Mongo mongo) {
-        this.mongo = mongo;
-    }
 
     public void setDatabaseName(String databaseName) {
         this.databaseName = databaseName;
     }
 
+    public void setPortalName(String portalName) {
+        this.portalName = portalName;
+    }
+
+    @Override
+    public Map<String, List<MenuItem>> getMenus(Locale locale) {
+        Map<String, Page> latestPages = getLatestPages();
+        Map<String, List<MenuItem>> menus = new TreeMap<String, List<MenuItem>>();
+        for (Page page : latestPages.values()) {
+            String menuName = page.getMenuName();
+            if (menuName != null) {
+                MenuItem menuItem = new MenuItem(menuName, page.getMenuPriority(), page.getTitle(locale), page.getPath());
+                List<MenuItem> list = menus.get(menuName);
+                if (list == null) {
+                    menus.put(menuName, list = new ArrayList<MenuItem>());
+                }
+                list.add(menuItem);
+            }
+        }
+        for (List<MenuItem> menu : menus.values()) {
+            Collections.sort(menu);
+        }
+        return menus;
+    }
+
+    @Override
     public Set<String> getPagePaths() {
         return getPathSet(PAGES_COLLECTION);
     }
 
+    @Override
     public Set<String> getImagePaths() {
         return getPathSet(IMAGES_COLLECTION);
     }
 
+    @Override
     public Page getPage(String path) {
         Page page = getLatestPage(path);
         if (page != null) {
             return page;
         }
         else {
-            BasicDBObject object = new BasicDBObject(PATH, path);
-            object.put(CONTENT, String.format("<a href=\"/%s/%s\">%s</a>", portalName, path, path));
-            return new PageImpl(object);
+            return new PageImpl(mob(
+                    Page.PATH, path,
+                    Page.CONTENT, String.format("<a href=\"/%s/%s\">%s</a>", portalName, path, path)
+            ));
         }
     }
 
+    @Override
     public Page getPage(String path, String id) {
         Page page = getPageVersion(new ObjectId(id));
         if (page != null) {
             return page;
         }
         else {
-            BasicDBObject object = new BasicDBObject(PATH, path);
-            object.put(CONTENT, String.format("<a href=\"%s\">%s</a>", path, path));
-            return new PageImpl(object);
+            return new PageImpl(mob(
+                    Page.PATH, path,
+                    Page.CONTENT, String.format("<a href=\"%s\">%s</a>", path, path)
+            ));
         }
     }
 
+    @Override
     public void approve(String path, String idString) {
         ObjectId id = new ObjectId(idString);
         Page approved = getPageVersion(id);
@@ -108,55 +134,51 @@ public class StaticRepoImpl implements StaticRepo {
         }
     }
 
+    @Override
     public void setHidden(String path, boolean hidden) {
         for (Page page : getVersionPages(path)) {
             page.setHidden(hidden);
         }
     }
 
+    @Override
     public List<Page> getPageVersions(String path) {
         return getVersionPages(path);
     }
 
+    @Override
     public byte[] getImage(String path) {
-        DBObject object = images().findOne(new BasicDBObject(PATH, path));
+        DBObject object = images().findOne(mob(Page.PATH, path));
         if (object != null) {
-            return (byte[]) object.get(CONTENT);
+            return (byte[]) object.get(Page.CONTENT);
         }
         else {
             return null;
         }
     }
 
+    @Override
     public void deleteImage(String path) {
-        DBObject object = images().findOne(new BasicDBObject(PATH, path));
+        DBObject object = images().findOne(mob(Page.PATH, path));
         if (object != null) {
             images().remove(object);
         }
     }
 
-    public ObjectId putPage(String path, String content, Locale locale) {
+    @Override
+    public Page createPage(String path) {
         Page page = getLatestPage(path);
-        if (page != null) {
-            if (content == null) {
-                page.remove();
-            }
-            else {
-                page.setContent(content, locale);
-            }
+        if (page == null) {
+            page = new PageImpl(mob(Page.PATH, path));
         }
-        else {
-            BasicDBObject object = new BasicDBObject(PATH, path);
-            page = new PageImpl(object);
-            page.setContent(content, locale);
-        }
-        return page.getId();
+        return page;
     }
 
+    @Override
     public boolean setPagePath(String oldPath, String newPath) {
-        DBObject object = pages().findOne(new BasicDBObject(PATH, oldPath));
+        DBObject object = pages().findOne(mob(Page.PATH, oldPath));
         if (object != null) {
-            object.put(PATH, newPath);
+            object.put(Page.PATH, newPath);
             pages().save(object);
             return true;
         }
@@ -165,23 +187,26 @@ public class StaticRepoImpl implements StaticRepo {
         }
     }
 
+    @Override
     public void putImage(String path, byte[] content) {
-        DBObject object = images().findOne(new BasicDBObject(PATH, path));
+        DBObject object = images().findOne(mob(Page.PATH, path));
         if (object != null) {
-            object.put(CONTENT, content);
+            object.put(Page.CONTENT, content);
             images().save(object);
         }
         else {
-            object = new BasicDBObject(PATH, path);
-            object.put(CONTENT, content);
-            images().insert(object);
+            images().insert(mob(
+                    Page.PATH, path,
+                    Page.CONTENT, content
+            ));
         }
     }
 
+    @Override
     public boolean setImagePath(String oldPath, String newPath) {
-        DBObject object = images().findOne(new BasicDBObject(PATH, oldPath));
+        DBObject object = images().findOne(mob(Page.PATH, oldPath));
         if (object != null) {
-            object.put(PATH, newPath);
+            object.put(Page.PATH, newPath);
             images().save(object);
             return true;
         }
@@ -197,33 +222,54 @@ public class StaticRepoImpl implements StaticRepo {
             this.object = object;
         }
 
+        @Override
         public ObjectId getId() {
             return (ObjectId) object.get(MONGO_ID);
         }
 
+        @Override
         public String getPath() {
             return "/" + portalName + "/" + object.get(PATH);
         }
 
+        @Override
         public boolean isHidden() {
-            Boolean hidden = (Boolean)object.get(HIDDEN);
+            Boolean hidden = (Boolean) object.get(HIDDEN);
             return hidden != null && hidden;
         }
 
+        @Override
         public void setHidden(boolean hidden) {
             object.put(HIDDEN, hidden);
             pages().save(object);
         }
 
-        public String getContent(Locale locale) {
-            String content;
-            if (locale != null) {
-                content = (String) object.get(CONTENT + "_" + locale.getLanguage());
-                if (content == null) {
-                    content = (String) object.get(CONTENT);
-                }
+        @Override
+        public String getMenuName() {
+            return (String) object.get(MENU_NAME);
+        }
+
+        @Override
+        public int getMenuPriority() {
+            return (Integer) object.get(MENU_PRIORITY);
+        }
+
+        @Override
+        public String getTitle(Locale locale) {
+            String title = (String) object.get(localeTitle(locale));
+            if (title == null) {
+                title = (String) object.get(TITLE);
             }
-            else {
+            if (title == null) {
+                title = "";
+            }
+            return title;
+        }
+
+        @Override
+        public String getContent(Locale locale) {
+            String content = (String) object.get(localeContent(locale));
+            if (content == null) {
                 content = (String) object.get(CONTENT);
             }
             if (content == null) {
@@ -232,6 +278,7 @@ public class StaticRepoImpl implements StaticRepo {
             return content;
         }
 
+        @Override
         public Date getDate() {
             ObjectId id = (ObjectId) object.get(MONGO_ID);
             if (id == null) {
@@ -240,20 +287,30 @@ public class StaticRepoImpl implements StaticRepo {
             return new Date(getId().getTime());
         }
 
-        public void setContent(String content, Locale locale) {
+        @Override
+        public void setContent(String title, String content, Locale locale) {
             BasicDBObject fresh = copyObject();
             if (locale != null) {
-                fresh.put(CONTENT + "_" + locale.getLanguage(), content);
+                fresh.put(localeTitle(locale), title);
+                fresh.put(localeContent(locale), content);
                 if (DEFAULT_LANGUAGE.equals(locale.getLanguage())) {
+                    fresh.put(TITLE, title);
                     fresh.put(CONTENT, content);
                 }
             }
             else {
+                fresh.put(TITLE, title);
                 fresh.put(CONTENT, content);
-
             }
             pages().insert(fresh);
             this.object = fresh;
+        }
+
+        @Override
+        public void setMenu(String menuName, int menuPriority) {
+            object.put(MENU_NAME, menuName);
+            object.put(MENU_PRIORITY, menuPriority);
+            pages().save(object);
         }
 
         public void remove() {
@@ -261,7 +318,7 @@ public class StaticRepoImpl implements StaticRepo {
         }
 
         private BasicDBObject copyObject() {
-            BasicDBObject fresh = new BasicDBObject();
+            BasicDBObject fresh = mob();
             for (String key : object.keySet()) {
                 if (!key.equals(MONGO_ID)) {
                     fresh.put(key, object.get(key));
@@ -275,7 +332,7 @@ public class StaticRepoImpl implements StaticRepo {
     // === private
 
     private Page getPageVersion(ObjectId id) {
-        DBObject object = pages().findOne(new BasicDBObject("_id", id));
+        DBObject object = pages().findOne(mob(MONGO_ID, id));
         if (object != null) {
             return new PageImpl(object);
         }
@@ -285,7 +342,7 @@ public class StaticRepoImpl implements StaticRepo {
     }
 
     private Page getLatestPage(String path) {
-        DBCursor cursor = pages().find(new BasicDBObject(PATH, path)).sort(new BasicDBObject("_id", -1)).limit(1);
+        DBCursor cursor = pages().find(mob(Page.PATH, path)).sort(mob(MONGO_ID, -1)).limit(1);
         if (cursor.hasNext()) {
             return new PageImpl(cursor.next());
         }
@@ -295,7 +352,7 @@ public class StaticRepoImpl implements StaticRepo {
     }
 
     private List<Page> getVersionPages(String path) {
-        DBCursor cursor = pages().find(new BasicDBObject(PATH, path)).sort(new BasicDBObject("_id", -1));
+        DBCursor cursor = pages().find(mob(Page.PATH, path)).sort(mob(MONGO_ID, -1));
         List<Page> list = new ArrayList<Page>();
         while (cursor.hasNext()) {
             list.add(new PageImpl(cursor.next()));
@@ -305,12 +362,12 @@ public class StaticRepoImpl implements StaticRepo {
 
     private Set<String> getPathSet(String collection) {
         DBCollection coll = db().getCollection(collection);
-        coll.ensureIndex(new BasicDBObject(PATH, 1));
+        coll.ensureIndex(mob(Page.PATH, 1));
         DBCursor cursor = coll.find();
         Set<String> set = new TreeSet<String>();
         while (cursor.hasNext()) {
             DBObject pageObject = cursor.next();
-            set.add("/" + portalName + "/" + pageObject.get(PATH));
+            set.add("/" + portalName + "/" + pageObject.get(Page.PATH));
         }
         return set;
     }
@@ -324,6 +381,40 @@ public class StaticRepoImpl implements StaticRepo {
     }
 
     private DB db() {
-        return mongo.getDB(databaseName);
+        return mongoFactory.getMongo().getDB(databaseName);
+    }
+
+    private Map<String, Page> getLatestPages() {
+        DBCursor cursor = pages().find();
+        Map<String, Page> latestPages = new TreeMap<String, Page>();
+        while (cursor.hasNext()) {
+            DBObject next = cursor.next();
+            Page page = new PageImpl(next);
+            if (!page.isHidden()) {
+                Page existing = latestPages.get(page.getPath());
+                if (existing == null || existing.getDate().compareTo(page.getDate()) < 0) {
+                    latestPages.put(page.getPath(), page);
+                }
+            }
+        }
+        return latestPages;
+    }
+
+    private String localeContent(Locale locale) {
+        if (locale == null) {
+            return Page.CONTENT;
+        }
+        else {
+            return String.format("%s_%s", Page.CONTENT, locale.getLanguage());
+        }
+    }
+
+    private String localeTitle(Locale locale) {
+        if (locale == null) {
+            return Page.TITLE;
+        }
+        else {
+            return String.format("%s_%s", Page.TITLE, locale.getLanguage());
+        }
     }
 }

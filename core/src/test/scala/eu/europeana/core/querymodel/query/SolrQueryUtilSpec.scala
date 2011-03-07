@@ -22,7 +22,7 @@ import org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class SolrQueryUtilSpec extends Spec with ShouldMatchers with DelvingTestUtil {
 
-  private val analyser: QueryAnalyzer = getQueryAnalyserFromBean
+  private val analyser: QueryAnalyzer = getQueryAnalyser
 
   describe("A SolrQueryUtil") {
 
@@ -69,7 +69,7 @@ class SolrQueryUtilSpec extends Spec with ShouldMatchers with DelvingTestUtil {
       }
 
       it("should surround the query with double quotes when 'zoeken_in' is not 'text") {
-        compareListToQuery(List("query" -> "max devrient", "zoeken_in" -> "title"), "advanced") {"title:\"max devrient\""}
+        compareListToQuery(List("query" -> "max devrient", "zoeken_in" -> "dc_title"), "advanced") {"dc_title:\"max devrient\""}
       }
     }
 

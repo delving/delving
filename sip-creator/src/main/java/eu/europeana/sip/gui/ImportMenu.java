@@ -96,10 +96,10 @@ public class ImportMenu extends JMenu {
         Map<String, FileStore.DataSetStore> dataSetStores = sipModel.getFileStore().getDataSetStores();
         Object[] specs = new Object[dataSetStores.keySet().size() + 1];
         int index = 0;
+        specs[index++] = "<New Data Set>";
         for (String key : dataSetStores.keySet()) {
             specs[index++] = key;
         }
-        specs[index] = "<New Data Set>";
         String spec = (String) JOptionPane.showInputDialog(
                 parent,
                 String.format(

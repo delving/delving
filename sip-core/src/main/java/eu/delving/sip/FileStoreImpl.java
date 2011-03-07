@@ -24,10 +24,12 @@ package eu.delving.sip;
 import com.thoughtworks.xstream.XStream;
 import eu.delving.metadata.Facts;
 import eu.delving.metadata.FieldStatistics;
+import eu.delving.metadata.Hasher;
 import eu.delving.metadata.MetadataException;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.RecordDefinition;
 import eu.delving.metadata.RecordMapping;
+import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.net.URL;
@@ -40,6 +42,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * This interface describes how files are stored by the sip-creator
@@ -168,9 +172,12 @@ public class FileStoreImpl implements FileStore {
     @Override
     public Map<String, DataSetStore> getDataSetStores() {
         Map<String, DataSetStore> map = new TreeMap<String, DataSetStore>();
-        for (File file : home.listFiles()) {
-            if (file.isDirectory()) {
-                map.put(file.getName(), new DataSetStoreImpl(file));
+        File[] list = home.listFiles();
+        if (list != null) {
+            for (File file : list) {
+                if (file.isDirectory()) {
+                    map.put(file.getName(), new DataSetStoreImpl(file));
+                }
             }
         }
         return map;
@@ -270,15 +277,22 @@ public class FileStoreImpl implements FileStore {
                 if (!source.delete()) {
                     throw new FileStoreException("Unable to delete " + source.getAbsolutePath());
                 }
-                if (!directory.delete()) {
-                    throw new FileStoreException("Unable to delete " + directory.getAbsolutePath());
-                }
+                clearSource();
             }
             else {
                 String hash = hasher.toString();
                 File hashedSource = new File(directory, hash + "__" + SOURCE_FILE_NAME);
                 if (!source.renameTo(hashedSource)) {
                     throw new FileStoreException(String.format("Unable to rename %s to %s", source.getAbsolutePath(), hashedSource.getAbsolutePath()));
+                }
+                Facts facts = getFacts();
+                if (facts.isDownloadedSource()) {
+                    facts.setDownloadedSource(false);
+                    setFacts(facts);
+                }
+                File statisticsFile = new File(directory, STATISTICS_FILE_NAME);
+                if (statisticsFile.exists()) {
+                    delete();
                 }
             }
         }
@@ -293,7 +307,7 @@ public class FileStoreImpl implements FileStore {
             }
             File statisticsFile = new File(directory, STATISTICS_FILE_NAME);
             if (statisticsFile.exists()) {
-                if (statisticsFile.delete()) {
+                if (!statisticsFile.delete()) {
                     throw new FileStoreException("Unable to delete statistics file.");
                 }
             }
@@ -311,7 +325,7 @@ public class FileStoreImpl implements FileStore {
         }
 
         @Override
-        public List<FieldStatistics> getStatistics() throws FileStoreException {
+        public List<FieldStatistics> getStatistics() {
             File statisticsFile = new File(directory, STATISTICS_FILE_NAME);
             if (statisticsFile.exists()) {
                 try {
@@ -322,9 +336,7 @@ public class FileStoreImpl implements FileStore {
                     return fieldStatisticsList;
                 }
                 catch (Exception e) {
-                    if (!statisticsFile.delete()) {
-                        throw new FileStoreException("Unable to read statistics file. Deleted it.", e);
-                    }
+                    statisticsFile.delete();
                 }
             }
             return null;
@@ -417,12 +429,57 @@ public class FileStoreImpl implements FileStore {
         public List<String> getMappingPrefixes() {
             List<String> prefixes = new ArrayList<String>();
             for (File mappingFile : findMappingFiles(directory)) {
-                String name = Hasher.getName(mappingFile);
+                String name = Hasher.extractFileName(mappingFile);
                 name = name.substring(FileStore.MAPPING_FILE_PREFIX.length());
                 name = name.substring(0, name.length() - FileStore.MAPPING_FILE_SUFFIX.length());
                 prefixes.add(name);
             }
             return prefixes;
+        }
+
+        @Override
+        public void acceptSipZip(ZipInputStream zipInputStream, ProgressListener progressListener) throws FileStoreException {
+            ZipEntry zipEntry;
+            byte[] buffer = new byte[BLOCK_SIZE];
+            long totalBytesRead = 0;
+            int bytesRead;
+            boolean cancelled = false;
+            try {
+                while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                    String fileName = zipEntry.getName();
+                    File file = new File(directory, fileName);
+                    if (fileName.equals(FileStore.SOURCE_FILE_NAME)) {
+                        Hasher hasher = new Hasher();
+                        GZIPInputStream gzipInputStream = new GZIPInputStream(zipInputStream);
+                        GZIPOutputStream outputStream = new GZIPOutputStream(new FileOutputStream(file));
+                        while (!cancelled && -1 != (bytesRead = gzipInputStream.read(buffer))) {
+                            outputStream.write(buffer, 0, bytesRead);
+                            totalBytesRead += bytesRead;
+                            if (progressListener != null) {
+                                if (!progressListener.setProgress((int) (totalBytesRead / BLOCK_SIZE))) {
+                                    cancelled = true;
+                                    break;
+                                }
+                            }
+                            hasher.update(buffer, bytesRead);
+                        }
+                        if (progressListener != null) progressListener.finished(!cancelled);
+                        outputStream.close();
+                        String hash = hasher.toString();
+                        File hashedSource = new File(directory, hash + "__" + SOURCE_FILE_NAME);
+                        if (!file.renameTo(hashedSource)) {
+                            throw new FileStoreException(String.format("Unable to rename %s to %s", file.getAbsolutePath(), hashedSource.getAbsolutePath()));
+                        }
+                    }
+                    else {
+                        IOUtils.copy(zipInputStream, new FileOutputStream(file));
+                        Hasher.ensureFileHashed(file);
+                    }
+                }
+            }
+            catch (IOException e) {
+                throw new FileStoreException("Unable to accept SipZip file", e);
+            }
         }
 
         @Override
@@ -539,7 +596,7 @@ public class FileStoreImpl implements FileStore {
                 return files[0];
             default:
                 for (File file : files) {
-                    if (Hasher.getHash(file) == null) {
+                    if (Hasher.extractHash(file) == null) {
                         return file;
                     }
                 }
@@ -556,7 +613,7 @@ public class FileStoreImpl implements FileStore {
                 return files[0];
             default:
                 for (File file : files) {
-                    if (Hasher.getHash(file) == null) {
+                    if (Hasher.extractHash(file) == null) {
                         return file;
                     }
                 }
@@ -605,27 +662,27 @@ public class FileStoreImpl implements FileStore {
     private class FactsFileFilter implements FileFilter {
         @Override
         public boolean accept(File file) {
-            return file.isFile() && FACTS_FILE_NAME.equals(Hasher.getName(file));
+            return file.isFile() && FACTS_FILE_NAME.equals(Hasher.extractFileName(file));
         }
     }
 
     private class SourceFileFilter implements FileFilter {
         @Override
         public boolean accept(File file) {
-            return file.isFile() && SOURCE_FILE_NAME.equals(Hasher.getName(file));
+            return file.isFile() && SOURCE_FILE_NAME.equals(Hasher.extractFileName(file));
         }
     }
 
     private class MappingFileFilter implements FileFilter {
         @Override
         public boolean accept(File file) {
-            String name = Hasher.getName(file);
+            String name = Hasher.extractFileName(file);
             return file.isFile() && name.startsWith(MAPPING_FILE_PREFIX) && name.endsWith(MAPPING_FILE_SUFFIX);
         }
     }
 
     private String getMetadataPrefix(File file) {
-        String name = Hasher.getName(file);
+        String name = Hasher.extractFileName(file);
         if (name.startsWith(MAPPING_FILE_PREFIX) && name.endsWith(MAPPING_FILE_SUFFIX)) {
             name = name.substring(MAPPING_FILE_PREFIX.length());
             name = name.substring(0, name.length() - MAPPING_FILE_SUFFIX.length());
@@ -655,7 +712,7 @@ public class FileStoreImpl implements FileStore {
                 }
             });
             if (files.length > MAX_HASH_HISTORY) {
-                for (int walk = MAX_HASH_HISTORY; walk<files.length; walk++) {
+                for (int walk = MAX_HASH_HISTORY; walk < files.length; walk++) {
                     //noinspection ResultOfMethodCallIgnored
                     files[walk].delete();
                 }

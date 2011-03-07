@@ -13,6 +13,10 @@
             <string>/opt/local/var/db/mongodb</string>
             <string>--logpath</string>
             <string>/opt/local/var/log/mongodb.log</string>
+            <string>--port</string>
+            <string>27017</string>
+            <string>--replSet</string>
+            <string>delving</string>
         </array>
     </dict>
 </plist>

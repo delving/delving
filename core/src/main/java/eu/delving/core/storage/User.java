@@ -75,6 +75,7 @@ public interface User {
 
 
     public enum Role {
+        NONE,
         ROLE_USER,
         ROLE_RESEARCH_USER,
         ROLE_ADMINISTRATOR,

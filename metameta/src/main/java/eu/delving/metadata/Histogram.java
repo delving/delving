@@ -44,7 +44,6 @@ public class Histogram implements Serializable {
     private int total;
     private int storageSize;
     private Map<String, Counter> counterMap = new HashMap<String, Counter>();
-    private List<Counter> counters = new ArrayList<Counter>();
     private boolean trimmed;
 
     public Histogram(int maxStorageSize, int maxSize) {
@@ -57,7 +56,6 @@ public class Histogram implements Serializable {
         if (counter == null) {
             counterMap.put(value, counter = new Counter(value));
             storageSize += value.length();
-            counters = null;
         }
         counter.count++;
         total++;
@@ -65,6 +63,14 @@ public class Histogram implements Serializable {
 
     public int getTotal() {
         return total;
+    }
+
+    public int getMaxSize() {
+        return maxSize;
+    }
+
+    public int getMaxStorageSize() {
+        return maxStorageSize;
     }
 
     public int getSize() {
@@ -82,33 +88,30 @@ public class Histogram implements Serializable {
         return trimmed;
     }
 
-    public Collection<Counter> getCounters(boolean trim) {
-        if (counters == null) {
-            counters = new ArrayList<Counter>(counterMap.values());
-            Collections.sort(counters);
-        }
-        if (trimmed && trim) {
-            trim(); // the last values will be too recently sampled
-            return getCounters(false);
+    public Collection<Counter> getTrimmedCounters() {
+        List<Counter> counters = new ArrayList<Counter>(counterMap.values());
+        Collections.sort(counters);
+        int size = counters.size();
+        if (size > maxSize) {
+            trimmed = true;
+            for (int walk = maxSize; walk < size; walk++) { // remove excess
+                Counter c = counters.get(walk);
+                storageSize -= c.getValue().length();
+                counterMap.remove(c.getValue());
+            }
+            return counters.subList(0, maxSize);
         }
         else {
             return counters;
         }
     }
 
-    public boolean isStorageOverflow() {
-        return storageSize > maxStorageSize || counterMap.size() > (int)(maxSize * OVERSAMPLING);
+    public boolean isTooLarge() {
+        return counterMap.size() > (int) (maxSize * OVERSAMPLING);
     }
 
-    public void trim() {
-        int size = getCounters(false).size();
-        for (int walk = maxSize; walk < size; walk++) {
-            Counter c = counters.get(walk);
-            storageSize -= c.getValue().length();
-            counterMap.remove(c.getValue());
-        }
-        counters = null;
-        trimmed = true;
+    public boolean isTooMuchData() {
+        return storageSize > maxStorageSize;
     }
 
     public class Counter implements Comparable<Counter>, Serializable {

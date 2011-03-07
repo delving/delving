@@ -1,7 +1,7 @@
 /*
- * Copyright 2007 EDL FOUNDATION
+ * Copyright 2010 DELVING BV
  *
- * Licensed under the EUPL, Version 1.1 or - as soon they
+ * Licensed under the EUPL, Version 1.1 or as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * you may not use this work except in compliance with the
@@ -22,6 +22,7 @@
 package eu.delving.services.controller;
 
 import eu.delving.services.cache.image.ImageCacheService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,6 +50,9 @@ public class ServiceController {
     @Value("#{launchProperties['resolverUrlPrefix']}")
     private String resolverUrlPrefix;
 
+    @Autowired
+    private ImageCacheService imageCacheService;
+
     @RequestMapping("/resolve")
     public void resolve(
             HttpServletRequest request,
@@ -61,7 +65,7 @@ public class ServiceController {
         else {
             String[] parts = pathInfo.split("/");
             if (parts.length != 4 || !"record".equals(parts[1])) {
-                report(response, "Expected path like /resolve/record/*/*");
+                report(response, "Expected path like /resolve/object/*/*");
             }
             else {
                 String uri = resolverUrlPrefix + request.getRequestURI();
@@ -80,7 +84,7 @@ public class ServiceController {
             @RequestParam(value = "id", required = false) String url,
             @RequestParam(value = "size", required = false) String sizeString
     ) throws IOException {
-        ImageCacheService.retrieveImageFromCache(url, response);
+        imageCacheService.retrieveImageFromCache(url, response);
     }
 
     private static void report(HttpServletResponse response, String message) throws IOException {

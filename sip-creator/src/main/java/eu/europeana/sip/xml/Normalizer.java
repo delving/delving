@@ -140,12 +140,12 @@ public class Normalizer implements Runnable {
                                 fileSetOutput.getDiscardedWriter().write(record.toString());
                                 e.printStackTrace(new PrintWriter(fileSetOutput.getDiscardedWriter()));
                                 fileSetOutput.getDiscardedWriter().write("\n========================================\n");
-                                fileSetOutput.recordDiscarded();
                             }
                             catch (IOException e1) {
                                 sipModel.getUserNotifier().tellUser("Unable to write discarded record", e1);
                                 abort();
                             }
+                            fileSetOutput.recordDiscarded();
                         }
                     }
                     else {
@@ -160,13 +160,13 @@ public class Normalizer implements Runnable {
                                 fileSetOutput.getDiscardedWriter().write(record.toString());
                                 e.printStackTrace(new PrintWriter(fileSetOutput.getDiscardedWriter()));
                                 fileSetOutput.getDiscardedWriter().write("\n========================================\n");
-                                fileSetOutput.recordDiscarded();
                             }
                             catch (IOException e1) {
                                 sipModel.getUserNotifier().tellUser("Unable to write discarded record", e1);
                                 abort();
                             }
                         }
+                        fileSetOutput.recordDiscarded();
                     }
                     else {
                         listener.invalidOutput(e);

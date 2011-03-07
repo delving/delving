@@ -41,9 +41,11 @@ public interface QueryModelFactory {
 
     SolrQuery createFromUri(String europeanaUri) throws EuropeanaQueryException;
 
-    QueryResponse getSolrResponse(SolrQuery solrQuery, boolean isBriefDoc) throws EuropeanaQueryException;
+    QueryResponse getSolrResponse(SolrQuery solrQuery, boolean isBriefDoc, Map<String, String[]> params) throws EuropeanaQueryException;
 
     BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString) throws EuropeanaQueryException, UnsupportedEncodingException;
+
+    BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString, Map<String, String[]> params) throws EuropeanaQueryException, UnsupportedEncodingException;
 
     FullBeanView getFullResultView(Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException;
 

@@ -1,3 +1,24 @@
+/*
+ * Copyright 2010 DELVING BV
+ *
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
+ */
+
 package eu.europeana.core.querymodel.query;
 
 import org.apache.solr.client.solrj.SolrQuery;
@@ -13,8 +34,7 @@ public class SolrQueryUtil {
 
     private static final int RANDOM_RANGE = 1000;
 
-    public static String[] getFilterQueriesAsPhrases(SolrQuery solrQuery) {
-        String[] filterQueries = solrQuery.getFilterQueries();
+    public static String[] getFilterQueriesAsPhrases(String[] filterQueries) {
         if (filterQueries == null) {
             return null;
         }
@@ -28,6 +48,11 @@ public class SolrQueryUtil {
             }
         }
         return phraseFilterQueries.toArray(new String[phraseFilterQueries.size()]);
+    }
+
+    public static String[] getFilterQueriesAsPhrases(SolrQuery solrQuery) {
+        String[] filterQueries = solrQuery.getFilterQueries();
+        return getFilterQueriesAsPhrases(filterQueries);
     }
 
     public static String[] getFilterQueriesWithoutPhrases(SolrQuery solrQuery) {
@@ -142,7 +167,9 @@ public class SolrQueryUtil {
                 // number exception is thrown take default setting 12 (hardening parameter handling)
             }
         }
-        solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery()).toString());
+        if (solrQuery.getQueryType() == null) {
+            solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery()).toString());
+        }
 
         // set sort field
         if (params.containsKey("sortBy") && !params.get("sortBy")[0].isEmpty()) {
@@ -165,7 +192,13 @@ public class SolrQueryUtil {
         }
 
         //set constraints
-        final String[] filterQueries = params.get("qf");
+        List<String> filterQueries = new ArrayList<String>();
+        if (params.containsKey("qf")) {
+            Collections.addAll(filterQueries, params.get("qf"));
+        }
+        if (params.containsKey("qf[]")) {
+            Collections.addAll(filterQueries, params.get("qf[]"));
+        }
         if (filterQueries != null) {
             for (String filterQuery : filterQueries) {
                 solrQuery.addFilterQuery(filterQuery);

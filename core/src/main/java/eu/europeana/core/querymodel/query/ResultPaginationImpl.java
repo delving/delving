@@ -15,7 +15,7 @@ import java.util.List;
 
 
 public class ResultPaginationImpl implements ResultPagination {
-    private static final String FACET_PROMPT = "&qf=";
+    private static final String FACET_PROMPT = "&amp;qf=";
     private static final int MARGIN = 5;
     private static final int PAGE_NUMBER_THRESHOLD = 7;
     private SolrQuery solrQuery;
@@ -83,10 +83,10 @@ public class ResultPaginationImpl implements ResultPagination {
             if (filterQuery.startsWith("start=")) {
                 continue; // start page must be reset to eliminate paging errors
             }
-            url.append(filterQuery).append("&");
+            url.append(filterQuery).append("&amp;");
         }
         String urlString = url.toString().trim();
-        if (urlString.endsWith("&")) {
+        if (urlString.endsWith("&amp;")) {
             urlString = urlString.substring(0, urlString.length() - 1);
         }
         return urlString;

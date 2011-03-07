@@ -11,7 +11,6 @@ cd ../core; $INSTALL
 cd ../sip-core; $INSTALL
 
 # Packaging of War files
-cd ../portal; $PACKAGE
 cd ../services; $PACKAGE
 # Packaging the Sip-Creator Java WebStart application
 cd ../sip-creator; $PACKAGE

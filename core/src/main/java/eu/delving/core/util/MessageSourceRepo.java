@@ -1,11 +1,30 @@
+/*
+ * Copyright 2010 DELVING BV
+ *
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
+ */
+
 package eu.delving.core.util;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +34,8 @@ import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+
+import static eu.delving.core.util.MongoObject.mob;
 
 /**
  * The repository of i18n messages
@@ -29,10 +50,10 @@ public class MessageSourceRepo extends AbstractMessageSource {
     static final String DEFAULT_LANGUAGE = "en";
 
     @Autowired
-    private Mongo mongo;
+    private MongoFactory mongoFactory;
 
-    public void setMongo(Mongo mongo) {
-        this.mongo = mongo;
+    public void setMongoFactory(MongoFactory mongoFactory) {
+        this.mongoFactory = mongoFactory;
     }
 
     @Value("#{launchProperties['portal.mongo.dbName']}")
@@ -43,12 +64,12 @@ public class MessageSourceRepo extends AbstractMessageSource {
     }
 
     public Translation getTranslation(String key) {
-        DBObject object = messages().findOne(new BasicDBObject(KEY, key));
+        DBObject object = messages().findOne(mob(KEY, key));
         if (object != null) {
             return new Translation(object);
         }
         else {
-            return new Translation(new BasicDBObject(KEY, key));
+            return new Translation(mob(KEY, key));
         }
     }
 
@@ -146,6 +167,6 @@ public class MessageSourceRepo extends AbstractMessageSource {
     }
 
     private DB db() {
-        return mongo.getDB(databaseName);
+        return mongoFactory.getMongo().getDB(databaseName);
     }
 }

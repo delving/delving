@@ -1,22 +1,22 @@
 /*
- * Copyright 2007 EDL FOUNDATION
+ * Copyright 2010 DELVING BV
  *
- *  Licensed under the EUPL, Version 1.0 or as soon they
- *  will be approved by the European Commission - subsequent
- *  versions of the EUPL (the "Licence");
- *  you may not use this work except in compliance with the
- *  Licence.
- *  You may obtain a copy of the Licence at:
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
  *
- *  http://ec.europa.eu/idabc/eupl
+ * http://ec.europa.eu/idabc/eupl
  *
- *  Unless required by applicable law or agreed to in
- *  writing, software distributed under the Licence is
- *  distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *  express or implied.
- *  See the Licence for the specific language governing
- *  permissions and limitations under the Licence.
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
  */
 
 package eu.europeana.core.util.web;
@@ -149,13 +149,46 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
             }
             else if (request.getParameter("bt").equalsIgnoreCase("tlv")) {
                 userAction = UserAction.FULL_RESULT_FROM_TIME_LINE_VIEW;
-        }
+            }
         }
         log.info(
                 MessageFormat.format(
                         "[action={0}, europeana_uri={2}, query={4}, start={3}, numFound={5}, {1}]",
                         userAction, printLogAffix(request), europeanaUri,
                         startPage, originalQuery, numFound));
+    }
+
+    @Override
+    public void logApiBriefView(HttpServletRequest request, BriefBeanView briefBeanView, SolrQuery solrQuery) {
+        //TODO: finish this
+        String query = briefBeanView.getPagination().getPresentationQuery().getUserSubmittedQuery(); //
+        String queryConstraints = "";
+        if (solrQuery.getFilterQueries() != null) {
+              queryConstraints = StringUtils.join(solrQuery.getFilterQueries(), ",");
+            }
+        UserAction userAction = UserAction.API_BRIEF;
+        Map params = request.getParameterMap();
+        int pageNr = briefBeanView.getPagination().getPageNumber();
+        int nrResults = briefBeanView.getPagination().getNumFound();
+        String languageFacets = briefBeanView.getFacetLogs().get("LANGUAGE");
+        String countryFacet = briefBeanView.getFacetLogs().get("COUNTRY");
+        log.info(
+                MessageFormat.format(
+                        "[action={0}, query={1}, queryType={2}, queryConstraints=\"{3}\", page={4}, " +
+                                "numFound={5}, langFacet={6}, countryFacet={7}, {8}]",
+                        userAction,  query,solrQuery.getQueryType(), queryConstraints, pageNr,
+                        nrResults, languageFacets, countryFacet, printLogAffix(request))
+        );
+
+    }
+
+    @Override
+    public void logApiFullView(HttpServletRequest request, FullBeanView fullResultView, String europeanaUri) {
+        //TODO: finish this
+        log.info(
+                MessageFormat.format(
+                        "[action={0}, europeana_uri={1}, {2}]",
+                        UserAction.API_FULL, europeanaUri, printLogAffix(request)));
     }
 
     private String printLogAffix(HttpServletRequest request) {

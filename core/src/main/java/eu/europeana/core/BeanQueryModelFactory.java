@@ -1,7 +1,7 @@
 /*
- * Copyright 2007 EDL FOUNDATION
+ * Copyright 2010 DELVING BV
  *
- * Licensed under the EUPL, Version 1.1 or - as soon they
+ * Licensed under the EUPL, Version 1.1 or as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * you may not use this work except in compliance with the
@@ -82,12 +82,20 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     @Autowired
     private MetadataModel metadataModel;
 
+    public MetadataModel getMetadataModel() {
+        return metadataModel;
+    }
+
     public void setSolrServer(CommonsHttpSolrServer solrServer) {
         this.solrServer = solrServer;
     }
 
     @Autowired
     private QueryAnalyzer queryAnalyzer;
+
+    public QueryAnalyzer getQueryAnalyzer() {
+        return queryAnalyzer;
+    }
 
     /**
      * create solr query from http query parameters
@@ -109,21 +117,32 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     }
 
     @Override
-    public BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString) throws EuropeanaQueryException, UnsupportedEncodingException {
-        QueryResponse queryResponse = getSolrResponse(solrQuery, true);
+    public BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString, Map<String, String[]> params) throws EuropeanaQueryException, UnsupportedEncodingException {
+        QueryResponse queryResponse = getSolrResponse(solrQuery, true, params);
         return new BriefBeanViewImpl(solrQuery, queryResponse, requestQueryString);
     }
 
     @Override
+    public BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString) throws EuropeanaQueryException, UnsupportedEncodingException {
+        return getBriefResultView(solrQuery, requestQueryString, null);
+    }
+
+    @Override
     public FullBeanView getFullResultView(Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException {
-        if (params.get("uri") == null) {
+        String europeanaUri = "";
+        if (params.get("uri") != null) {
+            europeanaUri = params.get("uri")[0];
+        }
+        else if (params.get("id") != null) {
+            europeanaUri = params.get("id")[0];
+        }
+        else {
             throw new EuropeanaQueryException(QueryProblem.MALFORMED_URL.toString()); // Expected uri query parameter
         }
-        String europeanaUri = params.get("uri")[0];
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.setQuery("europeana_uri:\"" + europeanaUri + "\"");
         solrQuery.setQueryType(QueryType.MORE_LIKE_THIS_QUERY.toString());
-        return new FullBeanViewImpl(solrQuery, getSolrResponse(solrQuery, false), params);
+        return new FullBeanViewImpl(solrQuery, getSolrResponse(solrQuery, false, params), params);
     }
 
     // todo remove maybe use FullBeanView.getFullDoc instead
@@ -314,7 +333,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     }
 
     private String createFullDocUrl(String europeanaId) {
-        return MessageFormat.format("/{0}/record/{1}.html", portalName, europeanaId);
+        return MessageFormat.format("/{0}/object/{1}.html", portalName, europeanaId);
     }
 
     private class FullBeanViewImpl implements FullBeanView {
@@ -433,7 +452,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     }
 
     @Override
-    public QueryResponse getSolrResponse(SolrQuery solrQuery, boolean isBriefDoc) throws EuropeanaQueryException { // add bean to ???
+    public QueryResponse getSolrResponse(SolrQuery solrQuery, boolean isBriefDoc, Map<String, String[]> params) throws EuropeanaQueryException { // add bean to ???
         // since we make a defensive copy before the start is decremented we must do it here
         if (solrQuery.getStart() != null && solrQuery.getStart() > 0) {
             solrQuery.setStart(solrQuery.getStart() - 1);
@@ -452,23 +471,34 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             solrQuery.setFacet(true);
             solrQuery.setFacetMinCount(1);
             solrQuery.setFacetLimit(100);
-            solrQuery.setRows(12); // todo replace with annotation later
+            if (solrQuery.getRows() ==  null) {
+                solrQuery.setRows(12);
+            }
             solrQuery.addFacetField(metadataModel.getRecordDefinition().getFacetFieldStrings());
             // todo now hard-coded but these values must be retrieved from the RecordDefinition later
-            solrQuery.setFields("europeana_uri,title,europeana_object,creator,YEAR,PROVIDER,DATAPROVIDER,LANGUAGE,TYPE");
+            if (solrQuery.getFields() == null) {
+                solrQuery.setFields("europeana_uri,dc_title,europeana_object,dc_creator,europeana_year,europeana_provider," +
+                        "europeana_dataProvider,europeana_language,europeana_type,dc_description");
 //            solrQuery.setFields("*,score");
 //            solrQuery.setFields(metadataModel.getRecordDefinition().getFieldStrings());
+            }
             if (solrQuery.getQueryType().equalsIgnoreCase(QueryType.SIMPLE_QUERY.toString())) {
                 solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery()).toString());
             }
         }
-        SolrQuery dCopy = copySolrQuery(solrQuery);
+        SolrQuery dCopy = copySolrQuery(solrQuery, params);
         return getSolrResponseFromServer(dCopy, false);
     }
 
-    private SolrQuery copySolrQuery(SolrQuery solrQuery) {
+    private SolrQuery copySolrQuery(SolrQuery solrQuery, Map<String, String[]> params) {
         SolrQuery dCopy = solrQuery.getCopy();
-        dCopy.setFilterQueries(SolrQueryUtil.getFilterQueriesAsOrQueries(solrQuery, metadataModel.getRecordDefinition().getFacetMap()));
+        if (params != null && params.containsKey("hqf")) {
+            final String[] hqf_fields = SolrQueryUtil.getFilterQueriesAsPhrases(params.get("hqf"));
+            for (String hqf_field : hqf_fields) {
+                dCopy.addFilterQuery(hqf_field);
+            }
+        }
+        dCopy.setFilterQueries(SolrQueryUtil.getFilterQueriesAsOrQueries(dCopy, metadataModel.getRecordDefinition().getFacetMap()));
         return dCopy;
     }
 

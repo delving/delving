@@ -1,26 +1,27 @@
 /*
  * Copyright 2010 DELVING BV
  *
- *  Licensed under the EUPL, Version 1.0 or? as soon they
- *  will be approved by the European Commission - subsequent
- *  versions of the EUPL (the "Licence");
- *  you may not use this work except in compliance with the
- *  Licence.
- *  You may obtain a copy of the Licence at:
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
  *
- *  http://ec.europa.eu/idabc/eupl
+ * http://ec.europa.eu/idabc/eupl
  *
- *  Unless required by applicable law or agreed to in
- *  writing, software distributed under the Licence is
- *  distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *  express or implied.
- *  See the Licence for the specific language governing
- *  permissions and limitations under the Licence.
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
  */
 
 package eu.delving.services.core.impl;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -32,8 +33,7 @@ import eu.delving.services.exceptions.MappingNotFoundException;
 import eu.delving.sip.AccessKey;
 import eu.europeana.sip.core.GroovyCodeResource;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import static eu.delving.core.util.MongoObject.mob;
 
 /**
  * Allow for foreign instantiations
@@ -42,7 +42,6 @@ import java.util.concurrent.Executors;
  */
 
 public class ImplFactory {
-    private Executor executor = Executors.newSingleThreadExecutor();
     private MetaRepo metaRepo;
     private DB db;
     private MetadataModel metadataModel;
@@ -76,7 +75,10 @@ public class ImplFactory {
     }
 
     public DBCollection records(String spec) {
-        return db.getCollection(MetaRepo.RECORD_COLLECTION_PREFIX + spec);
+        final DBCollection recordsColl = db.getCollection(MetaRepo.RECORD_COLLECTION_PREFIX + spec);
+        recordsColl.ensureIndex(new BasicDBObject(MetaRepo.Record.DELETED, 1));
+        recordsColl.ensureIndex(new BasicDBObject(MetaRepo.Record.UNIQUE, 1));
+        return recordsColl;
     }
 
     public DBCollection dataSets() {
@@ -99,6 +101,13 @@ public class ImplFactory {
         return accessKey;
     }
 
+    public void removeFirstHarvestSteps(String dataSetSpec) {
+        harvestSteps().remove(mob(
+                MetaRepo.HarvestStep.PMH_REQUEST + "." + MetaRepo.PmhRequest.SET, dataSetSpec,
+                MetaRepo.HarvestStep.FIRST, true
+        ));
+    }
+
     public MetaRepo.DataSet createDataSet(DBObject object) {
         return new DataSetImpl(this, object);
     }
@@ -115,15 +124,14 @@ public class ImplFactory {
                 if (step.getErrorMessage() != null) {
                     throw new RuntimeException(step.getErrorMessage());
                 }
-                executor.execute(step.createRecordSaver());
+                step.save();
             }
         }
         else { // the step has not yet been stored
-            harvestSteps().save(step.getObject());
+            step.setFirst();
+            step.save();
             step.createRecordFetcher(getDataSet(step), key).run();
-            step.createRecordSaver().run();
-            step.getObject().put(MetaRepo.HarvestStep.FIRST_ID, step.getObject().get(MetaRepo.MONGO_ID));
-            step.createRecordSaver().run();
+            step.save();
         }
         return step;
     }

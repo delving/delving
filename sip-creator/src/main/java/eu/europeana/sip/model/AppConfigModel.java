@@ -25,6 +25,7 @@ import eu.delving.sip.AppConfig;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author Gerald de Jong <gerald@delving.eu>
@@ -32,15 +33,18 @@ import java.util.List;
 
 public class AppConfigModel {
     private AppConfig appConfig;
-    private Listener listener;
+    private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
 
     public interface Listener {
         void appConfigUpdated(AppConfig appConfig);
     }
 
-    public AppConfigModel(AppConfig appConfig, Listener listener) {
+    public AppConfigModel(AppConfig appConfig) {
         this.appConfig = appConfig;
-        this.listener = listener;
+    }
+
+    public void addListener(Listener listener) {
+        listeners.add(listener);
     }
 
     public String getServerHostPort() {
@@ -49,7 +53,7 @@ public class AppConfigModel {
 
     public void setServerHostPort(String hostPort) {
         appConfig.setServerHostPort(hostPort);
-        listener.appConfigUpdated(appConfig);
+        fireChangeEvent();
     }
 
     public String getServerUrl() {
@@ -62,7 +66,26 @@ public class AppConfigModel {
 
     public void setServerAccessKey(String key) {
         appConfig.setAccessKey(key);
-        listener.appConfigUpdated(appConfig);
+        fireChangeEvent();
+    }
+
+    public void saveConnection() {
+        appConfig.saveConnection();
+        fireChangeEvent();
+    }
+
+    public void deleteConnection() {
+        appConfig.deleteConnection();
+        fireChangeEvent();
+    }
+
+    public void selectConnection(String serverHostPort) {
+        appConfig.selectConnection(serverHostPort);
+        fireChangeEvent();
+    }
+
+    public List<AppConfig.RepositoryConnection> getRepositoryConnections() {
+        return appConfig.getRepositoryConnections();
     }
 
     public String getRecentDirectory() {
@@ -74,7 +97,7 @@ public class AppConfigModel {
             directory = directory.getParentFile();
         }
         appConfig.setRecentDirectory(directory.getAbsolutePath());
-        listener.appConfigUpdated(appConfig);
+        fireChangeEvent();
     }
 
     public String getNormalizeDirectory() {
@@ -86,7 +109,7 @@ public class AppConfigModel {
             directory = directory.getParentFile();
         }
         appConfig.setNormalizeDirectory(directory.getAbsolutePath());
-        listener.appConfigUpdated(appConfig);
+        fireChangeEvent();
     }
 
     public List<String> getActiveMetadataPrefixes() {
@@ -100,7 +123,12 @@ public class AppConfigModel {
         else {
             appConfig.removeActiveMetadataPrefix(prefix);
         }
-        listener.appConfigUpdated(appConfig);
+        fireChangeEvent();
     }
 
+    private void fireChangeEvent() {
+        for (Listener listener : listeners) {
+            listener.appConfigUpdated(appConfig);
+        }
+    }
 }

@@ -94,7 +94,7 @@ public class FactModel {
     public void clear() {
         boolean changed = false;
         for (FactDefinition factDefinition : Facts.definitions()) {
-            if (put(factDefinition, "")) {
+            if (put(factDefinition, factDefinition.defaultValue == null ? "" : factDefinition.defaultValue)) {
                 changed = true;
             }
         }
@@ -117,6 +117,9 @@ public class FactModel {
         String existing = get(factDefinition);
         if (value.equals(existing)) {
             return false;
+        }
+        if (value.isEmpty() && factDefinition.defaultValue != null) {
+            value = factDefinition.defaultValue;
         }
         factMap.put(factDefinition.name, value);
         return true;
