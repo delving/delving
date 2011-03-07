@@ -36,12 +36,15 @@ import java.util.{Properties, Map => JMap}
 import java.net.URLEncoder
 import eu.delving.sip.AccessKey
 import eu.europeana.core.util.web.ClickStreamLogger
+import org.springframework.beans.factory.annotation.Autowired
+import reflect.BeanProperty
 import eu.delving.services.exceptions.AccessKeyException
 
 class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServletResponse,
                            beanQueryModelFactory: BeanQueryModelFactory, launchProperties: Properties,
                            queryAnalyzer: QueryAnalyzer, accessKey: AccessKey, clickStreamLogger: ClickStreamLogger
                                   ) {
+
   val servicesUrl = launchProperties.getProperty("services.url")
   val portalBaseUrl = launchProperties.getProperty("portal.baseUrl")
   val restrictedApiAccess = launchProperties.getProperty("services.api.useAccessKey").toBoolean
@@ -360,6 +363,20 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
 }
 
 case class RecordLabel(name : String, fieldValue : String, multivalued : Boolean = false)
+
+
+class RichSearchAPIServiceFactory {
+
+  @Autowired @BeanProperty var beanQueryModelFactory: BeanQueryModelFactory = _
+  @Autowired @BeanProperty var launchProperties: Properties = _
+  @Autowired @BeanProperty var queryAnalyzer: QueryAnalyzer = _
+  @Autowired @BeanProperty var accessKey: AccessKey = _
+  @Autowired @BeanProperty var clickStreamLogger : ClickStreamLogger = _
+
+  def getApiResponse(request: HttpServletRequest, response: HttpServletResponse) : String = {
+    RichSearchAPIService.processRequest(request, response, beanQueryModelFactory, launchProperties, queryAnalyzer, accessKey, clickStreamLogger)
+  }
+}
 
 object RichSearchAPIService {
 

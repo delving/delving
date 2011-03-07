@@ -108,6 +108,8 @@
         <constructor-arg ref="mongoDb"/>
     </bean>
 
+    <bean id="searchAPIServiceFactory" class="eu.delving.services.search.RichSearchAPIServiceFactory"/>
+
     <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
         <property name="interceptors" ref="cslInterceptor"/>
     </bean>
