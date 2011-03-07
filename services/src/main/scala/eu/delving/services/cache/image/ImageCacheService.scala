@@ -48,8 +48,8 @@ class ImageCacheService(mongoFactory : MongoFactory) {
 
   // HttpClient Settings
   val connectionParams = new HttpConnectionManagerParams
-  connectionParams setDefaultMaxConnectionsPerHost (10)
-  connectionParams setMaxTotalConnections (200)
+  connectionParams setDefaultMaxConnectionsPerHost (15)
+  connectionParams setMaxTotalConnections (250)
   connectionParams setConnectionTimeout (2000)
   val multiThreadedHttpConnectionManager = new MultiThreadedHttpConnectionManager()
   multiThreadedHttpConnectionManager setParams (connectionParams)
