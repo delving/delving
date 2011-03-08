@@ -127,15 +127,19 @@ public class StaticKickstarter implements ResourceLoaderAware {
                                 }
                             }
                             else {
-                                log.info(String.format("Page %s is already in the static repository, so cancelling kickstart", repoPath));
-                                return;
+                                log.info(String.format("Page %s is already in the static repository, so not updating it", repoPath));
                             }
                             break;
                         case PNG:
                         case JPG:
                         case GIF:
-                            byte[] image = IOUtils.toByteArray(resource.getInputStream());
-                            staticRepo.putImage(repoPath, image);
+                            if (staticRepo.getImage(repoPath) == null) {
+                                byte[] image = IOUtils.toByteArray(resource.getInputStream());
+                                staticRepo.putImage(repoPath, image);
+                            }
+                            else {
+                                log.info(String.format("Image %s is already in the static repository, so not updating it", repoPath));
+                            }
                             break;
                         default:
                             throw new RuntimeException("Unknown resource type " + resourceType);
