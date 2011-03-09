@@ -1,22 +1,22 @@
 /*
- * Copyright 2007 EDL FOUNDATION
+ * Copyright 2010 DELVING BV
  *
- *  Licensed under the EUPL, Version 1.1 or as soon they
- *  will be approved by the European Commission - subsequent
- *  versions of the EUPL (the "Licence");
- *  you may not use this work except in compliance with the
- *  Licence.
- *  You may obtain a copy of the Licence at:
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
  *
- *  http://ec.europa.eu/idabc/eupl
+ * http://ec.europa.eu/idabc/eupl
  *
- *  Unless required by applicable law or agreed to in
- *  writing, software distributed under the Licence is
- *  distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *  express or implied.
- *  See the Licence for the specific language governing
- *  permissions and limitations under the Licence.
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
  */
 
 package eu.europeana.core.util.web;
@@ -78,9 +78,14 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
             modelAndView.addObject("portalName", portalName);
             modelAndView.addObject("portalDisplayName", portalDisplayName);
             modelAndView.addObject("portalBaseUrl", portalBaseUrl);
-            modelAndView.addObject("portalTheme", portalTheme);
             modelAndView.addObject("portalColor", portalColor);
             final QueryParamList queryParamList = FreemarkerUtil.createQueryParamList(httpServletRequest.getParameterMap());
+            if (queryParamList.hasKey("theme")) {
+                modelAndView.addObject("portalTheme", "theme/" + queryParamList.getQueryParam("theme").getFirst());
+            }
+            else {
+                modelAndView.addObject("portalTheme", portalTheme);
+            }
             modelAndView.addObject("queryParamList", queryParamList);
             modelAndView.addObject("defaultParams", queryParamList.getDefaultParamsFormatted());
             modelAndView.addObject("includedMacros", includedMacros);
