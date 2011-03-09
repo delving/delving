@@ -248,6 +248,10 @@ portal.baseUrl = http://localhost:8080
 
 portal.mongo.dbName = PoolDB
 
+# when no language is selected the languade the interface should default to
+
+portal.default.lang = en
+
 # The url used by the Portal to get images from the Thumbnail cache instead of directly from the provider websites.
 # (Currently not used.)
 
