@@ -434,7 +434,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <scala.version>2.8.1</scala.version>
-        <scalaTest.version>1.2</scalaTest.version>
+        <scalaTest.version>1.3</scalaTest.version>
     </properties>
 
 </project>
