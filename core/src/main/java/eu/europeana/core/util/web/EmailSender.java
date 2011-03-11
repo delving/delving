@@ -6,10 +6,12 @@ import freemarker.template.Template;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -28,9 +30,13 @@ public class EmailSender {
     private static final String FROM_EMAIL = "FROM_EMAIL";
     private static final String TO_EMAIL = "TO_EMAIL";
     private static final String SUBJECT = "SUBJECT";
-    private static final String TEMPLATE_PATTERN = "/email/%s.ftl";
+    private static final String THEMELESS_FTL = "/email/%s.ftl";
+    private static final String THEMED_FTL = "/email/%s/%s.ftl";
     private Logger log = Logger.getLogger(getClass());
     private JavaMailSender mailSender;
+
+    @Value("#{launchProperties['portal.theme']}")
+    private String portalTheme;
 
     @Autowired
     public void setMailSender(JavaMailSender mailSender) {
@@ -81,7 +87,17 @@ public class EmailSender {
 
         public void send() {
             try {
-                String fileString = IOUtils.toString(getClass().getResourceAsStream(String.format(TEMPLATE_PATTERN, templateName)), "UTF-8");
+                String themedResource = String.format(THEMED_FTL, portalTheme, templateName);
+                InputStream inputStream = getClass().getResourceAsStream(themedResource);
+                if (inputStream == null) {
+                    String themelessResource = String.format(THEMELESS_FTL, templateName);
+                    log.info(String.format("Did not find %s, defaulting to %s", themedResource, themelessResource));
+                    inputStream = getClass().getResourceAsStream(themelessResource);
+                }
+                if (inputStream == null) {
+                    throw new IllegalStateException(String.format("No template found named %s in theme %s", templateName, portalTheme));
+                }
+                String fileString = IOUtils.toString(inputStream, "UTF-8");
                 int divider = fileString.indexOf(DIVIDER);
                 if (divider > 0) {
                     String propertiesString = fileString.substring(0, divider);
