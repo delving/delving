@@ -11,6 +11,8 @@ import collection.mutable.HashMap
 import eu.delving.services.core.MetaRepo.PmhVerb
 import eu.delving.services.exceptions.BadArgumentException
 import eu.delving.services.core.MetaRepoImpl
+import org.scalatest.junit.JUnitRunner
+import org.junit.runner.RunWith
 
 /**
  *
@@ -18,6 +20,7 @@ import eu.delving.services.core.MetaRepoImpl
  * @since Jun 16, 2010 12:05:48 AM
  */
 
+@RunWith(classOf[JUnitRunner])
 class OaiPmhServiceSpec extends Spec with ShouldMatchers {
   val metaRepo = new MetaRepoImpl
 
