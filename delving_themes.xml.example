@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<themes>
+    <theme default="true">
+        <name>norvegiana</name>
+        <templateDir>norvegiana</templateDir>
+        <hiddenQueryFilter></hiddenQueryFilter>
+        <portalBaseUrl>norvegiana2.delving.org</portalBaseUrl>
+        <portalDisplayName>Kulturnett.no</portalDisplayName>
+        <googleAnalyticsTrackingCode></googleAnalyticsTrackingCode>
+        <addThisTrackingCode></addThisTrackingCode>
+    </theme>
+    <theme default="false">
+        <name>friesmuseum</name>
+        <templateDir>friesmuseum</templateDir>
+        <hiddenQueryFilter>DATAPROVIDER:Fries Museum</hiddenQueryFilter>
+        <portalBaseUrl>friesmuseum2.delving.org</portalBaseUrl>
+        <portalDisplayName>Fries Museum</portalDisplayName>
+        <googleAnalyticsTrackingCode></googleAnalyticsTrackingCode>
+        <addThisTrackingCode></addThisTrackingCode>
+    </theme>
+</themes>

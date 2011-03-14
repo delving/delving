@@ -23,6 +23,9 @@ package eu.europeana.core.util.web;
 
 import eu.delving.core.binding.FreemarkerUtil;
 import eu.delving.core.binding.QueryParamList;
+import eu.delving.core.util.PortalTheme;
+import eu.delving.core.util.ThemeHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -64,6 +67,9 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
     @Value("#{launchProperties['addThis.trackingCode']}")
     private String addThisTrackingCode;
 
+    @Autowired
+    private ThemeHandler themeHandler;
+
     @Resource(name = "includedMacros")
     private List<String> includedMacros;
 
@@ -79,6 +85,7 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
             modelAndView.addObject("portalDisplayName", portalDisplayName);
             modelAndView.addObject("portalBaseUrl", portalBaseUrl);
             modelAndView.addObject("portalColor", portalColor);
+            final PortalTheme defaultTheme = themeHandler.getDefaultTheme();
             final QueryParamList queryParamList = FreemarkerUtil.createQueryParamList(httpServletRequest.getParameterMap());
             if (queryParamList.hasKey("theme")) {
                 modelAndView.addObject("portalTheme", "theme/" + queryParamList.getQueryParam("theme").getFirst());

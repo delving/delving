@@ -92,6 +92,8 @@
         </constructor-arg>
     </bean>
 
+     <bean id="themeHandler" class="eu.delving.core.util.ThemeHandler"/>
+
     <util:list id="includedMacros">
     </util:list>
 
