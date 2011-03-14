@@ -72,7 +72,7 @@
             <url>http://development.delving.org:8081/nexus/content/groups/public</url>
         </repository>
         <repository>
-            <id>releases</id>
+            <id>snapshots</id>
             <name>delving</name>
             <url>http://development.delving.org:8081/nexus/content/repositories/snapshots</url>
             <snapshots>
@@ -119,6 +119,7 @@
             <plugin>
                 <groupId>org.scala-tools</groupId>
                 <artifactId>maven-scala-plugin</artifactId>
+				<version>1.0</version>
                 <executions>
                     <execution>
                         <id>compile</id>
@@ -144,6 +145,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
+				<version>2.0.2</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
