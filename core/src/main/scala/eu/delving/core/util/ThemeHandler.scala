@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 DELVING BV
+ * Copyright 2011 DELVING BV
  *
  * Licensed under the EUPL, Version 1.1 or as soon they
  * will be approved by the European Commission - subsequent
@@ -38,7 +38,9 @@ import org.springframework.beans.factory.annotation.Autowired
 class ThemeHandler {
   private val log: Logger = Logger.getLogger(getClass)
 
-  private lazy val themeList: Seq[PortalTheme] = loadThemes(System.getProperty("delving.themes"))
+  private lazy val themeList: Seq[PortalTheme] = loadThemes()
+
+  private lazy val debug = launchProperties.getProperty("debug").toBoolean
 
   def hasSingleTheme : Boolean = themeList.length == 1
 
@@ -60,27 +62,38 @@ class ThemeHandler {
 
   def getByBaseUrl(request : HttpServletRequest) : PortalTheme = getByBaseUrl(request.getRequestURI)
 
-  private[util] def loadThemes(themeFilePath : String) : Seq[PortalTheme] = {
+  def getByRequest(request : HttpServletRequest) : PortalTheme = {
+    if (hasSingleTheme) getDefaultTheme
+    else if (debug && request.getParameterMap.containsKey("theme")) getByThemeName(request.getParameter("theme"))
+    else getByBaseUrl(request)
+  }
+
+  private[util] def loadThemes() : Seq[PortalTheme] = {
+
+    def getProperty(prop : String) : String = launchProperties.getProperty(prop)
+
+    val themeFilePath = getProperty("portal.theme.file")
 
     if (themeFilePath == null) {
-//      log.fatal("Theme file path must be defined with -Ddelving.themes=/path/to/property/file")
-//      System.exit(1)
-      def getProperty(prop : String) : (String) = launchProperties.getProperty(prop)
-
-      return List[PortalTheme](PortalTheme(
-        name = getProperty("portal.theme").toString.stripPrefix("theme/"),
-        displayName = getProperty("portal.displayName"),
-        templateDir = getProperty("portal.freemarker.path"),
-        isDefault = true,
-        baseUrl = getProperty("portal.baseUrl"),
-        gaCode = getProperty("googleAnalytics.trackingCode"),
-        addThisCode = getProperty("addThis.trackingCode")
-      )).toSeq
+        log.fatal("portal.theme.file path must be defined in -Dlaunch.properties=/path/to/property/file");
+        System.exit(1);
     }
 
     def createPortalTheme(node : Node, isDefault : Boolean = false) : PortalTheme = {
       val templateDir = node \\ "templateDir"
-      def getNodeText(label : String) = (node \\ label).text
+      def getNodeText(label : String) : String = (node \\ label).text
+
+      def createEmailTarget(node: Node): EmailTarget = {
+        EmailTarget(
+          adminTo = getNodeText("adminTo"),
+          exceptionTo = getNodeText("exceptionTo"),
+          feedbackTo = getNodeText("feedbackTo"),
+          registerTo = getNodeText("registerTo"),
+          systemFrom = getNodeText("systemFrom"),
+          feedbackFrom = getNodeText("feedbackFrom")
+        )
+      }
+
       PortalTheme(
         name = getNodeText("name"),
         templateDir = getNodeText("templateDir"),
@@ -89,7 +102,10 @@ class ThemeHandler {
         baseUrl = getNodeText("portalBaseUrl"),
         displayName = getNodeText("portalDisplayName"),
         gaCode = getNodeText("googleAnalyticsTrackingCode"),
-        addThisCode = getNodeText("addThisTrackingCode")
+        addThisCode = getNodeText("addThisTrackingCode"),
+        defaultLanguage = getNodeText("defaultLanguage"),
+        colorScheme = getNodeText("colorScheme"),
+        emailTarget = createEmailTarget(node)
       )
     }
 
@@ -110,7 +126,6 @@ class ThemeHandler {
 
   @Autowired @BeanProperty var launchProperties:  Properties = _
 }
-
 case class PortalTheme (
   name : String,
   templateDir : String,
@@ -120,5 +135,34 @@ case class PortalTheme (
   displayName: String = "default",
   gaCode: String = "",
   addThisCode : String = "",
-  defaultLanguage : String = "en"
-)
+  defaultLanguage : String = "en",
+  colorScheme : String = "azure",
+  emailTarget : EmailTarget = EmailTarget()
+) {
+  def getName = name
+  def getTemplateDir = templateDir
+  def hiddenQueryFilters = hqf
+  def getBaseUrl = baseUrl
+  def getDisplayName = displayName
+  def getGaCode = gaCode
+  def getAddThisCode = addThisCode
+  def getDefaultLanguage = defaultLanguage
+  def getColorScheme = colorScheme
+  def getEmailTarget = emailTarget
+}
+
+case class EmailTarget(
+   adminTo: String = "test-user@delving.eu",
+   exceptionTo: String = "test-user@delving.eu",
+   feedbackTo: String = "test-user@delving.eu",
+   registerTo: String = "test-user@delving.eu",
+   systemFrom: String = "noreply@delving.eu",
+   feedbackFrom: String = "noreply@delving.eu"
+) {
+  def getAdminTo = adminTo
+  def getExceptionTo = exceptionTo
+  def getFeedbackTo = feedbackTo
+  def getRegisterTo = registerTo
+  def getSystemFrom = systemFrom
+  def getFeebackFrom = feedbackFrom
+}

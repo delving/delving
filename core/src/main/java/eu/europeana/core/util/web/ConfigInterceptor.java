@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 DELVING BV
+ * Copyright 2011 DELVING BV
  *
  * Licensed under the EUPL, Version 1.1 or as soon they
  * will be approved by the European Commission - subsequent
@@ -24,8 +24,7 @@ package eu.europeana.core.util.web;
 import eu.delving.core.binding.FreemarkerUtil;
 import eu.delving.core.binding.QueryParamList;
 import eu.delving.core.util.PortalTheme;
-import eu.delving.core.util.ThemeHandler;
-import org.springframework.beans.factory.annotation.Autowired;
+import eu.delving.core.util.ThemeInterceptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -49,27 +48,6 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
     @Value("#{launchProperties['portal.name']}")
     private String portalName;
 
-    @Value("#{launchProperties['portal.displayName']}")
-    private String portalDisplayName;
-
-    @Value("#{launchProperties['portal.theme']}")
-    private String portalTheme;
-
-    @Value("#{launchProperties['portal.color']}")
-    private String portalColor;
-
-    @Value("#{launchProperties['portal.baseUrl']}")
-    private String portalBaseUrl;
-
-    @Value("#{launchProperties['googleAnalytics.trackingCode']}")
-    private String googleAnalyticsTrackingCode;
-
-    @Value("#{launchProperties['addThis.trackingCode']}")
-    private String addThisTrackingCode;
-
-    @Autowired
-    private ThemeHandler themeHandler;
-
     @Resource(name = "includedMacros")
     private List<String> includedMacros;
 
@@ -77,30 +55,25 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
     @Override
     public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
         super.postHandle(httpServletRequest, httpServletResponse, o, modelAndView);
+        final PortalTheme theme = ThemeInterceptor.getTheme();
         if (modelAndView != null && !modelAndView.getViewName().startsWith("redirect:")) {
             modelAndView.addObject("debug", Boolean.valueOf(debug));
             modelAndView.addObject("interfaceLanguage", ControllerUtil.getLocale(httpServletRequest));
             modelAndView.addObject("cacheUrl", cacheUrl);
             modelAndView.addObject("portalName", portalName);
-            modelAndView.addObject("portalDisplayName", portalDisplayName);
-            modelAndView.addObject("portalBaseUrl", portalBaseUrl);
-            modelAndView.addObject("portalColor", portalColor);
-            final PortalTheme defaultTheme = themeHandler.getDefaultTheme();
+            modelAndView.addObject("portalDisplayName", theme.getDisplayName());
+            modelAndView.addObject("portalBaseUrl", theme.getBaseUrl());
+            modelAndView.addObject("portalColor", theme.getColorScheme());
+            modelAndView.addObject("portalTheme", "theme/" + theme.getName());
             final QueryParamList queryParamList = FreemarkerUtil.createQueryParamList(httpServletRequest.getParameterMap());
-            if (queryParamList.hasKey("theme")) {
-                modelAndView.addObject("portalTheme", "theme/" + queryParamList.getQueryParam("theme").getFirst());
-            }
-            else {
-                modelAndView.addObject("portalTheme", portalTheme);
-            }
             modelAndView.addObject("queryParamList", queryParamList);
             modelAndView.addObject("defaultParams", queryParamList.getDefaultParamsFormatted());
             modelAndView.addObject("includedMacros", includedMacros);
-            if (!googleAnalyticsTrackingCode.isEmpty()) {
-                modelAndView.addObject("googleAnalyticsTrackingCode", googleAnalyticsTrackingCode);
+            if (!theme.getGaCode().isEmpty()) {
+                modelAndView.addObject("googleAnalyticsTrackingCode", theme.getGaCode());
             }
-            if (!addThisTrackingCode.isEmpty()) {
-                modelAndView.addObject("addThisTrackingCode", addThisTrackingCode);
+            if (!theme.getAddThisCode().isEmpty()) {
+                modelAndView.addObject("addThisTrackingCode", theme.getAddThisCode());
             }
         }
     }

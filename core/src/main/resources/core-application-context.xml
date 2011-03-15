@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2010 DELVING BV
+  ~ Copyright 2011 DELVING BV
   ~
   ~ Licensed under the EUPL, Version 1.1 or as soon they
   ~ will be approved by the European Commission - subsequent
@@ -51,22 +51,13 @@
                 <value>smtp.password</value>
                 <value>trigger.startDelay</value>
                 <value>trigger.repeatInterval</value>
-                <value>admin.to</value>
-                <value>system.from</value>
-                <value>feedback.to</value>
-                <value>exception.to</value>
-                <value>feedback.from</value>
                 <value>debug</value>
                 <value>debug.freemarker</value>
                 <value>log4j.xml</value>
                 <value>portal.name</value>
-                <value>portal.displayName</value>
+                <value>portal.theme.file</value>
                 <value>portal.freemarker.path</value>
-                <value>portal.theme</value>
-                <value>portal.color</value>
-                <value>portal.baseUrl</value>
                 <value>portal.mongo.dbName</value>
-                <value>portal.default.lang</value>
                 <value>cacheUrl</value>
                 <value>services.url</value>
                 <value>services.password</value>
@@ -92,7 +83,7 @@
         </constructor-arg>
     </bean>
 
-     <bean id="themeHandler" class="eu.delving.core.util.ThemeHandler"/>
+    <bean id="themeHandler" class="eu.delving.core.util.ThemeHandler"/>
 
     <util:list id="includedMacros">
     </util:list>

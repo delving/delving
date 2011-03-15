@@ -1,20 +1,37 @@
+/*
+ * Copyright 2011 DELVING BV
+ *
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
+ */
+
 package eu.europeana.core.util.web;
 
+import eu.delving.core.util.ThemeInterceptor;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
 import java.text.MessageFormat;
 import java.util.Map;
 import java.util.TreeMap;
@@ -34,9 +51,6 @@ public class EmailSender {
     private static final String THEMED_FTL = "/email/%s/%s.ftl";
     private Logger log = Logger.getLogger(getClass());
     private JavaMailSender mailSender;
-
-    @Value("#{launchProperties['portal.theme']}")
-    private String portalTheme;
 
     @Autowired
     public void setMailSender(JavaMailSender mailSender) {
@@ -63,6 +77,7 @@ public class EmailSender {
         private static final String DIVIDER = "\n.\n";
         private Map<String, Object> model = new TreeMap<String, Object>();
         private String templateName;
+        private final String portalTheme = "theme/" + ThemeInterceptor.getTheme().getName();
 
         private EmailImpl(String templateName) {
             this.templateName = templateName;

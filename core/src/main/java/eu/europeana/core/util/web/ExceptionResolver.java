@@ -1,26 +1,29 @@
 /*
- * Copyright 2007 EDL FOUNDATION
+ * Copyright 2011 DELVING BV
  *
- *  Licensed under the EUPL, Version 1.1 or as soon they
- *  will be approved by the European Commission - subsequent
- *  versions of the EUPL (the "Licence");
- *  you may not use this work except in compliance with the
- *  Licence.
- *  You may obtain a copy of the Licence at:
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
  *
- *  http://ec.europa.eu/idabc/eupl
+ * http://ec.europa.eu/idabc/eupl
  *
- *  Unless required by applicable law or agreed to in
- *  writing, software distributed under the Licence is
- *  distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *  express or implied.
- *  See the Licence for the specific language governing
- *  permissions and limitations under the Licence.
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
  */
 
 package eu.europeana.core.util.web;
 
+import eu.delving.core.util.EmailTarget;
+import eu.delving.core.util.PortalTheme;
+import eu.delving.core.util.ThemeInterceptor;
 import eu.europeana.core.querymodel.query.EuropeanaQueryException;
 import eu.europeana.core.querymodel.query.QueryProblem;
 import org.apache.log4j.Logger;
@@ -58,21 +61,6 @@ public class ExceptionResolver implements HandlerExceptionResolver {
     @Value("#{launchProperties['portal.name']}")
     private String portalName;
 
-    @Value("#{launchProperties['portal.theme']}")
-    private String portalTheme;
-
-    @Value("#{launchProperties['portal.color']}")
-    private String portalColor;
-
-    @Value("#{launchProperties['system.from']}")
-    private String fromEmail;
-
-    @Value("#{launchProperties['exception.to']}")
-    private String toEmail;
-
-    @Value("#{launchProperties['portal.displayName']}")
-    private String portalDisplayName;
-
     @Resource(name = "includedMacros")
     private List<String> includedMacros;
 
@@ -81,6 +69,8 @@ public class ExceptionResolver implements HandlerExceptionResolver {
 
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object object, Exception exception) {
+        final PortalTheme theme = ThemeInterceptor.getTheme();
+        final EmailTarget emailTarget = theme.getEmailTarget();
         if (request.getRequestURI().endsWith(".ajax")) {
             return ajaxFailure(request, response, exception);
         }
@@ -97,17 +87,17 @@ public class ExceptionResolver implements HandlerExceptionResolver {
                 if (!debugMode) { // don't send email in debugMode
                     emailSender.
                             create("exception").
-                            setFrom(fromEmail).
-                            setTo(toEmail).
+                            setFrom(emailTarget.getSystemFrom()).
+                            setTo(emailTarget.getExceptionTo()).
                             setSubject(queryProblem.getFragment()).
                             set("hostName", request.getServerName()).
                             set("request", ControllerUtil.formatFullRequestUrl(request)).
                             set("stackTrace", stackTrace).
                             set("cacheUrl", cacheUrl).
                             set("portalName", portalName).
-                            set("portalTheme", portalTheme).
-                            set("portalColor", portalColor).
-                            set("portalDisplayName", portalDisplayName).
+                            set("portalTheme", theme.getName()).
+                            set("portalColor", theme.getColorScheme()).
+                            set("portalDisplayName", theme.getDisplayName()).
                             set("agent", request.getHeader("User-Agent")).
                             set("referer", request.getHeader("referer")).
                             send();
@@ -123,9 +113,9 @@ public class ExceptionResolver implements HandlerExceptionResolver {
             mav.addObject("interfaceLanguage", ControllerUtil.getLocale(request));
             mav.addObject("cacheUrl", cacheUrl);
             mav.addObject("portalName", portalName);
-            mav.addObject("portalTheme", portalTheme);
-            mav.addObject("portalColor", portalColor);
-            mav.addObject("portalDisplayName", portalDisplayName);
+            mav.addObject("portalTheme", theme.getName());
+            mav.addObject("portalColor", theme.getColorScheme());
+            mav.addObject("portalDisplayName", theme.getDisplayName());
             mav.addObject("queryProblem", queryProblem);
             mav.addObject("exception", exception);
             mav.addObject("stackTrace", stackTrace);

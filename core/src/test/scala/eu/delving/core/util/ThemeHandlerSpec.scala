@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 DELVING BV
+ * Copyright 2011 DELVING BV
  *
  * Licensed under the EUPL, Version 1.1 or as soon they
  * will be approved by the European Commission - subsequent
@@ -23,9 +23,9 @@ package eu.delving.core.util
 
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.Spec
-import eu.delving.core.util.ThemeHandler
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
+import java.util.{Arrays, Properties}
 
 /**
  *
@@ -39,18 +39,19 @@ class ThemeHandlerSpec extends Spec with ShouldMatchers {
   describe("A ThemeHandler") {
       
       describe("(when receiving a path to the theme file)") {
-          System.setProperty("delving.themes", "delving_themes.xml.example")
-          val themeHandler = new ThemeHandler()
+        System.setProperty("launch.properties", classOf[ThemeHandlerSpec].getResource("/mock-launch.properties").getFile)
+        val launchProperties: Properties = new LaunchProperties(Arrays.asList("portal.theme.file"))
+        val themeHandler = new ThemeHandler()
+        themeHandler.setLaunchProperties(launchProperties)
 
-// todo: fix this test
-//        it("should load it the themes from the property path") {
-//          themeHandler.hasSingleTheme should be (false)
-//        }
-//
-//        it("should give access to the themes") {
-//          themeHandler.getDefaultTheme.name should equal ("norvegiana")
-//          themeHandler.getByBaseUrl("http://friesmuseum2.delving.org").name should equal ("friesmuseum")
-//        }
+        it("should load it the themes from the property path") {
+          themeHandler.hasSingleTheme should be (false)
+        }
+
+        it("should give access to the themes") {
+          themeHandler.getDefaultTheme.name should equal ("norvegiana")
+          themeHandler.getByBaseUrl("http://localhost").name should equal ("friesmuseum")
+        }
 
         it ("fake") {
           true should be (true)
