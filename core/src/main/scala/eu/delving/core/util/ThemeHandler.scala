@@ -111,6 +111,14 @@ class ThemeHandler {
   @Autowired @BeanProperty var launchProperties:  Properties = _
 }
 
-case class PortalTheme (name : String, templateDir : String, isDefault : Boolean = false, hqf : String = "",
-                        baseUrl : String = "", displayName: String = "default", gaCode: String = "",
-                        addThisCode : String = "")
+case class PortalTheme (
+  name : String,
+  templateDir : String,
+  isDefault : Boolean = false,
+  hqf : String = "",
+  baseUrl : String = "",
+  displayName: String = "default",
+  gaCode: String = "",
+  addThisCode : String = "",
+  defaultLanguage : String = "en"
+)
