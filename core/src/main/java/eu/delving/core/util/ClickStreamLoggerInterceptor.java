@@ -1,5 +1,6 @@
 package eu.delving.core.util;
 
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -12,10 +13,19 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ClickStreamLoggerInterceptor extends HandlerInterceptorAdapter {
 
+    private static ThreadLocal<DateTime> dateTimeThreadLocal = new ThreadLocal<DateTime>();
+
+    public static long getTimeElapsed() {
+        if (dateTimeThreadLocal.get() == null) {
+            Logger.getLogger(ClickStreamLoggerInterceptor.class).error("This interceptor must be installed!");
+            return -1;
+        }
+        return System.currentTimeMillis() - dateTimeThreadLocal.get().getMillis();
+    }
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        request.setAttribute("startRequestDateTime", new DateTime());
-        // Proceed in any case.
+        dateTimeThreadLocal.set(new DateTime());
         return true;
     }
 }

@@ -22,6 +22,7 @@
 package eu.europeana.core.util.web;
 
 import eu.delving.core.storage.User;
+import eu.delving.core.util.ClickStreamLoggerInterceptor;
 import eu.delving.domain.Language;
 import eu.europeana.core.querymodel.query.BriefBeanView;
 import eu.europeana.core.querymodel.query.DocIdWindowPager;
@@ -226,20 +227,11 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
                 }
             }
         }
-        DateTime now = new DateTime();
-
-        long timeElapsed = 0;
-        try {
-            final DateTime startRequestDateTime = (DateTime) request.getAttribute("startRequestDateTime");
-            timeElapsed = now.getMillis() - startRequestDateTime.getMillis();
-        } catch (Exception e) {
-            log.error("Unable to get startRequestTime from HttpServletRequest. Probably missing the cslInterceptor");
-        }
         return MessageFormat.format(
                 "userId={0}, lang={1}, req={4}, date={2}, ip={3}, user-agent={5}, referer={6}, utma={8}, " +
                         "utmb={9}, utmc={10}, v={7}, duration={11}, langCookie={12}",
-                userId, language, now, ip, reqUrl, userAgent, referer, VERSION, utma, utmb, utmc,
-                timeElapsed, languageCookie);
+                userId, language, new DateTime(), ip, reqUrl, userAgent, referer, VERSION, utma, utmb, utmc,
+                ClickStreamLoggerInterceptor.getTimeElapsed(), languageCookie);
     }
 
     private static String getRequestUrl(HttpServletRequest request) {
