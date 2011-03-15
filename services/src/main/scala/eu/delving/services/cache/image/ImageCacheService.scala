@@ -155,12 +155,11 @@ class ImageCacheService(mongoFactory : MongoFactory) {
     response.setStatus(404)
     response.setContentType("text/xml")
     response.setCharacterEncoding("UTF-8")
-    response.getWriter.write(format("""
-    <?xml encoding="utf-8"?>
+    response.getWriter.write(
+   format("""<?xml encoding="utf-8"?>
     <error>
       <message>Unable to retrieve your image (%s) through the CacheProxy</message>
-    </error>
-    """, url))
+    </error> """, url))
     response.getWriter.close
     response
   }
