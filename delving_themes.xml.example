@@ -37,6 +37,7 @@
         <registerTo>username@email.com</registerTo>
         <systemFrom>noreply@delving.eu</systemFrom>
         <feedbackFrom>noreply@delving.eu</feedbackFrom>
+        <solrSelectUrl>http://localhost:8983/solr</solrSelectUrl>
     </theme>
     <theme default="false">
         <name>friesmuseum</name>
@@ -54,5 +55,6 @@
         <registerTo>username@email.com</registerTo>
         <systemFrom>noreply@delving.eu</systemFrom>
         <feedbackFrom>noreply@delving.eu</feedbackFrom>
+        <solrSelectUrl>http://localhost:8983/solr</solrSelectUrl>
     </theme>
 </themes>
