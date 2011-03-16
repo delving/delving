@@ -25,6 +25,7 @@ import eu.delving.core.binding.FreemarkerUtil;
 import eu.delving.core.binding.QueryParamList;
 import eu.delving.core.util.PortalTheme;
 import eu.delving.core.util.ThemeInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -48,6 +49,9 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
     @Resource(name = "includedMacros")
     private List<String> includedMacros;
 
+    @Autowired
+    private FreemarkerUtil freeMarkerUtil;
+
     @SuppressWarnings({"unchecked"})
     @Override
     public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
@@ -66,6 +70,7 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
             modelAndView.addObject("queryParamList", queryParamList);
             modelAndView.addObject("defaultParams", queryParamList.getDefaultParamsFormatted());
             modelAndView.addObject("includedMacros", includedMacros);
+            modelAndView.addObject("pageGrabber", freeMarkerUtil);
             if (!theme.getGaCode().isEmpty()) {
                 modelAndView.addObject("googleAnalyticsTrackingCode", theme.getGaCode());
             }
