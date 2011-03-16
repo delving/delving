@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2011 Delving B.V.
+  ~ Copyright 2011 DELVING BV
   ~
-  ~ Licensed under the EUPL, Version 1.1 or as soon they
+  ~ Licensed under the EUPL, Version 1.1 or as soon they
   ~ will be approved by the European Commission - subsequent
   ~ versions of the EUPL (the "Licence");
   ~ you may not use this work except in compliance with the
@@ -69,7 +69,7 @@
     <parent>
         <groupId>eu.delving</groupId>
         <artifactId>parent</artifactId>
-        <version>0.2.4</version>
+        <version>0.2.5</version>
     </parent>
 
     <build>

@@ -21,6 +21,8 @@
 
 package eu.europeana.core.util.web;
 
+import eu.delving.core.binding.FreemarkerUtil;
+import eu.delving.core.binding.QueryParamList;
 import eu.delving.core.util.EmailTarget;
 import eu.delving.core.util.PortalTheme;
 import eu.delving.core.util.ThemeInterceptor;
@@ -60,6 +62,9 @@ public class ExceptionResolver implements HandlerExceptionResolver {
 
     @Value("#{launchProperties['portal.name']}")
     private String portalName;
+
+    @Autowired
+    private FreemarkerUtil freeMarkerUtil;
 
     @Resource(name = "includedMacros")
     private List<String> includedMacros;
@@ -111,15 +116,19 @@ public class ExceptionResolver implements HandlerExceptionResolver {
             ModelAndView mav = new ModelAndView("exception");
             mav.addObject("debug", debugMode);
             mav.addObject("interfaceLanguage", ControllerUtil.getLocale(request));
-            mav.addObject("cacheUrl", cacheUrl);
+            mav.addObject("cacheUrl", theme.getCacheUrl());
             mav.addObject("portalName", portalName);
-            mav.addObject("portalTheme", theme.getName());
+            mav.addObject("portalTheme", "theme/" + theme.getName());
             mav.addObject("portalColor", theme.getColorScheme());
             mav.addObject("portalDisplayName", theme.getDisplayName());
             mav.addObject("queryProblem", queryProblem);
             mav.addObject("exception", exception);
             mav.addObject("stackTrace", stackTrace);
             mav.addObject("includedMacros", includedMacros);
+            final QueryParamList queryParamList = FreemarkerUtil.createQueryParamList(request.getParameterMap());
+            mav.addObject("queryParamList", queryParamList);
+            mav.addObject("defaultParams", queryParamList.getDefaultParamsFormatted());
+            mav.addObject("pageGrabber", freeMarkerUtil);
             return mav;
         }
     }
