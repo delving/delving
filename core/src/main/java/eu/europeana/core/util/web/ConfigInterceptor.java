@@ -42,9 +42,6 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
     @Value("#{launchProperties['debug']}")
     private String debug;
 
-    @Value("#{launchProperties['cacheUrl']}")
-    private String cacheUrl;
-
     @Value("#{launchProperties['portal.name']}")
     private String portalName;
 
@@ -59,7 +56,7 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
         if (modelAndView != null && !modelAndView.getViewName().startsWith("redirect:")) {
             modelAndView.addObject("debug", Boolean.valueOf(debug));
             modelAndView.addObject("interfaceLanguage", ControllerUtil.getLocale(httpServletRequest));
-            modelAndView.addObject("cacheUrl", cacheUrl);
+            modelAndView.addObject("cacheUrl", theme.getCacheUrl());
             modelAndView.addObject("portalName", portalName);
             modelAndView.addObject("portalDisplayName", theme.getDisplayName());
             modelAndView.addObject("portalBaseUrl", theme.getBaseUrl());
