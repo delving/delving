@@ -126,6 +126,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
             mav.addObject("cacheUrl", theme.getCacheUrl());
             mav.addObject("portalName", portalName);
             mav.addObject("portalTheme", "theme/" + theme.getName());
+            mav.addObject("portalThemeName", theme.getName());
             mav.addObject("portalColor", theme.getColorScheme());
             mav.addObject("portalDisplayName", theme.getDisplayName());
             mav.addObject("queryProblem", queryProblem);

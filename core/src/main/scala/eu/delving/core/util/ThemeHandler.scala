@@ -40,7 +40,7 @@ class ThemeHandler {
 
   private lazy val themeList: Seq[PortalTheme] = loadThemes()
 
-  private lazy val debug = launchProperties.getProperty("debug").toBoolean
+  private lazy val debug = launchProperties.getProperty("debug").trim.toBoolean
 
   def hasSingleTheme : Boolean = themeList.length == 1
 
@@ -70,7 +70,7 @@ class ThemeHandler {
 
   private[util] def loadThemes() : Seq[PortalTheme] = {
 
-    def getProperty(prop : String) : String = launchProperties.getProperty(prop)
+    def getProperty(prop : String) : String = launchProperties.getProperty(prop).trim
 
     val themeFilePath = getProperty("portal.theme.file")
 
