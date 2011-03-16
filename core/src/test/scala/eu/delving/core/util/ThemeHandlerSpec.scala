@@ -50,7 +50,7 @@ class ThemeHandlerSpec extends Spec with ShouldMatchers {
 
         it("should give access to the themes") {
           themeHandler.getDefaultTheme.name should equal ("norvegiana")
-          themeHandler.getByBaseUrl("http://localhost").name should equal ("friesmuseum")
+          themeHandler.getByBaseUrl("http://localhost").name should equal ("norvegiana")
         }
 
         it ("fake") {
