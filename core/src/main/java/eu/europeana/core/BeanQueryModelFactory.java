@@ -508,7 +508,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         }
         final PortalTheme theme = ThemeInterceptor.getTheme();
         if (theme != null && !theme.getHiddenQueryFilters().isEmpty()) {
-            final String[] themeHqf = theme.getHiddenQueryFilters().split(",");
+             final String[] themeHqf = SolrQueryUtil.getFilterQueriesAsPhrases(theme.getHiddenQueryFilters().split(","));
             for (String qf : themeHqf) {
                 dCopy.addFilterQuery(qf);
             }
