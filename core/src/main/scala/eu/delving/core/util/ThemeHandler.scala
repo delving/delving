@@ -101,6 +101,7 @@ class ThemeHandler {
         hqf = getNodeText("hiddenQueryFilter"),
         baseUrl = getNodeText("portalBaseUrl"),
         solrSelectUrl = getNodeText("solrSelectUrl"),
+        cacheUrl = getNodeText("cacheUrl"),
         displayName = getNodeText("portalDisplayName"),
         gaCode = getNodeText("googleAnalyticsTrackingCode"),
         addThisCode = getNodeText("addThisTrackingCode"),
@@ -139,6 +140,7 @@ case class PortalTheme (
   defaultLanguage : String = "en",
   colorScheme : String = "azure",
   solrSelectUrl : String = "http://localhost:8983/solr",
+  cacheUrl : String = "http://localhost:8983/services/image?",
   emailTarget : EmailTarget = EmailTarget()
 ) {
   def getName = name
@@ -146,6 +148,7 @@ case class PortalTheme (
   def getHiddenQueryFilters = hqf
   def getSolrSelectUrl = solrSelectUrl
   def getBaseUrl = baseUrl
+  def getCacheUrl = cacheUrl
   def getDisplayName = displayName
   def getGaCode = gaCode
   def getAddThisCode = addThisCode

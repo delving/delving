@@ -1,3 +1,24 @@
+/*
+ * Copyright 2011 DELVING BV
+ *
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
+ */
+
 package eu.europeana.core.querymodel.query;
 
 import eu.delving.core.binding.SolrBindingService;
@@ -41,6 +62,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     private String siwa;
     private String tab;
     private String sortBy;
+    private String theme;
     private List<Breadcrumb> breadcrumbs;
     private int fullDocUriInt;
     private int numFound;
@@ -101,6 +123,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         this.format = fetchParameter(httpParameters, "format", "");
         this.siwa = fetchParameter(httpParameters, "siwa", "");
         this.sortBy = fetchParameter(httpParameters, "sortBy", "");
+        this.theme = fetchParameter(httpParameters, "theme", "");
         if (this.pageId != null) {
             this.setReturnToResults(httpParameters);
         }
@@ -211,6 +234,9 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         }
         if (!sortBy.isEmpty()) {
             out.append("&amp;sortBy=").append(sortBy);
+        }
+        if (!theme.isEmpty()) {
+            out.append("&amp;theme=").append(theme);
         }
         out.append("&amp;rtr=true");
         returnToResults = out.toString();
