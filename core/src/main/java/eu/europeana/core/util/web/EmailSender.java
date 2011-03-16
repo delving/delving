@@ -21,6 +21,8 @@
 
 package eu.europeana.core.util.web;
 
+import eu.delving.core.util.PortalTheme;
+import eu.delving.core.util.ThemeHandler;
 import eu.delving.core.util.ThemeInterceptor;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
@@ -53,6 +55,9 @@ public class EmailSender {
     private JavaMailSender mailSender;
 
     @Autowired
+    private ThemeHandler themeHandler;
+
+    @Autowired
     public void setMailSender(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
@@ -77,7 +82,6 @@ public class EmailSender {
         private static final String DIVIDER = "\n.\n";
         private Map<String, Object> model = new TreeMap<String, Object>();
         private String templateName;
-        private final String portalTheme = "theme/" + ThemeInterceptor.getTheme().getName();
 
         private EmailImpl(String templateName) {
             this.templateName = templateName;
@@ -102,6 +106,11 @@ public class EmailSender {
 
         public void send() {
             try {
+                PortalTheme theme = ThemeInterceptor.getTheme();
+                if (theme == null ) {
+                    theme = themeHandler.getDefaultTheme();
+                }
+                String portalTheme = "theme/" + theme.getName();
                 String themedResource = String.format(THEMED_FTL, portalTheme, templateName);
                 InputStream inputStream = getClass().getResourceAsStream(themedResource);
                 if (inputStream == null) {
