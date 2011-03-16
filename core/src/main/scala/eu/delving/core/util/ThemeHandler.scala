@@ -55,12 +55,12 @@ class ThemeHandler {
   }
 
   def getByBaseUrl(baseUrl : String) : PortalTheme = {
-    val theme = themeList.filter(_.baseUrl.equalsIgnoreCase(baseUrl.replaceFirst("http[s]?://", "")))
+    val theme = themeList.filter(_.baseUrl.equalsIgnoreCase(baseUrl))
     if (!theme.isEmpty) theme.head
     else getDefaultTheme
   }
 
-  def getByBaseUrl(request : HttpServletRequest) : PortalTheme = getByBaseUrl(request.getRequestURI)
+  def getByBaseUrl(request : HttpServletRequest) : PortalTheme = getByBaseUrl(request.getServerName)
 
   def getByRequest(request : HttpServletRequest) : PortalTheme = {
     if (hasSingleTheme) getDefaultTheme
