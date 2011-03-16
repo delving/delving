@@ -66,6 +66,7 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
             modelAndView.addObject("portalBaseUrl", theme.getBaseUrl());
             modelAndView.addObject("portalColor", theme.getColorScheme());
             modelAndView.addObject("portalTheme", "theme/" + theme.getName());
+            modelAndView.addObject("portalThemeName", theme.getName());
             final QueryParamList queryParamList = FreemarkerUtil.createQueryParamList(httpServletRequest.getParameterMap());
             modelAndView.addObject("queryParamList", queryParamList);
             modelAndView.addObject("defaultParams", queryParamList.getDefaultParamsFormatted());
