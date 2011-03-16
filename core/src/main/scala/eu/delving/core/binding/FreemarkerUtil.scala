@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 DELVING BV
+ * Copyright 2011 DELVING BV
  *
  * Licensed under the EUPL, Version 1.1 or as soon they
  * will be approved by the European Commission - subsequent
@@ -21,9 +21,14 @@
 
 package eu.delving.core.binding
 
-import java.util. {List => JList, Map => JMap}
 import scala.collection.JavaConversions._
 import scala.collection.mutable.Map
+import org.springframework.beans.factory.annotation.Autowired
+import reflect.BeanProperty
+import eu.delving.core.storage.StaticRepo
+import eu.delving.core.storage.StaticRepo.Page
+import java.util.{Locale, List => JList, Map => JMap}
+import java.lang.String
 
 /**
  * Example Freemarker usage:
@@ -38,8 +43,25 @@ import scala.collection.mutable.Map
  * @since 1/2/11 1:11 PM  
  */
 
+class FreemarkerUtil {
+
+  def getStaticPage(pagePath : String, locale : String) =  StaticPage(staticPageRepo.getPage(pagePath), locale)
+
+  @Autowired @BeanProperty var staticPageRepo:  StaticRepo = _
+}
+
 object FreemarkerUtil {
   def createQueryParamList(params: JMap[String, Array[String]]) = QueryParamList(asScalaMap(params))
+}
+
+case class StaticPage(page : Page, language : String = "en") {
+  val locale: Locale = new Locale(language)
+  def getContent = {
+    val content: String = page.getContent(locale)
+    if (!content.startsWith("<a href")) content
+    else ""
+  }
+  def getTitle = page.getTitle(locale)
 }
 
 case class QueryParamList(params: Map[String, Array[String]]) {
