@@ -25,6 +25,7 @@ import eu.delving.core.binding.FreemarkerUtil;
 import eu.delving.core.binding.QueryParamList;
 import eu.delving.core.util.EmailTarget;
 import eu.delving.core.util.PortalTheme;
+import eu.delving.core.util.ThemeHandler;
 import eu.delving.core.util.ThemeInterceptor;
 import eu.europeana.core.querymodel.query.EuropeanaQueryException;
 import eu.europeana.core.querymodel.query.QueryProblem;
@@ -70,11 +71,17 @@ public class ExceptionResolver implements HandlerExceptionResolver {
     private List<String> includedMacros;
 
     @Autowired
+    private ThemeHandler themeHandler;
+
+    @Autowired
     private ClickStreamLogger clickStreamLogger;
 
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object object, Exception exception) {
-        final PortalTheme theme = ThemeInterceptor.getTheme();
+        PortalTheme theme = ThemeInterceptor.getTheme();
+        if (theme == null) {
+            theme = themeHandler.getDefaultTheme();
+        }
         final EmailTarget emailTarget = theme.getEmailTarget();
         if (request.getRequestURI().endsWith(".ajax")) {
             return ajaxFailure(request, response, exception);
@@ -108,7 +115,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
                             send();
                 }
                 else {
-                    log.error(stackTrace);
+                    log.error(stackTrace + queryProblem);
                 }
             }
             String errorMessage = MessageFormat.format("errorMessage={0}", queryProblem.toString());

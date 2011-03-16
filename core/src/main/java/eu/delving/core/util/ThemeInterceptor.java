@@ -21,6 +21,7 @@
 
 package eu.delving.core.util;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -41,6 +42,10 @@ public class ThemeInterceptor extends HandlerInterceptorAdapter {
     private ThemeHandler themeHandler;
 
     public static PortalTheme getTheme() {
+        if (themeThreadLocal.get() == null) {
+            Logger.getLogger(ThemeInterceptor.class).error("This interceptor must be installed!");
+            return null;
+        }
         return themeThreadLocal.get();
     }
 
