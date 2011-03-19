@@ -72,6 +72,7 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
             modelAndView.addObject("defaultParams", queryParamList.getDefaultParamsFormatted());
             modelAndView.addObject("includedMacros", includedMacros);
             modelAndView.addObject("pageGrabber", freeMarkerUtil);
+            modelAndView.addObject("homePage", theme.getHomePage());
             if (!theme.getGaCode().isEmpty()) {
                 modelAndView.addObject("googleAnalyticsTrackingCode", theme.getGaCode());
             }

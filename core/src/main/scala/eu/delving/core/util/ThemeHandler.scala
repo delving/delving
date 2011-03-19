@@ -107,7 +107,8 @@ class ThemeHandler {
         addThisCode = getNodeText("addThisTrackingCode"),
         defaultLanguage = getNodeText("defaultLanguage"),
         colorScheme = getNodeText("colorScheme"),
-        emailTarget = createEmailTarget(node)
+        emailTarget = createEmailTarget(node) ,
+        homePage = getNodeText("homePage")
       )
     }
 
@@ -141,7 +142,8 @@ case class PortalTheme (
   colorScheme : String = "azure",
   solrSelectUrl : String = "http://localhost:8983/solr",
   cacheUrl : String = "http://localhost:8983/services/image?",
-  emailTarget : EmailTarget = EmailTarget()
+  emailTarget : EmailTarget = EmailTarget(),
+  homePage : String = ""
 ) {
   def getName = name
   def getTemplateDir = templateDir
@@ -155,6 +157,7 @@ case class PortalTheme (
   def getDefaultLanguage = defaultLanguage
   def getColorScheme = colorScheme
   def getEmailTarget = emailTarget
+  def getHomePage = homePage
 }
 
 case class EmailTarget(
