@@ -39,6 +39,8 @@
         <feedbackFrom>noreply@delving.eu</feedbackFrom>
         <solrSelectUrl>http://localhost:8983/solr</solrSelectUrl>
         <cacheUrl>http://localhost:8983/services/image?</cacheUrl>
+        <homePage></homePage>
+        <localiseQueryString>false</localiseQueryString>
     </theme>
     <theme default="false">
         <name>friesmuseum</name>
@@ -58,5 +60,7 @@
         <feedbackFrom>noreply@delving.eu</feedbackFrom>
         <solrSelectUrl>http://localhost:8983/solr</solrSelectUrl>
         <cacheUrl>http://localhost:8983/services/image?</cacheUrl>
+        <homePage></homePage>
+        <localiseQueryString>false</localiseQueryString>
     </theme>
 </themes>
