@@ -191,8 +191,9 @@
                 <prop key="template_exception_handler">#{launchProperties['debug.freemarker']}</prop>
             </props>
         </property>
+        <!--value="#{launchProperties['portal.freemarker.path']}"-->
         <property name="templateLoaderPaths"
-                  value="#{launchProperties['portal.freemarker.path']}"/>
+                  value="WEB-INF/templates/theme/"/>
     </bean>
 
     <bean id="clickStreamLogger" class="eu.europeana.core.util.web.ClickStreamLoggerImpl"/>

@@ -143,7 +143,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
 
     private ModelAndView ajaxFailure(HttpServletRequest request, HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        ModelAndView page = ControllerUtil.createModelAndViewPage("xml/ajax");
+        ModelAndView page = ThemeInterceptor.createThemedModelAndViewPage("xml/ajax");
         page.addObject("success", false);
         page.addObject("exception", getStackTrace(e));
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.AJAX_ERROR);

@@ -21,8 +21,11 @@
 
 package eu.delving.core.util;
 
+import eu.delving.core.storage.User;
+import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -48,6 +51,22 @@ public class ThemeInterceptor extends HandlerInterceptorAdapter {
         }
         return themeThreadLocal.get();
     }
+
+     /**
+     * This creates the default ModelAndView for the portal applications. It should be used in every Controller.
+     *
+     * @param view The Freemarker template that will be used by the model to render the view
+     * @return ModelAndView page
+     */
+
+    public static ModelAndView createThemedModelAndViewPage(String view) {
+        final String themeTemplateDir = getTheme().getTemplateDir();
+        ModelAndView page = new ModelAndView(themeTemplateDir + "/" + view);
+        User user = ControllerUtil.getUser();
+        page.addObject("user", user);
+        return page;
+    }
+
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

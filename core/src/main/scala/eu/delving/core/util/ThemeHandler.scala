@@ -82,6 +82,7 @@ class ThemeHandler {
     def createPortalTheme(node : Node, isDefault : Boolean = false) : PortalTheme = {
       val templateDir = node \\ "templateDir"
       def getNodeText(label : String) : String = (node \\ label).text
+      def getBooleanNodeText(label : String) : Boolean = try {(node \\ label).text.toBoolean} catch {case ex : Exception => false}
 
       def createEmailTarget(node: Node): EmailTarget = {
         EmailTarget(
@@ -98,6 +99,7 @@ class ThemeHandler {
         name = getNodeText("name"),
         templateDir = getNodeText("templateDir"),
         isDefault = isDefault,
+        localiseQueryString = getBooleanNodeText("localiseQueryString"),
         hqf = getNodeText("hiddenQueryFilter"),
         baseUrl = getNodeText("portalBaseUrl"),
         solrSelectUrl = getNodeText("solrSelectUrl"),
@@ -133,6 +135,7 @@ case class PortalTheme (
   name : String,
   templateDir : String,
   isDefault : Boolean = false,
+  localiseQueryString : Boolean = false,
   hqf : String = "",
   baseUrl : String = "",
   displayName: String = "default",
@@ -156,6 +159,7 @@ case class PortalTheme (
   def getAddThisCode = addThisCode
   def getDefaultLanguage = defaultLanguage
   def getColorScheme = colorScheme
+  def withLocalisedQueryString = localiseQueryString
   def getEmailTarget = emailTarget
   def getHomePage = homePage
 }
