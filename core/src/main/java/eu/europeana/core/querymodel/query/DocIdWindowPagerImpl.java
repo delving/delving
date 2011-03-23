@@ -22,6 +22,7 @@
 package eu.europeana.core.querymodel.query;
 
 import eu.delving.core.binding.SolrBindingService;
+import eu.delving.core.util.ThemeInterceptor;
 import eu.delving.metadata.MetadataModel;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
@@ -77,7 +78,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
 
     private SolrQuery copySolrQuery(SolrQuery solrQuery, MetadataModel metadataModel) {
         SolrQuery dCopy = solrQuery.getCopy();
-        dCopy.setFilterQueries(SolrQueryUtil.getFilterQueriesAsOrQueries(solrQuery, metadataModel.getRecordDefinition().getFacetMap()));
+        dCopy.setFilterQueries(SolrQueryUtil.getFilterQueriesAsOrQueries(solrQuery, ThemeInterceptor.getTheme().getRecordDefinition().getFacetMap()));
         return dCopy;
     }
 

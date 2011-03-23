@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest
 import java.util.Properties
 import reflect.BeanProperty
 import org.springframework.beans.factory.annotation.Autowired
+import eu.delving.metadata.{RecordDefinition, MetadataModel}
 
 /**
  *
@@ -71,6 +72,14 @@ class ThemeHandler {
   private[util] def loadThemes() : Seq[PortalTheme] = {
 
     def getProperty(prop : String) : String = launchProperties.getProperty(prop).trim
+    def getRecordDefinition(prefix : String) : RecordDefinition = {
+      try {
+        metadataModel.getRecordDefinition(prefix)
+      }
+      catch {
+        case ex : Exception => metadataModel.getRecordDefinition
+      }
+    }
 
     val themeFilePath = getProperty("portal.theme.file")
 
@@ -110,7 +119,8 @@ class ThemeHandler {
         defaultLanguage = getNodeText("defaultLanguage"),
         colorScheme = getNodeText("colorScheme"),
         emailTarget = createEmailTarget(node) ,
-        homePage = getNodeText("homePage")
+        homePage = getNodeText("homePage"),
+        recordDefinition = getRecordDefinition(getNodeText("metadataPrefix"))
       )
     }
 
@@ -130,6 +140,7 @@ class ThemeHandler {
   }
 
   @Autowired @BeanProperty var launchProperties:  Properties = _
+  @Autowired @BeanProperty var metadataModel:  MetadataModel = _
 }
 case class PortalTheme (
   name : String,
@@ -146,7 +157,8 @@ case class PortalTheme (
   solrSelectUrl : String = "http://localhost:8983/solr",
   cacheUrl : String = "http://localhost:8983/services/image?",
   emailTarget : EmailTarget = EmailTarget(),
-  homePage : String = ""
+  homePage : String = "",
+  recordDefinition : RecordDefinition
 ) {
   def getName = name
   def getTemplateDir = templateDir
@@ -162,6 +174,7 @@ case class PortalTheme (
   def withLocalisedQueryString = localiseQueryString
   def getEmailTarget = emailTarget
   def getHomePage = homePage
+  def getRecordDefinition = recordDefinition
 }
 
 case class EmailTarget(

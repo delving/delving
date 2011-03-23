@@ -67,7 +67,6 @@ public class ThemeInterceptor extends HandlerInterceptorAdapter {
         return page;
     }
 
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         final PortalTheme portalTheme = themeHandler.getByRequest(request);

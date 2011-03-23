@@ -482,7 +482,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             if (solrQuery.getRows() ==  null) {
                 solrQuery.setRows(12);
             }
-            solrQuery.addFacetField(metadataModel.getRecordDefinition().getFacetFieldStrings());
+            solrQuery.addFacetField(ThemeInterceptor.getTheme().getRecordDefinition().getFacetFieldStrings());
             // todo now hard-coded but these values must be retrieved from the RecordDefinition later
             if (solrQuery.getFields() == null) {
                 solrQuery.setFields("europeana_uri,dc_title,europeana_object,dc_creator,europeana_year,europeana_provider," +
@@ -513,7 +513,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
                 dCopy.addFilterQuery(qf);
             }
         }
-        dCopy.setFilterQueries(SolrQueryUtil.getFilterQueriesAsOrQueries(dCopy, metadataModel.getRecordDefinition().getFacetMap()));
+        dCopy.setFilterQueries(SolrQueryUtil.getFilterQueriesAsOrQueries(dCopy, ThemeInterceptor.getTheme().getRecordDefinition().getFacetMap()));
         return dCopy;
     }
 
