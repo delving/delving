@@ -78,6 +78,7 @@ import java.util.List;
 public class RefinementPanel extends JPanel {
     private SipModel sipModel;
     private JTextArea groovyCodeArea;
+    private JTextArea outputArea;
     private JButton removeMappingButton = new JButton("Remove Selected Mapping");
     private JButton dictionaryCreate = new JButton("Create");
     private JButton dictionaryEdit = new JButton("Edit");
@@ -153,7 +154,7 @@ public class RefinementPanel extends JPanel {
     private JPanel createOutputPanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Output Record"));
-        JTextArea outputArea = new JTextArea(sipModel.getFieldCompileModel().getOutputDocument());
+        outputArea = new JTextArea(sipModel.getFieldCompileModel().getOutputDocument());
         outputArea.setEditable(false);
         new URLLauncher(outputArea);
         p.add(scroll(outputArea), BorderLayout.CENTER);
@@ -298,6 +299,26 @@ public class RefinementPanel extends JPanel {
             }
         });
         sipModel.getFieldCompileModel().addListener(new ModelStateListener());
+        outputArea.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent documentEvent) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        outputArea.setCaretPosition(0);
+                    }
+                });
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent documentEvent) {
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent documentEvent) {
+            }
+        });
+
     }
 
     private void setFieldMapping(FieldMapping fieldMapping) {
