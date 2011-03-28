@@ -22,8 +22,7 @@
 package eu.europeana.core.querymodel.query;
 
 import eu.delving.core.binding.SolrBindingService;
-import eu.delving.core.util.ThemeInterceptor;
-import eu.delving.metadata.MetadataModel;
+import eu.delving.metadata.RecordDefinition;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -76,15 +75,15 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         this.portalName = portalName;
     }
 
-    private SolrQuery copySolrQuery(SolrQuery solrQuery, MetadataModel metadataModel) {
+    private SolrQuery copySolrQuery(SolrQuery solrQuery, RecordDefinition recordDefinition) {
         SolrQuery dCopy = solrQuery.getCopy();
-        dCopy.setFilterQueries(SolrQueryUtil.getFilterQueriesAsOrQueries(solrQuery, ThemeInterceptor.getTheme().getRecordDefinition().getFacetMap()));
+        dCopy.setFilterQueries(SolrQueryUtil.getFilterQueriesAsOrQueries(solrQuery, recordDefinition.getFacetMap()));
         return dCopy;
     }
 
     @Override
     @SuppressWarnings({"AccessingNonPublicFieldOfAnotherObject"})
-    public void initialize(Map<String, String[]> httpParameters, SolrQuery originalBriefSolrQuery, SolrServer solrServer, MetadataModel metadataModel) throws SolrServerException, EuropeanaQueryException {
+    public void initialize(Map<String, String[]> httpParameters, SolrQuery originalBriefSolrQuery, SolrServer solrServer, RecordDefinition metadataModel) throws SolrServerException, EuropeanaQueryException {
         this.query = originalBriefSolrQuery.getQuery();
         int fullDocUriInt = getFullDocInt(httpParameters, originalBriefSolrQuery);
         this.fullDocUriInt = fullDocUriInt;

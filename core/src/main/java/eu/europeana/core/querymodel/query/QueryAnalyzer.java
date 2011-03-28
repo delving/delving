@@ -21,9 +21,7 @@
 
 package eu.europeana.core.querymodel.query;
 
-import eu.delving.core.util.ThemeInterceptor;
-import eu.delving.metadata.MetadataModel;
-import org.springframework.beans.factory.annotation.Autowired;
+import eu.delving.metadata.RecordDefinition;
 
 import java.text.MessageFormat;
 import java.util.Map;
@@ -41,17 +39,10 @@ import java.util.TreeSet;
 
 public class QueryAnalyzer {
 
-    @Autowired
-    private MetadataModel metadataModel;
-
     public QueryAnalyzer() {
     }
 
-    public QueryAnalyzer(MetadataModel metadataModel) {
-        this.metadataModel = metadataModel;
-    }
-
-    public QueryType findSolrQueryType(String query) throws EuropeanaQueryException {
+    public QueryType findSolrQueryType(String query, RecordDefinition recordDefinition) throws EuropeanaQueryException {
         String[] terms = query.split("\\s+");
         for (String term : terms) {
             if (BOOLEAN_KEYWORDS.contains(term)) {
@@ -70,7 +61,7 @@ public class QueryAnalyzer {
                     return QueryType.MORE_LIKE_THIS_QUERY;
                 }
                 else {
-                    if (ThemeInterceptor.getTheme().getRecordDefinition().getFieldNameList().contains(field)) {
+                    if (recordDefinition.getFieldNameList().contains(field)) {
                         return QueryType.ADVANCED_QUERY;
                     }
                     else if ("tag".equalsIgnoreCase(field)) {

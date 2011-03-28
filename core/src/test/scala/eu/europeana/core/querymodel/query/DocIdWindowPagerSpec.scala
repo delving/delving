@@ -1,3 +1,24 @@
+/*
+ * Copyright 2011 DELVING BV
+ *
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
+ */
+
 package eu.europeana.core.querymodel.query
 
 import _root_.org.apache.solr.client.solrj.SolrQuery
@@ -16,11 +37,10 @@ import scala.collection.JavaConversions.asJavaList
  */
 
 @RunWith(classOf[JUnitRunner])
-class DocIdWindowPagerSpec extends Spec with BeforeAndAfterAll with ShouldMatchers with PrivateMethodTester with SolrTester {
+class DocIdWindowPagerSpec extends Spec with BeforeAndAfterAll with ShouldMatchers with PrivateMethodTester with SolrTester  with DelvingTestUtil {
   override def afterAll() = stopSolrServer
 
   val windowPagerFactory: DocIdWindowPagerFactory = new DocIdWindowPagerFactory
-  val qa = new QueryAnalyzer
   val testCollId = "00101"
   val solrSever = getSolrSever
   loadDefaultData(solrSever, 14, testCollId)
@@ -177,12 +197,9 @@ class DocIdWindowPagerSpec extends Spec with BeforeAndAfterAll with ShouldMatche
     List[(String, String)]("startPage" -> startPage, "start" -> start, "query" -> userQuery, "pageId" -> "brd").foreach(param =>
       request.addParameter(param._1, param._2))
     val uri = createEuropeanaUri(start, testCollId)
-    val query = SolrQueryUtil.createFromQueryParams(request.getParameterMap, qa)
+    val query = SolrQueryUtil.createFromQueryParams(request.getParameterMap, getQueryAnalyser, getThemeHandler.getDefaultTheme.getRecordDefinition)
     request.addParameter("uri", uri)
-    val metadataModel = new MetadataModelImpl()
-    metadataModel setDefaultPrefix ("abm")
-    metadataModel setRecordDefinitionResources (asJavaList(List[String]("/ese-record-definition.xml", "/abm-record-definition.xml")))
-    val pager: DocIdWindowPager = windowPagerFactory.getPager(request.getParameterMap, query, solrSever, metadataModel)
+    val pager: DocIdWindowPager = windowPagerFactory.getPager(request.getParameterMap, query, solrSever, getRecordDefinition)
     (pager, uri)
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 DELVING BV
+ * Copyright 2011 DELVING BV
  *
  * Licensed under the EUPL, Version 1.1 or as soon they
  * will be approved by the European Commission - subsequent
@@ -21,6 +21,7 @@
 
 package eu.europeana.core.querymodel.query;
 
+import eu.delving.metadata.RecordDefinition;
 import org.apache.solr.client.solrj.SolrQuery;
 
 import java.text.MessageFormat;
@@ -129,7 +130,7 @@ public class SolrQueryUtil {
         return queries.toArray(new String[queries.size()]);
     }
 
-    public static SolrQuery createFromQueryParams(Map<String, String[]> params, QueryAnalyzer queryAnalyzer) throws EuropeanaQueryException {
+    public static SolrQuery createFromQueryParams(Map<String, String[]> params, QueryAnalyzer queryAnalyzer, RecordDefinition recordDefinition) throws EuropeanaQueryException {
         SolrQuery solrQuery = new SolrQuery();
         if (params.containsKey("query") || params.containsKey("query1")) {
             if (!params.containsKey("query")) {  // support advanced search
@@ -168,7 +169,7 @@ public class SolrQueryUtil {
             }
         }
         if (solrQuery.getQueryType() == null) {
-            solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery()).toString());
+            solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery(), recordDefinition).toString());
         }
 
         // set sort field

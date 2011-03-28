@@ -41,6 +41,7 @@
         <cacheUrl>http://localhost:8983/services/image?</cacheUrl>
         <homePage></homePage>
         <localiseQueryString>false</localiseQueryString>
+        <metadataPrefix>abm</metadataPrefix>
     </theme>
     <theme default="false">
         <name>friesmuseum</name>
@@ -62,5 +63,6 @@
         <cacheUrl>http://localhost:8983/services/image?</cacheUrl>
         <homePage></homePage>
         <localiseQueryString>false</localiseQueryString>
+        <metadataPrefix>icn</metadataPrefix>
     </theme>
 </themes>

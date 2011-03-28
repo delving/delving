@@ -135,7 +135,7 @@ class ThemeHandler {
     val portalThemeSeq = themeList.map {
       themeNode =>
         val isDefault : Boolean = themeNode.attributes.get("default").head.text.toBoolean
-        themeNode.child.filter(!_.label.startsWith("#PCDATA")).foreach(nd => println (nd.label + nd.text))
+//      themeNode.child.filter(!_.label.startsWith("#PCDATA")).foreach(nd => println (nd.label + nd.text))
         createPortalTheme(themeNode, isDefault)
     }
     if (portalThemeSeq.isEmpty) {

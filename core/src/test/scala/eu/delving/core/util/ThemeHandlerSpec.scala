@@ -24,8 +24,11 @@ package eu.delving.core.util
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.Spec
 import org.scalatest.junit.JUnitRunner
+import scala.collection.JavaConversions._
 import org.junit.runner.RunWith
 import java.util.{Arrays, Properties}
+import eu.delving.metadata.MetadataModelImpl
+import eu.europeana.core.querymodel.query.DelvingTestUtil
 
 /**
  *
@@ -34,15 +37,12 @@ import java.util.{Arrays, Properties}
  */
 
 @RunWith(classOf[JUnitRunner])
-class ThemeHandlerSpec extends Spec with ShouldMatchers {
+class ThemeHandlerSpec extends Spec with ShouldMatchers with DelvingTestUtil {
   
   describe("A ThemeHandler") {
       
       describe("(when receiving a path to the theme file)") {
-        System.setProperty("launch.properties", classOf[ThemeHandlerSpec].getResource("/mock-launch.properties").getFile)
-        val launchProperties: Properties = new LaunchProperties(Arrays.asList("portal.theme.file"))
-        val themeHandler = new ThemeHandler()
-        themeHandler.setLaunchProperties(launchProperties)
+        val themeHandler = getThemeHandler
 
         it("should load it the themes from the property path") {
           themeHandler.hasSingleTheme should be (false)
@@ -50,12 +50,8 @@ class ThemeHandlerSpec extends Spec with ShouldMatchers {
 
         it("should give access to the themes") {
           themeHandler.getDefaultTheme.name should equal ("norvegiana")
-          themeHandler.getByBaseUrl("http://localhost").name should equal ("norvegiana")
+          themeHandler.getByBaseUrl("localhost").name should equal ("friesmuseum")
         }
-
-        it ("fake") {
-          true should be (true)
-        }
-      }
+     }
   }
 }
