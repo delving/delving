@@ -26,15 +26,16 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.OutputStream;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -51,9 +52,6 @@ public class SolrProxyController {
         this.solrServer = solrServer;
     }
 
-    @Value("#{launchProperties['solr.selectUrl']}")
-    private String solrSelectUrl;
-
     @Autowired
     private HttpClient httpClient;
 
@@ -62,9 +60,15 @@ public class SolrProxyController {
         final String solrQueryString = request.getQueryString();
         HttpMethod method = new GetMethod(String.format("%s/select?%s", ThemeInterceptor.getTheme().getSolrSelectUrl(), solrQueryString));
         httpClient.executeMethod(method);
-        for (Header header : method.getRequestHeaders()) {
+        Boolean getAsStream = false;
+        for (Header header : method.getResponseHeaders()) {
             if (header.getName().equalsIgnoreCase("content-type")) {
-                response.setContentType(method.getResponseHeader("Content-Type").getValue());
+                final String contentType = method.getResponseHeader("Content-Type").getValue();
+                response.setContentType(contentType);
+                response.setHeader(header.getName(), header.getValue());
+                if (contentType.equalsIgnoreCase("application/octet-stream")) {
+                    getAsStream = true;
+                }
             }
             else if (header.getName().equalsIgnoreCase("server")) {
                 //ignore
@@ -74,7 +78,17 @@ public class SolrProxyController {
             }
         }
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(method.getResponseBodyAsString()); //todo add response from SolrProxy here
-        response.getWriter().close();
+        if (getAsStream) {
+            OutputStream out = response.getOutputStream();
+            try {
+                IOUtils.copy(method.getResponseBodyAsStream(), out);
+            } finally {
+                out.close();
+            }
+        }
+        else {
+            response.getWriter().write(method.getResponseBodyAsString()); //todo add response from SolrProxy here
+            response.getWriter().close();
+        }
     }
 }
