@@ -120,7 +120,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
             }
             String errorMessage = MessageFormat.format("errorMessage={0}", queryProblem.toString());
             clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.EXCEPTION_CAUGHT, errorMessage);
-            ModelAndView mav = new ModelAndView("exception");
+            ModelAndView mav = ThemeInterceptor.createThemedModelAndViewPage("exception");
             mav.addObject("debug", debugMode);
             mav.addObject("interfaceLanguage", ControllerUtil.getLocale(request));
             mav.addObject("cacheUrl", theme.getCacheUrl());
