@@ -40,12 +40,12 @@ import org.springframework.test.context.ContextConfiguration
  * @since Apr 5, 2010 10:55:58 PM
  */
 
-//@RunWith(classOf[JUnitRunner])
-@RunWith(classOf[SpringJUnit4ClassRunner])
-@ContextConfiguration(locations = Array[String](
-        "/core-application-context.xml",
-        "/test-application-context.xml"
-))
+@RunWith(classOf[JUnitRunner])
+//@RunWith(classOf[SpringJUnit4ClassRunner])
+//@ContextConfiguration(locations = Array[String](
+//        "/core-application-context.xml",
+//        "/test-application-context.xml"
+//))
 class DocIdWindowPagerSpec extends Spec with BeforeAndAfterAll with ShouldMatchers with PrivateMethodTester with SolrTester with DelvingTestUtil {
   // todo fix this unit test
 
@@ -66,21 +66,21 @@ class DocIdWindowPagerSpec extends Spec with BeforeAndAfterAll with ShouldMatche
 //  * - getFullDocInt
 //  */
 //
-//  describe("A DocIdWindowPager") {
-//
-//    describe("(when getting a parameter from the ParameterMap)") {
-//      val secret = PrivateMethod[String]('setQueryStringForPaging)
-//      val request = new MockHttpServletRequest
-//      val parameters = List("p1" -> "v1", "p2" -> "v2")
-//      parameters foreach (param => request setParameter (param._1, param._2))
-//
-//      it("should give back the formatted query string") {
-//        val query = new SolrQuery("sjoerd")
-//        val pager = new DocIdWindowPagerImpl
-//        pager invokePrivate secret(query, "1")
-//        pager.getQueryStringForPaging should equal("query=sjoerd&startPage=1")
-//      }
-//    }
+  describe("A DocIdWindowPager") {
+
+    describe("(when getting a parameter from the ParameterMap)") {
+      val secret = PrivateMethod[String]('setQueryStringForPaging)
+      val request = new MockHttpServletRequest
+      val parameters = List("p1" -> "v1", "p2" -> "v2")
+      parameters foreach (param => request setParameter (param._1, param._2))
+
+      it("should give back the formatted query string") {
+        val query = new SolrQuery("sjoerd")
+        val pager = new DocIdWindowPagerImpl
+        pager invokePrivate secret(query, "1")
+        pager.getQueryStringForPaging should equal("query=sjoerd&startPage=1")
+      }
+    }
 //
 //    describe("(when given the second record that has a next and previous record)") {
 //
@@ -212,6 +212,6 @@ class DocIdWindowPagerSpec extends Spec with BeforeAndAfterAll with ShouldMatche
 //    request.addParameter("uri", uri)
 //    val pager: DocIdWindowPager = windowPagerFactory.getPager(request.getParameterMap, query, getRecordDefinition)
 //    (pager, uri)
-//  }
+  }
 
 }
