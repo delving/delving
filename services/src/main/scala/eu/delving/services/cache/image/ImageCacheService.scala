@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 DELVING BV
+ * Copyright 2011 DELVING BV
  *
  * Licensed under the EUPL, Version 1.1 or as soon they
  * will be approved by the European Commission - subsequent
@@ -72,7 +72,7 @@ class ImageCacheService(mongoFactory : MongoFactory) {
   }
 
   private[image] def sanitizeUrl(url: String) : String = {
-    val sanitizeUrl : String = url.replaceAll("""\\""", "%5C")
+    val sanitizeUrl : String = url.replaceAll("""\\""", "%5C").replaceAll("\\[", "%5B").replaceAll("\\]", "%5D")
     sanitizeUrl
   }
 
