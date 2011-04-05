@@ -68,4 +68,6 @@ public interface QueryModelFactory {
     List<? extends BriefDoc> getMatchDocFromDocumentList(SolrDocumentList matchDoc);
 
     QueryResponse getSolrResponseWithHiddenQueryFilters(SolrQuery solrQuery, Map<String, String[]> params) throws EuropeanaQueryException;
+
+    QueryResponse getPagingQueryResponse(SolrQuery solrQuery, Map<String, String[]> params, int solrStartRow) throws EuropeanaQueryException, SolrServerException;
 }

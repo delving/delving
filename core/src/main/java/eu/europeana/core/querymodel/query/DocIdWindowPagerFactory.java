@@ -23,8 +23,8 @@ package eu.europeana.core.querymodel.query;
 
 import eu.delving.metadata.RecordDefinition;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Map;
@@ -38,12 +38,14 @@ public class DocIdWindowPagerFactory {
     @Value("#{launchProperties['portal.name']}")
     private String portalName = "portal"; // must be injected later
 
+    @Autowired
+    private QueryModelFactory beanQueryModelFactory;
 
-    public DocIdWindowPager getPager(Map<String, String[]> params, SolrQuery solrQuery, SolrServer solrServer, RecordDefinition recordDefinition) {
+    public DocIdWindowPager getPager(Map<String, String[]> params, SolrQuery solrQuery, RecordDefinition recordDefinition) {
         DocIdWindowPager pager = new DocIdWindowPagerImpl();
         pager.setPortalName(portalName);
         try {
-            pager.initialize(params, solrQuery, solrServer, recordDefinition);
+            pager.initialize(params, solrQuery, beanQueryModelFactory, recordDefinition);
         } catch (SolrServerException e) {
             return null; // when there are no results from solr return null
         } catch (EuropeanaQueryException e) {

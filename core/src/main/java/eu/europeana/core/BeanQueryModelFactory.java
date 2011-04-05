@@ -352,7 +352,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
                 if (theme != null) {
                     solrServer.setBaseURL(theme.getSolrSelectUrl());
                 }
-                idWindowPager = docIdWindowPagerFactory.getPager(params, createFromQueryParams(params), solrServer, ThemeInterceptor.getTheme().getRecordDefinition());
+                idWindowPager = docIdWindowPagerFactory.getPager(params, createFromQueryParams(params), ThemeInterceptor.getTheme().getRecordDefinition());
             }
             return idWindowPager;
         }
@@ -515,6 +515,16 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         }
         dCopy.setFilterQueries(SolrQueryUtil.getFilterQueriesAsOrQueries(dCopy, ThemeInterceptor.getTheme().getRecordDefinition().getFacetMap()));
         return dCopy;
+    }
+
+     @Override
+     public QueryResponse getPagingQueryResponse(SolrQuery solrQuery, Map<String, String[]> params, int solrStartRow) throws EuropeanaQueryException, SolrServerException {
+         SolrQuery dCopy = addHiddenQueryFilters(solrQuery, params);
+         dCopy.setFields("europeana_uri");
+         dCopy.setStart(solrStartRow);
+         dCopy.setRows(3);
+//        this.breadcrumbs = Breadcrumb.createList(originalBriefSolrQuery); //todo decide for or queries
+         return getSolrResponseFromServer(dCopy, true); // todo should this not be false
     }
 
     private static ResultPagination createPagination(QueryResponse response, SolrQuery query, String requestQueryString) throws EuropeanaQueryException {

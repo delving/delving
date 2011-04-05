@@ -24,7 +24,6 @@ package eu.europeana.core.querymodel.query;
 import eu.delving.core.binding.SolrBindingService;
 import eu.delving.metadata.RecordDefinition;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
@@ -75,20 +74,14 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         this.portalName = portalName;
     }
 
-    private SolrQuery copySolrQuery(SolrQuery solrQuery, RecordDefinition recordDefinition) {
-        SolrQuery dCopy = solrQuery.getCopy();
-        dCopy.setFilterQueries(SolrQueryUtil.getFilterQueriesAsOrQueries(solrQuery, recordDefinition.getFacetMap()));
-        return dCopy;
-    }
-
     @Override
     @SuppressWarnings({"AccessingNonPublicFieldOfAnotherObject"})
-    public void initialize(Map<String, String[]> httpParameters, SolrQuery originalBriefSolrQuery, SolrServer solrServer, RecordDefinition metadataModel) throws SolrServerException, EuropeanaQueryException {
+    public void initialize(Map<String, String[]> httpParameters, SolrQuery originalBriefSolrQuery, QueryModelFactory queryModelFactory, RecordDefinition metadataModel) throws SolrServerException, EuropeanaQueryException {
         this.query = originalBriefSolrQuery.getQuery();
         int fullDocUriInt = getFullDocInt(httpParameters, originalBriefSolrQuery);
         this.fullDocUriInt = fullDocUriInt;
         int solrStartRow = getSolrStart(fullDocUriInt);
-        QueryResponse queryResponse = getQueryResponse(copySolrQuery(originalBriefSolrQuery, metadataModel), solrServer, solrStartRow);
+        QueryResponse queryResponse = queryModelFactory.getPagingQueryResponse(originalBriefSolrQuery, httpParameters, solrStartRow);
         if (queryResponse.getResults() == null) {
             throw new EuropeanaQueryException("no results for this query"); // if no results are found return null to signify that docIdPage can be created.
         }
@@ -173,28 +166,6 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
                 this.nextUri = list.get(1).getEuropeanaUri();
             }
         }
-    }
-
-    /**
-     * This method queries the SolrSearch engine to get a QueryResponse with 3 DocIds
-     * <p/>
-     * This method does not have to be Unit Tested
-     *
-     * @param originalBriefSolrQuery
-     * @param solrServer
-     * @param solrStartRow
-     * @return
-     * @throws EuropeanaQueryException
-     * @throws org.apache.solr.client.solrj.SolrServerException
-     *
-     */
-    @SuppressWarnings({"AccessingNonPublicFieldOfAnotherObject"})
-    private QueryResponse getQueryResponse(SolrQuery originalBriefSolrQuery, SolrServer solrServer, int solrStartRow) throws EuropeanaQueryException, SolrServerException {
-        originalBriefSolrQuery.setFields("europeana_uri");
-        originalBriefSolrQuery.setStart(solrStartRow);
-        originalBriefSolrQuery.setRows(3);
-//        this.breadcrumbs = Breadcrumb.createList(originalBriefSolrQuery); //todo decide for or queries
-        return solrServer.query(originalBriefSolrQuery);
     }
 
     private void setReturnToResults(Map<String, String[]> httpParameters) {
