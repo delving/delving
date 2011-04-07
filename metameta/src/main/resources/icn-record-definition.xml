@@ -1,4 +1,25 @@
 <?xml version="1.0"?>
+<!--
+  ~ Copyright 2011 DELVING BV
+  ~
+  ~ Licensed under the EUPL, Version 1.1 or as soon they
+  ~ will be approved by the European Commission - subsequent
+  ~ versions of the EUPL (the "Licence");
+  ~ you may not use this work except in compliance with the
+  ~ Licence.
+  ~ You may obtain a copy of the Licence at:
+  ~
+  ~ http://ec.europa.eu/idabc/eupl
+  ~
+  ~ Unless required by applicable law or agreed to in
+  ~ writing, software distributed under the Licence is
+  ~ distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+  ~ express or implied.
+  ~ See the Licence for the specific language governing
+  ~ permissions and limitations under the Licence.
+  -->
+
 <record-definition prefix="icn">
     <namespaces>
         <namespace prefix="dc" uri="http://purl.org/dc/elements/1.1/" schema="http://dublincore.org/schemas/xmls/qdc/dc.xsd"/>
@@ -46,7 +67,7 @@
                 </options>
             </validation>
         </field>
-        <field prefix="icn" localName="material"/>
+        <field prefix="icn" localName="material" facetPrefix="mtr"/>
         <field prefix="icn" localName="location"/>
         <field prefix="icn" localName="province"/>
         <field prefix="icn" localName="collectionPart"/>
@@ -76,7 +97,7 @@
         <field prefix="dc" localName="contributor" searchField="who,creator"/>
         <field prefix="dc" localName="coverage" searchField="what,subject"/>
         <field prefix="dc" localName="creator" searchField="who,creator" sortable="true"/>
-        <field prefix="dc" localName="date" searchField="when,date"/> <!--removed extract year it doesn't belong here -->
+        <field prefix="dc" localName="date" facetName="dcdate" facetPrefix="dcd" searchField="when,date"/> <!--removed extract year it doesn't belong here -->
         <field prefix="dc" localName="description" searchField="description"/>
         <field prefix="dc" localName="format"/>
         <field prefix="dc" localName="identifier" searchField="identifier"/>
@@ -85,7 +106,7 @@
         <field prefix="dc" localName="relation" searchField="relation"/>
         <field prefix="dc" localName="rights"/>
         <field prefix="dc" localName="source"/>
-        <field prefix="dc" localName="subject" facetName="subject" searchField="what,subject"/>
+        <field prefix="dc" localName="subject" facetName="subject" facetPrefix="sbj" searchField="what,subject"/>
         <field prefix="dc" localName="title" sortable="true"/>
         <field prefix="dc" localName="type" facetPrefix="dct" facetName="dctype"/>
         <field prefix="dcterms" localName="alternative"/>
