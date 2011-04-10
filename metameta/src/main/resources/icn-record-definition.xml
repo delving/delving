@@ -67,10 +67,10 @@
                 </options>
             </validation>
         </field>
-        <field prefix="icn" localName="material" facetPrefix="mtr"/>
+        <field prefix="icn" localName="material" facetPrefix="mtr" facetName="materiaal"/>
         <field prefix="icn" localName="location"/>
         <field prefix="icn" localName="province"/>
-        <field prefix="icn" localName="collectionPart"/>
+        <field prefix="icn" localName="collectionPart" facetPrefix="cpart" facetName="collPart"/>
         <!-- Category ICN_RESEARCH -->
         <field prefix="icn" localName="acquisitionMeans">
             <validation>
@@ -173,7 +173,7 @@
             </validation>
         </field>
         <field prefix="europeana" localName="userTag" searchField="usertags"/>
-        <field prefix="europeana" localName="hasDigitalObject" systemField="true"/>
+        <field prefix="europeana" localName="hasDigitalObject" systemField="true" facetPrefix="hdo"/>
         <field prefix="europeana" localName="year" fulldoc="false" fieldType="string" facetPrefix="year">
             <validation>
                 <converter multipleOutput="true" call=".extractYear()"/>

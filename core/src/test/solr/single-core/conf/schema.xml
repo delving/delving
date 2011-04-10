@@ -599,6 +599,7 @@
              <!--abm content provider is DataPRovider facet-->
              <field name="ABOUTORGANISATION" type="string" indexed="true" stored="true" multiValued="true"/>
              <field name="MATERIAAL" type="string" indexed="true" stored="true" multiValued="true"/>
+             <field name="COLLPART" type="string" indexed="true" stored="true" multiValued="true"/>
 
              <!-- ABM fields -->
              <field name="abm_digitised" type="string" indexed="true" stored="true" multiValued="true"/>
@@ -798,6 +799,7 @@
    <!-- ICN Facets -->
    <copyField source="icn_technique" dest="TECHNIQUE" />
    <copyField source="icn_material" dest="MATERIAAL" />
+   <copyField source="icn_collectionPart" dest="COLLPART" />
    <!-- ABM Facets -->
    <copyField source="abm_landedProperty" dest="LANDEDPROPERTY" />
    <copyField source="abm_municipality" dest="MUNICIPALITY" />

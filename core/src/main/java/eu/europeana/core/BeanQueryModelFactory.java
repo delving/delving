@@ -486,7 +486,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             // todo now hard-coded but these values must be retrieved from the RecordDefinition later
             if (solrQuery.getFields() == null) {
                 solrQuery.setFields("europeana_uri,dc_title,europeana_object,dc_creator,europeana_year,europeana_provider," +
-                        "europeana_dataProvider,europeana_language,europeana_type,dc_description");
+                        "europeana_dataProvider,europeana_language,europeana_type,dc_description,dc_type");
 //            solrQuery.setFields("*,score");
 //            solrQuery.setFields(metadataModel.getRecordDefinition().getFieldStrings());
             }
