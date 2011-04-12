@@ -44,6 +44,11 @@ public class ThemeCookieLocaleResolver extends CookieLocaleResolver {
     }
 
     @Override
+    public String getCookieName() {
+        return "org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE";
+    }
+
+    @Override
     protected Locale determineDefaultLocale(HttpServletRequest request) {
         return new Locale(ThemeInterceptor.getTheme().getDefaultLanguage());
     }
