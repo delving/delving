@@ -39,7 +39,7 @@ public class ThemeCookieLocaleResolver extends CookieLocaleResolver {
 
     @Override
     public String getCookieDomain() {
-        log.info(String.format("Fetching cookie domain %s from theme, cookie name is %s", ThemeInterceptor.getTheme().getBaseUrl(), getCookieName()));
+        log.debug(String.format("Fetching cookie domain %s from theme, cookie name is %s", ThemeInterceptor.getTheme().getBaseUrl(), getCookieName()));
         return ThemeInterceptor.getTheme().getBaseUrl();
     }
 
