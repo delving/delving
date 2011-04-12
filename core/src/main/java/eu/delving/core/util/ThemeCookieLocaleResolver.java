@@ -35,7 +35,7 @@ import java.util.Locale;
 public class ThemeCookieLocaleResolver extends CookieLocaleResolver {
 
     @Override
-    public String getCookieName() {
+    public String getCookieDomain() {
         return ThemeInterceptor.getTheme().getBaseUrl();
     }
 
