@@ -21,6 +21,7 @@
 
 package eu.delving.core.util;
 
+import org.apache.log4j.Logger;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,8 +35,11 @@ import java.util.Locale;
 
 public class ThemeCookieLocaleResolver extends CookieLocaleResolver {
 
+    private Logger log = Logger.getLogger(getClass());
+
     @Override
     public String getCookieDomain() {
+        log.info(String.format("Fetching cookie domain %s from theme, cookie name is %s", ThemeInterceptor.getTheme().getBaseUrl(), getCookieName()));
         return ThemeInterceptor.getTheme().getBaseUrl();
     }
 
