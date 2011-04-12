@@ -35,6 +35,11 @@ import java.util.Locale;
 public class ThemeCookieLocaleResolver extends CookieLocaleResolver {
 
     @Override
+    public String getCookieName() {
+        return ThemeInterceptor.getTheme().getBaseUrl();
+    }
+
+    @Override
     protected Locale determineDefaultLocale(HttpServletRequest request) {
         return new Locale(ThemeInterceptor.getTheme().getDefaultLanguage());
     }
