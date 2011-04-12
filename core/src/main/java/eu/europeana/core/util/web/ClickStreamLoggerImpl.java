@@ -234,7 +234,7 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
         }
         return MessageFormat.format(
                 "userId={0}, lang={1}, req={4}, date={2}, ip={3}, user-agent={5}, referer={6}, utma={8}, " +
-                        "utmb={9}, utmc={10}, utmz={13}, v={7}, duration={11}, langCookie={12}, defaultLanguage={13}",
+                        "utmb={9}, utmc={10}, utmz={13}, v={7}, duration={11}, langCookie={12}, defaultLanguage={14}",
                 userId, language, new DateTime(), ip, reqUrl, userAgent, referer, VERSION, utma, utmb, utmc,
                 ClickStreamLoggerInterceptor.getTimeElapsed(), languageCookie, utmz, ThemeInterceptor.getTheme().getDefaultLanguage());
     }
