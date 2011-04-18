@@ -1,3 +1,24 @@
+/*
+ * Copyright 2011 DELVING BV
+ *
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
+ */
+
 package eu.delving.services.harvesting
 
 import javax.servlet.http.{HttpServletRequest}
@@ -226,7 +247,8 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo, accessKey: 
     val pmhObject = harvestStep.getPmhRequest
 
     var elem : Elem =
-    <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/">
+    <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
      <responseDate>{currentDate}</responseDate>
      <request verb="ListRecords" from={printDate(pmhObject.getFrom)} until={printDate(pmhObject.getUntil)}
               metadataPrefix={pmhObject.getMetadataPrefix}>{request.getRequestURL}</request>
@@ -255,7 +277,8 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo, accessKey: 
     if (record == null) return createErrorResponse("idDoesNotExist")
 
     var elem : Elem =
-    <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/">
+    <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
       <responseDate>{currentDate}</responseDate>
       <request verb="GetRecord" identifier={identifier}
                metadataPrefix={metadataFormat}>{request.getRequestURL}</request>
