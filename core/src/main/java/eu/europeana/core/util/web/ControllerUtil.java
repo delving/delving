@@ -94,51 +94,6 @@ public class ControllerUtil {
         return Language.findByCode(currentLangCode);
     }
 
-    /**
-     * This creates the default ModelAndView for the portal applications. It should be used in every Controller.
-     *
-     * @param view The Freemarker template that will be used by the model to render the view
-     * @return ModelAndView page
-     */
-
-    public static ModelAndView createModelAndViewPage(String view) {
-        ModelAndView page = new ModelAndView(view);
-        User user = ControllerUtil.getUser();
-        page.addObject("user", user);
-        return page;
-    }
-
-    /**
-     * This creates the default ModelAndView for the portal applications. It should be used in every Controller. When the
-     * varArgs includes is not empty the view is interpreted as a Surrounding Template and however many includes values
-     * are injected into the model as Freemarke variable 'include' + number increment, for example 'include1'. In a
-     * Freemarker template that is designed as a Surrounding Template it needs to check for if an include exists,
-     * for example:
-     *
-     * <p>
-     *  <code>
-     *      <#if include1??> <#include "${include1}.ftl"> <#/if>
-     *  </code>
-     * </p>
-     *
-     * @param view Surrounding Template
-     * @param includes a VarArg with the includes that will injected into the model as 'include' + increment
-     * @return ModelAndView page
-     */
-
-    public static ModelAndView createModelAndViewPage(String view, String... includes) {
-        ModelAndView page = new ModelAndView(view);
-        User user = ControllerUtil.getUser();
-        page.addObject("user", user);
-        for (int i = 0; i < includes.length; i++) {
-            String include = includes[i];
-            if (!include.isEmpty()) {
-                page.addObject(String.format("include%d", i), include);
-            }
-        }
-        return page;
-    }
-
     /*
     * Format full requested uri from HttpServletRequest
     */
