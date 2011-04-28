@@ -22,6 +22,7 @@
 package eu.europeana.core.querymodel.query;
 
 import eu.delving.core.binding.SolrBindingService;
+import eu.delving.core.util.MultilingualAccessTranslator;
 import eu.delving.metadata.RecordDefinition;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -34,6 +35,7 @@ import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -76,7 +78,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
 
     @Override
     @SuppressWarnings({"AccessingNonPublicFieldOfAnotherObject"})
-    public void initialize(Map<String, String[]> httpParameters, SolrQuery originalBriefSolrQuery, QueryModelFactory queryModelFactory, RecordDefinition metadataModel) throws SolrServerException, EuropeanaQueryException {
+    public void initialize(Map<String, String[]> httpParameters, BreadcrumbFactory breadcrumbFactory, Locale locale, SolrQuery originalBriefSolrQuery, QueryModelFactory queryModelFactory, RecordDefinition metadataModel) throws SolrServerException, EuropeanaQueryException {
         this.query = originalBriefSolrQuery.getQuery();
         int fullDocUriInt = getFullDocInt(httpParameters, originalBriefSolrQuery);
         this.fullDocUriInt = fullDocUriInt;
@@ -90,7 +92,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         }
         List<? extends DocId> list = SolrBindingService.getDocIds(queryResponse);
         final SolrDocumentList response = queryResponse.getResults();
-        this.breadcrumbs = Breadcrumb.createList(originalBriefSolrQuery); // todo comment out
+        this.breadcrumbs = breadcrumbFactory.createList(originalBriefSolrQuery, locale); // todo comment out
         int offset = (int) response.getStart();
         int numFound = (int) response.getNumFound();
         this.numFound = numFound;
@@ -299,9 +301,6 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public DocIdWindowPagerImpl() {
     }
 
     @Override

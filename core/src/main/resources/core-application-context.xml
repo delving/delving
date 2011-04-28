@@ -235,5 +235,7 @@
         <property name="parentMessageSource" ref="exposedKeysMessageSource"/>
     </bean>
 
+    <bean id="breadcrumbFactory" class="eu.europeana.core.querymodel.query.BreadcrumbFactory"/>
+
 </beans>
 

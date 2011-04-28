@@ -130,19 +130,19 @@ public class SolrQueryUtil {
         return queries.toArray(new String[queries.size()]);
     }
 
-    public static SolrQuery createFromQueryParams(Map<String, String[]> params, QueryAnalyzer queryAnalyzer, RecordDefinition recordDefinition) throws EuropeanaQueryException {
+    public static SolrQuery createFromQueryParams(Map<String, String[]> params, QueryAnalyzer queryAnalyzer, Locale locale, RecordDefinition recordDefinition) throws EuropeanaQueryException {
         SolrQuery solrQuery = new SolrQuery();
         if (params.containsKey("query") || params.containsKey("query1")) {
             if (!params.containsKey("query")) {  // support advanced search
-                solrQuery.setQuery(queryAnalyzer.createAdvancedQuery(params));
+                solrQuery.setQuery(queryAnalyzer.createAdvancedQuery(params, locale));
             }
             else {
                 if (params.containsKey("zoeken_in") && !params.get("zoeken_in")[0].equalsIgnoreCase("text")) {
                     String zoekenIn = params.get("zoeken_in")[0];
-                    solrQuery.setQuery(zoekenIn + ":\"" + queryAnalyzer.sanitize(params.get("query")[0]) + "\""); // only get the first one
+                    solrQuery.setQuery(zoekenIn + ":\"" + queryAnalyzer.sanitizeAndTranslate(params.get("query")[0], locale) + "\""); // only get the first one
                 }
                 else {
-                    solrQuery.setQuery(queryAnalyzer.sanitize(params.get("query")[0])); // only get the first one
+                    solrQuery.setQuery(queryAnalyzer.sanitizeAndTranslate(params.get("query")[0], locale)); // only get the first one
                 }
             }
         }
@@ -207,7 +207,7 @@ public class SolrQueryUtil {
         }
         // find rq and add to filter queries
         if (params.containsKey("rq") && params.get("rq").length != 0) {
-            String refineSearchFilterQuery = queryAnalyzer.createRefineSearchFilterQuery(params);
+            String refineSearchFilterQuery = queryAnalyzer.createRefineSearchFilterQuery(params, locale);
             if (!refineSearchFilterQuery.isEmpty()) {
                 solrQuery.addFilterQuery(refineSearchFilterQuery);
             }

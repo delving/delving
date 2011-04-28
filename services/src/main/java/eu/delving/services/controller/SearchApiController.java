@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Locale;
 import java.util.Properties;
 
 /**
@@ -52,9 +53,9 @@ public class SearchApiController {
     private RichSearchAPIServiceFactory richApiServiceFactory;
 
     @RequestMapping("/api/search")
-    public void searchApiController(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void searchApiController(HttpServletRequest request, Locale locale, HttpServletResponse response) throws Exception {
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(richApiServiceFactory.getApiResponse(request, response));
+        response.getWriter().write(richApiServiceFactory.getApiResponse(request, locale, response));
         response.getWriter().close();
     }
 
