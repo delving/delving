@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 DELVING BV
+ * Copyright 2011 DELVING BV
  *
  * Licensed under the EUPL, Version 1.1 or as soon they
  * will be approved by the European Commission - subsequent
@@ -72,7 +72,7 @@ class ImageCacheService(mongoFactory : MongoFactory) {
   }
 
   private[image] def sanitizeUrl(url: String) : String = {
-    val sanitizeUrl : String = url.replaceAll("""\\""", "%5C")
+    val sanitizeUrl : String = url.replaceAll("""\\""", "%5C").replaceAll("\\[", "%5B").replaceAll("\\]", "%5D")
     sanitizeUrl
   }
 
@@ -155,12 +155,11 @@ class ImageCacheService(mongoFactory : MongoFactory) {
     response.setStatus(404)
     response.setContentType("text/xml")
     response.setCharacterEncoding("UTF-8")
-    response.getWriter.write(format("""
-    <?xml encoding="utf-8"?>
+    response.getWriter.write(
+   format("""<?xml encoding="utf-8"?>
     <error>
       <message>Unable to retrieve your image (%s) through the CacheProxy</message>
-    </error>
-    """, url))
+    </error> """, url))
     response.getWriter.close
     response
   }

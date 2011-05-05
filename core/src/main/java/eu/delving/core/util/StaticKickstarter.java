@@ -21,25 +21,27 @@
 package eu.delving.core.util;
 
 import eu.delving.core.storage.StaticRepo;
-import eu.delving.core.storage.impl.StaticRepoImpl;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.text.MessageFormat;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
+import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * This class puts everything from a directory into the StaticRepo to kickstart it, of course only if said has
@@ -49,7 +51,6 @@ import java.util.Properties;
  */
 
 public class StaticKickstarter implements ResourceLoaderAware {
-    private static final String FILE_NAME = "kickstarter";
     private static final String TITLE_PREFIX = "title:";
     private static final String MENU_NAME_PREFIX = "menuName:";
     private static final String MENU_PRIORITY_PREFIX = "menuPriority:";
@@ -57,6 +58,9 @@ public class StaticKickstarter implements ResourceLoaderAware {
     private StaticRepo staticRepo;
     private boolean kicked;
     private ResourceLoader resourceLoader;
+
+    @Autowired
+    private ThemeHandler themeHandler;
 
     public void setStaticRepo(StaticRepo staticRepo) {
         this.staticRepo = staticRepo;
@@ -78,77 +82,95 @@ public class StaticKickstarter implements ResourceLoaderAware {
         public void run() {
             try {
                 Thread.sleep(2000);
-                Resource resource = resourceLoader.getResource(String.format("classpath:%s.txt", FILE_NAME));
-                List<String> files = IOUtils.readLines(resource.getInputStream());
-                for (String file : files) {
-                    if (file.startsWith("/")) {
-                        throw new IOException("Paths are assumed to start in the root, do not prefix with '/'");
+                for (String themeName : themeHandler.getThemeNames()) {
+                    String resourceName = String.format("classpath:kickstarter/%s", themeName);
+                    Resource directoryResource = resourceLoader.getResource(resourceName);
+                    if (!directoryResource.exists()) {
+                        log.info(String.format("Resource '%s' not found", resourceName));
+                        continue;
                     }
-                    resource = resourceLoader.getResource(String.format("classpath:%s/%s", FILE_NAME, file));
-                    ResourceType resourceType = ResourceType.find(file);
-                    String repoPath = resourceType.fileToRepoPath(file);
-                    switch (resourceType) {
-                        case HTML:
-                            StaticRepo.Page page = staticRepo.getPage(repoPath);
-                            if (page.getId() == null) {
-                                List<String> lines = IOUtils.readLines(resource.getInputStream(), "UTF-8");
-                                String title = "";
-                                String menuName = null;
-                                int menuPriority = 1;
-                                Iterator<String> walk = lines.iterator();
-                                while (walk.hasNext()) {
-                                    String line = walk.next().trim();
-                                    if (!line.isEmpty()) {
-                                        if (line.startsWith("<")) {
-                                            break;
-                                        }
-                                        if (line.startsWith(TITLE_PREFIX)) {
-                                            title = line.substring(TITLE_PREFIX.length()).trim();
-                                        }
-                                        else if (line.startsWith(MENU_NAME_PREFIX)) {
-                                            menuName = line.substring(MENU_NAME_PREFIX.length()).trim();
-                                        }
-                                        else if (line.startsWith(MENU_PRIORITY_PREFIX)) {
-                                            menuPriority = Integer.parseInt(line.substring(MENU_PRIORITY_PREFIX.length()).trim());
-                                        }
-                                        else {
-                                            log.warn("Did not understand: " + line);
-                                        }
-                                    }
-                                    walk.remove();
-                                }
-                                StringBuilder content = new StringBuilder();
-                                for (String line : lines) {
-                                    content.append(line).append('\n');
-                                }
-                                page.setContent(title, content.toString(), null);
-                                if (menuName != null) {
-                                    page.setMenu(menuName, menuPriority);
-                                }
-                            }
-                            else {
-                                log.info(String.format("Page %s is already in the static repository, so not updating it", repoPath));
-                            }
-                            break;
-                        case PNG:
-                        case JPG:
-                        case GIF:
-                            if (staticRepo.getImage(repoPath) == null) {
-                                byte[] image = IOUtils.toByteArray(resource.getInputStream());
-                                staticRepo.putImage(repoPath, image);
-                            }
-                            else {
-                                log.info(String.format("Image %s is already in the static repository, so not updating it", repoPath));
-                            }
-                            break;
-                        default:
-                            throw new RuntimeException("Unknown resource type " + resourceType);
+                    File directory = directoryResource.getFile();
+                    if (!directory.isDirectory()) {
+                        log.error(String.format("Resource '%s' not a directory", resourceName));
+                        continue;
                     }
-                    log.info(String.format("Put %s in static repo at %s", file, repoPath));
+                    kickstartDirectory(directory, directory);
                 }
             }
             catch (Exception e) {
                 log.error("Unable to kickstart!", e);
+            }
+        }
+
+        private void kickstartDirectory(File rootDirectory, File directory) throws IOException {
+            log.info(String.format("Kickstarting '%s'", directory.getAbsolutePath()));
+            for (File file : directory.listFiles()) {
+                if (file.isDirectory()) {
+                    kickstartDirectory(rootDirectory, file);
+                    continue;
+                }
+                ResourceType resourceType = ResourceType.find(file);
+                String filePath = file.getAbsolutePath().substring(rootDirectory.getAbsolutePath().length());
+                String repoPath = resourceType.fileToRepoPath(rootDirectory.getName() + filePath);
+                switch (resourceType) {
+                    case HTML:
+                        StaticRepo.Page page = staticRepo.getPage(repoPath);
+                        if (page.getId() == null) {
+                            List<String> lines = IOUtils.readLines(new FileInputStream(file), "UTF-8");
+                            String title = "";
+                            String menuName = null;
+                            int menuPriority = 1;
+                            Iterator<String> walk = lines.iterator();
+                            while (walk.hasNext()) {
+                                String line = walk.next().trim();
+                                if (!line.isEmpty()) {
+                                    if (line.startsWith("<")) {
+                                        break;
+                                    }
+                                    if (line.startsWith(TITLE_PREFIX)) {
+                                        title = line.substring(TITLE_PREFIX.length()).trim();
+                                    }
+                                    else if (line.startsWith(MENU_NAME_PREFIX)) {
+                                        menuName = line.substring(MENU_NAME_PREFIX.length()).trim();
+                                    }
+                                    else if (line.startsWith(MENU_PRIORITY_PREFIX)) {
+                                        menuPriority = Integer.parseInt(line.substring(MENU_PRIORITY_PREFIX.length()).trim());
+                                    }
+                                    else {
+                                        log.warn("Did not understand: " + line);
+                                    }
+                                }
+                                walk.remove();
+                            }
+                            StringBuilder content = new StringBuilder();
+                            for (String line : lines) {
+                                content.append(line).append('\n');
+                            }
+                            page.setContent(title, content.toString(), null);
+                            if (menuName != null) {
+                                page.setMenu(menuName, menuPriority);
+                            }
+                            log.info(String.format("Page %s created", repoPath));
+                        }
+                        else {
+                            log.info(String.format("Page %s is already in the static repository, so not updating it", repoPath));
+                        }
+                        break;
+                    case PNG:
+                    case JPG:
+                    case GIF:
+                        if (staticRepo.getImage(repoPath) == null) {
+                            byte[] image = FileUtils.readFileToByteArray(file);
+                            staticRepo.putImage(repoPath, image);
+                            log.info(String.format("Image %s created", repoPath));
+                        }
+                        else {
+                            log.info(String.format("Image %s is already in the static repository, so not updating it", repoPath));
+                        }
+                        break;
+                    default:
+                        throw new RuntimeException("Unknown resource type " + resourceType);
+                }
             }
         }
     }
@@ -174,13 +196,13 @@ public class StaticKickstarter implements ResourceLoaderAware {
             return filePath.substring(0, filePath.length() - fileSuffix.length()) + pageSurfix;
         }
 
-        static ResourceType find(String filePath) {
+        static ResourceType find(File file) {
             for (ResourceType type : values()) {
-                if (filePath.endsWith(type.fileSuffix)) {
+                if (file.getName().endsWith(type.fileSuffix)) {
                     return type;
                 }
             }
-            throw new RuntimeException("File suffix not recognized: " + filePath);
+            throw new RuntimeException("File suffix not recognized: " + file.getAbsolutePath());
         }
     }
 }

@@ -1,7 +1,7 @@
 /*
- * Copyright 2007 EDL FOUNDATION
+ * Copyright 2011 DELVING BV
  *
- * Licensed under the EUPL, Version 1.1 or - as soon they
+ * Licensed under the EUPL, Version 1.1 or as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * you may not use this work except in compliance with the
@@ -21,8 +21,7 @@
 
 package eu.europeana.core.querymodel.query;
 
-import eu.delving.metadata.MetadataModel;
-import org.springframework.beans.factory.annotation.Autowired;
+import eu.delving.metadata.RecordDefinition;
 
 import java.text.MessageFormat;
 import java.util.Map;
@@ -40,17 +39,10 @@ import java.util.TreeSet;
 
 public class QueryAnalyzer {
 
-    @Autowired
-    private MetadataModel metadataModel;
-
     public QueryAnalyzer() {
     }
 
-    public QueryAnalyzer(MetadataModel metadataModel) {
-        this.metadataModel = metadataModel;
-    }
-
-    public QueryType findSolrQueryType(String query) throws EuropeanaQueryException {
+    public QueryType findSolrQueryType(String query, RecordDefinition recordDefinition) throws EuropeanaQueryException {
         String[] terms = query.split("\\s+");
         for (String term : terms) {
             if (BOOLEAN_KEYWORDS.contains(term)) {
@@ -69,7 +61,7 @@ public class QueryAnalyzer {
                     return QueryType.MORE_LIKE_THIS_QUERY;
                 }
                 else {
-                    if (metadataModel.getRecordDefinition().getFieldNameList().contains(field)) {
+                    if (recordDefinition.getFieldNameList().contains(field)) {
                         return QueryType.ADVANCED_QUERY;
                     }
                     else if ("tag".equalsIgnoreCase(field)) {

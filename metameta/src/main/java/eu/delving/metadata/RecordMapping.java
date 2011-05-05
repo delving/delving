@@ -232,10 +232,10 @@ public class RecordMapping {
                                     "    def v = %s_Dictionary[value.sanitize()]; " +
                                     "    if (v) { " +
                                     "       if (v.endsWith(':')) { " +
-                                    "           \"${v} ${value}\" "+
+                                    "           \"${v} ${value}\" " +
                                     "       }" +
                                     "       else {" +
-                                    "           v "+
+                                    "           v " +
                                     "       }" +
                                     "    }" +
                                     "    else {" +
@@ -339,22 +339,14 @@ public class RecordMapping {
 
     private static int codeIndent(String line) {
         int indent = 0;
-        if (line.startsWith("case") || line.startsWith("default")) {
-            indent++;
-        }
-        else if (line.startsWith("break")) {
-            indent--;
-        }
-        else {
-            for (char c : line.toCharArray()) {
-                switch (c) {
-                    case '}':
-                        indent--;
-                        break;
-                    case '{':
-                        indent++;
-                        break;
-                }
+        for (char c : line.toCharArray()) {
+            switch (c) {
+                case '}':
+                    indent--;
+                    break;
+                case '{':
+                    indent++;
+                    break;
             }
         }
         return indent;

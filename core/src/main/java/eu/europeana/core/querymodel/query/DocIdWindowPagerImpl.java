@@ -1,9 +1,29 @@
+/*
+ * Copyright 2011 DELVING BV
+ *
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
+ */
+
 package eu.europeana.core.querymodel.query;
 
 import eu.delving.core.binding.SolrBindingService;
-import eu.delving.metadata.MetadataModel;
+import eu.delving.metadata.RecordDefinition;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
@@ -41,6 +61,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     private String siwa;
     private String tab;
     private String sortBy;
+    private String theme;
     private List<Breadcrumb> breadcrumbs;
     private int fullDocUriInt;
     private int numFound;
@@ -53,20 +74,14 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         this.portalName = portalName;
     }
 
-    private SolrQuery copySolrQuery(SolrQuery solrQuery, MetadataModel metadataModel) {
-        SolrQuery dCopy = solrQuery.getCopy();
-        dCopy.setFilterQueries(SolrQueryUtil.getFilterQueriesAsOrQueries(solrQuery, metadataModel.getRecordDefinition().getFacetMap()));
-        return dCopy;
-    }
-
     @Override
     @SuppressWarnings({"AccessingNonPublicFieldOfAnotherObject"})
-    public void initialize(Map<String, String[]> httpParameters, SolrQuery originalBriefSolrQuery, SolrServer solrServer, MetadataModel metadataModel) throws SolrServerException, EuropeanaQueryException {
+    public void initialize(Map<String, String[]> httpParameters, SolrQuery originalBriefSolrQuery, QueryModelFactory queryModelFactory, RecordDefinition metadataModel) throws SolrServerException, EuropeanaQueryException {
         this.query = originalBriefSolrQuery.getQuery();
         int fullDocUriInt = getFullDocInt(httpParameters, originalBriefSolrQuery);
         this.fullDocUriInt = fullDocUriInt;
         int solrStartRow = getSolrStart(fullDocUriInt);
-        QueryResponse queryResponse = getQueryResponse(copySolrQuery(originalBriefSolrQuery, metadataModel), solrServer, solrStartRow);
+        QueryResponse queryResponse = queryModelFactory.getPagingQueryResponse(originalBriefSolrQuery, httpParameters, solrStartRow);
         if (queryResponse.getResults() == null) {
             throw new EuropeanaQueryException("no results for this query"); // if no results are found return null to signify that docIdPage can be created.
         }
@@ -101,6 +116,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         this.format = fetchParameter(httpParameters, "format", "");
         this.siwa = fetchParameter(httpParameters, "siwa", "");
         this.sortBy = fetchParameter(httpParameters, "sortBy", "");
+        this.theme = fetchParameter(httpParameters, "theme", "");
         if (this.pageId != null) {
             this.setReturnToResults(httpParameters);
         }
@@ -152,28 +168,6 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         }
     }
 
-    /**
-     * This method queries the SolrSearch engine to get a QueryResponse with 3 DocIds
-     * <p/>
-     * This method does not have to be Unit Tested
-     *
-     * @param originalBriefSolrQuery
-     * @param solrServer
-     * @param solrStartRow
-     * @return
-     * @throws EuropeanaQueryException
-     * @throws org.apache.solr.client.solrj.SolrServerException
-     *
-     */
-    @SuppressWarnings({"AccessingNonPublicFieldOfAnotherObject"})
-    private QueryResponse getQueryResponse(SolrQuery originalBriefSolrQuery, SolrServer solrServer, int solrStartRow) throws EuropeanaQueryException, SolrServerException {
-        originalBriefSolrQuery.setFields("europeana_uri");
-        originalBriefSolrQuery.setStart(solrStartRow);
-        originalBriefSolrQuery.setRows(3);
-//        this.breadcrumbs = Breadcrumb.createList(originalBriefSolrQuery); //todo decide for or queries
-        return solrServer.query(originalBriefSolrQuery);
-    }
-
     private void setReturnToResults(Map<String, String[]> httpParameters) {
         StringBuilder out = new StringBuilder();
         if (pageId.equalsIgnoreCase("brd")) {
@@ -211,6 +205,9 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         }
         if (!sortBy.isEmpty()) {
             out.append("&amp;sortBy=").append(sortBy);
+        }
+        if (!theme.isEmpty()) {
+            out.append("&amp;theme=").append(theme);
         }
         out.append("&amp;rtr=true");
         returnToResults = out.toString();

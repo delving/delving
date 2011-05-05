@@ -1,4 +1,12 @@
 <harvest-config outputDirectory="../oai_xml">
+  <harvest id="teylers" output="00201_M_NL_hmr">
+    <prefix>oai_dc</prefix>
+    <publisher>ICN</publisher>
+    <lastHarvest>2011-04-21 14:36:10.214 CEST</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://teylers.rnatoolset.net/oai/default.aspx</baseUrl>
+    <lastToken>e390bf8a-927f-41c8-b7ca-c7d19aada805</lastToken>
+  </harvest>
   <harvest id="hmr" output="00201_M_NL_hmr">
     <prefix>oai_dc</prefix>
     <publisher>ICN</publisher>

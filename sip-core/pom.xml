@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2011 Delving B.V.
+  ~ Copyright 2011 DELVING BV
   ~
-  ~ Licensed under the EUPL, Version 1.1 or as soon they
+  ~ Licensed under the EUPL, Version 1.1 or as soon they
   ~ will be approved by the European Commission - subsequent
   ~ versions of the EUPL (the "Licence");
   ~ you may not use this work except in compliance with the
@@ -31,7 +31,7 @@
     <artifactId>sip-core</artifactId>
     <packaging>jar</packaging>
     <name>SIP-Core</name>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.2.4-SNAPSHOT</version>
     <description>
         A Minimal set of classes shared between client and server, avoiding dependency on core module.
     </description>
@@ -69,7 +69,7 @@
     <parent>
         <groupId>eu.delving</groupId>
         <artifactId>parent</artifactId>
-        <version>0.2.0</version>
+        <version>0.2.5</version>
     </parent>
 
     <build>
@@ -89,7 +89,7 @@
         <dependency>
             <groupId>eu.delving</groupId>
             <artifactId>metameta</artifactId>
-            <version>0.2.0-SNAPSHOT</version>
+            <version>0.2.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

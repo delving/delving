@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  ~ Copyright 2011 Delving B.V.
+  ~ Copyright 2011 DELVING BV
   ~
-  ~ Licensed under the EUPL, Version 1.1 or as soon they
+  ~ Licensed under the EUPL, Version 1.1 or as soon they
   ~ will be approved by the European Commission - subsequent
   ~ versions of the EUPL (the "Licence");
   ~ you may not use this work except in compliance with the
@@ -32,7 +32,7 @@
     <artifactId>core</artifactId>
     <packaging>jar</packaging>
     <name>Delving Shared Core Classes</name>
-    <version>0.2.2-SNAPSHOT</version>
+    <version>0.2.5-SNAPSHOT</version>
     <description>
         This module contains the lion's share of the Delving Framework code
     </description>
@@ -70,7 +70,7 @@
     <parent>
         <groupId>eu.delving</groupId>
         <artifactId>parent</artifactId>
-        <version>0.2.0</version>
+        <version>0.2.5</version>
     </parent>
 
     <build>
@@ -107,6 +107,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+				<version>2.4.3</version>
                 <configuration>
                     <includes>
                         <include>**/*Spec.class</include>
@@ -120,7 +121,7 @@
         <dependency>
             <groupId>eu.delving</groupId>
             <artifactId>metameta</artifactId>
-            <version>0.2.0-SNAPSHOT</version>
+            <version>0.2.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

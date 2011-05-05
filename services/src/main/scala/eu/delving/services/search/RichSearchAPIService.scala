@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 DELVING BV
+ * Copyright 2011 DELVING BV
  *
  * Licensed under the EUPL, Version 1.1 or as soon they
  * will be approved by the European Commission - subsequent
@@ -39,8 +39,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import reflect.BeanProperty
 import eu.delving.services.exceptions.AccessKeyException
 import java.util.{Locale, Properties, Map => JMap}
-import eu.delving.core.util.MultilingualAccessTranslator
 import java.lang.String
+import eu.delving.core.util.{ThemeInterceptor, MultilingualAccessTranslator}
 
 class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServletResponse,
                            beanQueryModelFactory: BeanQueryModelFactory, launchProperties: Properties,
@@ -90,7 +90,7 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
     val userQuery = request.getParameter("query")
     require(!userQuery.isEmpty)
     val jParams = request.getParameterMap.asInstanceOf[JMap[String, Array[String]]]
-    val solrQuery: SolrQuery = SolrQueryUtil.createFromQueryParams(jParams, queryAnalyzer)
+    val solrQuery: SolrQuery = SolrQueryUtil.createFromQueryParams(jParams, queryAnalyzer, ThemeInterceptor.getTheme.getRecordDefinition)
     solrQuery.setFields("*,score")
     val briefResultView = beanQueryModelFactory.getBriefResultView(solrQuery, solrQuery.getQuery, jParams)
     clickStreamLogger.logApiBriefView(request, briefResultView, solrQuery)

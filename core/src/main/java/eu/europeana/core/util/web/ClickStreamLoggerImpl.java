@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 DELVING BV
+ * Copyright 2011 DELVING BV
  *
  * Licensed under the EUPL, Version 1.1 or as soon they
  * will be approved by the European Commission - subsequent
@@ -22,6 +22,8 @@
 package eu.europeana.core.util.web;
 
 import eu.delving.core.storage.User;
+import eu.delving.core.util.ClickStreamLoggerInterceptor;
+import eu.delving.core.util.ThemeInterceptor;
 import eu.delving.domain.Language;
 import eu.europeana.core.querymodel.query.BriefBeanView;
 import eu.europeana.core.querymodel.query.DocIdWindowPager;
@@ -209,6 +211,7 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
         String utma = "";
         String utmb = "";
         String utmc = "";
+        String utmz = "";
         String languageCookie = "";
         if (cookies != null) {
             for (Cookie cookie : cookies) {
@@ -221,25 +224,19 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
                 else if (cookie.getName().equalsIgnoreCase("__utmc")) {
                     utmc = cookie.getValue();
                 }
+                else if (cookie.getName().equalsIgnoreCase("__utmz")) {
+                    utmz = cookie.getValue();
+                }
                 else if (cookie.getName().equalsIgnoreCase("org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE")) {
                     languageCookie = cookie.getValue();
                 }
             }
         }
-        DateTime now = new DateTime();
-
-        long timeElapsed = 0;
-        try {
-            final DateTime startRequestDateTime = (DateTime) request.getAttribute("startRequestDateTime");
-            timeElapsed = now.getMillis() - startRequestDateTime.getMillis();
-        } catch (Exception e) {
-            log.error("Unable to get startRequestTime from HttpServletRequest. Probably missing the cslInterceptor");
-        }
         return MessageFormat.format(
                 "userId={0}, lang={1}, req={4}, date={2}, ip={3}, user-agent={5}, referer={6}, utma={8}, " +
-                        "utmb={9}, utmc={10}, v={7}, duration={11}, langCookie={12}",
-                userId, language, now, ip, reqUrl, userAgent, referer, VERSION, utma, utmb, utmc,
-                timeElapsed, languageCookie);
+                        "utmb={9}, utmc={10}, utmz={13}, v={7}, duration={11}, langCookie={12}, defaultLanguage={14}",
+                userId, language, new DateTime(), ip, reqUrl, userAgent, referer, VERSION, utma, utmb, utmc,
+                ClickStreamLoggerInterceptor.getTimeElapsed(), languageCookie, utmz, ThemeInterceptor.getTheme().getDefaultLanguage());
     }
 
     private static String getRequestUrl(HttpServletRequest request) {

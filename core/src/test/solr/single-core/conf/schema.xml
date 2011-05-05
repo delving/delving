@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
- Licensed to the Apache Software Foundation (ASF) under one or more
- contributor license agreements.  See the NOTICE file distributed with
- this work for additional information regarding copyright ownership.
- The ASF licenses this file to You under the Apache License, Version 2.0
- (the "License"); you may not use this file except in compliance with
- the License.  You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
--->
+  ~ Copyright 2011 DELVING BV
+  ~
+  ~ Licensed under the EUPL, Version 1.1 or as soon they
+  ~ will be approved by the European Commission - subsequent
+  ~ versions of the EUPL (the "Licence");
+  ~ you may not use this work except in compliance with the
+  ~ Licence.
+  ~ You may obtain a copy of the Licence at:
+  ~
+  ~ http://ec.europa.eu/idabc/eupl
+  ~
+  ~ Unless required by applicable law or agreed to in
+  ~ writing, software distributed under the Licence is
+  ~ distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+  ~ express or implied.
+  ~ See the Licence for the specific language governing
+  ~ permissions and limitations under the Licence.
+  -->
 
 <!--
  This is the Solr schema file. This file should be named "schema.xml" and
@@ -578,6 +582,7 @@
              <field name="SUBJECT" type="string" indexed="true" stored="true" multiValued="true" />
              <field name="TYPE" type="string" indexed="true" stored="true" multiValued="true" />
              <field name="DCTYPE" type="string" indexed="true" stored="true" multiValued="true" />
+             <field name="DCDATE" type="string" indexed="true" stored="true" multiValued="true" />
              <field name="YEAR" type="string" indexed="true" stored="true" multiValued="true" />
              <field name="HASDIGITALOBJECT" type="boolean" indexed="true" stored="true" multiValued="false" />
              <field name="PROVIDER" type="string" indexed="true" stored="true" multiValued="true" />
@@ -593,6 +598,8 @@
              <field name="LANDEDPROPERTY" type="string" indexed="true" stored="true" multiValued="true" />
              <!--abm content provider is DataPRovider facet-->
              <field name="ABOUTORGANISATION" type="string" indexed="true" stored="true" multiValued="true"/>
+             <field name="MATERIAAL" type="string" indexed="true" stored="true" multiValued="true"/>
+             <field name="COLLPART" type="string" indexed="true" stored="true" multiValued="true"/>
 
              <!-- ABM fields -->
              <field name="abm_digitised" type="string" indexed="true" stored="true" multiValued="true"/>
@@ -784,11 +791,15 @@
    <copyField source="europeana_country" dest="COUNTRY" />
    <copyField source="europeana_year" dest="YEAR" />
    <copyField source="europeana_provider" dest="PROVIDER" />
+   <copyField source="dc_date" dest="DCDATE" />
+   <copyField source="dc_subject" dest="SUBJECT" />
    <copyField source="europeana_hasDigitalObject" dest="HASDIGITALOBJECT" />
    <copyField source="europeana_dataProvider" dest="DATAPROVIDER" />
    <copyField source="europeana_collectionTitle" dest="COLLECTION" />
    <!-- ICN Facets -->
    <copyField source="icn_technique" dest="TECHNIQUE" />
+   <copyField source="icn_material" dest="MATERIAAL" />
+   <copyField source="icn_collectionPart" dest="COLLPART" />
    <!-- ABM Facets -->
    <copyField source="abm_landedProperty" dest="LANDEDPROPERTY" />
    <copyField source="abm_municipality" dest="MUNICIPALITY" />

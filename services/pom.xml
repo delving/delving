@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2011 Delving B.V.
+  ~ Copyright 2011 DELVING BV
   ~
-  ~ Licensed under the EUPL, Version 1.1 or as soon they
+  ~ Licensed under the EUPL, Version 1.1 or as soon they
   ~ will be approved by the European Commission - subsequent
   ~ versions of the EUPL (the "Licence");
   ~ you may not use this work except in compliance with the
@@ -31,7 +31,7 @@
     <artifactId>services</artifactId>
     <packaging>war</packaging>
     <name>Services</name>
-    <version>0.2.1</version>
+    <version>0.2.5</version>
     <description>
         Services Web-Application for all Delving core functionality
     </description>
@@ -69,7 +69,7 @@
     <parent>
         <groupId>eu.delving</groupId>
         <artifactId>parent</artifactId>
-        <version>0.2.0</version>
+        <version>0.2.5</version>
     </parent>
 
     <pluginRepositories>
@@ -89,21 +89,6 @@
     <build>
         <defaultGoal>package</defaultGoal>
         <plugins>
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.4.1</version>
-                <configuration>
-                    <groups>regression</groups>
-                    <parallel>true</parallel>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.scala-tools</groupId>
                 <artifactId>maven-scala-plugin</artifactId>
@@ -136,10 +121,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.4.3</version>
                 <configuration>
                     <includes>
                         <include>**/*Spec.class</include>
                     </includes>
+                    <groups>regression</groups>
+                    <parallel>true</parallel>
                 </configuration>
             </plugin>
         </plugins>
@@ -149,12 +137,12 @@
         <dependency>
             <groupId>eu.delving</groupId>
             <artifactId>core</artifactId>
-            <version>0.2.2-SNAPSHOT</version>
+            <version>0.2.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eu.delving</groupId>
             <artifactId>sip-core</artifactId>
-            <version>0.2.0-SNAPSHOT</version>
+            <version>0.2.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>

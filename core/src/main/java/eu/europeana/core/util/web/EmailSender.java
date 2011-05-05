@@ -1,5 +1,29 @@
+/*
+ * Copyright 2011 DELVING BV
+ *
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
+ */
+
 package eu.europeana.core.util.web;
 
+import eu.delving.core.util.PortalTheme;
+import eu.delving.core.util.ThemeHandler;
+import eu.delving.core.util.ThemeInterceptor;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
@@ -9,10 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
 import java.text.MessageFormat;
 import java.util.Map;
 import java.util.TreeMap;
@@ -28,9 +49,13 @@ public class EmailSender {
     private static final String FROM_EMAIL = "FROM_EMAIL";
     private static final String TO_EMAIL = "TO_EMAIL";
     private static final String SUBJECT = "SUBJECT";
-    private static final String TEMPLATE_PATTERN = "/email/%s.ftl";
+    private static final String THEMELESS_FTL = "/email/%s.ftl";
+    private static final String THEMED_FTL = "/email/%s/%s.ftl";
     private Logger log = Logger.getLogger(getClass());
     private JavaMailSender mailSender;
+
+    @Autowired
+    private ThemeHandler themeHandler;
 
     @Autowired
     public void setMailSender(JavaMailSender mailSender) {
@@ -81,7 +106,22 @@ public class EmailSender {
 
         public void send() {
             try {
-                String fileString = IOUtils.toString(getClass().getResourceAsStream(String.format(TEMPLATE_PATTERN, templateName)), "UTF-8");
+                PortalTheme theme = ThemeInterceptor.getTheme();
+                if (theme == null ) {
+                    theme = themeHandler.getDefaultTheme();
+                }
+                String portalTheme = "theme/" + theme.getName();
+                String themedResource = String.format(THEMED_FTL, portalTheme, templateName);
+                InputStream inputStream = getClass().getResourceAsStream(themedResource);
+                if (inputStream == null) {
+                    String themelessResource = String.format(THEMELESS_FTL, templateName);
+                    log.info(String.format("Did not find %s, defaulting to %s", themedResource, themelessResource));
+                    inputStream = getClass().getResourceAsStream(themelessResource);
+                }
+                if (inputStream == null) {
+                    throw new IllegalStateException(String.format("No template found named %s in theme %s", templateName, portalTheme));
+                }
+                String fileString = IOUtils.toString(inputStream, "UTF-8");
                 int divider = fileString.indexOf(DIVIDER);
                 if (divider > 0) {
                     String propertiesString = fileString.substring(0, divider);

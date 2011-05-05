@@ -26,6 +26,7 @@ import groovy.lang.DelegatingMetaClass;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClass;
 import groovy.xml.QName;
+import org.codehaus.groovy.runtime.NullObject;
 
 import java.util.Collection;
 import java.util.List;
@@ -224,6 +225,9 @@ public class GroovyNode {
                 }
             }
         }
+        if (answer.isEmpty()) {
+            answer.add(NullObject.getNullObject());
+        }
         return answer;
     }
 
@@ -251,101 +255,6 @@ public class GroovyNode {
             throw new RuntimeException(value.getClass().getName());
         }
     }
-
-//    /**
-//     * Provide a collection of all the nodes in the tree
-//     * using a breadth-first traversal.
-//     *
-//     * @return the list of (breadth-first) ordered nodes
-//     */
-//    public List<Object> breadthFirst() {
-//        List<Object> answer = new GroovyList();
-//        answer.add(this);
-//        answer.addAll(breadthFirstRest());
-//        return answer;
-//    }
-//    /**
-//     * Provides lookup of elements by QName.
-//     *
-//     * @param name the QName of interest
-//     * @return the nodes matching name
-//     */
-//    private List<Object> breadthFirstRest() {
-//        List<Object> answer = new GroovyList();
-//        List<Object> nextLevelChildren = getDirectChildren();
-//        while (!nextLevelChildren.isEmpty()) {
-//            List<Object> working = new GroovyList(nextLevelChildren);
-//            nextLevelChildren = new GroovyList();
-//            for (Object aWorking : working) {
-//                GroovyNode childNode = (GroovyNode) aWorking;
-//                answer.add(childNode);
-//                List<Object> children = childNode.getDirectChildren();
-//                nextLevelChildren.addAll(children);
-//            }
-//        }
-//        return answer;
-//    }
-//
-//    public GroovyList getAt(QName name) {
-//        GroovyList answer = new GroovyList();
-//        for (Object child : children()) {
-//            if (child instanceof GroovyNode) {
-//                GroovyNode childNode = (GroovyNode) child;
-//                Object childNodeName = childNode.name();
-//                if (name.matches(childNodeName)) {
-//                    answer.add(childNode);
-//                }
-//            }
-//        }
-//        return answer;
-//    }
-//
-//    private List<Object> getDirectChildren() {
-//        List<Object> answer = new GroovyList();
-//        for (Iterator iter = InvokerHelper.asIterator(value); iter.hasNext();) {
-//            Object child = iter.next();
-//            if (child instanceof GroovyNode) {
-//                GroovyNode childNode = (GroovyNode) child;
-//                answer.add(childNode);
-//            }
-//        }
-//        return answer;
-//    }
-//
-//    public boolean remove(GroovyNode child) {
-//        child.parent = null;
-//        return getParentList(this).remove(child);
-//    }
-//
-//    public GroovyNode appendNode(Object name, Map<String, String> attributes) {
-//        return new GroovyNode(this, name, attributes);
-//    }
-//
-//    public GroovyNode appendNode(Object name) {
-//        return new GroovyNode(this, name);
-//    }
-//
-//    public GroovyNode appendNode(Object name, Object value) {
-//        return new GroovyNode(this, name, value);
-//    }
-//
-//    public GroovyNode appendNode(Object name, Map<String, String> attributes, Object value) {
-//        return new GroovyNode(this, name, attributes, value);
-//    }
-//
-//    public Iterator iterator() {
-//        return children().iterator();
-//    }
-//
-//    public List<String> names() {
-//        List<String> names = new ArrayList<String>();
-//        for (Object o : children()) {
-//            names.add(((GroovyNode) o).name().toString());
-//        }
-//        return names;
-//    }
-
-
 
     protected static void setMetaClass(final MetaClass metaClass, Class nodeClass) {
         final MetaClass newMetaClass = new DelegatingMetaClass(metaClass) {

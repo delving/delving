@@ -1,5 +1,5 @@
 #
-# Copyright 2010 DELVING BV
+# Copyright 2011 DELVING BV
 #
 # Licensed under the EUPL, Version 1.1 or as soon they
 # will be approved by the European Commission - subsequent
@@ -132,37 +132,6 @@ trigger.repeatInterval = 3000
 
 ###############################################
 #                                             #
-#       Portal related Email settings         #
-#                                             #
-###############################################
-
-# The administrator email address
-
-admin.to       = username@email.com
-
-# The address the exceptions that have occurred are send to (should be a developer normally)
-
-exception.to   = username@email.com
-
-# Where the contents of the feedback forms are emailed to.
-
-feedback.to    = username@email.com
-
-# Where the registration notifications are emailed to.
-
-register.to    = username@email.com
-
-# The system reply address. Should be noreply@yourorganisaton.com
-
-system.from    = noreply@europeana.eu
-
-# The feedback reply address. Should be noreply@yourorganisaton.com
-
-feedback.from  = noreply@europeana.eu
-
-
-###############################################
-#                                             #
 #       SMTP connection settings              #
 #                                             #
 ###############################################
@@ -224,45 +193,19 @@ log4j.xml=/tmp/log4j.xml
 
 portal.name = portal
 
-# The name that is used by the portal to Name the pages and the application
+# Path to the themes.xml file that defines the different themes for the portal
 
-portal.displayName = Delving
-
-# where freemarker can find its templates for a theme
-
-portal.freemarker.path = WEB-INF/templates/theme/default
-
-# The name of the theme used by the portal. Primarily used to prefix links to css/javascript and css images
-
-portal.theme = theme/default
-
-# The color scheme selected for the chosen theme
-
-portal.color = azure
-
-# The absolute external baseUrl for the portal excluding its name. so Server + port (if relevant)
-
-portal.baseUrl = http://localhost:8080
+portal.theme.file = path/to/delving_themes/file
 
 # The name of the MongoDB database that is used by the Portal CMS. At a later stage this will be deferred to the Services module.
 
 portal.mongo.dbName = PoolDB
 
+# where freemarker can find its templates for a theme
+
+portal.freemarker.path = WEB-INF/templates/theme/default
+
 # The url used by the Portal to get images from the Thumbnail cache instead of directly from the provider websites.
 # (Currently not used.)
 
 cacheUrl = http://localhost:8983/services/image?
-
-# This is the tracking code for google analytics. If it is empty the badge is not included in the footer
-
-googleAnalytics.trackingCode =
-
-# tracking code for addThis.com functionality. If empty the functionality is hidden
-
-addThis.trackingCode =
-
-#
-# Where the image annotation tool can be found. If this property is set a
-# link will be created in the actions sidebar of the full-doc view.
-#
-#image.annotation.tool.base.url=../image-annotation-frontend/annotate.jsp

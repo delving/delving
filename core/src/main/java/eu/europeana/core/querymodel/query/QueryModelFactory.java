@@ -1,7 +1,7 @@
 /*
- * Copyright 2007 EDL FOUNDATION
+ * Copyright 2011 DELVING BV
  *
- * Licensed under the EUPL, Version 1.0 or - as soon they
+ * Licensed under the EUPL, Version 1.1 or as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * you may not use this work except in compliance with the
@@ -66,4 +66,8 @@ public interface QueryModelFactory {
     List<? extends BriefDoc> getBriefDocListFromQueryResponse(QueryResponse solrResponse);
 
     List<? extends BriefDoc> getMatchDocFromDocumentList(SolrDocumentList matchDoc);
+
+    QueryResponse getSolrResponseWithHiddenQueryFilters(SolrQuery solrQuery, Map<String, String[]> params) throws EuropeanaQueryException;
+
+    QueryResponse getPagingQueryResponse(SolrQuery solrQuery, Map<String, String[]> params, int solrStartRow) throws EuropeanaQueryException, SolrServerException;
 }
