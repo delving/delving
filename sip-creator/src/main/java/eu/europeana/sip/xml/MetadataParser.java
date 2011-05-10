@@ -111,7 +111,7 @@ public class MetadataParser {
                     break;
                 case XMLEvent.END_ELEMENT:
                     if (node != null) {
-                        String valueString = value.toString().replaceAll("\n", " ").replaceAll(" +", " ").trim();
+                        String valueString = removeMultiLines(value.toString());
                         value.setLength(0);
                         if (valueString.length() > 0) {
                             node.setValue(valueString);
@@ -156,6 +156,15 @@ public class MetadataParser {
         }
         catch (XMLStreamException e) {
             e.printStackTrace(); // should never happen
+        }
+    }
+
+    private static String removeMultiLines(String multi) {
+        if (multi.contains("\n")) {
+            return multi.replaceAll("\n", " ").replaceAll(" +", " ").trim();
+        }
+        else {
+            return multi;
         }
     }
 
