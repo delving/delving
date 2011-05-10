@@ -131,31 +131,19 @@ public class RecordPanel extends JPanel {
     private ActionListener seek = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent event) {
-            int recordNumber;
-            try {
-                recordNumber = Integer.parseInt(seekField.getText());
-                if (recordNumber <= 0) {
-                    recordNumber = 1;
+            seekButton.setEnabled(false);
+            final ProgressMonitor progressMonitor = new ProgressMonitor(
+                    SwingUtilities.getRoot(RecordPanel.this),
+                    "<html><h2>Scanning</h2>",
+                    "Input Records",
+                    0, 100
+            );
+            sipModel.seekRecord(seekField.getText(), new ProgressListener.Adapter(progressMonitor) {
+                @Override
+                public void swingFinished(boolean success) {
+                    seekButton.setEnabled(true);
                 }
-            }
-            catch (NumberFormatException e) {
-                recordNumber = 1;
-            }
-            if (currentMetadataRecord == null || recordNumber != currentMetadataRecord.getRecordNumber()) {
-                seekButton.setEnabled(false);
-                final ProgressMonitor progressMonitor = new ProgressMonitor(
-                        SwingUtilities.getRoot(RecordPanel.this),
-                        "<html><h2>Scanning</h2>",
-                        "Input Records",
-                        0,100
-                );
-                sipModel.seekRecord(recordNumber, new ProgressListener.Adapter(progressMonitor) {
-                    @Override
-                    public void swingFinished(boolean success) {
-                        seekButton.setEnabled(true);
-                    }
-                });
-            }
+            });
         }
     };
 }

@@ -61,6 +61,8 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * This model is behind the whole sip creator, as a facade for all the models related to a data set
@@ -499,7 +501,18 @@ public class SipModel {
     }
 
     public void seekRecord(int recordNumber, ProgressListener progressListener) {
+        seekRecord(String.valueOf(recordNumber), progressListener);
+    }
+
+    public void seekRecord(String string, ProgressListener progressListener) {
         checkSwingThread();
+        int recordNumber;
+        try {
+            recordNumber = Integer.parseInt(string);
+        }
+        catch (NumberFormatException e) {
+            recordNumber = -1;
+        }
         if (metadataParser != null) {
             metadataParser.close();
             metadataParser = null;
@@ -509,13 +522,24 @@ public class SipModel {
         }
         Path recordRoot = getRecordRoot();
         if (recordRoot != null) {
-            executor.execute(new RecordFetcher(recordNumber, progressListener));
+            if (recordNumber >= 0) {
+                executor.execute(new RecordNumberFetcher(recordNumber, progressListener));
+            }
+            else {
+                try {
+                    Pattern pattern = Pattern.compile(string, Pattern.CASE_INSENSITIVE);
+                    executor.execute(new RecordRegexFetcher(pattern, progressListener));
+                }
+                catch (PatternSyntaxException e) {
+                    userNotifier.tellUser("Invalid regular expression pattern in seek field.");
+                }
+            }
         }
     }
 
     public void nextRecord() {
         checkSwingThread();
-        executor.execute(new RecordFetcher(1, null));
+        executor.execute(new RecordNumberFetcher(1, null));
     }
 
     public CompileModel getRecordCompileModel() {
@@ -586,11 +610,11 @@ public class SipModel {
         setStatistics(null);
     }
 
-    private class RecordFetcher implements Runnable {
+    private class RecordNumberFetcher implements Runnable {
         private int recordNumber;
         private ProgressListener progressListener;
 
-        private RecordFetcher(int recordNumber, ProgressListener progressListener) {
+        private RecordNumberFetcher(int recordNumber, ProgressListener progressListener) {
             this.recordNumber = recordNumber;
             this.progressListener = progressListener;
         }
@@ -625,6 +649,52 @@ public class SipModel {
             }
             catch (Exception e) {
                 userNotifier.tellUser("Unable to fetch the next record", e);
+                metadataParser = null;
+            }
+        }
+    }
+
+    private class RecordRegexFetcher implements Runnable {
+        private Pattern pattern;
+        private ProgressListener progressListener;
+
+        private RecordRegexFetcher(Pattern pattern, ProgressListener progressListener) {
+            this.pattern = pattern;
+            this.progressListener = progressListener;
+        }
+
+        @Override
+        public void run() {
+            Path recordRoot = getRecordRoot();
+            if (recordRoot == null) {
+                return;
+            }
+            try {
+                if (metadataParser == null) {
+                    metadataParser = new MetadataParser(dataSetStore.createXmlInputStream(), recordRoot, getRecordCount(), progressListener);
+                }
+                else {
+                    metadataParser.setProgressListener(progressListener);
+                }
+                while ((metadataRecord = metadataParser.nextRecord()) != null) {
+                    if (metadataRecord.contains(pattern)) {
+                        break;
+                    }
+                }
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (ParseListener parseListener : parseListeners) {
+                            parseListener.updatedRecord(metadataRecord);
+                        }
+                        if (progressListener != null) {
+                            progressListener.finished(true);
+                        }
+                    }
+                });
+            }
+            catch (Exception e) {
+                userNotifier.tellUser("Unable to find a matching record", e);
                 metadataParser = null;
             }
         }
