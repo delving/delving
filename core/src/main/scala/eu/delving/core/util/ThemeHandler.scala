@@ -41,7 +41,7 @@ class ThemeHandler {
 
   private lazy val themeList: Seq[PortalTheme] = loadThemes()
 
-  def getThemeNames() : java.util.Set[String] = {
+  def getThemeNames: java.util.Set[String] = {
     val set :java.util.Set[String] = new java.util.TreeSet[String]
     themeList.foreach(theme => set.add(theme.name))
     set

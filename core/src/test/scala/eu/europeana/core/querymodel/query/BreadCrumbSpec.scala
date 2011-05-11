@@ -9,7 +9,7 @@ import _root_.org.apache.solr.client.solrj.SolrQuery
 import scala.collection.JavaConversions._
 import collection.immutable.List
 import java.util.Locale
-import eu.delving.core.util.MultilingualAccessTranslator
+import eu.delving.core.util.LocalizedFieldNames
 
 /**
  *

@@ -21,11 +21,9 @@
 
 package eu.europeana.core.querymodel.query;
 
-import eu.delving.core.util.MultilingualAccessTranslator;
+import eu.delving.core.util.ThemeInterceptor;
 import eu.delving.metadata.RecordDefinition;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -43,9 +41,6 @@ import java.util.TreeSet;
  */
 
 public class QueryAnalyzer {
-
-    @Autowired
-    private MultilingualAccessTranslator multilingualAccessTranslator;
 
     public QueryType findSolrQueryType(String query, RecordDefinition recordDefinition) throws EuropeanaQueryException {
         String[] terms = query.split("\\s+");
@@ -119,7 +114,7 @@ public class QueryAnalyzer {
             else {
                 String facet = part.substring(0, colon);
                 String value = part.substring(colon+1);
-                facet = multilingualAccessTranslator.toFieldName(facet, locale);
+                facet = ThemeInterceptor.getLookup().toFieldName(facet, locale);
                 out.append(facet).append(":").append(value).append(" ");
             }
         }

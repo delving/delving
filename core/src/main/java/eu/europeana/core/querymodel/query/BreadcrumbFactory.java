@@ -1,8 +1,7 @@
 package eu.europeana.core.querymodel.query;
 
-import eu.delving.core.util.MultilingualAccessTranslator;
+import eu.delving.core.util.ThemeInterceptor;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -20,9 +19,6 @@ import java.util.TreeSet;
 
 public class BreadcrumbFactory {
     private static final String FACET_PROMPT = "&amp;qf=";
-
-    @Autowired
-    private MultilingualAccessTranslator multilingualAccessTranslator;
 
     public List<Breadcrumb> createList(SolrQuery solrQuery, Locale locale) throws EuropeanaQueryException {
         if (solrQuery.getQuery() == null) {
@@ -44,7 +40,7 @@ public class BreadcrumbFactory {
                         String facetValue = facetTerm.substring(colon + 1);
                         appendToURI(out, facetName, facetValue);
                         if (count-- == 0) {
-                            String translatedFacetName = multilingualAccessTranslator.toLocalizedName(facetName, locale);
+                            String translatedFacetName = ThemeInterceptor.getLookup().toLocalizedName(facetName, locale);
                             breadcrumbs.add(new Breadcrumb(out.toString(), translatedFacetName + ":" + facetValue, facetName, facetValue));
                             break;
                         }
@@ -92,7 +88,7 @@ public class BreadcrumbFactory {
             else {
                 String facet = part.substring(0, colon);
                 String value = part.substring(colon+1);
-                facet = multilingualAccessTranslator.toLocalizedName(facet, locale);
+                facet = ThemeInterceptor.getLookup().toLocalizedName(facet, locale);
                 out.append(facet).append(":").append(value).append(" ");
             }
         }

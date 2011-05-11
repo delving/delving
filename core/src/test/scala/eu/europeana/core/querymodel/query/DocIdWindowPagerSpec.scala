@@ -33,7 +33,7 @@ import reflect.BeanProperty
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import org.springframework.test.context.ContextConfiguration
-import eu.delving.core.util.MultilingualAccessTranslator
+import eu.delving.core.util.LocalizedFieldNames
 
 /**
  *

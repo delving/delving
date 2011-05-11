@@ -21,6 +21,7 @@
 
 package eu.delving.services.controller;
 
+import eu.delving.core.util.ThemeInterceptor;
 import eu.delving.services.search.OpenSearchService;
 import eu.delving.services.search.RichSearchAPIServiceFactory;
 import eu.europeana.core.BeanQueryModelFactory;
@@ -55,7 +56,7 @@ public class SearchApiController {
     @RequestMapping("/api/search")
     public void searchApiController(HttpServletRequest request, Locale locale, HttpServletResponse response) throws Exception {
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(richApiServiceFactory.getApiResponse(request, locale, response));
+        response.getWriter().write(richApiServiceFactory.getApiResponse(request, locale, ThemeInterceptor.getLookup(), response));
         response.getWriter().close();
     }
 

@@ -21,7 +21,6 @@
 
 package eu.europeana.core.querymodel.query;
 
-import eu.delving.core.util.MultilingualAccessTranslator;
 import eu.delving.metadata.RecordDefinition;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;

@@ -30,6 +30,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 
 /**
  * Put a theme into thread local for subsequent use during handling of the request
@@ -40,9 +41,13 @@ import javax.servlet.http.HttpServletResponse;
 public class ThemeInterceptor extends HandlerInterceptorAdapter {
 
     private static ThreadLocal<PortalTheme> themeThreadLocal = new ThreadLocal<PortalTheme>();
+    private static ThreadLocal<LocalizedFieldNames.Lookup> lookupThreadLocal = new ThreadLocal<LocalizedFieldNames.Lookup>();
 
     @Autowired
     private ThemeHandler themeHandler;
+
+    @Autowired
+    private LocalizedFieldNames localizedFieldNames;
 
     public static PortalTheme getTheme() {
         if (themeThreadLocal.get() == null) {
@@ -51,6 +56,15 @@ public class ThemeInterceptor extends HandlerInterceptorAdapter {
         }
         return themeThreadLocal.get();
     }
+
+    public static LocalizedFieldNames.Lookup getLookup() {
+        if (lookupThreadLocal.get() == null) {
+            Logger.getLogger(ThemeInterceptor.class).error("This interceptor must be installed!");
+            return null;
+        }
+        return lookupThreadLocal.get();
+    }
+
 
      /**
      * This creates the default ModelAndView for the portal applications. It should be used in every Controller.
@@ -71,6 +85,7 @@ public class ThemeInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         final PortalTheme portalTheme = themeHandler.getByRequest(request);
         themeThreadLocal.set(portalTheme);
+        lookupThreadLocal.set(localizedFieldNames.createLookup(Arrays.asList(portalTheme.getLocaliseQueryKeys())));
         return true;
     }
 }
