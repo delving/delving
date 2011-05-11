@@ -24,6 +24,8 @@ package eu.delving.core.storage.impl;
 import com.mongodb.*;
 import eu.delving.core.storage.StaticRepo;
 import eu.delving.core.util.MongoFactory;
+import eu.delving.core.util.PortalTheme;
+import eu.delving.core.util.ThemeInterceptor;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -381,7 +383,9 @@ public class StaticRepoImpl implements StaticRepo {
     }
 
     private DB db() {
-        return mongoFactory.getMongo().getDB(databaseName);
+        PortalTheme portalTheme = ThemeInterceptor.getTheme();
+        String name = portalTheme == null ? databaseName : String.format("%s_%s",databaseName, portalTheme.getName());
+        return mongoFactory.getMongo().getDB(name);
     }
 
     private Map<String, Page> getLatestPages() {
