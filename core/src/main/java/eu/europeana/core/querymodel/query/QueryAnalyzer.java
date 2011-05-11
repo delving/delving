@@ -21,6 +21,7 @@
 
 package eu.europeana.core.querymodel.query;
 
+import eu.delving.core.util.LocalizedFieldNames;
 import eu.delving.core.util.ThemeInterceptor;
 import eu.delving.metadata.RecordDefinition;
 
@@ -113,8 +114,11 @@ public class QueryAnalyzer {
             }
             else {
                 String facet = part.substring(0, colon);
-                String value = part.substring(colon+1);
-                facet = ThemeInterceptor.getLookup().toFieldName(facet, locale);
+                String value = part.substring(colon + 1);
+                LocalizedFieldNames.Lookup lookup = ThemeInterceptor.getLookup();
+                if (lookup != null) {
+                    facet = lookup.toFieldName(facet, locale);
+                }
                 out.append(facet).append(":").append(value).append(" ");
             }
         }
@@ -188,7 +192,6 @@ public class QueryAnalyzer {
         addBooleanKeyword("OR");
         addBooleanKeyword("NOT");
     }
-
 
 
 }
