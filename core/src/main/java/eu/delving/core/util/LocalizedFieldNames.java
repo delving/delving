@@ -100,7 +100,11 @@ public class LocalizedFieldNames {
                 fieldToName.put(locale, map = new TreeMap<String, String>());
                 for (String key : keys) {
                     String wholeKey = METADATA_KEY_PREFIX + key;
-                    map.put(wholeKey, messageSource.getMessage(wholeKey, null, locale));
+                    String value = messageSource.getMessage(wholeKey, null, locale);
+                    if (wholeKey.equals(value)) {
+                        throw new RuntimeException(String.format("No translation found for %s", wholeKey));
+                    }
+                    map.put(wholeKey, value);
                 }
             }
             return map;
