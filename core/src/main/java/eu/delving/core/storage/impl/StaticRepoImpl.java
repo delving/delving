@@ -363,7 +363,9 @@ public class StaticRepoImpl implements StaticRepo {
     }
 
     private Set<String> getPathSet(String collection) {
-        DBCollection coll = db().getCollection(collection);
+        PortalTheme portalTheme = ThemeInterceptor.getTheme();
+        String collectionName = portalTheme == null ? collection : String.format("%s_%s",collection, portalTheme.getName());
+        DBCollection coll = database().getCollection(collectionName);
         coll.ensureIndex(mob(Page.PATH, 1));
         DBCursor cursor = coll.find();
         Set<String> set = new TreeSet<String>();
@@ -375,17 +377,19 @@ public class StaticRepoImpl implements StaticRepo {
     }
 
     private DBCollection pages() {
-        return db().getCollection(PAGES_COLLECTION);
+        PortalTheme portalTheme = ThemeInterceptor.getTheme();
+        String collectionName = portalTheme == null ? PAGES_COLLECTION : String.format("%s_%s",PAGES_COLLECTION, portalTheme.getName());
+        return database().getCollection(collectionName);
     }
 
     private DBCollection images() {
-        return db().getCollection(IMAGES_COLLECTION);
+        PortalTheme portalTheme = ThemeInterceptor.getTheme();
+        String collectionName = portalTheme == null ? IMAGES_COLLECTION : String.format("%s_%s",IMAGES_COLLECTION, portalTheme.getName());
+        return database().getCollection(collectionName);
     }
 
-    private DB db() {
-        PortalTheme portalTheme = ThemeInterceptor.getTheme();
-        String name = portalTheme == null ? databaseName : String.format("%s_%s",databaseName, portalTheme.getName());
-        return mongoFactory.getMongo().getDB(name);
+    private DB database() {
+        return mongoFactory.getMongo().getDB(databaseName);
     }
 
     private Map<String, Page> getLatestPages() {
