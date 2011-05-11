@@ -27,6 +27,8 @@ import com.mongodb.DBObject;
 import eu.delving.core.storage.User;
 import eu.delving.core.storage.UserRepo;
 import eu.delving.core.util.MongoFactory;
+import eu.delving.core.util.PortalTheme;
+import eu.delving.core.util.ThemeInterceptor;
 import eu.delving.domain.Language;
 import eu.europeana.core.querymodel.query.DocType;
 import org.bson.types.ObjectId;
@@ -61,7 +63,9 @@ public class UserRepoImpl implements UserRepo {
     }
 
     private DBCollection users() {
-        return mongoFactory.getMongo().getDB(databaseName).getCollection(USERS_COLLECTION);
+        PortalTheme portalTheme = ThemeInterceptor.getTheme();
+        String collectionName = portalTheme == null ? USERS_COLLECTION : String.format("%s_%s", USERS_COLLECTION, portalTheme.getName());
+        return mongoFactory.getMongo().getDB(databaseName).getCollection(collectionName);
     }
 
     @Override
