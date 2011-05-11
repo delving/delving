@@ -1,5 +1,6 @@
 package eu.europeana.core.querymodel.query;
 
+import eu.delving.core.util.LocalizedFieldNames;
 import eu.delving.core.util.ThemeInterceptor;
 import org.apache.solr.client.solrj.SolrQuery;
 
@@ -40,7 +41,8 @@ public class BreadcrumbFactory {
                         String facetValue = facetTerm.substring(colon + 1);
                         appendToURI(out, facetName, facetValue);
                         if (count-- == 0) {
-                            String translatedFacetName = ThemeInterceptor.getLookup().toLocalizedName(facetName, locale);
+                            LocalizedFieldNames.Lookup lookup = ThemeInterceptor.getLookup();
+                            String translatedFacetName = lookup == null ? facetName : lookup.toLocalizedName(facetName, locale);
                             breadcrumbs.add(new Breadcrumb(out.toString(), translatedFacetName + ":" + facetValue, facetName, facetValue));
                             break;
                         }
