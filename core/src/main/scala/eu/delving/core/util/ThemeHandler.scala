@@ -98,7 +98,7 @@ class ThemeHandler {
       val templateDir = node \\ "templateDir"
       def getNodeText(label : String) : String = (node \\ label).text
       def getBooleanNodeText(label : String) : Boolean = try {(node \\ label).text.toBoolean} catch {case ex : Exception => false}
-      def getNodeTextAsArray(label : String)  : Array[String] = (node \\ label).text.trim().split(",") // todo trim whitespace of individual items
+      def getNodeTextAsArray(label : String)  : Array[String] = (node \\ label).text.trim().split(" *, *")
 
       def createEmailTarget(node: Node): EmailTarget = {
         EmailTarget(
