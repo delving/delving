@@ -47,16 +47,13 @@ public class MultilingualAccessTranslator {
     }
 
     public String toLocalizedName(String fieldName, Locale locale) {
-        return getFieldToName(locale).get(fieldNameToKey(fieldName));
+        String key = getFieldToName(locale).get(fieldNameToKey(fieldName));
+        return key == null ? fieldName : key;
     }
 
     public String toFieldName(String localizedName, Locale locale) {
-        String searchName = localizedToKey(localizedName);
-        String key = getNameToField(locale).get(searchName);
-        if (key == null) {
-            return "unknown";
-        }
-        return key.substring(METADATA_KEY_PREFIX.length()).replaceAll("\\.", "_");
+        String key = getNameToField(locale).get(localizedToKey(localizedName));
+        return key == null ? localizedName : key.substring(METADATA_KEY_PREFIX.length()).replaceAll("\\.", "_");
     }
 
     private String fieldNameToKey(String fieldName) {
@@ -72,7 +69,11 @@ public class MultilingualAccessTranslator {
         if (map == null) {
             nameToField.put(locale, map = new TreeMap<String, String>());
             for (Map.Entry<String, String> entry : getFieldToName(locale).entrySet()) {
-                map.put(localizedToKey(entry.getValue()), entry.getKey());
+                String key = localizedToKey(entry.getValue());
+                if (map.containsKey(key)) {
+                    throw new RuntimeException(String.format("Value %s --> %s conflicts with %s --> %s", key, entry.getKey(), key, map.get(key)));
+                }
+                map.put(key, entry.getKey());
             }
         }
         return map;

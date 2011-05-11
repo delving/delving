@@ -126,32 +126,6 @@ public class QueryAnalyzer {
         return out.toString().trim();
     }
 
-//    public String sanitize(String query) {
-//        String[] terms = query.split("\\s+");
-//        StringBuilder out = new StringBuilder();
-//        for (String term : terms) {
-//            if (BOOLEAN_KEYWORDS.contains(term)) {
-//                term = term.toUpperCase();
-//            }
-//            boolean emptyTerm = true;
-//            for (int walk = 0; walk < term.length(); walk++) {
-//                char ch = term.charAt(walk);
-//                switch (ch) {
-//                    case '{':
-//                    case '}':
-//                        break;
-//                    default:
-//                        out.append(ch);
-//                        emptyTerm = false;
-//                }
-//            }
-//            if (!emptyTerm) {
-//                out.append(' ');
-//            }
-//        }
-//        return out.toString().trim();
-//    }
-//
     /**
      * Create advanced query from params with facet[1-3], operator[1-3], query[1-3].
      * <p/>
