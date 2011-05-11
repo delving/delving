@@ -28,6 +28,7 @@ import org.apache.solr.common.SolrDocumentList;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -37,21 +38,21 @@ import java.util.Map;
 
 public interface QueryModelFactory {
 
-    SolrQuery createFromQueryParams(Map<String, String[]> params) throws EuropeanaQueryException;
+    SolrQuery createFromQueryParams(Map<String, String[]> params, Locale locale) throws EuropeanaQueryException;
 
     SolrQuery createFromUri(String europeanaUri) throws EuropeanaQueryException;
 
     QueryResponse getSolrResponse(SolrQuery solrQuery, boolean isBriefDoc, Map<String, String[]> params) throws EuropeanaQueryException;
 
-    BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString) throws EuropeanaQueryException, UnsupportedEncodingException;
+    BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString, Locale locale) throws EuropeanaQueryException, UnsupportedEncodingException;
 
-    BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString, Map<String, String[]> params) throws EuropeanaQueryException, UnsupportedEncodingException;
+    BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString, Map<String, String[]> params, Locale locale) throws EuropeanaQueryException, UnsupportedEncodingException;
 
-    FullBeanView getFullResultView(Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException;
+    FullBeanView getFullResultView(Map<String, String[]> params, Locale locale) throws EuropeanaQueryException, SolrServerException;
 
     FullDoc getFullDoc(SolrQuery solrQuery) throws EuropeanaQueryException;
 
-    List<?> getDocIdList(Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException;
+    List<?> getDocIdList(Map<String, String[]> params, Locale locale) throws EuropeanaQueryException, SolrServerException;
 
     QueryResponse getSolrResponse(SolrQuery solrQuery) throws EuropeanaQueryException;
 

@@ -27,6 +27,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -41,11 +42,14 @@ public class DocIdWindowPagerFactory {
     @Autowired
     private QueryModelFactory beanQueryModelFactory;
 
-    public DocIdWindowPager getPager(Map<String, String[]> params, SolrQuery solrQuery, RecordDefinition recordDefinition) {
+    @Autowired
+    private BreadcrumbFactory breadcrumbFactory;
+
+    public DocIdWindowPager getPager(Map<String, String[]> params, Locale locale, SolrQuery solrQuery, RecordDefinition recordDefinition) {
         DocIdWindowPager pager = new DocIdWindowPagerImpl();
         pager.setPortalName(portalName);
         try {
-            pager.initialize(params, solrQuery, beanQueryModelFactory, recordDefinition);
+            pager.initialize(params, breadcrumbFactory, locale, solrQuery, beanQueryModelFactory, recordDefinition);
         } catch (SolrServerException e) {
             return null; // when there are no results from solr return null
         } catch (EuropeanaQueryException e) {

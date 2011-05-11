@@ -8,6 +8,8 @@ import _root_.org.scalatest.Spec
 import _root_.org.apache.solr.client.solrj.SolrQuery
 import scala.collection.JavaConversions._
 import collection.immutable.List
+import java.util.Locale
+import eu.delving.core.util.LocalizedFieldNames
 
 /**
  *
@@ -17,6 +19,7 @@ import collection.immutable.List
 
 @RunWith(classOf[JUnitRunner])
 class BreadCrumbSpec extends Spec with ShouldMatchers {
+  val bcFactory = new BreadcrumbFactory
   val queryString = "single query"
   val encodedQueryString = URLEncoder.encode(queryString, "utf-8")
   val filterPrefix = "&amp;qf="
@@ -26,7 +29,7 @@ class BreadCrumbSpec extends Spec with ShouldMatchers {
 
     describe("(when given a SolrQuery without FilterQueries)") {
       val solrQuery = new SolrQuery(queryString)
-      val list = (Breadcrumb createList solrQuery).toList
+      val list = (bcFactory.createList(solrQuery, Locale.CANADA)).toList
 
       it("should only contain the query") {
         list.size should equal(1)
@@ -49,7 +52,7 @@ class BreadCrumbSpec extends Spec with ShouldMatchers {
       val solrQuery = new SolrQuery(queryString)
       val filterQueries: List[String] = List("YEAR:1900", "YEAR:1901", "LOCATION:Here")
       solrQuery setFilterQueries (filterQueries: _*)
-      val list = Breadcrumb.createList(solrQuery).toList
+      val list = bcFactory.createList(solrQuery, Locale.CANADA).toList
 
       it("should contain as many entries as filterqueries + the query") {
         list.size should equal(solrQuery.getFilterQueries.length + 1)
@@ -87,7 +90,7 @@ class BreadCrumbSpec extends Spec with ShouldMatchers {
       val solrQuery = new SolrQuery
 
       it("produces an EuropeanaQueryException") {
-        evaluating {Breadcrumb createList solrQuery} should produce[EuropeanaQueryException]
+        evaluating {bcFactory.createList(solrQuery, Locale.CANADA)} should produce[EuropeanaQueryException]
       }
     }
 
@@ -95,7 +98,7 @@ class BreadCrumbSpec extends Spec with ShouldMatchers {
       val solrQuery: SolrQuery = new SolrQuery(queryString).setFilterQueries("LANGUAGE:en", "wrong filter query")
 
       it("should ignore the illegal FilterQuery") {
-        val list: List[Breadcrumb] = (Breadcrumb createList solrQuery).toList
+        val list: List[Breadcrumb] = (bcFactory.createList(solrQuery, Locale.CANADA)).toList
         list.size should equal(2)
         val lastBreadCrumb: Breadcrumb = list.last
         lastBreadCrumb.isLast should be(true)

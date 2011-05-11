@@ -25,7 +25,6 @@ import _root_.org.scalatest.matchers.ShouldMatchers
 import _root_.org.scalatest.Spec
 import scala.collection.JavaConversions._
 import org.apache.solr.client.solrj.SolrQuery
-import java.util.{Map => JMap}
 import collection.mutable.HashMap
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.beans.factory.annotation.Autowired
@@ -33,6 +32,7 @@ import org.junit.runner.RunWith
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import org.springframework.test.context.ContextConfiguration
 import org.scalatest.junit.JUnitRunner
+import java.util.{Locale, Map => JMap}
 
 /**
  *
@@ -84,7 +84,7 @@ class SolrQueryUtilSpec extends Spec with ShouldMatchers with DelvingTestUtil {
 
     describe("(when give request parameters to create a SolrQuery)") {
       def compareListToQuery(paramsList: List[(String, String)], queryType: String = "simple")(queryString: String) =
-        SolrQueryUtil.createFromQueryParams(createParamsMap(paramsList), analyser, recordDefinition).toString should equal (new SolrQuery(queryString).setQueryType(queryType).toString)
+        SolrQueryUtil.createFromQueryParams(createParamsMap(paramsList), analyser, Locale.CANADA, recordDefinition).toString should equal (new SolrQuery(queryString).setQueryType(queryType).toString)
 
       it("should ignore 'zoeken_in' when the value is 'text'") {
         compareListToQuery(List("query" -> "max", "zoeken_in" -> "text")) {"max"}

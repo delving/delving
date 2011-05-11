@@ -40,12 +40,12 @@ import reflect.BeanProperty
 import eu.delving.services.exceptions.AccessKeyException
 import java.util.{Locale, Properties, Map => JMap}
 import java.lang.String
-import eu.delving.core.util.{ThemeInterceptor, MultilingualAccessTranslator}
+import eu.delving.core.util.{ThemeInterceptor, LocalizedFieldNames}
 
-class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServletResponse,
+class RichSearchAPIService(request: HttpServletRequest, locale: Locale, httpResponse: HttpServletResponse,
                            beanQueryModelFactory: BeanQueryModelFactory, launchProperties: Properties,
                            queryAnalyzer: QueryAnalyzer, accessKey: AccessKey, clickStreamLogger: ClickStreamLogger,
-                           bidirectionalMetadataFieldNameMap : MultilingualAccessTranslator
+                           lookup : LocalizedFieldNames.Lookup
                                   ) {
 
   val servicesUrl = launchProperties.getProperty("services.url")
@@ -90,9 +90,9 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
     val userQuery = request.getParameter("query")
     require(!userQuery.isEmpty)
     val jParams = request.getParameterMap.asInstanceOf[JMap[String, Array[String]]]
-    val solrQuery: SolrQuery = SolrQueryUtil.createFromQueryParams(jParams, queryAnalyzer, ThemeInterceptor.getTheme.getRecordDefinition)
+    val solrQuery: SolrQuery = SolrQueryUtil.createFromQueryParams(jParams, queryAnalyzer, locale, ThemeInterceptor.getTheme.getRecordDefinition)
     solrQuery.setFields("*,score")
-    val briefResultView = beanQueryModelFactory.getBriefResultView(solrQuery, solrQuery.getQuery, jParams)
+    val briefResultView = beanQueryModelFactory.getBriefResultView(solrQuery, solrQuery.getQuery, jParams, locale)
     clickStreamLogger.logApiBriefView(request, briefResultView, solrQuery)
     briefResultView
   }
@@ -101,7 +101,7 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
     val idQuery = request.getParameter("id")
     require(!idQuery.isEmpty)
     val jParams = request.getParameterMap.asInstanceOf[JMap[String, Array[String]]]
-    val fullView = beanQueryModelFactory.getFullResultView(jParams)
+    val fullView = beanQueryModelFactory.getFullResultView(jParams, locale)
     clickStreamLogger.logApiFullView(request, fullView, idQuery)
     fullView
   }
@@ -187,7 +187,7 @@ class RichSearchAPIService(request: HttpServletRequest, httpResponse: HttpServle
 
     def localiseKey(metadataField : String, defaultLabel : String = "unknown", language : String = "en") : String = {
       val locale = new Locale(language)
-      val localizedName: String = bidirectionalMetadataFieldNameMap.toLocalizedName(metadataField.replace(":", "_"), locale)
+      val localizedName: String = lookup.toLocalizedName(metadataField.replace(":", "_"), locale)
       if (localizedName != null && !defaultLabel.startsWith("#")) localizedName else defaultLabel
     }
 
@@ -383,21 +383,20 @@ class RichSearchAPIServiceFactory {
   @Autowired @BeanProperty var queryAnalyzer: QueryAnalyzer = _
   @Autowired @BeanProperty var accessKey: AccessKey = _
   @Autowired @BeanProperty var clickStreamLogger : ClickStreamLogger = _
-  @Autowired @BeanProperty var bidirectionalMetadataFieldNameMap : MultilingualAccessTranslator = _
 
-  def getApiResponse(request: HttpServletRequest, response: HttpServletResponse) : String = {
-    RichSearchAPIService.processRequest(request, response, beanQueryModelFactory, launchProperties, queryAnalyzer, accessKey,
-      clickStreamLogger, bidirectionalMetadataFieldNameMap)
+  def getApiResponse(request: HttpServletRequest, locale: Locale, lookup: LocalizedFieldNames.Lookup, response: HttpServletResponse) : String = {
+    RichSearchAPIService.processRequest(request, locale, response, beanQueryModelFactory, launchProperties, queryAnalyzer, accessKey,
+      clickStreamLogger, lookup)
   }
 }
 
 object RichSearchAPIService {
 
-  def processRequest(request: HttpServletRequest, response: HttpServletResponse, beanQueryModelFactory: BeanQueryModelFactory,
+  def processRequest(request: HttpServletRequest, locale: Locale, response: HttpServletResponse, beanQueryModelFactory: BeanQueryModelFactory,
                      launchProperties: Properties, queryAnalyzer: QueryAnalyzer, accessKey: AccessKey,
-                     clickStreamLogger : ClickStreamLogger, bidirectionalMetadataFieldNameMap : MultilingualAccessTranslator) : String = {
-    val service = new RichSearchAPIService(request, response, beanQueryModelFactory, launchProperties, queryAnalyzer, accessKey,
-      clickStreamLogger, bidirectionalMetadataFieldNameMap)
+                     clickStreamLogger : ClickStreamLogger, lookup : LocalizedFieldNames.Lookup) : String = {
+    val service = new RichSearchAPIService(request, locale, response, beanQueryModelFactory, launchProperties, queryAnalyzer, accessKey,
+      clickStreamLogger, lookup)
     service parseRequest
   }
 

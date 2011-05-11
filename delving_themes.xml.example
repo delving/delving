@@ -40,7 +40,7 @@
         <solrSelectUrl>http://localhost:8983/solr</solrSelectUrl>
         <cacheUrl>http://localhost:8983/services/image?</cacheUrl>
         <homePage></homePage>
-        <localiseQueryString>false</localiseQueryString>
+        <localiseQueryKeys>dc.title,dc.creator</localiseQueryKeys>
         <metadataPrefix>abm</metadataPrefix>
     </theme>
     <theme default="false">
@@ -62,7 +62,7 @@
         <solrSelectUrl>http://localhost:8983/solr</solrSelectUrl>
         <cacheUrl>http://localhost:8983/services/image?</cacheUrl>
         <homePage></homePage>
-        <localiseQueryString>false</localiseQueryString>
+        <localiseQueryKeys>dc.title,dc.creator</localiseQueryKeys>
         <metadataPrefix>icn</metadataPrefix>
     </theme>
 </themes>

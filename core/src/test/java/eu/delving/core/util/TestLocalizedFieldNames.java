@@ -24,7 +24,9 @@ package eu.delving.core.util;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 /**
@@ -33,32 +35,34 @@ import java.util.Locale;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class TestMultilingualAccessTranslator {
+public class TestLocalizedFieldNames {
 
-    private ExposedKeysMessageSource exposedKeysMessageSource = new ExposedKeysMessageSource();
-    private MultilingualAccessTranslator multilingualAccessTranslator = new MultilingualAccessTranslator();
+    private ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+    private LocalizedFieldNames localizedFieldNames = new LocalizedFieldNames();
 
     @Before
     public void before() throws Exception {
-        exposedKeysMessageSource.setUseCodeAsDefaultMessage(true);
-        exposedKeysMessageSource.setBasename("classpath:/i18n/messages");
-        exposedKeysMessageSource.setDefaultEncoding("UTF-8");
-        multilingualAccessTranslator.setExposedKeysMessageSource(exposedKeysMessageSource);
+        messageSource.setUseCodeAsDefaultMessage(true);
+        messageSource.setBasename("classpath:/i18n/messages");
+        messageSource.setDefaultEncoding("UTF-8");
+        localizedFieldNames.setMessageSource(messageSource);
     }
 
     @Test
     public void backAndForth() {
+        LocalizedFieldNames.Lookup lookup = localizedFieldNames.createLookup(Arrays.asList("dc.title"));
         final Locale english = new Locale("en");
-        String title = multilingualAccessTranslator.toLocalizedName("dc_title", english);
+        String title = lookup.toLocalizedName("dc_title", english);
         Assert.assertEquals("Title", title);
-        String fieldName = multilingualAccessTranslator.toFieldName(title, english);
+        String fieldName = lookup.toFieldName(title, english);
         Assert.assertEquals("dc_title", fieldName);
     }
 
     @Test
     public void multiWord() {
+        LocalizedFieldNames.Lookup lookup = localizedFieldNames.createLookup(Arrays.asList("dcterms.isReferencedBy"));
         final Locale english = new Locale("en");
-        String fieldName = multilingualAccessTranslator.toFieldName("isreferENCedby", english);
+        String fieldName = lookup.toFieldName("isreferENCedby", english);
         Assert.assertEquals("dcterms_isReferencedBy", fieldName);
     }
 }
