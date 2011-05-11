@@ -98,6 +98,7 @@ class ThemeHandler {
       val templateDir = node \\ "templateDir"
       def getNodeText(label : String) : String = (node \\ label).text
       def getBooleanNodeText(label : String) : Boolean = try {(node \\ label).text.toBoolean} catch {case ex : Exception => false}
+      def getNodeTextAsArray(label : String)  : Array[String] = (node \\ label).text.trim().split(",") // todo trim whitespace of individual items
 
       def createEmailTarget(node: Node): EmailTarget = {
         EmailTarget(
@@ -114,7 +115,7 @@ class ThemeHandler {
         name = getNodeText("name"),
         templateDir = getNodeText("templateDir"),
         isDefault = isDefault,
-        localiseQueryString = getBooleanNodeText("localiseQueryString"),
+        localiseQueryKeys = getNodeTextAsArray("localiseQueryKeys"),
         hqf = getNodeText("hiddenQueryFilter"),
         baseUrl = getNodeText("portalBaseUrl"),
         solrSelectUrl = getNodeText("solrSelectUrl"),
@@ -152,7 +153,7 @@ case class PortalTheme (
   name : String,
   templateDir : String,
   isDefault : Boolean = false,
-  localiseQueryString : Boolean = false,
+  localiseQueryKeys : Array[String] = Array(),
   hqf : String = "",
   baseUrl : String = "",
   displayName: String = "default",
@@ -177,7 +178,8 @@ case class PortalTheme (
   def getAddThisCode = addThisCode
   def getDefaultLanguage = defaultLanguage
   def getColorScheme = colorScheme
-  def withLocalisedQueryString = localiseQueryString
+  def withLocalisedQueryString = localiseQueryKeys.isEmpty
+  def getLocaliseQueryKeys = localiseQueryKeys
   def getEmailTarget = emailTarget
   def getHomePage = homePage
   def getRecordDefinition = recordDefinition
