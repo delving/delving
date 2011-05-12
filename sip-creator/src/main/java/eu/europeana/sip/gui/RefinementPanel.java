@@ -449,6 +449,7 @@ public class RefinementPanel extends JPanel {
 
         boolean showURL(String urlString) {
             try {
+                urlString = urlString.replaceAll("&amp;", "&");
                 URL url = new URL(urlString);
                 BasicService bs = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
                 return bs.showDocument(url);
