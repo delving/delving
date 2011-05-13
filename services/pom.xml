@@ -31,7 +31,7 @@
     <artifactId>services</artifactId>
     <packaging>war</packaging>
     <name>Services</name>
-    <version>0.2.6</version>
+    <version>0.2.7</version>
     <description>
         Services Web-Application for all Delving core functionality
     </description>
@@ -137,12 +137,12 @@
         <dependency>
             <groupId>eu.delving</groupId>
             <artifactId>core</artifactId>
-            <version>0.2.6-SNAPSHOT</version>
+            <version>0.2.7-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eu.delving</groupId>
             <artifactId>sip-core</artifactId>
-            <version>0.2.6-SNAPSHOT</version>
+            <version>0.2.7-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>

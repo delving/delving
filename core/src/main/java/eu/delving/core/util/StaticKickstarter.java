@@ -62,6 +62,9 @@ public class StaticKickstarter implements ResourceLoaderAware {
     @Autowired
     private ThemeHandler themeHandler;
 
+    @Autowired
+    private ThemeInterceptor themeInterceptor;
+
     public void setStaticRepo(StaticRepo staticRepo) {
         this.staticRepo = staticRepo;
         if (kicked) {
@@ -94,6 +97,7 @@ public class StaticKickstarter implements ResourceLoaderAware {
                         log.error(String.format("Resource '%s' not a directory", resourceName));
                         continue;
                     }
+                    themeInterceptor.initialize(themeName);
                     kickstartDirectory(directory, directory);
                 }
             }

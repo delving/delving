@@ -70,7 +70,7 @@
     <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
         <property name="interceptors">
             <list>
-                <bean class="eu.delving.core.util.ThemeInterceptor"/>
+                <ref bean="themeInterceptor"/>
                 <bean class="eu.delving.core.util.ClickStreamLoggerInterceptor"/>
             </list>
         </property>

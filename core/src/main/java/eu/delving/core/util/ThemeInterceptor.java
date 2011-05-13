@@ -88,4 +88,10 @@ public class ThemeInterceptor extends HandlerInterceptorAdapter {
         lookupThreadLocal.set(localizedFieldNames.createLookup(Arrays.asList(portalTheme.getLocaliseQueryKeys())));
         return true;
     }
+
+    public void initialize(String themeName) throws Exception {
+        final PortalTheme portalTheme = themeHandler.getByThemeName(themeName);
+        themeThreadLocal.set(portalTheme);
+        lookupThreadLocal.set(localizedFieldNames.createLookup(Arrays.asList(portalTheme.getLocaliseQueryKeys())));
+    }
 }
