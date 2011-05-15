@@ -51,39 +51,39 @@ public class MappingCategory {
     return tuples
   }
 
-  static Object multiply(NullObject nullObject, Closure closure) {
-    return null
-  }
-
   static Object multiply(GroovyList list, Closure closure) { // operator *
     for (Object child: list) {
       if (child instanceof GroovyList) {
-        if (child) {
-          closure.call(child)
-        }
+        multiply(child, closure)
       }
-      else {
-        String string = child.toString()
-        if (string) {
-          closure.call(string)
-        }
+      else if (child instanceof GroovyNode) {
+        multiply(child, closure)
+      }
+      else if (child instanceof String) {
+        multiply(child, closure)
       }
     }
     return null
   }
 
   static Object multiply(GroovyNode node, Closure closure) { // operator *
-    if (node instanceof GroovyList) {
-      if (node) {
-        closure.call(node)
-      }
+    if (node instanceof GroovyNode) {
+      multiply(node.toString(), closure)
     }
-    else {
-      String string = node.toString()
-      if (string) {
-        closure.call(string)
-      }
+    else if (node instanceof String) {
+      multiply(node, closure)
     }
+    return null
+  }
+
+  static Object multiply(String string, Closure closure) { // operator *
+    if (string) {
+      closure.call(string)
+    }
+    return null
+  }
+
+  static Object multiply(NullObject nullObject, Closure closure) {
     return null
   }
 
