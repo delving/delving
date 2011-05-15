@@ -26,7 +26,6 @@ import groovy.lang.DelegatingMetaClass;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClass;
 import groovy.xml.QName;
-import org.codehaus.groovy.runtime.NullObject;
 
 import java.util.Collection;
 import java.util.List;
@@ -224,9 +223,6 @@ public class GroovyNode {
                     answer.add(childNode);
                 }
             }
-        }
-        if (answer.isEmpty()) {
-            answer.add(NullObject.getNullObject());
         }
         return answer;
     }

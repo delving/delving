@@ -1,6 +1,5 @@
 import eu.europeana.sip.core.GroovyList
 import eu.europeana.sip.core.GroovyNode
-import org.codehaus.groovy.runtime.NullObject
 
 // MappingCategory is a class used as a Groovy Category to add methods to existing classes
 
@@ -80,10 +79,6 @@ public class MappingCategory {
     if (string) {
       closure.call(string)
     }
-    return null
-  }
-
-  static Object multiply(NullObject nullObject, Closure closure) {
     return null
   }
 
