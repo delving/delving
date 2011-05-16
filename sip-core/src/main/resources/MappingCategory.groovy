@@ -1,5 +1,6 @@
 import eu.europeana.sip.core.GroovyList
 import eu.europeana.sip.core.GroovyNode
+import org.codehaus.groovy.runtime.NullObject
 
 // MappingCategory is a class used as a Groovy Category to add methods to existing classes
 
@@ -75,10 +76,26 @@ public class MappingCategory {
     return null
   }
 
+  static GroovyList multiply(GroovyList list, String delimiter) {
+    Iterator walk = list.iterator();
+    StringBuilder out = new StringBuilder()
+    while (walk.hasNext()) {
+      out.append(walk.next())
+      if (walk.hasNext()) {
+        out.append(delimiter)
+      }
+    }
+    return new GroovyList(out.toString())
+  }
+
   static Object multiply(String string, Closure closure) { // operator *
     if (string) {
       closure.call(string)
     }
+    return null
+  }
+
+  static Object multiply(NullObject nothing, Closure closure) { // operator *
     return null
   }
 
@@ -90,18 +107,6 @@ public class MappingCategory {
       }
     }
     return all;
-  }
-
-  static GroovyList multiply(GroovyList list, String delimiter) {
-    Iterator walk = list.iterator();
-    StringBuilder out = new StringBuilder()
-    while (walk.hasNext()) {
-      out.append(walk.next())
-      if (walk.hasNext()) {
-        out.append(delimiter)
-      }
-    }
-    return new GroovyList(out.toString())
   }
 
   static GroovyList mod(GroovyNode node, String regex) { // operator %
