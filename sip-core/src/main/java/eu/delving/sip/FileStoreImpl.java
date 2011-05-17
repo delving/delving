@@ -560,8 +560,11 @@ public class FileStoreImpl implements FileStore {
                     recordMapping.setRecordsNormalized(0);
                     recordMapping.setRecordsDiscarded(0);
                     recordMapping.setNormalizeTime(0);
+                    if (outputWriter != null) {
+                        outputWriter.close();
+                        discardedWriter.close();
+                    }
                     if (normalizedFile != null) {
-                        discardedFile.delete();
                         normalizedFile.delete();
                     }
                 }
