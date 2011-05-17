@@ -34,8 +34,9 @@ import java.util.BitSet;
 
 public class Uniqueness {
     private static final int[] PRIMES = {
-            4105001, 4105019, 4105033, 4105069, 4105091,
-            4105093, 4105103, 4105111
+            99000007, 99000023, 99000029, 99000037, 99000047,
+            99000059, 99000079, 99000101, 99000107, 99000137,
+            99000151, 99000157, 99000217, 99000221, 99000259
     };
     private MessageDigest messageDigest;
     private BitSet[] bitSet = new BitSet[PRIMES.length];
@@ -53,7 +54,7 @@ public class Uniqueness {
     }
 
     public boolean isRepeated(String text) {
-        BigInteger hashCode =  hash(text);
+        BigInteger hashCode = hash(text);
         boolean setEverywhere = true;
         for (int walk = 0; walk < bitSet.length && setEverywhere; walk++) {
             if (!getBit(hashCode, walk)) {
