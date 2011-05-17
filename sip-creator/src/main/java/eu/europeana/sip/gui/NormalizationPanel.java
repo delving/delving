@@ -144,7 +144,8 @@ public class NormalizationPanel extends JPanel {
         public void actionPerformed(ActionEvent actionEvent) {
             if (storeNormalizedBox.isSelected()) {
                 File normalizeDirectory = new File(sipModel.getAppConfigModel().getNormalizeDirectory());
-                chooser.setCurrentDirectory(normalizeDirectory);
+                chooser.setSelectedFile(normalizeDirectory); // todo: this doesn't work for some reason
+                chooser.setCurrentDirectory(normalizeDirectory.getParentFile());
                 chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                 chooser.setFileFilter(new FileFilter() {
                     @Override
