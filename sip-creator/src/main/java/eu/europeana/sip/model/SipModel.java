@@ -249,7 +249,7 @@ public class SipModel {
                         @Override
                         public void run() {
                             mappingModel.setRecordMapping(recordMapping);
-                            recordCompileModel.setRecordValidator(new RecordValidator(getRecordDefinition(), false));
+                            recordCompileModel.setRecordValidator(new RecordValidator(getRecordDefinition()));
                             seekRecord(1, null);
                             if (recordMapping != null) {
                                 if (getRecordRoot() != null) {

@@ -57,10 +57,8 @@ public class RecordValidator {
     private long totalParseTime, totalValidateTime, totalWriteTime;
     private SAXReader reader = new SAXReader();
 
-
-    public RecordValidator(RecordDefinition recordDefinition, boolean checkUniqueness) {
+    public RecordValidator(RecordDefinition recordDefinition) {
         this.recordDefinition = recordDefinition;
-        this.idUniqueness = checkUniqueness ? new Uniqueness() : null;
         StringBuilder contextString = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<validate\n");
         for (NamespaceDefinition namespaceDefinition : recordDefinition.namespaces) {
             contextString.append(String.format("xmlns:%s=\"%s\"\n", namespaceDefinition.prefix, namespaceDefinition.uri));
@@ -75,6 +73,10 @@ public class RecordValidator {
                 validatableFields.add(fieldDefinition);
             }
         }
+    }
+
+    public void guardUniqueness(Uniqueness uniqueness) {
+        this.idUniqueness = uniqueness;
     }
 
     public String validateRecord(String recordString, List<String> problems) {

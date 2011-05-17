@@ -59,7 +59,7 @@ class MappingImpl implements MetaRepo.Mapping, MappingInternal, Comparable<MetaR
         this.dataSet = dataSet;
         this.object = object;
         this.metadataFormat = new MetadataFormatImpl((DBObject) object.get(FORMAT));
-        this.recordValidator = new RecordValidator(implFactory.getMetadataModel().getRecordDefinition(metadataFormat.getPrefix()), false);
+        this.recordValidator = new RecordValidator(implFactory.getMetadataModel().getRecordDefinition(metadataFormat.getPrefix()));
     }
 
     @Override

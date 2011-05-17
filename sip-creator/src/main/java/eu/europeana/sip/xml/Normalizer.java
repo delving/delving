@@ -24,6 +24,7 @@ package eu.europeana.sip.xml;
 import eu.delving.metadata.MetadataNamespace;
 import eu.delving.metadata.RecordMapping;
 import eu.delving.metadata.RecordValidator;
+import eu.delving.metadata.Uniqueness;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.ProgressListener;
@@ -42,6 +43,7 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Take the input and config informationm and produce an output xml file
@@ -87,7 +89,9 @@ public class Normalizer implements Runnable {
     public void run() {
         FileStore.MappingOutput fileSetOutput = null;
         boolean store = normalizeDirectory != null;
-        RecordValidator recordValidator = new RecordValidator(sipModel.getRecordDefinition(), true);
+        Uniqueness uniqueness = new Uniqueness();
+        RecordValidator recordValidator = new RecordValidator(sipModel.getRecordDefinition());
+        recordValidator.guardUniqueness(uniqueness);
         try {
             RecordMapping recordMapping = sipModel.getMappingModel().getRecordMapping();
             if (recordMapping == null) {
@@ -181,7 +185,14 @@ public class Normalizer implements Runnable {
             if (store) {
                 fileSetOutput.getOutputWriter().write("</metadata>\n");
             }
-            fileSetOutput.close(!running);
+            Set<String> repeated = uniqueness.getRepeated();
+            if (repeated.isEmpty()) {
+                fileSetOutput.close(!running);
+            }
+            else {
+                sipModel.getUserNotifier().tellUser("Identifier should be unique, but there were repeats, including: "+repeated);
+                fileSetOutput.close(true);
+            }
         }
         catch (XMLStreamException e) {
             throw new RuntimeException("XML Problem", e);
@@ -207,6 +218,7 @@ public class Normalizer implements Runnable {
             log.info(String.format("Validating Time %d", totalValidationTime));
             recordValidator.report();
             listener.finished(running);
+            uniqueness.destroy();
             if (!running) { // aborted, so metadataparser will not call finished()
                 progressAdapter.finished(false);
             }
