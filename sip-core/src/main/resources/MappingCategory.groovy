@@ -198,10 +198,10 @@ public class MappingCategory {
     }
     def uriBytes = identifier.toString().getBytes("UTF-8");
     def digest = java.security.MessageDigest.getInstance("SHA-1")
-    def hash = ''
+    def hash = new StringBuilder()
     for (Byte b in digest.digest(uriBytes)) {
-      hash += '0123456789ABCDEF'[(b & 0xF0) >> 4]
-      hash += '0123456789ABCDEF'[b & 0x0F]
+      hash.append('0123456789ABCDEF'[(b & 0xF0) >> 4])
+      hash.append('0123456789ABCDEF'[b & 0x0F])
     }
     return new GroovyList("$spec/$hash")
   }
