@@ -19,10 +19,6 @@ public class MappingCategory {
     return list
   }
 
-  static Object power(GroovyList list, Closure closure) {  // operator **
-    multiply(mod(list, / +/), closure)
-  }
-
   static Object plus(GroovyList listA, GroovyList listB) { // operator +
     GroovyList both = new GroovyList()
     both.addAll(listA)
@@ -96,6 +92,24 @@ public class MappingCategory {
   }
 
   static Object multiply(NullObject nothing, Closure closure) { // operator *
+    return null
+  }
+
+  static Object power(GroovyList list, Closure closure) {  // operator **
+    for (Object child: list) {
+      if (child instanceof GroovyList) {
+        multiply(child, closure)
+        break;
+      }
+      else if (child instanceof GroovyNode) {
+        multiply(child, closure)
+        break;
+      }
+      else if (child instanceof String) {
+        multiply(child, closure)
+        break;
+      }
+    }
     return null
   }
 

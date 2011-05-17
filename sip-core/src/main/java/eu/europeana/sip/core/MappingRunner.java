@@ -117,7 +117,7 @@ public class MappingRunner {
                 }
             }
             sb.append("----------- What happened ------------\n");
-            sb.append(trace);
+            sb.append(e.toString());
             return sb.toString();
         }
         return null;

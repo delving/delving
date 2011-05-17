@@ -41,13 +41,10 @@ public class Utility {
             "<b><code>input * {}</code></li></b>" +
             "<li><b>concat</b>: the star-string-star operator concatenates with a delimiter<br>" +
             "<b><code>input * '; ' * {}</code></b></li>" +
-            "<li><b>word</b>: the star-star operator splits inputs into words<br>" +
+            "<li><b>word</b>: the star-star operator takes only the first if there are multiple<br>" +
             "<b><code>input ** {}</code></b></li>" +
             "<li><b>split</b>: the  operator splits inputs on a regular expression<br>" +
             "<b><code>input % /;/ * {}</code></b></li>" +
-            "<li><b>choose</b>: the square brackets operator selects one entry<br>" +
-            "first <b><code>input[0] * {}</code></b><br>" +
-            "last <b><code>input[-1] * {}</code></b></li>" +
             "</ul>" +
             "<h2>Notes</h2>" +
             "<ul>" +

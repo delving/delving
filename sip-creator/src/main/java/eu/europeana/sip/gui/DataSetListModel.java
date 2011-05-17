@@ -230,7 +230,7 @@ public class DataSetListModel extends AbstractListModel {
                         break;
                     case INCOMPLETE:
                         html.append(String.format(
-                                "<p>Data Set is incomplete.  So far %d records.</p>",
+                                "<p>Data Set is incomplete. So far %d records.</p>",
                                 dataSetInfo.recordCount
                         ));
                         break;
@@ -242,11 +242,11 @@ public class DataSetListModel extends AbstractListModel {
                         ));
                         break;
                     case ERROR:
-                        html.append("<p>Data set is in <strong>error</strong>. Indexing can be retried.</p>");
+                        html.append("<p style=\"color: red;\"><strong>Data set is in <strong>error</strong>. Indexing can be retried.</strong></p>");
                         break;
                     case INDEXING:
                         html.append(String.format(
-                                "<p>Data set is busy indexing, with %d records processed so far of %d.</p>",
+                                "<p style=\"color: green;\"><strong>Data set is busy indexing, with %d records processed so far of %d.</strong></p>",
                                 dataSetInfo.recordsIndexed,
                                 dataSetInfo.recordCount
                         ));
