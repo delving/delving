@@ -148,6 +148,14 @@ public class GroovyNode {
         return text().length();
     }
 
+    public boolean contains(String s) {
+        return text().contains(s);
+    }
+
+    public String [] split(String s) {
+        return text().split(s);
+    }
+
     public void setValue(Object value) {
         this.value = value;
     }
