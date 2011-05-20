@@ -87,7 +87,7 @@ public class MetadataParser {
                 case XMLEvent.START_ELEMENT:
                     path.push(Tag.create(input.getName().getPrefix(), input.getName().getLocalPart()));
                     if (node == null && path.equals(recordRoot)) {
-                        node = new GroovyNode("input");
+                        node = new GroovyNode(null, "input");
                     }
                     else if (node != null) {
                         node = new GroovyNode(node, input.getNamespaceURI(), input.getLocalName(), input.getPrefix());

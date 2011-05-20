@@ -1,10 +1,17 @@
 import eu.europeana.sip.core.GroovyList
 import eu.europeana.sip.core.GroovyNode
-import org.codehaus.groovy.runtime.NullObject
 
 // MappingCategory is a class used as a Groovy Category to add methods to existing classes
 
 public class MappingCategory {
+
+  static GroovyList children(String string) {
+    return new GroovyList(string);
+  }
+
+  static String getAt(GroovyNode node, Object what) {
+    return node.toString()[what]
+  }
 
   static GroovyList ifAbsentUse(GroovyList list, Object factVariable) {
     if (!list) {
@@ -19,61 +26,29 @@ public class MappingCategory {
     return list
   }
 
-  static Object plus(GroovyList listA, GroovyList listB) { // operator +
+  static Object plus(a, b) { // operator +
     GroovyList both = new GroovyList()
-    both.addAll(listA)
-    both.addAll(listB)
+    both.addAll(a.children())
+    both.addAll(b.children())
     return both;
   }
 
-  static Object minus(GroovyList listA, GroovyList listB) { // operator -
-    GroovyList tuples = new GroovyList()
-    int index = 0
-    for (Object a : listA) {
-      GroovyList tuple = new GroovyList()
-      Object b = index < listB.size() ? listB.get(index) : null
-      if (a instanceof GroovyList) {
-        tuple.addAll(a);
-      }
-      else {
-        tuple.add(a)
-      }
-      if (b) {
-        tuple.add(b)
-      }
-      tuples.add(tuple)
-      index++
-    }
-    return tuples
+  static Object or(a, b) { // operator |
+    GroovyList listA = a.children()
+    GroovyList listB = b.children()
+    GroovyList tupleList = new GroovyList()
+    int max = Math.min(listA.size(), listB.size());
+    for (Integer index : 0..(max-1) ) tupleList.add(new GroovyList(listA[index], listB[index]))
+    return tupleList
   }
 
-  static Object multiply(GroovyList list, Closure closure) { // operator *
-    for (Object child: list) {
-      if (child instanceof GroovyList) {
-        multiply(child, closure)
-      }
-      else if (child instanceof GroovyNode) {
-        multiply(child, closure)
-      }
-      else if (child instanceof String) {
-        multiply(child, closure)
-      }
-    }
+  static Object multiply(a, Closure closure) { // operator *
+    for (Object child: a.children()) closure.call(child);
     return null
   }
 
-  static Object multiply(GroovyNode node, Closure closure) { // operator *
-    if (node instanceof GroovyNode) {
-      multiply(node.toString(), closure)
-    }
-    else if (node instanceof String) {
-      multiply(node, closure)
-    }
-    return null
-  }
-
-  static GroovyList multiply(GroovyList list, String delimiter) {
-    Iterator walk = list.iterator();
+  static GroovyList multiply(a, String delimiter) {
+    Iterator walk = a.children().iterator();
     StringBuilder out = new StringBuilder()
     while (walk.hasNext()) {
       out.append(walk.next())
@@ -84,47 +59,22 @@ public class MappingCategory {
     return new GroovyList(out.toString())
   }
 
-  static Object multiply(String string, Closure closure) { // operator *
-    if (string) {
-      closure.call(string)
+  static Object power(a, Closure closure) {  // operator **
+    for (Object child: a.children()) {
+      closure.call(child)
+      break
     }
     return null
   }
 
-  static Object multiply(NullObject nothing, Closure closure) { // operator *
-    return null
-  }
-
-  static Object power(GroovyList list, Closure closure) {  // operator **
-    for (Object child: list) {
-      if (child instanceof GroovyList) {
-        multiply(child, closure)
-        break;
-      }
-      else if (child instanceof GroovyNode) {
-        multiply(child, closure)
-        break;
-      }
-      else if (child instanceof String) {
-        multiply(child, closure)
-        break;
-      }
-    }
-    return null
-  }
-
-  static GroovyList mod(GroovyList list, String regex) {
+  static GroovyList mod(a, String regex) {
     GroovyList all = new GroovyList();
-    for (Object node: list) {
+    for (Object node: a.children()) {
       if (node instanceof GroovyNode) {
-        all += mod(node, regex);
+        all += new GroovyList(node.text().split(regex))
       }
     }
     return all;
-  }
-
-  static GroovyList mod(GroovyNode node, String regex) { // operator %
-    return new GroovyList(node.text().split(regex))
   }
 
   static GroovyList extractYear(GroovyList target) {
@@ -182,14 +132,14 @@ public class MappingCategory {
   }
 
   static GroovyList toId(GroovyNode identifier, spec) {
-    return toId(identifier.toString(), spec)
+    return new GroovyList(toId(identifier.text(), spec))
   }
 
   static GroovyList toId(GroovyList identifier, spec) {
-    return toId(identifier.toString(), spec)
+    return new GroovyList(toId(identifier.toString(), spec))
   }
 
-  static GroovyList toId(String identifier, spec) {
+  static String toId(String identifier, spec) {
     if (!spec) {
       throw new MissingPropertyException("spec", String.class)
     }
@@ -203,7 +153,7 @@ public class MappingCategory {
       hash.append('0123456789ABCDEF'[(b & 0xF0) >> 4])
       hash.append('0123456789ABCDEF'[b & 0x0F])
     }
-    return new GroovyList("$spec/$hash")
+    return "$spec/$hash"
   }
 
   static String sanitize(GroovyNode node) {

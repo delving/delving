@@ -169,7 +169,7 @@ public class MetadataRecord {
                             break;
                         case XMLEvent.START_ELEMENT:
                             if (node == null) {
-                                rootNode = node = new GroovyNode("input");
+                                rootNode = node = new GroovyNode(null, "input");
                             }
                             else {
                                 node = new GroovyNode(node, input.getNamespaceURI(), input.getLocalName(), input.getPrefix());
