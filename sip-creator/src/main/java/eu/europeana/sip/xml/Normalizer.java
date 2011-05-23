@@ -28,6 +28,7 @@ import eu.delving.metadata.Uniqueness;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.ProgressListener;
+import eu.europeana.sip.core.DiscardRecordException;
 import eu.europeana.sip.core.GroovyCodeResource;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
@@ -149,8 +150,8 @@ public class Normalizer implements Runnable {
                                 sipModel.getUserNotifier().tellUser("Unable to write discarded record", e1);
                                 abort();
                             }
-                            fileSetOutput.recordDiscarded();
                         }
+                        fileSetOutput.recordDiscarded();
                     }
                     else {
                         listener.invalidInput(e);
@@ -176,6 +177,19 @@ public class Normalizer implements Runnable {
                         listener.invalidOutput(e);
                         abort();
                     }
+                }
+                catch (DiscardRecordException e) {
+                    if (store) {
+                        try {
+                            fileSetOutput.getDiscardedWriter().write("Discarded explicitly: \n" + record.toString());
+                            fileSetOutput.getDiscardedWriter().write("\n========================================\n");
+                        }
+                        catch (IOException e1) {
+                            sipModel.getUserNotifier().tellUser("Unable to write discarded record", e1);
+                            abort();
+                        }
+                    }
+                    fileSetOutput.recordDiscarded();
                 }
                 catch (Exception e) {
                     sipModel.getUserNotifier().tellUser("Problem writing output", e);

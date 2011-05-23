@@ -53,7 +53,7 @@ public class MappingRunner {
         this.code = code;
     }
 
-    public String runMapping(MetadataRecord metadataRecord) throws MappingException {
+    public String runMapping(MetadataRecord metadataRecord) throws MappingException, DiscardRecordException {
         if (metadataRecord == null) {
             throw new RuntimeException("Null input metadata record");
         }
@@ -73,6 +73,9 @@ public class MappingRunner {
             script.setBinding(binding);
             script.run();
             return writer.toString();
+        }
+        catch (DiscardRecordException e) {
+            throw e;
         }
         catch (MissingPropertyException e) {
             throw new MappingException(metadataRecord, "Missing Property " + e.getProperty(), e);

@@ -1,9 +1,14 @@
 import eu.europeana.sip.core.GroovyList
 import eu.europeana.sip.core.GroovyNode
+import eu.europeana.sip.core.DiscardRecordException
 
 // MappingCategory is a class used as a Groovy Category to add methods to existing classes
 
 public class MappingCategory {
+
+  static void discard(Boolean condition, String why) {
+    if (condition) throw new DiscardRecordException(why)
+  }
 
   static GroovyList children(String string) {
     return new GroovyList(string);
