@@ -84,7 +84,7 @@ public class RecordPanel extends JPanel {
 
     private JPanel createRecordTab(CompileModel compileModel) {
         JPanel p = new JPanel(new BorderLayout(5, 5));
-        p.add(createRecordView(compileModel), BorderLayout.CENTER);
+        p.add(scroll(createRecordView(compileModel)), BorderLayout.CENTER);
         JPanel bp = new JPanel(new GridLayout(1, 0, 5, 5));
         bp.add(firstButton);
         bp.add(nextButton);
