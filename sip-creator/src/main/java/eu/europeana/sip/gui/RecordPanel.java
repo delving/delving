@@ -21,25 +21,20 @@
 
 package eu.europeana.sip.gui;
 
-import eu.delving.sip.ProgressListener;
-import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.model.CompileModel;
 import eu.europeana.sip.model.SipModel;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ProgressMonitor;
+import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -50,18 +45,24 @@ import java.awt.event.ActionListener;
  */
 
 public class RecordPanel extends JPanel {
-    private SipModel sipModel;
-    private JButton seekButton = new JButton("Seek Record #");
-    private JTextField seekField = new JTextField(15);
-    private JTextField countField = new JTextField(15);
     private JButton nextButton = new JButton("Next");
-    private MetadataRecord currentMetadataRecord;
-    private int recordCount = -1;
 
     public RecordPanel(SipModel sipModel, CompileModel compileModel) {
-        super(new BorderLayout(5, 5));
-        this.sipModel = sipModel;
-        setBorder(BorderFactory.createTitledBorder("Parsed Record"));
+        super(new BorderLayout());
+        final JTabbedPane tabs = new JTabbedPane();
+        tabs.addTab("Input Record", scroll(createRecordView(compileModel)));
+        tabs.addTab("Search", new RecordSearchPanel(sipModel, new Runnable() {
+            @Override
+            public void run() {
+                tabs.setSelectedIndex(0);
+            }
+        }));
+        add(tabs);
+        setPreferredSize(new Dimension(240, 500));
+        wireUp();
+    }
+
+    private JEditorPane createRecordView(CompileModel compileModel) {
         final JEditorPane recordView = new JEditorPane();
         recordView.setContentType("text/html");
         recordView.setDocument(compileModel.getInputDocument());
@@ -84,29 +85,8 @@ public class RecordPanel extends JPanel {
             public void changedUpdate(DocumentEvent documentEvent) {
             }
         });
-        sipModel.addParseListener(new SipModel.ParseListener() {
-            @Override
-            public void updatedRecord(MetadataRecord metadataRecord) {
-                currentMetadataRecord = metadataRecord;
-                if (metadataRecord != null) {
-                    seekField.setText(String.valueOf(metadataRecord.getRecordNumber()));
-                    if (metadataRecord.getRecordCount() != recordCount) {
-                        countField.setText(String.valueOf(recordCount = metadataRecord.getRecordCount()));
-                    }
-                }
-            }
-        });
         recordView.setEditable(false);
-        JPanel grid = new JPanel(new GridLayout(1, 0, 5, 5));
-        grid.add(seekButton);
-        grid.add(seekField);
-        countField.setEditable(false);
-        grid.add(countField);
-        grid.add(nextButton);
-        add(scroll(recordView), BorderLayout.CENTER);
-        add(grid, BorderLayout.SOUTH);
-        setPreferredSize(new Dimension(240, 500));
-        wireUp();
+        return recordView;
     }
 
     private JScrollPane scroll(JComponent content) {
@@ -118,32 +98,11 @@ public class RecordPanel extends JPanel {
     }
 
     private void wireUp() {
-        seekButton.addActionListener(seek);
-        seekField.addActionListener(seek);
         nextButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sipModel.nextRecord();
+//                sipModel.nextRecord();
             }
         });
     }
-
-    private ActionListener seek = new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent event) {
-            seekButton.setEnabled(false);
-            final ProgressMonitor progressMonitor = new ProgressMonitor(
-                    SwingUtilities.getRoot(RecordPanel.this),
-                    "<html><h2>Scanning</h2>",
-                    "Input Records",
-                    0, 100
-            );
-            sipModel.seekRecord(seekField.getText(), new ProgressListener.Adapter(progressMonitor) {
-                @Override
-                public void swingFinished(boolean success) {
-                    seekButton.setEnabled(true);
-                }
-            });
-        }
-    };
 }

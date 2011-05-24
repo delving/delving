@@ -117,6 +117,10 @@ public class SipModel {
         void updatedRecord(MetadataRecord metadataRecord);
     }
 
+    public interface ScanPredicate {
+        boolean accept(MetadataRecord record);
+    }
+
     public SipModel(FileStore fileStore, MetadataModel metadataModel, GroovyCodeResource groovyCodeResource, UserNotifier userNotifier) throws FileStoreException {
         this.fileStore = fileStore;
         this.appConfigModel = new AppConfigModel(fileStore.getAppConfig());
@@ -250,7 +254,7 @@ public class SipModel {
                         public void run() {
                             mappingModel.setRecordMapping(recordMapping);
                             recordCompileModel.setRecordValidator(new RecordValidator(getRecordDefinition()));
-                            seekRecord(1, null);
+                            seekRecordNumber(1, null);
                             if (recordMapping != null) {
                                 if (getRecordRoot() != null) {
                                     setRecordRootInternal(new Path(facts.getRecordRootPath()), Integer.parseInt(facts.getRecordCount()));
@@ -297,7 +301,7 @@ public class SipModel {
             try {
                 template.apply(getRecordDefinition());
                 mappingModel.applyTemplate(template);
-                seekRecord(1, null);
+                seekRecordNumber(1, null);
             }
             catch (Exception e) {
                 userNotifier.tellUser("Unable to load template", e);
@@ -368,7 +372,7 @@ public class SipModel {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                seekRecord(exception.getMetadataRecord().getRecordNumber(), progressListener);
+                                seekRecordNumber(exception.getMetadataRecord().getRecordNumber(), progressListener);
                             }
                         });
                     }
@@ -379,7 +383,7 @@ public class SipModel {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                seekRecord(exception.getMetadataRecord().getRecordNumber(), progressListener);
+                                seekRecordNumber(exception.getMetadataRecord().getRecordNumber(), progressListener);
                             }
                         });
                     }
@@ -437,7 +441,7 @@ public class SipModel {
     public void setRecordRoot(Path recordRoot, int recordCount) {
         checkSwingThread();
         setRecordRootInternal(recordRoot, recordCount);
-        seekRecord(1, null);
+        seekRecordNumber(1, null);
         facts.setRecordRootPath(recordRoot.toString());
         facts.setRecordCount(String.valueOf(recordCount));
         factModel.setFacts(facts, dataSetStore.getSpec());
@@ -500,19 +504,20 @@ public class SipModel {
         return fieldMappingListModel;
     }
 
-    public void seekRecord(int recordNumber, ProgressListener progressListener) {
-        seekRecord(String.valueOf(recordNumber), progressListener);
+    public void seekRecordNumber(final int recordNumber, ProgressListener progressListener) {
+        seekRecord(
+                new ScanPredicate() {
+                    @Override
+                    public boolean accept(MetadataRecord record) {
+                        return record.getRecordNumber() == recordNumber;
+                    }
+                },
+                progressListener
+        );
     }
 
-    public void seekRecord(String string, ProgressListener progressListener) {
+    public void seekRecord(ScanPredicate scanPredicate, ProgressListener progressListener) {
         checkSwingThread();
-        int recordNumber;
-        try {
-            recordNumber = Integer.parseInt(string);
-        }
-        catch (NumberFormatException e) {
-            recordNumber = -1;
-        }
         if (metadataParser != null) {
             metadataParser.close();
             metadataParser = null;
@@ -522,24 +527,8 @@ public class SipModel {
         }
         Path recordRoot = getRecordRoot();
         if (recordRoot != null) {
-            if (recordNumber >= 0) {
-                executor.execute(new RecordNumberFetcher(recordNumber, progressListener));
-            }
-            else {
-                try {
-                    Pattern pattern = Pattern.compile(string, Pattern.CASE_INSENSITIVE);
-                    executor.execute(new RecordRegexFetcher(pattern, progressListener));
-                }
-                catch (PatternSyntaxException e) {
-                    userNotifier.tellUser("Invalid regular expression pattern in seek field.");
-                }
-            }
+            executor.execute(new RecordScanner(scanPredicate, progressListener));
         }
-    }
-
-    public void nextRecord() {
-        checkSwingThread();
-        executor.execute(new RecordNumberFetcher(1, null));
     }
 
     public CompileModel getRecordCompileModel() {
@@ -610,56 +599,12 @@ public class SipModel {
         setStatistics(null);
     }
 
-    private class RecordNumberFetcher implements Runnable {
-        private int recordNumber;
+    private class RecordScanner implements Runnable {
+        private ScanPredicate scanPredicate;
         private ProgressListener progressListener;
 
-        private RecordNumberFetcher(int recordNumber, ProgressListener progressListener) {
-            this.recordNumber = recordNumber;
-            this.progressListener = progressListener;
-        }
-
-        @Override
-        public void run() {
-            Path recordRoot = getRecordRoot();
-            if (recordRoot == null) {
-                return;
-            }
-            try {
-                if (metadataParser == null) {
-                    metadataParser = new MetadataParser(dataSetStore.createXmlInputStream(), recordRoot, getRecordCount(), progressListener);
-                }
-                else {
-                    metadataParser.setProgressListener(progressListener);
-                }
-                while (recordNumber-- > 0) {
-                    metadataRecord = metadataParser.nextRecord();
-                }
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (ParseListener parseListener : parseListeners) {
-                            parseListener.updatedRecord(metadataRecord);
-                        }
-                        if (progressListener != null) {
-                            progressListener.finished(true);
-                        }
-                    }
-                });
-            }
-            catch (Exception e) {
-                userNotifier.tellUser("Unable to fetch the next record", e);
-                metadataParser = null;
-            }
-        }
-    }
-
-    private class RecordRegexFetcher implements Runnable {
-        private Pattern pattern;
-        private ProgressListener progressListener;
-
-        private RecordRegexFetcher(Pattern pattern, ProgressListener progressListener) {
-            this.pattern = pattern;
+        private RecordScanner(ScanPredicate scanPredicate, ProgressListener progressListener) {
+            this.scanPredicate = scanPredicate;
             this.progressListener = progressListener;
         }
 
@@ -677,24 +622,25 @@ public class SipModel {
                     metadataParser.setProgressListener(progressListener);
                 }
                 while ((metadataRecord = metadataParser.nextRecord()) != null) {
-                    if (metadataRecord.contains(pattern)) {
+                    if (scanPredicate == null || scanPredicate.accept(metadataRecord)) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (ParseListener parseListener : parseListeners) {
+                                    parseListener.updatedRecord(metadataRecord);
+                                }
+                                if (progressListener != null) {
+                                    progressListener.finished(true);
+                                }
+                            }
+                        });
                         break;
                     }
                 }
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (ParseListener parseListener : parseListeners) {
-                            parseListener.updatedRecord(metadataRecord);
-                        }
-                        if (progressListener != null) {
-                            progressListener.finished(true);
-                        }
-                    }
-                });
+                metadataParser.close();
             }
             catch (Exception e) {
-                userNotifier.tellUser("Unable to find a matching record", e);
+                userNotifier.tellUser("Unable to fetch the next record", e);
                 metadataParser = null;
             }
         }
