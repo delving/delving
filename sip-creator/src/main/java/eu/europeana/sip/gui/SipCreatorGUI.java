@@ -182,10 +182,9 @@ public class SipCreatorGUI extends JFrame {
                         BorderFactory.createRaisedBevelBorder()
                 )
         );
-        titleLabel.setBackground(Color.WHITE);
         titleLabel.setOpaque(true);
         titleLabel.setFont(new Font("Sans", Font.BOLD, 24));
-        JLabel northRight = new JLabel(new ImageIcon(getClass().getResource("/delving-logo-name.jpg")));
+        JLabel northRight = new JLabel(new ImageIcon(getClass().getResource("/delving-logo.png")));
         north.add(createFilterPanel(), BorderLayout.WEST);
         north.add(titleLabel, BorderLayout.CENTER);
         north.add(northRight, BorderLayout.EAST);
@@ -211,7 +210,6 @@ public class SipCreatorGUI extends JFrame {
 
     private Component createFilterPanel() {
         JPanel p = new JPanel(new BorderLayout());
-        p.setBackground(Color.WHITE);
         p.setBorder(BorderFactory.createTitledBorder("Filter"));
         filterTimer = new Timer(300, new ActionListener() {
             @Override
