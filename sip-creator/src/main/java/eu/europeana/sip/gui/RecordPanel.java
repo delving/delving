@@ -35,6 +35,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -45,21 +46,50 @@ import java.awt.event.ActionListener;
  */
 
 public class RecordPanel extends JPanel {
+    private JButton firstButton = new JButton("First");
     private JButton nextButton = new JButton("Next");
 
     public RecordPanel(SipModel sipModel, CompileModel compileModel) {
         super(new BorderLayout());
         final JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Input Record", scroll(createRecordView(compileModel)));
-        tabs.addTab("Search", new RecordSearchPanel(sipModel, new Runnable() {
+        final RecordSearchPanel rsp = new RecordSearchPanel(sipModel, new RecordSearchPanel.Listener() {
             @Override
-            public void run() {
+            public void searchStarted(String description) {
+                firstButton.setText(String.format("First: %s", description));
+                nextButton.setText(String.format("Next: %s", description));
+            }
+
+            @Override
+            public void searchFinished() {
                 tabs.setSelectedIndex(0);
             }
-        }));
+        });
+        tabs.addTab("Input Record", createRecordTab(compileModel));
+        tabs.addTab("Search", rsp);
         add(tabs);
         setPreferredSize(new Dimension(240, 500));
-        wireUp();
+        firstButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                rsp.scan(false);
+            }
+        });
+        nextButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                rsp.scan(true);
+            }
+        });
+    }
+
+    private JPanel createRecordTab(CompileModel compileModel) {
+        JPanel p = new JPanel(new BorderLayout(5, 5));
+        p.add(createRecordView(compileModel), BorderLayout.CENTER);
+        JPanel bp = new JPanel(new GridLayout(1, 0, 5, 5));
+        bp.add(firstButton);
+        bp.add(nextButton);
+        p.add(bp, BorderLayout.SOUTH);
+        return p;
     }
 
     private JEditorPane createRecordView(CompileModel compileModel) {
@@ -95,14 +125,5 @@ public class RecordPanel extends JPanel {
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scroll.setPreferredSize(new Dimension(240, 300));
         return scroll;
-    }
-
-    private void wireUp() {
-        nextButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-//                sipModel.nextRecord();
-            }
-        });
     }
 }

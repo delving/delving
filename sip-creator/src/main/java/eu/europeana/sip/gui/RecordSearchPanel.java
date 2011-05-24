@@ -44,24 +44,44 @@ import java.util.regex.Pattern;
 public class RecordSearchPanel extends JPanel {
     private SipModel sipModel;
     private List<JTextField> fields = new ArrayList<JTextField>();
-    private Runnable finished;
+    private Listener listener;
+    private FieldScanPredicate currentPredicate;
 
-    public RecordSearchPanel(SipModel sipModel, Runnable finished) {
+    public interface Listener {
+        void searchStarted(String description);
+
+        void searchFinished();
+    }
+
+    public RecordSearchPanel(SipModel sipModel, Listener listener) {
         super(new SpringLayout());
         this.sipModel = sipModel;
-        this.finished = finished;
-        fields.add(createField("Record Number:", new FieldScanPredicate() {
+        this.listener = listener;
+        fields.add(createField("Record Number (modulo):", new FieldScanPredicate() {
 
-            private int recordNumber;
+            private int modulo;
 
             @Override
             public void setFieldValue(String value) {
-                recordNumber = Integer.parseInt(value);
+                try {
+                    modulo = Integer.parseInt(value);
+                }
+                catch (NumberFormatException e) {
+                    modulo = 1;
+                }
+                if (modulo <= 0) {
+                    modulo = 1;
+                }
+            }
+
+            @Override
+            public String render() {
+                return String.format("Modulo %d", modulo);
             }
 
             @Override
             public boolean accept(MetadataRecord record) {
-                return record.getRecordNumber() == recordNumber;
+                return modulo == 1 || record.getRecordNumber() % modulo == 0;
             }
         }));
         fields.add(createField("Field Contains (Substring)", new FieldScanPredicate() {
@@ -70,6 +90,11 @@ public class RecordSearchPanel extends JPanel {
             @Override
             public void setFieldValue(String value) {
                 this.substring = value;
+            }
+
+            @Override
+            public String render() {
+                return String.format("Contains '%s'", substring);
             }
 
             @Override
@@ -86,11 +111,38 @@ public class RecordSearchPanel extends JPanel {
             }
 
             @Override
+            public String render() {
+                return String.format("Equals '%s'", regex);
+            }
+
+            @Override
             public boolean accept(MetadataRecord record) {
                 return record.contains(Pattern.compile(regex));
             }
         }));
         Utility.makeCompactGrid(this, getComponentCount() / 2, 2, 5, 5, 5, 5);
+    }
+
+    public void scan(boolean next) {
+        if (!next) sipModel.seekFresh();
+        ProgressListener progressListener = null;
+        if (currentPredicate != null) {
+            for (JTextField field : fields) field.setEnabled(false);
+            final ProgressMonitor progressMonitor = new ProgressMonitor(
+                    SwingUtilities.getRoot(RecordSearchPanel.this),
+                    "<html><h2>Scanning</h2>",
+                    currentPredicate.render(),
+                    0, 100
+            );
+            progressListener = new ProgressListener.Adapter(progressMonitor) {
+                @Override
+                public void swingFinished(boolean success) {
+                    for (JTextField field : fields) field.setEnabled(true);
+                    listener.searchFinished();
+                }
+            };
+        }
+        sipModel.seekRecord(currentPredicate, progressListener);
     }
 
     private JTextField createField(String prompt, final FieldScanPredicate fieldScanPredicate) {
@@ -101,7 +153,9 @@ public class RecordSearchPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 fieldScanPredicate.setFieldValue(actionEvent.getActionCommand());
-                scanFor(fieldScanPredicate);
+                currentPredicate = fieldScanPredicate;
+                listener.searchStarted(fieldScanPredicate.render());
+                scan(true);
             }
         });
         add(label);
@@ -109,25 +163,10 @@ public class RecordSearchPanel extends JPanel {
         return field;
     }
 
-    private void scanFor(SipModel.ScanPredicate scanPredicate) {
-        for (JTextField field : fields) field.setEnabled(false);
-        final ProgressMonitor progressMonitor = new ProgressMonitor(
-                SwingUtilities.getRoot(RecordSearchPanel.this),
-                "<html><h2>Scanning</h2>",
-                "Input Records",
-                0, 100
-        );
-        ProgressListener progressListener = new ProgressListener.Adapter(progressMonitor) {
-            @Override
-            public void swingFinished(boolean success) {
-                for (JTextField field : fields) field.setEnabled(true);
-                finished.run();
-            }
-        };
-        sipModel.seekRecord(scanPredicate, progressListener);
-    }
-
     private interface FieldScanPredicate extends SipModel.ScanPredicate {
+
         void setFieldValue(String value);
+
+        String render();
     }
 }

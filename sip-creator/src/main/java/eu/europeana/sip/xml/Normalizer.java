@@ -115,9 +115,9 @@ public class Normalizer implements Runnable {
             MetadataParser parser = new MetadataParser(
                     sipModel.getDataSetStore().createXmlInputStream(),
                     sipModel.getRecordRoot(),
-                    sipModel.getRecordCount(),
-                    progressAdapter
+                    sipModel.getRecordCount()
             );
+            parser.setProgressListener(progressAdapter);
             MetadataRecord record;
             while ((record = parser.nextRecord()) != null && running) {
                 try {

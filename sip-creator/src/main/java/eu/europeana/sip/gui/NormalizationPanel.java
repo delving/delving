@@ -66,22 +66,10 @@ public class NormalizationPanel extends JPanel {
         this.sipModel = sipModel;
         JPanel center = new JPanel(new GridLayout(1, 0, 5, 5));
         center.add(new RecordPanel(sipModel, sipModel.getRecordCompileModel()));
-        center.add(createCodePanel());
         center.add(createOutputPanel());
         add(center, BorderLayout.CENTER);
         add(createNormalizePanel(), BorderLayout.SOUTH);
         wireUp();
-    }
-
-    private JPanel createCodePanel() {
-        JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Groovy Code"));
-        JTextArea area = new JTextArea(sipModel.getRecordCompileModel().getCodeDocument());
-        area.setTabSize(3);
-        area.setToolTipText(Utility.GROOVY_TOOL_TIP);
-        area.setEditable(false);
-        p.add(scroll(area));
-        return p;
     }
 
     private JPanel createOutputPanel() {

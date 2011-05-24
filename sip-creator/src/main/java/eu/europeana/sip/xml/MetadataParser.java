@@ -55,11 +55,10 @@ public class MetadataParser {
     private MetadataRecord.Factory factory = new MetadataRecord.Factory(namespaces);
     private ProgressListener progressListener;
 
-    public MetadataParser(InputStream inputStream, Path recordRoot, int recordCount, ProgressListener progressListener) throws XMLStreamException {
+    public MetadataParser(InputStream inputStream, Path recordRoot, int recordCount) throws XMLStreamException {
         this.inputStream = inputStream;
         this.recordRoot = recordRoot;
         this.recordCount = recordCount;
-        this.progressListener = progressListener;
         XMLInputFactory2 xmlif = (XMLInputFactory2) XMLInputFactory2.newInstance();
         xmlif.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, Boolean.FALSE);
         xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
@@ -70,6 +69,9 @@ public class MetadataParser {
 
     public void setProgressListener(ProgressListener progressListener) {
         this.progressListener = progressListener;
+        if (progressListener != null) {
+            progressListener.setTotal(recordCount);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -80,9 +82,6 @@ public class MetadataParser {
         while (metadataRecord == null) {
             switch (input.getEventType()) {
                 case XMLEvent.START_DOCUMENT:
-                    if (progressListener != null) {
-                        progressListener.setTotal(recordCount);
-                    }
                     break;
                 case XMLEvent.START_ELEMENT:
                     path.push(Tag.create(input.getName().getPrefix(), input.getName().getLocalPart()));
@@ -120,7 +119,7 @@ public class MetadataParser {
                             if (node.parent() != null) {
                                 throw new RuntimeException("Expected to be at root node");
                             }
-                            metadataRecord = factory.fromGroovyNode(node, ++recordIndex, recordCount);
+                            metadataRecord = factory.fromGroovyNode(node, recordIndex++, recordCount);
                             if (progressListener != null) {
                                 if (!progressListener.setProgress(recordIndex)) {
                                     throw new AbortException();
