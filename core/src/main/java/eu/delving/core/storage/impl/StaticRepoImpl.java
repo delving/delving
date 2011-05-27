@@ -25,7 +25,7 @@ import com.mongodb.*;
 import eu.delving.core.storage.StaticRepo;
 import eu.delving.core.util.MongoFactory;
 import eu.delving.core.util.PortalTheme;
-import eu.delving.core.util.ThemeInterceptor;
+import eu.delving.core.util.ThemeFilter;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -363,7 +363,7 @@ public class StaticRepoImpl implements StaticRepo {
     }
 
     private Set<String> getPathSet(String collection) {
-        PortalTheme portalTheme = ThemeInterceptor.getTheme();
+        PortalTheme portalTheme = ThemeFilter.getTheme();
         String collectionName = portalTheme == null ? collection : String.format("%s_%s",collection, portalTheme.getName());
         DBCollection coll = database().getCollection(collectionName);
         coll.ensureIndex(mob(Page.PATH, 1));
@@ -377,13 +377,13 @@ public class StaticRepoImpl implements StaticRepo {
     }
 
     private DBCollection pages() {
-        PortalTheme portalTheme = ThemeInterceptor.getTheme();
+        PortalTheme portalTheme = ThemeFilter.getTheme();
         String collectionName = portalTheme == null ? PAGES_COLLECTION : String.format("%s_%s",PAGES_COLLECTION, portalTheme.getName());
         return database().getCollection(collectionName);
     }
 
     private DBCollection images() {
-        PortalTheme portalTheme = ThemeInterceptor.getTheme();
+        PortalTheme portalTheme = ThemeFilter.getTheme();
         String collectionName = portalTheme == null ? IMAGES_COLLECTION : String.format("%s_%s",IMAGES_COLLECTION, portalTheme.getName());
         return database().getCollection(collectionName);
     }

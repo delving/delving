@@ -26,19 +26,23 @@ import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import java.io.IOException;
 import java.util.Arrays;
 
 /**
- * Put a theme into thread local for subsequent use during handling of the request
+ * Put necessary things into thread local for subsequent use during handling of the request
  *
  * @author Gerald de Jong <gerald@delving.eu>
  */
 
-public class ThemeInterceptor extends HandlerInterceptorAdapter {
+public class ThemeFilter implements Filter {
 
     private static ThreadLocal<PortalTheme> themeThreadLocal = new ThreadLocal<PortalTheme>();
     private static ThreadLocal<LocalizedFieldNames.Lookup> lookupThreadLocal = new ThreadLocal<LocalizedFieldNames.Lookup>();
@@ -49,22 +53,33 @@ public class ThemeInterceptor extends HandlerInterceptorAdapter {
     @Autowired
     private LocalizedFieldNames localizedFieldNames;
 
+    /**
+     * Fetch the theme from thread local, or fail loudly
+     *
+     * @return the theme
+     */
+
     public static PortalTheme getTheme() {
         if (themeThreadLocal.get() == null) {
-            Logger.getLogger(ThemeInterceptor.class).error("This interceptor must be installed!");
+            Logger.getLogger(ThemeFilter.class).error(ThemeFilter.class+" must be installed!");
             return null;
         }
         return themeThreadLocal.get();
     }
 
+    /**
+     * Fetch the lookup from thread local, or fail loudly
+     *
+     * @return the lookup machine
+     */
+
     public static LocalizedFieldNames.Lookup getLookup() {
         if (lookupThreadLocal.get() == null) {
-            Logger.getLogger(ThemeInterceptor.class).error("This interceptor must be installed!");
+            Logger.getLogger(ThemeFilter.class).error(ThemeFilter.class+" must be installed!");
             return null;
         }
         return lookupThreadLocal.get();
     }
-
 
      /**
      * This creates the default ModelAndView for the portal applications. It should be used in every Controller.
@@ -81,23 +96,46 @@ public class ThemeInterceptor extends HandlerInterceptorAdapter {
         return page;
     }
 
-    @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        final PortalTheme portalTheme = themeHandler.getByRequest(request);
-        themeThreadLocal.set(portalTheme);
-        lookupThreadLocal.set(localizedFieldNames.createLookup(Arrays.asList(portalTheme.getLocaliseQueryKeys())));
-        return true;
-    }
-
-//    @Override
-//    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-//        themeThreadLocal.remove();
-//        lookupThreadLocal.remove();
-//    }
+    /**
+     * Pretend that a request has come in for a theme.
+     *
+     * @param themeName which theme
+     * @throws Exception oops
+     */
 
     public void initialize(String themeName) throws Exception {
         final PortalTheme portalTheme = themeHandler.getByThemeName(themeName);
         themeThreadLocal.set(portalTheme);
         lookupThreadLocal.set(localizedFieldNames.createLookup(Arrays.asList(portalTheme.getLocaliseQueryKeys())));
+    }
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        // not used
+    }
+
+    /**
+     * Filter Servlet requests, putting Portal Theme and Lookup in thread local
+     *
+     * @param request from user
+     * @param response to user
+     * @param chain the other filters
+     * @throws IOException problem
+     * @throws ServletException problem
+     */
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        final PortalTheme portalTheme = themeHandler.getByRequest(request);
+        themeThreadLocal.set(portalTheme);
+        lookupThreadLocal.set(localizedFieldNames.createLookup(Arrays.asList(portalTheme.getLocaliseQueryKeys())));
+        chain.doFilter(request, response);
+        themeThreadLocal.remove();
+        lookupThreadLocal.remove();
+    }
+
+    @Override
+    public void destroy() {
+        // not used
     }
 }

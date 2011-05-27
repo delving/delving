@@ -24,7 +24,7 @@ package eu.europeana.core;
 import eu.delving.core.binding.FacetMap;
 import eu.delving.core.binding.SolrBindingService;
 import eu.delving.core.util.PortalTheme;
-import eu.delving.core.util.ThemeInterceptor;
+import eu.delving.core.util.ThemeFilter;
 import eu.delving.metadata.MetadataModel;
 import eu.europeana.core.querymodel.query.*;
 import org.apache.log4j.Logger;
@@ -92,7 +92,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
      */
     @Override
     public SolrQuery createFromQueryParams(Map<String, String[]> params, Locale locale) throws EuropeanaQueryException {
-        return SolrQueryUtil.createFromQueryParams(params, queryAnalyzer, locale, ThemeInterceptor.getTheme().getRecordDefinition());
+        return SolrQueryUtil.createFromQueryParams(params, queryAnalyzer, locale, ThemeFilter.getTheme().getRecordDefinition());
     }
 
     @Override
@@ -153,7 +153,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         solrQuery.setRows(3);
         solrQuery.setFields("europeana_uri");
         // Fetch results from server
-        final PortalTheme theme = ThemeInterceptor.getTheme();
+        final PortalTheme theme = ThemeFilter.getTheme();
         if (theme != null) {
                 solrServer.setBaseURL(theme.getSolrSelectUrl());
         }
@@ -178,7 +178,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         solrQuery.setRows(rowsReturned);
         solrQuery.setFields("europeana_uri", "timestamp");
         solrQuery.setStart(pageNumber * rowsReturned);
-        final PortalTheme theme = ThemeInterceptor.getTheme();
+        final PortalTheme theme = ThemeFilter.getTheme();
         if (theme != null) {
             solrServer.setBaseURL(theme.getSolrSelectUrl());
         }
@@ -350,11 +350,11 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         private DocIdWindowPager createDocIdPager(Map<String, String[]> params, Locale locale) throws SolrServerException, EuropeanaQueryException {
             DocIdWindowPager idWindowPager = null;
             if (params.containsKey("query")) {
-                final PortalTheme theme = ThemeInterceptor.getTheme();
+                final PortalTheme theme = ThemeFilter.getTheme();
                 if (theme != null) {
                     solrServer.setBaseURL(theme.getSolrSelectUrl());
                 }
-                idWindowPager = docIdWindowPagerFactory.getPager(params, locale, createFromQueryParams(params, locale), ThemeInterceptor.getTheme().getRecordDefinition());
+                idWindowPager = docIdWindowPagerFactory.getPager(params, locale, createFromQueryParams(params, locale), ThemeFilter.getTheme().getRecordDefinition());
             }
             return idWindowPager;
         }
@@ -438,7 +438,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         QueryResponse queryResponse;
         // todo: add view limitation to query
         try {
-            final PortalTheme theme = ThemeInterceptor.getTheme();
+            final PortalTheme theme = ThemeFilter.getTheme();
             if (theme != null) {
                 solrServer.setBaseURL(theme.getSolrSelectUrl());
             }
@@ -484,7 +484,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             if (solrQuery.getRows() ==  null) {
                 solrQuery.setRows(12);
             }
-            solrQuery.addFacetField(ThemeInterceptor.getTheme().getRecordDefinition().getFacetFieldStrings());
+            solrQuery.addFacetField(ThemeFilter.getTheme().getRecordDefinition().getFacetFieldStrings());
             // todo now hard-coded but these values must be retrieved from the RecordDefinition later
             if (solrQuery.getFields() == null) {
                 solrQuery.setFields("europeana_uri,dc_title,europeana_object,dc_creator,europeana_year,europeana_provider," +
@@ -493,7 +493,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
 //            solrQuery.setFields(metadataModel.getRecordDefinition().getFieldStrings());
             }
             if (solrQuery.getQueryType().equalsIgnoreCase(QueryType.SIMPLE_QUERY.toString())) {
-                solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery(), ThemeInterceptor.getTheme().getRecordDefinition()).toString());
+                solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery(), ThemeFilter.getTheme().getRecordDefinition()).toString());
             }
         }
         SolrQuery dCopy = addHiddenQueryFilters(solrQuery, params);
@@ -508,14 +508,14 @@ public class BeanQueryModelFactory implements QueryModelFactory {
                 dCopy.addFilterQuery(hqf_field);
             }
         }
-        final PortalTheme theme = ThemeInterceptor.getTheme();
+        final PortalTheme theme = ThemeFilter.getTheme();
         if (theme != null && !theme.getHiddenQueryFilters().isEmpty()) {
              final String[] themeHqf = SolrQueryUtil.getFilterQueriesAsPhrases(theme.getHiddenQueryFilters().split(","));
             for (String qf : themeHqf) {
                 dCopy.addFilterQuery(qf);
             }
         }
-        dCopy.setFilterQueries(SolrQueryUtil.getFilterQueriesAsOrQueries(dCopy, ThemeInterceptor.getTheme().getRecordDefinition().getFacetMap()));
+        dCopy.setFilterQueries(SolrQueryUtil.getFilterQueriesAsOrQueries(dCopy, ThemeFilter.getTheme().getRecordDefinition().getFacetMap()));
         return dCopy;
     }
 

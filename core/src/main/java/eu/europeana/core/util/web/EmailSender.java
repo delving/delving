@@ -23,7 +23,7 @@ package eu.europeana.core.util.web;
 
 import eu.delving.core.util.PortalTheme;
 import eu.delving.core.util.ThemeHandler;
-import eu.delving.core.util.ThemeInterceptor;
+import eu.delving.core.util.ThemeFilter;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
@@ -106,7 +106,7 @@ public class EmailSender {
 
         public void send() {
             try {
-                PortalTheme theme = ThemeInterceptor.getTheme();
+                PortalTheme theme = ThemeFilter.getTheme();
                 if (theme == null ) {
                     theme = themeHandler.getDefaultTheme();
                 }

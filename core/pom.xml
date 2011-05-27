@@ -32,7 +32,7 @@
     <artifactId>core</artifactId>
     <packaging>jar</packaging>
     <name>Delving Shared Core Classes</name>
-    <version>0.2.7-SNAPSHOT</version>
+    <version>0.2.8-SNAPSHOT</version>
     <description>
         This module contains the lion's share of the Delving Framework code
     </description>
@@ -121,7 +121,7 @@
         <dependency>
             <groupId>eu.delving</groupId>
             <artifactId>metameta</artifactId>
-            <version>0.2.7-SNAPSHOT</version>
+            <version>0.2.8-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

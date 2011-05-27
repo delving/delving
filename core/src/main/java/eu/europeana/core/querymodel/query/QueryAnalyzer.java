@@ -22,7 +22,7 @@
 package eu.europeana.core.querymodel.query;
 
 import eu.delving.core.util.LocalizedFieldNames;
-import eu.delving.core.util.ThemeInterceptor;
+import eu.delving.core.util.ThemeFilter;
 import eu.delving.metadata.RecordDefinition;
 
 import java.util.ArrayList;
@@ -115,7 +115,7 @@ public class QueryAnalyzer {
             else {
                 String facet = part.substring(0, colon);
                 String value = part.substring(colon + 1);
-                LocalizedFieldNames.Lookup lookup = ThemeInterceptor.getLookup();
+                LocalizedFieldNames.Lookup lookup = ThemeFilter.getLookup();
                 if (lookup != null) {
                     facet = lookup.toFieldName(facet, locale);
                 }

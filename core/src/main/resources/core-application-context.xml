@@ -235,7 +235,7 @@
     </bean>
 
     <bean id="breadcrumbFactory" class="eu.europeana.core.querymodel.query.BreadcrumbFactory"/>
-    <bean id="themeInterceptor" class="eu.delving.core.util.ThemeInterceptor"/>
+    <bean id="themeFilter" class="eu.delving.core.util.ThemeFilter"/>
 
 </beans>
 

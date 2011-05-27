@@ -32,16 +32,8 @@ import org.springframework.core.io.ResourceLoader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 /**
  * This class puts everything from a directory into the StaticRepo to kickstart it, of course only if said has
@@ -63,7 +55,7 @@ public class StaticKickstarter implements ResourceLoaderAware {
     private ThemeHandler themeHandler;
 
     @Autowired
-    private ThemeInterceptor themeInterceptor;
+    private ThemeFilter themeFilter;
 
     public void setStaticRepo(StaticRepo staticRepo) {
         this.staticRepo = staticRepo;
@@ -97,7 +89,7 @@ public class StaticKickstarter implements ResourceLoaderAware {
                         log.error(String.format("Resource '%s' not a directory", resourceName));
                         continue;
                     }
-                    themeInterceptor.initialize(themeName);
+                    themeFilter.initialize(themeName);
                     kickstartDirectory(directory, directory);
                 }
             }

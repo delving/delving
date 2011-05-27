@@ -1,7 +1,7 @@
 package eu.europeana.core.querymodel.query;
 
 import eu.delving.core.util.LocalizedFieldNames;
-import eu.delving.core.util.ThemeInterceptor;
+import eu.delving.core.util.ThemeFilter;
 import org.apache.solr.client.solrj.SolrQuery;
 
 import java.io.UnsupportedEncodingException;
@@ -41,7 +41,7 @@ public class BreadcrumbFactory {
                         String facetValue = facetTerm.substring(colon + 1);
                         appendToURI(out, facetName, facetValue);
                         if (count-- == 0) {
-                            LocalizedFieldNames.Lookup lookup = ThemeInterceptor.getLookup();
+                            LocalizedFieldNames.Lookup lookup = ThemeFilter.getLookup();
                             String translatedFacetName = lookup == null ? facetName : lookup.toLocalizedName(facetName, locale);
                             breadcrumbs.add(new Breadcrumb(out.toString(), translatedFacetName + ":" + facetValue, facetName, facetValue));
                             break;
@@ -90,7 +90,7 @@ public class BreadcrumbFactory {
             else {
                 String facet = part.substring(0, colon);
                 String value = part.substring(colon+1);
-                facet = ThemeInterceptor.getLookup().toLocalizedName(facet, locale);
+                facet = ThemeFilter.getLookup().toLocalizedName(facet, locale);
                 out.append(facet).append(":").append(value).append(" ");
             }
         }

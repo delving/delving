@@ -39,8 +39,8 @@ public class ThemeCookieLocaleResolver extends CookieLocaleResolver {
 
     @Override
     public String getCookieDomain() {
-        log.debug(String.format("Fetching cookie domain %s from theme, cookie name is %s", ThemeInterceptor.getTheme().getBaseUrl(), getCookieName()));
-        return ThemeInterceptor.getTheme().getBaseUrl();
+        log.debug(String.format("Fetching cookie domain %s from theme, cookie name is %s", ThemeFilter.getTheme().getBaseUrl(), getCookieName()));
+        return ThemeFilter.getTheme().getBaseUrl();
     }
 
     @Override
@@ -50,6 +50,6 @@ public class ThemeCookieLocaleResolver extends CookieLocaleResolver {
 
     @Override
     protected Locale determineDefaultLocale(HttpServletRequest request) {
-        return new Locale(ThemeInterceptor.getTheme().getDefaultLanguage());
+        return new Locale(ThemeFilter.getTheme().getDefaultLanguage());
     }
 }

@@ -40,7 +40,7 @@ import reflect.BeanProperty
 import eu.delving.services.exceptions.AccessKeyException
 import java.util.{Locale, Properties, Map => JMap}
 import java.lang.String
-import eu.delving.core.util.{ThemeInterceptor, LocalizedFieldNames}
+import eu.delving.core.util.{ThemeFilter, LocalizedFieldNames}
 
 class RichSearchAPIService(request: HttpServletRequest, locale: Locale, httpResponse: HttpServletResponse,
                            beanQueryModelFactory: BeanQueryModelFactory, launchProperties: Properties,
@@ -90,7 +90,7 @@ class RichSearchAPIService(request: HttpServletRequest, locale: Locale, httpResp
     val userQuery = request.getParameter("query")
     require(!userQuery.isEmpty)
     val jParams = request.getParameterMap.asInstanceOf[JMap[String, Array[String]]]
-    val solrQuery: SolrQuery = SolrQueryUtil.createFromQueryParams(jParams, queryAnalyzer, locale, ThemeInterceptor.getTheme.getRecordDefinition)
+    val solrQuery: SolrQuery = SolrQueryUtil.createFromQueryParams(jParams, queryAnalyzer, locale, ThemeFilter.getTheme.getRecordDefinition)
     solrQuery.setFields("*,score")
     val briefResultView = beanQueryModelFactory.getBriefResultView(solrQuery, solrQuery.getQuery, jParams, locale)
     clickStreamLogger.logApiBriefView(request, briefResultView, solrQuery)

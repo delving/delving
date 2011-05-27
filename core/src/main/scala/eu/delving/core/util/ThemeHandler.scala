@@ -24,11 +24,11 @@ package eu.delving.core.util
 import org.apache.log4j.Logger
 import java.lang.String
 import xml.{Node, NodeSeq, Elem, XML}
-import javax.servlet.http.HttpServletRequest
 import java.util.Properties
 import reflect.BeanProperty
 import org.springframework.beans.factory.annotation.Autowired
 import eu.delving.metadata.{RecordDefinition, MetadataModel}
+import javax.servlet.ServletRequest
 
 /**
  *
@@ -67,9 +67,9 @@ class ThemeHandler {
     else getDefaultTheme
   }
 
-  def getByBaseUrl(request : HttpServletRequest) : PortalTheme = getByBaseUrl(request.getServerName)
+  def getByBaseUrl(request : ServletRequest) : PortalTheme = getByBaseUrl(request.getServerName)
 
-  def getByRequest(request : HttpServletRequest) : PortalTheme = {
+  def getByRequest(request : ServletRequest) : PortalTheme = {
     if (hasSingleTheme) getDefaultTheme
     else if (debug && request.getParameterMap.containsKey("theme")) getByThemeName(request.getParameter("theme"))
     else getByBaseUrl(request)
