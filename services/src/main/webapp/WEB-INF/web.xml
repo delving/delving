@@ -35,7 +35,7 @@
 
     <filter-mapping>
         <filter-name>themeFilter</filter-name>
-        <url-pattern>/</url-pattern>
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
 
     <filter>
