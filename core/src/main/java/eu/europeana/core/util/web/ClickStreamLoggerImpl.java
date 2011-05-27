@@ -23,7 +23,8 @@ package eu.europeana.core.util.web;
 
 import eu.delving.core.storage.User;
 import eu.delving.core.util.ClickStreamLoggerInterceptor;
-import eu.delving.core.util.ThemeFilter;
+import eu.delving.core.util.PortalTheme;
+import eu.delving.core.util.ThemeHandler;
 import eu.delving.domain.Language;
 import eu.europeana.core.querymodel.query.BriefBeanView;
 import eu.europeana.core.querymodel.query.DocIdWindowPager;
@@ -32,6 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.Cookie;
@@ -46,6 +48,9 @@ import java.util.Map;
 public class ClickStreamLoggerImpl implements ClickStreamLogger {
     private Logger log = Logger.getLogger(getClass());
     private static String VERSION = "1.0";
+
+    @Autowired
+    private ThemeHandler themeHandler;
 
     @Override
     public void logUserAction(HttpServletRequest request, UserAction action, ModelAndView model) {
@@ -232,11 +237,12 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
                 }
             }
         }
+        PortalTheme theme = themeHandler.getByRequest(request);
         return MessageFormat.format(
                 "userId={0}, lang={1}, req={4}, date={2}, ip={3}, user-agent={5}, referer={6}, utma={8}, " +
                         "utmb={9}, utmc={10}, utmz={13}, v={7}, duration={11}, langCookie={12}, defaultLanguage={14}",
                 userId, language, new DateTime(), ip, reqUrl, userAgent, referer, VERSION, utma, utmb, utmc,
-                ClickStreamLoggerInterceptor.getTimeElapsed(), languageCookie, utmz, ThemeFilter.getTheme().getDefaultLanguage());
+                ClickStreamLoggerInterceptor.getTimeElapsed(), languageCookie, utmz, theme.getDefaultLanguage());
     }
 
     private static String getRequestUrl(HttpServletRequest request) {
