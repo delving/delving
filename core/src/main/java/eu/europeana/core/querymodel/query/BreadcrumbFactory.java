@@ -19,7 +19,7 @@ import java.util.TreeSet;
  */
 
 public class BreadcrumbFactory {
-    private static final String FACET_PROMPT = "&amp;qf=";
+    private static final String FACET_PROMPT = "&qf=";
 
     public List<Breadcrumb> createList(SolrQuery solrQuery, Locale locale) throws EuropeanaQueryException {
         if (solrQuery.getQuery() == null) {
