@@ -89,6 +89,12 @@ public class ThemeInterceptor extends HandlerInterceptorAdapter {
         return true;
     }
 
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        themeThreadLocal.remove();
+        lookupThreadLocal.remove();
+    }
+
     public void initialize(String themeName) throws Exception {
         final PortalTheme portalTheme = themeHandler.getByThemeName(themeName);
         themeThreadLocal.set(portalTheme);
