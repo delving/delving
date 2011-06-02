@@ -112,6 +112,7 @@ class DataSetImpl implements MetaRepo.DataSet {
         implFactory.removeFirstHarvestSteps(getSpec());
         object.put(SOURCE_HASH, "");
         save();
+        records().drop();
         try {
             MetaRepo.Details details = getDetails();
             Facts facts = Facts.read(new ByteArrayInputStream(details.getFacts()));
@@ -129,15 +130,16 @@ class DataSetImpl implements MetaRepo.DataSet {
             while ((record = parser.nextRecord()) != null) {
                 record.getMob().put(MetaRepo.Record.MODIFIED, modified);
                 record.getMob().put(MetaRepo.Record.DELETED, false);
-                records().update( // just match unique values for now
-                        mob(
-                                MetaRepo.Record.UNIQUE,
-                                record.getMob().get(MetaRepo.Record.UNIQUE)
-                        ),
-                        record.getMob(),
-                        true,
-                        false
-                );
+                records().insert(record.getMob());
+//                records().update( // just match unique values for now
+//                        mob(
+//                                MetaRepo.Record.UNIQUE,
+//                                record.getMob().get(MetaRepo.Record.UNIQUE)
+//                        ),
+//                        record.getMob(),
+//                        true,
+//                        false
+//                );
                 recordCount++;
                 if (recordCount % 10000 == 0) {
                     LOG.info(String.format("%d Records read, current count %d", recordCount, records().count()));
@@ -145,20 +147,20 @@ class DataSetImpl implements MetaRepo.DataSet {
             }
             LOG.info(String.format("Finally, %d Records read, current count %d", recordCount, records().count()));
             parser.close();
-            // mark records unmodified by above loop as deleted
-            records().update(
-                    mob(
-                            MetaRepo.Record.MODIFIED,
-                            mob("$lt", modified)
-                    ),
-                    mob(
-                            "$set",
-                            mob(MetaRepo.Record.DELETED, true)
-                    ),
-                    false,
-                    true
-            );
-            LOG.info(String.format("After marking orphans, %d Records read, current count %d", recordCount, records().count()));
+//            // mark records unmodified by above loop as deleted
+//            records().update(
+//                    mob(
+//                            MetaRepo.Record.MODIFIED,
+//                            mob("$lt", modified)
+//                    ),
+//                    mob(
+//                            "$set",
+//                            mob(MetaRepo.Record.DELETED, true)
+//                    ),
+//                    false,
+//                    true
+//            );
+//            LOG.info(String.format("After marking orphans, %d Records read, current count %d", recordCount, records().count()));
         }
         catch (Exception e) {
             throw new RecordParseException("Unable to parse records", e);
