@@ -35,6 +35,7 @@ import eu.delving.services.exceptions.MappingNotFoundException;
 import eu.delving.services.exceptions.MetaRepoSystemException;
 import eu.delving.services.exceptions.RecordParseException;
 import eu.delving.sip.DataSetState;
+import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
 import java.io.ByteArrayInputStream;
@@ -54,6 +55,7 @@ import static eu.delving.core.util.MongoObject.mob;
  */
 
 class DataSetImpl implements MetaRepo.DataSet {
+    private static Logger LOG = Logger.getLogger(DataSetImpl.class);
     private ImplFactory implFactory;
     private DBObject object;
     private DBCollection recColl;
@@ -123,6 +125,7 @@ class DataSetImpl implements MetaRepo.DataSet {
             MongoObjectParser.Record record;
             Date modified = new Date();
             object.put(NAMESPACES, parser.getNamespaces());
+            int recordCount = 0;
             while ((record = parser.nextRecord()) != null) {
                 record.getMob().put(MetaRepo.Record.MODIFIED, modified);
                 record.getMob().put(MetaRepo.Record.DELETED, false);
@@ -135,7 +138,12 @@ class DataSetImpl implements MetaRepo.DataSet {
                         true,
                         false
                 );
+                recordCount++;
+                if (recordCount % 10000 == 0) {
+                    LOG.info(String.format("%d Records read, current count %d", recordCount, records().count()));
+                }
             }
+            LOG.info(String.format("Finally, %d Records read, current count %d", recordCount, records().count()));
             parser.close();
             // mark records unmodified by above loop as deleted
             records().update(
@@ -150,6 +158,7 @@ class DataSetImpl implements MetaRepo.DataSet {
                     false,
                     true
             );
+            LOG.info(String.format("After marking orphans, %d Records read, current count %d", recordCount, records().count()));
         }
         catch (Exception e) {
             throw new RecordParseException("Unable to parse records", e);
