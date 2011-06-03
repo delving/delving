@@ -285,7 +285,7 @@ class DataSetImpl implements MetaRepo.DataSet {
 
     @Override
     public int getRecordCount() {
-        return records().find().count();
+        return (int)records().count();
     }
 
     @Override
