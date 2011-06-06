@@ -133,13 +133,14 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public DataSet getFirstDataSet(DataSetState dataSetState) {
+    public DataSet getDataSetForIndexing(int maxSimultaneous) {
         DBCollection collection = db().getCollection(DATASETS_COLLECTION);
-        DBObject object = collection.findOne(mob(DataSet.DATA_SET_STATE, dataSetState.toString()));
-        if (object == null) {
-            return null;
+        int indexingCount = collection.find(mob(DataSet.DATA_SET_STATE, DataSetState.INDEXING.toString())).count();
+        if (indexingCount < maxSimultaneous) {
+            DBObject object = collection.findOne(mob(DataSet.DATA_SET_STATE, DataSetState.QUEUED.toString()));
+            if (object != null) return factory().createDataSet(object);
         }
-        return factory().createDataSet(object);
+        return null;
     }
 
     @Override

@@ -55,7 +55,7 @@ public interface MetaRepo {
 
     DataSet getDataSet(String spec);
 
-    DataSet getFirstDataSet(DataSetState dataSetState);
+    DataSet getDataSetForIndexing(int maxSimultaneous);
 
     Set<? extends MetadataFormat> getMetadataFormats();
 
