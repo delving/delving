@@ -170,6 +170,7 @@ public class SipCreatorGUI extends JFrame {
                 for (FileStore.DataSetStore dataSetStore : sipModel.getFileStore().getDataSetStores().values()) {
                     dataSetListModel.setDataSetStore(dataSetStore);
                 }
+                dataSetListModel.setPattern(filter.getText());
             }
         });
         setJMenuBar(createMenuBar());

@@ -150,8 +150,8 @@ public class AnalysisFactsPanel extends JPanel {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            selectRecordRootButton.setEnabled(node.couldBeRecordRoot() && !sipModel.getFacts().isDownloadedSource());
-                            selectUniqueElementButton.setEnabled(!node.couldBeRecordRoot() && !sipModel.getFacts().isDownloadedSource());
+                            selectRecordRootButton.setEnabled(node.couldBeRecordRoot());
+                            selectUniqueElementButton.setEnabled(!node.couldBeRecordRoot());
                             sipModel.setStatistics(node.getStatistics());
                         }
                     });
