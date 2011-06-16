@@ -41,6 +41,8 @@ class ThemeHandler {
 
   private lazy val themeList: Seq[PortalTheme] = loadThemes()
 
+  private val defaultQueryKeys = List("dc.title","dc.description","dc.creator","dc.subject", "dc.date") // todo add more default cases
+
   def getThemeNames: java.util.Set[String] = {
     val set :java.util.Set[String] = new java.util.TreeSet[String]
     themeList.foreach(theme => set.add(theme.name))
@@ -115,7 +117,7 @@ class ThemeHandler {
         name = getNodeText("name"),
         templateDir = getNodeText("templateDir"),
         isDefault = isDefault,
-        localiseQueryKeys = getNodeTextAsArray("localiseQueryKeys"),
+        localiseQueryKeys = defaultQueryKeys.toArray ++ getNodeTextAsArray("localiseQueryKeys"),
         hqf = getNodeText("hiddenQueryFilter"),
         baseUrl = getNodeText("portalBaseUrl"),
         solrSelectUrl = getNodeText("solrSelectUrl"),

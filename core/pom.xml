@@ -233,7 +233,7 @@
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>
-            <artifactId>scalatest</artifactId>
+            <artifactId>scalatest_2.9.0</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

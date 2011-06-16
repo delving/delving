@@ -181,44 +181,31 @@ public class DataSetListModel extends AbstractListModel {
 
         public String toHtml() throws FileStoreException {
             StringBuilder html = new StringBuilder(String.format("<html><table><tr><td width=250><b>%s</b></td><td>", spec));
-            if (dataSetStore != null && dataSetInfo != null) {
-                html.append("<p>Data Set is present in the repository as well as in the local file store.</p>");
-            }
-            else if (dataSetStore != null) {
-                if (connectedStatus.isConnected()) {
-                    html.append("<p>Data Set is in the local file store but not in the repository.</p>");
+            if (connectedStatus.isConnected()) {
+                if (dataSetInfo != null && dataSetStore != null) {
+                    html.append("<p>Data Set present both locally and in the repository</p>");
                 }
-                else {
-                    html.append("<p>Data Set is available the local file store.</p>");
+                else if (dataSetInfo != null) {
+                    html.append("<p>Data Set is only in the repository, no local copy.</p>");
+                }
+                else if (dataSetStore != null) {
+                    html.append("<p>Data Set is only stored locally, and can be uploaded.</p>");
                 }
             }
-            else if (dataSetInfo != null) {
-                html.append("<p>Data Set is present only in the repository, and not in the local file store.</p>");
-            }
-
             if (dataSetStore != null) {
                 List<String> mappingPrefixes = dataSetStore.getMappingPrefixes();
                 switch (mappingPrefixes.size()) {
                     case 0:
+                        html.append("<p>No mappings yet</p>");
                         break;
                     case 1:
-                        html.append(String.format(
-                                "<p>There is a mapping created for <strong>%s</strong>.</p>",
-                                mappingPrefixes.get(0)
-                        ));
+                        html.append(String.format("<p>Mapping created for <strong>%s</strong>.</p>", mappingPrefixes.get(0)));
                         break;
                     case 2:
-                        html.append(String.format(
-                                "<p>There are mappings created for <strong>%s</strong> and <strong>%s</strong>.</p>",
-                                mappingPrefixes.get(0),
-                                mappingPrefixes.get(1)
-                        ));
+                        html.append(String.format("<p>Mappings created for <strong>%s</strong> and <strong>%s</strong>.</p>", mappingPrefixes.get(0), mappingPrefixes.get(1)));
                         break;
                     default:
-                        html.append(String.format(
-                                "<p>There are mappings created for all of <strong>%s</strong>.</p>",
-                                mappingPrefixes
-                        ));
+                        html.append(String.format("<p>Mappings created for all of <strong>%s</strong>.</p>", mappingPrefixes));
                         break;
                 }
             }
@@ -226,39 +213,25 @@ public class DataSetListModel extends AbstractListModel {
                 DataSetState state = DataSetState.valueOf(dataSetInfo.state);
                 switch (state) {
                     case DISABLED:
-                        html.append(String.format("<p>Data Set is disabled, but it has %d records and it can be indexed.</p>", dataSetInfo.recordCount));
+                        html.append(String.format("<p>Data Set is not in the index, but it has %d records ready.</p>", dataSetInfo.recordCount));
                         break;
                     case INCOMPLETE:
-                        html.append(String.format(
-                                "<p>Data Set is incomplete. So far %d records.</p>",
-                                dataSetInfo.recordCount
-                        ));
+                        html.append("<p>Data Set is known but has no records yet.</p>");
                         break;
                     case ENABLED:
-                        html.append(String.format(
-                                "<p><strong>Data set is enabled, with %d records indexed of the total %d.</strong></p>",
-                                dataSetInfo.recordsIndexed,
-                                dataSetInfo.recordCount
-                        ));
+                        html.append(String.format("<p><strong>Data set is enabled, with %d records indexed of the total %d.</strong></p>", dataSetInfo.recordsIndexed, dataSetInfo.recordCount));
                         break;
                     case ERROR:
                         html.append("<p style=\"color: red;\"><strong>Data set is in <strong>error</strong>. Indexing can be retried.</strong></p>");
                         break;
                     case INDEXING:
-                        html.append(String.format(
-                                "<p style=\"color: green;\"><strong>Data set is busy indexing, with %d records processed so far of %d.</strong></p>",
-                                dataSetInfo.recordsIndexed,
-                                dataSetInfo.recordCount
-                        ));
+                        html.append(String.format("<p style=\"color: green;\"><strong>Data set is busy indexing, with %d records processed so far of %d.</strong></p>", dataSetInfo.recordsIndexed, dataSetInfo.recordCount));
                         break;
                     case QUEUED:
                         html.append("<p>Data set is queued for indexing, which should start shortly.</p>");
                         break;
                     case UPLOADED:
-                        html.append(String.format(
-                                "<p>Data Set is fully uploaded with %d records.</p>",
-                                dataSetInfo.recordCount
-                        ));
+                        html.append(String.format("<p>Data Set is uploaded with %d records.</p>", dataSetInfo.recordCount));
                         break;
                     default:
                         throw new RuntimeException();

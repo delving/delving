@@ -78,10 +78,6 @@ public class DataSetController {
     @Autowired
     private AccessKey accessKey;
 
-    @Qualifier("mongoDb")
-    @Autowired
-    private MongoFactory mongoFactory;
-
     @Autowired
     @Qualifier("solrUpdateServer")
     private SolrServer solrServer;
@@ -428,7 +424,7 @@ public class DataSetController {
         info.spec = dataSet.getSpec();
         info.name = dataSet.getDetails().getName();
         info.state = dataSet.getState(false).toString();
-        info.recordCount = dataSet.getDetails().getUploadedRecordCount();
+        info.recordCount = dataSet.getRecordCount();
         info.errorMessage = dataSet.getErrorMessage();
         info.recordsIndexed = dataSet.getRecordsIndexed();
         info.hashes = dataSet.getHashes();
