@@ -42,7 +42,6 @@ import eu.delving.core.util.{ThemeFilter, LocalizedFieldNames}
 import java.util.{Locale, Properties, Map => JMap}
 import collection.immutable.ListMap
 import collection.mutable.{Map, LinkedHashMap}
-import sun.jvm.hotspot.debugger.posix.elf.ELFSectionHeader
 
 class RichSearchAPIService(aro : ApiRequestObject) {
 
