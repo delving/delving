@@ -47,12 +47,13 @@ class RichSearchAPIService(aro : ApiRequestObject) {
 
   private val log : Logger = Logger.getLogger("RichSearchAPIService")
 
+  val format = aro.params.getOrElse("format", Array[String]("default")).head
+
   /**
    * This function parses the response for with output format needs to be rendered
    */
 
   def parseRequest : String = {
-    val format = aro.params.getOrElse("format", Array[String]("default")).head
 
     val response = try {
       if (aro.restrictedApiAccess) {
@@ -81,6 +82,31 @@ class RichSearchAPIService(aro : ApiRequestObject) {
     response
   }
 
+  def getJSONResultResponse(authorized: Boolean = true, callback : String = ""): String = {
+    aro.response setContentType ("text/xml")
+    require(aro.params.contains("query") || aro.params.contains("id") || aro.params.contains("explain"))
+
+    val response : String = aro.params match {
+      case x : Map[String, Array[String]] if x.containsKey("explain") => ExplainResponse(aro).renderAsJson
+      case x : Map[String, Array[String]] if x.containsKey("id") && !x.get("id").isEmpty => FullView(getFullResultsFromSolr, aro).renderAsJSON(authorized)
+      case _ => SearchSummary(getBriefResultsFromSolr, aro).renderAsJSON(authorized)
+    }
+    response
+  }
+
+  def getXMLResultResponse(authorized: Boolean = true): String = {
+    aro.response setContentType ("text/xml")
+    require(aro.params.contains("query") || aro.params.contains("id") || aro.params.contains("explain"))
+
+    val response : Elem = aro.params match {
+      case x : Map[String, Array[String]] if x.containsKey("explain") => ExplainResponse(aro).renderAsXml
+      case x : Map[String, Array[String]] if x.containsKey("id") && !x.get("id").isEmpty => FullView(getFullResultsFromSolr, aro).renderAsXML(true)
+      case _ => SearchSummary(getBriefResultsFromSolr, aro).renderAsXML(authorized)
+    }
+
+    "<?xml version='1.0' encoding='utf-8' ?>\n" + aro.prettyPrinter.format(response)
+  }
+
   private def getBriefResultsFromSolr: BriefBeanView = {
     val userQuery = aro.request.getParameter("query")
     require(!userQuery.isEmpty)
@@ -99,19 +125,6 @@ class RichSearchAPIService(aro : ApiRequestObject) {
     val fullView = aro.beanQueryModelFactory.getFullResultView(jParams, aro.locale)
     aro.clickStreamLogger.logApiFullView(aro.request, fullView, idQuery)
     fullView
-  }
-
-  def getXMLResultResponse(authorized: Boolean = true): String = {
-    aro.response setContentType ("text/xml")
-    require(aro.params.contains("query") || aro.params.contains("id") || aro.params.contains("explain"))
-
-    val response : Elem = aro.params match {
-      case x : Map[String, Array[String]] if x.containsKey("explain") => ExplainResponse(aro).renderAsXml
-      case x : Map[String, Array[String]] if x.containsKey("id") && !x.get("id").isEmpty => FullView(getFullResultsFromSolr, aro).renderAsXML(true)
-      case _ => SearchSummary(getBriefResultsFromSolr, aro).renderAsXML(authorized)
-    }
-
-    "<?xml version='1.0' encoding='utf-8' ?>\n" + aro.prettyPrinter.format(response)
   }
 
   def errorResponse(error : String = "Unable to respond to the API request",
@@ -145,18 +158,7 @@ class RichSearchAPIService(aro : ApiRequestObject) {
     response
   }
 
-  def getJSONResultResponse(authorized: Boolean = true, callback : String = ""): String = {
-    aro.response setContentType ("text/xml")
-    require(aro.params.contains("query") || aro.params.contains("id") || aro.params.contains("explain"))
-
-    val response : String = aro.params match {
-      case x : Map[String, Array[String]] if x.containsKey("explain") => ExplainResponse(aro).renderAsJson
-      case x : Map[String, Array[String]] if x.containsKey("id") && !x.get("id").isEmpty => FullView(getFullResultsFromSolr, aro).renderAsJSON(true)
-      case _ => SearchSummary(getBriefResultsFromSolr, aro).renderAsJSON(authorized)
-    }
-    response
-  }
-
+  @Deprecated
   def getSimileResultResponse(callback : String = "") : String = {
     implicit val formats = net.liftweb.json.DefaultFormats
     aro.response setContentType ("text/javascript")
@@ -168,10 +170,10 @@ class RichSearchAPIService(aro : ApiRequestObject) {
           fieldValue =>
             if (fieldValue.isNotEmpty) {
               if (fieldValue.getValueAsArray.size > 1) {
-                recordMap.put(fieldValue.getKeyAsXml, encodeUrl(fieldValue.getValueAsArray, fieldValue.getKey))
+                recordMap.put(fieldValue.getKeyAsXml, RichSearchAPIService.encodeUrl(fieldValue.getValueAsArray, fieldValue.getKey, aro))
               }
               else {
-                recordMap.put(fieldValue.getKeyAsXml, encodeUrl(fieldValue))
+                recordMap.put(fieldValue.getKeyAsXml, RichSearchAPIService.encodeUrl(fieldValue, aro))
               }
             }
         }
@@ -195,18 +197,7 @@ class RichSearchAPIService(aro : ApiRequestObject) {
     }
   }
 
-  private def encodeUrl(field: FieldValue): String = {
-    if (aro.params.getOrElse("cache", Array[String]("false")).head.contains("true") && field.getKey == "europeana_object")
-      aro.cacheUrl + URLEncoder.encode(field.getFirst, "utf-8")
-    else field.getFirst
-  }
-
-  private def encodeUrl(fields: Array[String], label: String): Array[String] = {
-    if (aro.params.getOrElse("cache", Array[String]("false")).head.contains("true") && label == "europeana_object")
-      fields.map(fieldEntry => aro.cacheUrl + URLEncoder.encode(fieldEntry, "utf-8"))
-    else fields
-  }
-
+  @Deprecated
   def renderSimileRecord(doc: BriefDoc): ListMap[String, Any] = {
 
     val recordMap = collection.mutable.ListMap[String, Any]()
@@ -225,7 +216,7 @@ class RichSearchAPIService(aro : ApiRequestObject) {
           recordMap.put(label.name, fieldValue.getValueAsArray)
         }
         else {
-          recordMap.put(label.name, encodeUrl(fieldValue))
+          recordMap.put(label.name, RichSearchAPIService.encodeUrl(fieldValue, aro))
         }
       }
     }
@@ -240,6 +231,10 @@ case class RecordLabel(name : String, fieldValue : String, multivalued : Boolean
 case class SearchSummary(result : BriefBeanView, aro : ApiRequestObject) {
 
   private val log : Logger = Logger.getLogger("SearchSummary")
+  private val pagination = result.getPagination
+  private val searchTerms = pagination.getPresentationQuery.getUserSubmittedQuery
+  private val startPage = pagination.getStart
+  private val language = aro.params.getOrElse("lang", Array[String]("en")).head
 
   def minusAmp(link : String) = link.replaceAll("amp;", "").replaceAll(" ","%20").replaceAll("qf=","qf[]=")
 
@@ -255,10 +250,6 @@ case class SearchSummary(result : BriefBeanView, aro : ApiRequestObject) {
     "Person(s)" -> "abm:aboutPerson")
 
   def renderAsXML(authorized : Boolean) : Elem = {
-    val pagination = result.getPagination
-    val searchTerms = pagination.getPresentationQuery.getUserSubmittedQuery
-    val startPage = pagination.getStart
-    val language = aro.params.getOrElse("lang", Array[String]("en")).head
 
     val response : Elem =
       <results xmlns:icn="http://www.icn.nl/" xmlns:europeana="http://www.europeana.eu/schemas/ese/" xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -296,7 +287,7 @@ case class SearchSummary(result : BriefBeanView, aro : ApiRequestObject) {
         <items>
           {result.getBriefDocs.map(item =>
           <item>
-          {item.getFieldValuesFiltered(false, Array("delving_pmhId")).sortWith((fv1, fv2) => fv1.getKey < fv2.getKey).map(field => RichSearchAPIService.renderXMLFields(field, aro))}
+          {item.getFieldValuesFiltered(false, Array("delving_pmhId","europeana:collectionName", "europeana:collectionTitle")).sortWith((fv1, fv2) => fv1.getKey < fv2.getKey).map(field => RichSearchAPIService.renderXMLFields(field, aro))}
           </item>
         )}
         </items>
@@ -314,7 +305,49 @@ case class SearchSummary(result : BriefBeanView, aro : ApiRequestObject) {
   }
 
   def renderAsJSON(authorized : Boolean) : String = {
-    "todo"
+    implicit val formats = net.liftweb.json.DefaultFormats
+
+    def createJsonRecord(doc : BriefDoc) : ListMap[String, Any]= {
+      val recordMap = collection.mutable.ListMap[String, Any]();
+      doc.getFieldValuesFiltered(false, Array("delving_pmhId", "europeana:collectionName", "europeana:collectionTitle"))
+                              .sortWith((fv1, fv2) => fv1.getKey < fv2.getKey).foreach(fv => recordMap.put(fv.getKeyAsXml, RichSearchAPIService.encodeUrl(fv.getValueAsArray, fv.getKey, aro)))
+      ListMap(recordMap.toSeq: _*)
+    }
+
+    def createLayoutItems : ListMap[String, Any] = {
+      val recordMap = collection.mutable.ListMap[String, Any]();
+      layoutMap.map(item =>
+              recordMap.put(localiseKey(item._2, item._1, language), item._2))
+      ListMap(recordMap.toSeq: _*)
+    }
+
+    def createFacetList: List[ListMap[String, Any]] = {
+      result.getFacetQueryLinks.map(fql =>
+        ListMap("name" -> fql.getType, "isSelected" -> fql.isSelected, "links" -> fql.getLinks.map(link =>
+          ListMap("url" -> minusAmp(link.getUrl), "isSelected" -> link.isRemove, "value" -> link.getValue, "count" -> link.getCount, "displayString" -> "%s (%s)".format(link.getValue, link.getCount))))
+      ).toList
+    }
+
+    val outputJson = Printer.pretty(render(Extraction.decompose(
+      ListMap("result" ->
+              ListMap("query" ->
+                      ListMap("numfound" -> pagination.getNumFound, "terms" -> searchTerms,
+                        "breadCrumbs" -> pagination.getBreadcrumbs.map(bc => ListMap("field" -> bc.getField, "href" -> minusAmp(bc.getHref), "value" -> bc.getDisplay))),
+                "pagination" ->
+                        ListMap("start" -> pagination.getStart, "rows" -> pagination.getRows, "numFound" -> pagination.getNumFound,
+                          "hasNext" -> pagination.isNext, "nextPage" -> pagination.getNextPage, "hasPrevious" -> pagination.isPrevious,
+                          "previousPage" -> pagination.getPreviousPage, "currentPage" -> pagination.getStart,
+                          "links" -> pagination.getPageLinks.map(pageLink => ListMap("start" -> pageLink.getStart, "isLinked" -> pageLink.isLinked, "pageNumber" -> pageLink.getDisplay))
+                        ),
+                "layout" ->
+                        ListMap[String, Any]("drupal" -> createLayoutItems),
+                "items" ->
+                        result.getBriefDocs.map(doc => createJsonRecord(doc)).toList,
+                "facets" -> createFacetList
+              )
+      )
+    )))
+    outputJson
   }
 }
 
@@ -334,7 +367,18 @@ case class FullView(fullResult : FullBeanView, aro : ApiRequestObject) {
     }
 
     def renderAsJSON(authorized : Boolean) : String = {
-      "todo"
+      implicit val formats = net.liftweb.json.DefaultFormats
+
+      val recordMap = collection.mutable.ListMap[String, Any]()
+      fullResult.getFullDoc.getFieldValuesFiltered(false, Array("delving_pmhId","europeana:collectionName", "europeana:collectionTitle"))
+                              .sortWith((fv1, fv2) => fv1.getKey < fv2.getKey).foreach(fv => recordMap.put(fv.getKeyAsXml, fv.getValueAsArray))
+
+      val outputJson = Printer.pretty(render(Extraction.decompose(
+        ListMap("result" ->
+              ListMap("item" -> ListMap(recordMap.toSeq : _*))
+        )
+      )))
+      outputJson
     }
 }
 
@@ -449,16 +493,9 @@ object RichSearchAPIService {
   }
 
   def renderXMLFields(field : FieldValue, aro: ApiRequestObject) : Seq[Elem] = {
-    def encodeUrl(content: String): String = {
-      if (aro.params.getOrElse("cache", Array[String]("false")).head.contains("true") && field.getKey == "europeana_object")
-        aro.cacheUrl + URLEncoder.encode(content, "utf-8")
-      else if (content.startsWith("http://")) content.replaceAll("&", "&amp;")
-      else content.replaceAll(" & ", "&amp;")
-    }
-
     field.getValueAsArray.map(value =>
       try {
-        XML.loadString("<%s>%s</%s>\n".format(field.getKeyAsXml, encodeUrl(value), field.getKeyAsXml))
+        XML.loadString("<%s>%s</%s>\n".format(field.getKeyAsXml, encodeUrl(value, field, aro), field.getKeyAsXml))
       }
       catch {
         case ex : Exception =>
@@ -468,4 +505,22 @@ object RichSearchAPIService {
     ).toSeq
   }
 
+  def encodeUrl(field: FieldValue, aro: ApiRequestObject): String = {
+    if (aro.params.getOrElse("cache", Array[String]("false")).head.contains("true") && field.getKey == "europeana_object")
+      aro.cacheUrl + URLEncoder.encode(field.getFirst, "utf-8")
+    else field.getFirst
+  }
+
+  def encodeUrl(fields: Array[String], label: String, aro: ApiRequestObject): Array[String] = {
+    if (aro.params.getOrElse("cache", Array[String]("false")).head.contains("true") && label == "europeana_object")
+      fields.map(fieldEntry => aro.cacheUrl + URLEncoder.encode(fieldEntry, "utf-8"))
+    else fields
+  }
+
+  def encodeUrl(content: String, field: FieldValue, aro: ApiRequestObject): String = {
+    if (aro.params.getOrElse("cache", Array[String]("false")).head.contains("true") && field.getKey == "europeana_object")
+      aro.cacheUrl + URLEncoder.encode(content, "utf-8")
+    else if (content.startsWith("http://")) content.replaceAll("&", "&amp;")
+    else content.replaceAll(" & ", "&amp;")
+  }
 }
