@@ -1,3 +1,24 @@
+/*
+ * Copyright 2011 DELVING BV
+ *
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
+ */
+
 package eu.europeana.core.querymodel.query
 
 import _root_.java.net.URLEncoder
@@ -22,7 +43,7 @@ class BreadCrumbSpec extends Spec with ShouldMatchers {
   val bcFactory = new BreadcrumbFactory
   val queryString = "single query"
   val encodedQueryString = URLEncoder.encode(queryString, "utf-8")
-  val filterPrefix = "&amp;qf="
+  val filterPrefix = "&qf="
   val queryPrefix = "query=" + encodedQueryString;
 
   describe("A List of BreadCrumbs") {
@@ -102,7 +123,7 @@ class BreadCrumbSpec extends Spec with ShouldMatchers {
         list.size should equal(2)
         val lastBreadCrumb: Breadcrumb = list.last
         lastBreadCrumb.isLast should be(true)
-        lastBreadCrumb.getHref should equal(queryPrefix + "&amp;qf=LANGUAGE:en")
+        lastBreadCrumb.getHref should equal(queryPrefix + filterPrefix + "LANGUAGE:en")
       }
     }
   }
