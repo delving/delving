@@ -149,7 +149,7 @@ public class StaticKickstarter implements ResourceLoaderAware {
                             log.info(String.format("Page %s created", repoPath));
                         }
                         else {
-                            log.info(String.format("Page %s is already in the static repository, so not updating it", repoPath));
+                            log.debug(String.format("Page %s is already in the static repository, so not updating it", repoPath));
                         }
                         break;
                     case PNG:
