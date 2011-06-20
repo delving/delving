@@ -37,7 +37,7 @@ import java.util.Set;
 
 public interface StaticRepo {
 
-    Map<String, List<MenuItem>> getMenus(Locale locale);
+    List<MenuItem> getMenu(String menuName, Locale locale);
 
     Set<String> getPagePaths();
 

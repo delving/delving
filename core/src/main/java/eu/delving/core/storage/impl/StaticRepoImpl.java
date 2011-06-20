@@ -65,24 +65,17 @@ public class StaticRepoImpl implements StaticRepo {
     }
 
     @Override
-    public Map<String, List<MenuItem>> getMenus(Locale locale) {
+    public List<MenuItem> getMenu(String menuName, Locale locale) {
         Map<String, Page> latestPages = getLatestPages();
-        Map<String, List<MenuItem>> menus = new TreeMap<String, List<MenuItem>>();
+        List<MenuItem> items = new ArrayList<MenuItem>();
         for (Page page : latestPages.values()) {
-            String menuName = page.getMenuName();
-            if (menuName != null) {
+            if (menuName.equals(page.getMenuName())) {
                 MenuItem menuItem = new MenuItem(menuName, page.getMenuPriority(), page.getTitle(locale), page.getPath());
-                List<MenuItem> list = menus.get(menuName);
-                if (list == null) {
-                    menus.put(menuName, list = new ArrayList<MenuItem>());
-                }
-                list.add(menuItem);
+                items.add(menuItem);
             }
         }
-        for (List<MenuItem> menu : menus.values()) {
-            Collections.sort(menu);
-        }
-        return menus;
+        Collections.sort(items);
+        return items;
     }
 
     @Override
