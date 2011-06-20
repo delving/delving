@@ -30,6 +30,7 @@ import eu.delving.services.exceptions.MappingNotFoundException;
 import eu.delving.services.exceptions.RecordParseException;
 import eu.delving.services.exceptions.ResumptionTokenNotFoundException;
 import eu.delving.sip.DataSetState;
+import eu.europeana.sip.core.MappingException;
 import org.bson.types.ObjectId;
 
 import java.io.InputStream;
@@ -59,7 +60,7 @@ public interface MetaRepo {
 
     Set<? extends MetadataFormat> getMetadataFormats();
 
-    Set<? extends MetadataFormat> getMetadataFormats(String id, String accessKey) throws MappingNotFoundException, AccessKeyException;
+    Set<? extends MetadataFormat> getMetadataFormats(String id, String accessKey) throws MappingNotFoundException, AccessKeyException, MappingException;
 
     HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String accessKey) throws DataSetNotFoundException, MappingNotFoundException, AccessKeyException;
 
@@ -67,7 +68,7 @@ public interface MetaRepo {
 
     void removeExpiredHarvestSteps();
 
-    Record getRecord(String identifier, String metadataFormat, String accessKey) throws BadArgumentException, DataSetNotFoundException, MappingNotFoundException, AccessKeyException;
+    Record getRecord(String identifier, String metadataFormat, String accessKey) throws BadArgumentException, DataSetNotFoundException, MappingNotFoundException, AccessKeyException, MappingException;
 
     MetaConfig getMetaRepoConfig();
 
@@ -110,7 +111,7 @@ public interface MetaRepo {
 
         int getRecordCount();
 
-        Record getRecord(ObjectId id, String metadataPrefix, String accessKey) throws MappingNotFoundException, AccessKeyException;
+        Record getRecord(ObjectId id, String metadataPrefix, String accessKey) throws MappingNotFoundException, AccessKeyException, MappingException;
 
         interface RecordFetch {
             List<? extends Record> getRecords();
@@ -118,7 +119,7 @@ public interface MetaRepo {
             ObjectId getAfterId();
         }
 
-        RecordFetch getRecords(String prefix, int count, Date from, ObjectId afterId, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException;
+        RecordFetch getRecords(String prefix, int count, Date from, ObjectId afterId, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException, MappingException;
 
         List<String> getHashes();
 

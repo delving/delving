@@ -23,6 +23,7 @@ package eu.delving.services.core.impl;
 
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.MappingNotFoundException;
+import eu.europeana.sip.core.MappingException;
 
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,6 @@ import java.util.Map;
  */
 
 interface MappingInternal {
-    void executeMapping(List<? extends MetaRepo.Record> records, Map<String, String> namespaces) throws MappingNotFoundException;
+    void executeMapping(List<? extends MetaRepo.Record> records, Map<String, String> namespaces) throws MappingNotFoundException, MappingException;
 }
 

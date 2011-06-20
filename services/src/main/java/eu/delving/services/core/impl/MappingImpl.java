@@ -84,7 +84,7 @@ class MappingImpl implements MetaRepo.Mapping, MappingInternal, Comparable<MetaR
     }
 
     @Override
-    public void executeMapping(List<? extends MetaRepo.Record> records, Map<String, String> namespaces) throws MappingNotFoundException {
+    public void executeMapping(List<? extends MetaRepo.Record> records, Map<String, String> namespaces) throws MappingNotFoundException, MappingException {
         try {
             MappingRunner mappingRunner = getMappingRunner();
             MetadataRecord.Factory factory = new MetadataRecord.Factory(namespaces);
@@ -112,13 +112,9 @@ class MappingImpl implements MetaRepo.Mapping, MappingInternal, Comparable<MetaR
                     discardedCount++;
                     walk.remove();
                 }
-                catch (MappingException e) {
-                    log.warn("mapping exception: " + e);
-                    invalidCount++;
-                    walk.remove();
-                }
                 catch (XMLStreamException e) {
                     log.warn("Unable to map record!", e);
+                    throw new MappingException(null, "XML Streaming problem: "+record, e);
                 }
             }
             if (invalidCount > 0) {

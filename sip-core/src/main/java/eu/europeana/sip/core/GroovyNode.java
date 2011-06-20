@@ -156,6 +156,10 @@ public class GroovyNode {
         return text().split(s);
     }
 
+    public boolean endsWith(String s) {
+        return text().endsWith(s);
+    }
+
     public void setValue(Object value) {
         this.value = value;
     }
