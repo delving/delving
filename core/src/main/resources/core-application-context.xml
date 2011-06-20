@@ -87,7 +87,7 @@
 
     <bean id="freeMarkerUtil" class="eu.delving.core.binding.FreemarkerUtil"/>
 
-    <bean id="staticPageRepo" class="eu.delving.core.storage.impl.StaticRepoImpl"/>
+    <bean id="staticRepo" class="eu.delving.core.storage.impl.StaticRepoImpl"/>
 
     <util:list id="includedMacros">
     </util:list>
