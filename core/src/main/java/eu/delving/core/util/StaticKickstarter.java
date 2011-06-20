@@ -21,9 +21,11 @@
 package eu.delving.core.util;
 
 import eu.delving.core.storage.StaticRepo;
+import eu.delving.core.storage.UserRepo;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
@@ -42,12 +44,11 @@ import java.util.List;
  * @author Gerald de Jong <gerald@delving.eu>
  */
 
-public class StaticKickstarter implements ResourceLoaderAware {
+public class StaticKickstarter implements ResourceLoaderAware, InitializingBean {
     private static final String TITLE_PREFIX = "title:";
     private static final String MENU_NAME_PREFIX = "menuName:";
     private static final String MENU_PRIORITY_PREFIX = "menuPriority:";
     private Logger log = Logger.getLogger(getClass());
-    private StaticRepo staticRepo;
     private boolean kicked;
     private ResourceLoader resourceLoader;
 
@@ -57,18 +58,21 @@ public class StaticKickstarter implements ResourceLoaderAware {
     @Autowired
     private ThemeFilter themeFilter;
 
-    public void setStaticRepo(StaticRepo staticRepo) {
-        this.staticRepo = staticRepo;
+    @Autowired
+    private StaticRepo staticRepo;
+
+    @Override
+    public void setResourceLoader(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
         if (kicked) {
             log.error("Kickstarter being loaded twice");
         }
         kicked = true;
         new Thread(new Kicker()).start();
-    }
-
-    @Override
-    public void setResourceLoader(ResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
     }
 
     private class Kicker implements Runnable {
