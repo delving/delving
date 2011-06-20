@@ -35,6 +35,7 @@ import eu.delving.services.exceptions.MappingNotFoundException;
 import eu.delving.services.exceptions.MetaRepoSystemException;
 import eu.delving.services.exceptions.RecordParseException;
 import eu.delving.sip.DataSetState;
+import eu.europeana.sip.core.MappingException;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
@@ -289,7 +290,7 @@ class DataSetImpl implements MetaRepo.DataSet {
     }
 
     @Override
-    public MetaRepo.Record getRecord(ObjectId id, String prefix, String accessKey) throws MappingNotFoundException, AccessKeyException { // if prefix is passed in, mapping can be done
+    public MetaRepo.Record getRecord(ObjectId id, String prefix, String accessKey) throws MappingNotFoundException, AccessKeyException, MappingException { // if prefix is passed in, mapping can be done
         DBObject rawRecord = records().findOne(mob(MetaRepo.MONGO_ID, id));
         if (rawRecord != null) {
             MetaRepo.Mapping mapping = getMapping(prefix, accessKey);
@@ -315,7 +316,7 @@ class DataSetImpl implements MetaRepo.DataSet {
     }
 
     @Override
-    public RecordFetch getRecords(String prefix, int count, Date from, ObjectId afterId, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException {
+    public RecordFetch getRecords(String prefix, int count, Date from, ObjectId afterId, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException, MappingException {
         MetaRepo.Mapping mapping = getMapping(prefix, accessKey);
         final List<RecordImpl> list = new ArrayList<RecordImpl>();
         DBCursor cursor = createCursor(from, afterId, until).limit(count).sort(mob(MetaRepo.MONGO_ID, 1));

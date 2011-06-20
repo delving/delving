@@ -36,34 +36,34 @@ import org.junit.runner.RunWith
 @RunWith(classOf[JUnitRunner])
 class ImageCacheServiceSpec extends Spec with ShouldMatchers {
 
-// todo: fix this test
-//  describe("A imageCache") {
-//
-//    val factory = new MongoFactory
-//    factory.setTestContext("true")
-//
-//    val imageCacheService = new ImageCacheService(factory)
-//
-//    describe("(when an object is not found in the cache)") {
-//
-//      val testUrl = """http://www.sffarkiv.no/webdb/fileStream.aspx?fileName=dbatlas_leks\1412-sol\1412001004.jpg"""
-//      val sanitizedUrl: String = imageCacheService.sanitizeUrl(testUrl)
-//
-//      it("should retrieve it from the remote source") {
-//        imageCacheService.retrieveImageFromUrl(sanitizedUrl).storable should be(true)
-//      }
-//
-//      it("should store the image in Mongo") {
-//        imageCacheService.storeImage(sanitizedUrl).available should be(true)
-//      }
-//
-//      it("should find the saved item") {
-//        val cachedImage = imageCacheService.findImageInCache(sanitizedUrl)
-//        cachedImage.getFilename should equal(sanitizedUrl)
-//        cachedImage.get("viewed").asInstanceOf[Int] should not equal (0)
-//      }
-//
-//    }
-//
-//  }
+  describe("A imageCache") {
+
+    val factory = new MongoFactory
+    factory.setTestContext("true")
+    factory.afterPropertiesSet()
+
+    val imageCacheService = new ImageCacheService(factory)
+
+    describe("(when an object is not found in the cache)") {
+
+      val testUrl = """http://62.221.199.163:5294/imageproxy.asp?server=62.221.199.182&port=2107&maxwidth=500&filename=1154-A1.jpg"""
+      val sanitizedUrl: String = imageCacheService.sanitizeUrl(testUrl)
+
+      it("should retrieve it from the remote source") {
+        imageCacheService.retrieveImageFromUrl(sanitizedUrl).storable should be(true)
+      }
+
+      it("should store the image in Mongo") {
+        imageCacheService.storeImage(sanitizedUrl).available should be(true)
+      }
+
+      it("should find the saved item") {
+        val cachedImage = imageCacheService.findImageInCache(sanitizedUrl)
+        cachedImage.getFilename should equal(sanitizedUrl)
+        cachedImage.get("viewed").asInstanceOf[Int] should not equal (0)
+      }
+
+    }
+
+  }
 }
