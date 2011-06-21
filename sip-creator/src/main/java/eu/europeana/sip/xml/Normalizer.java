@@ -200,13 +200,16 @@ public class Normalizer implements Runnable {
                 fileSetOutput.getOutputWriter().write("</metadata>\n");
             }
             Set<String> repeated = uniqueness.getRepeated();
-            if (repeated.isEmpty()) {
-                fileSetOutput.close(!running);
+            if (!repeated.isEmpty()) {
+                StringBuilder out = new StringBuilder();
+                int countdown = 6;
+                for (String line : repeated) {
+                    if (countdown-- == 0) break;
+                    out.append(line).append("<br>");
+                }
+                sipModel.getUserNotifier().tellUser(String.format("<html>Identifier should be unique, but there were %d repeats, including:<br> ", repeated.size())+out);
             }
-            else {
-                sipModel.getUserNotifier().tellUser("Identifier should be unique, but there were repeats, including: "+repeated);
-                fileSetOutput.close(true);
-            }
+            fileSetOutput.close(!running);
         }
         catch (XMLStreamException e) {
             throw new RuntimeException("XML Problem", e);
