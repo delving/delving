@@ -160,6 +160,10 @@ public class GroovyNode {
         return text().endsWith(s);
     }
 
+    public String replaceAll(String from, String to) {
+        return text().replaceAll(from, to);
+    }
+
     public void setValue(Object value) {
         this.value = value;
     }
