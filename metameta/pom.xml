@@ -31,7 +31,7 @@
     <artifactId>metameta</artifactId>
     <packaging>jar</packaging>
     <name>Meta-Meta</name>
-    <version>0.2.8-SNAPSHOT</version>
+    <version>0.2.9-SNAPSHOT</version>
     <description>
         Minimal classes shared by all code of the Delving Framework
     </description>
