@@ -28,16 +28,11 @@ import org.apache.commons.httpclient.methods.GetMethod
 import com.mongodb.gridfs. {GridFSInputFile, GridFSDBFile, GridFS}
 import org.apache.commons.io.IOUtils
 import org.apache.commons.httpclient. {Header, HttpClient, MultiThreadedHttpConnectionManager}
-import annotation.tailrec
 import org.apache.log4j.Logger
-import com.mongodb. {DBObject, MongoOptions, Mongo}
 import java.util.Date
 import eu.delving.core.util.MongoFactory
-import org.springframework.beans.factory.annotation.Autowired
 import java.awt.image.BufferedImage
 import com.thebuzzmedia.imgscalr.Scalr
-import javax.management.remote.rmi._RMIConnection_Stub
-import sun.awt.SunHints.Value
 import javax.imageio.ImageIO
 
 /**
