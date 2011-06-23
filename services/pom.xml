@@ -86,6 +86,14 @@
         </pluginRepository>
     </pluginRepositories>
 
+    <repositories>
+        <repository>
+            <id>The Buzz Media Maven Repository</id>
+            <url>http://maven.thebuzzmedia.com</url>
+        </repository>
+    </repositories>
+
+
     <build>
         <defaultGoal>package</defaultGoal>
         <plugins>
@@ -240,6 +248,13 @@
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.thebuzzmedia</groupId>
+            <artifactId>imgscalr-lib</artifactId>
+            <version>3.1</version>
+            <type>jar</type>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

@@ -34,6 +34,11 @@ import com.mongodb. {DBObject, MongoOptions, Mongo}
 import java.util.Date
 import eu.delving.core.util.MongoFactory
 import org.springframework.beans.factory.annotation.Autowired
+import java.awt.image.BufferedImage
+import com.thebuzzmedia.imgscalr.Scalr
+import javax.management.remote.rmi._RMIConnection_Stub
+import sun.awt.SunHints.Value
+import javax.imageio.ImageIO
 
 /**
  *
@@ -76,13 +81,13 @@ class ImageCacheService(mongoFactory : MongoFactory) {
     sanitizeUrl
   }
 
-  def retrieveImageFromCache(url: String, response : HttpServletResponse) : HttpServletResponse = {
+  def retrieveImageFromCache(url: String, sizeString:String, response : HttpServletResponse) : HttpServletResponse = {
     // catch try block to harden the application and always give back a 404 for the application
     try {
       require(url != null)
       require(url != "noImageFound")
       require(!url.isEmpty)
-      findOrInsert(sanitizeUrl(url), response)
+      findOrInsert(sanitizeUrl(url), parseSize(Option(sizeString)), response)
     }
     catch {
       case ia : IllegalArgumentException =>
@@ -95,14 +100,14 @@ class ImageCacheService(mongoFactory : MongoFactory) {
     }
   }
 
-  def findOrInsert(url: String, response: HttpServletResponse) : HttpServletResponse = {
+  def findOrInsert(url: String, targetSize:Option[(Int, Int)], response: HttpServletResponse) : HttpServletResponse = {
     val image : GridFSDBFile = findImageInCache(url)
     if (image == null) {
       log info ("image not found attempting to store in cache " + url)
       val item = storeImage(url)
       if (item.available) {
         val storedImage = findImageInCache(url)
-        addImageToResponseStream(storedImage, response)
+        addImageToResponseStream(storedImage, targetSize, response)
         setImageCacheControlHeaders(storedImage, response)
       }
       else {
@@ -111,7 +116,7 @@ class ImageCacheService(mongoFactory : MongoFactory) {
       }
     }
     else {
-      addImageToResponseStream(image, response)
+      addImageToResponseStream(image, targetSize, response)
       setImageCacheControlHeaders(image, response)
     }
   }
@@ -164,17 +169,29 @@ class ImageCacheService(mongoFactory : MongoFactory) {
     response
   }
 
-  private def addImageToResponseStream(image : GridFSDBFile, response : HttpServletResponse) : HttpServletResponse = {
-    val in : InputStream = image.getInputStream
+  private def addImageToResponseStream(image : GridFSDBFile, targetSize: Option[(Int, Int)], response : HttpServletResponse) : HttpServletResponse = {
     val out : OutputStream = response.getOutputStream
-    try {
-      IOUtils.copy(in, out)
+    if (targetSize.isDefined) {
+      val resizedImage:BufferedImage = resizeImage(image.getInputStream, targetSize.get._1, targetSize.get._2)
+      writeImage(None, out, {
+        outputStream => ImageIO.write(resizedImage, "jpeg", outputStream)
+      })
+    } else {
+      val in : InputStream = image.getInputStream
+      writeImage(Some(in), out, {
+        outputStream => IOUtils.copy(in, outputStream)
+      })
     }
-    finally {
-      in.close()
+    response
+  }
+
+  private def writeImage(in:Option[InputStream], out:OutputStream, callback:OutputStream => Any) {
+    try {
+      callback(out)
+    } finally {
+      in.map { stream => stream.close()}
       out.close()
     }
-    setImageCacheControlHeaders(image, response)
   }
 
   private def setImageCacheControlHeaders(image : GridFSDBFile, response : HttpServletResponse) : HttpServletResponse = {
@@ -186,6 +203,22 @@ class ImageCacheService(mongoFactory : MongoFactory) {
     response.setDateHeader("Expires", now + cacheDuration * 1000)
     response
   }
+
+  // width x height
+  val SizeMatch = """^(\d{0,9}+)x(\d{0,9}+)""".r
+
+  private def parseSize(size:Option[String]): Option[(Int, Int)] = {
+    size.getOrElse(None) match {
+      case SizeMatch(width, height) => Some((Integer.parseInt(width), Integer.parseInt(height)))
+      case _ => None
+    }
+  }
+
+  private def resizeImage(imageStream: InputStream, width: Int, height: Int): BufferedImage = {
+    val bufferedImage:BufferedImage = ImageIO.read(imageStream)
+    Scalr.resize(bufferedImage, width, height)
+  }
+
 }
 
 case class WebResource(url: String, dataAsStream: InputStream, storable: Boolean, contentType : String)
