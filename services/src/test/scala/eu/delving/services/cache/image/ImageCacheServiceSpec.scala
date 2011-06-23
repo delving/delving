@@ -26,6 +26,17 @@ import org.scalatest.matchers.ShouldMatchers
 import eu.delving.core.util.MongoFactory
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
+import org.scalatest.mock.MockitoSugar
+import javax.servlet.http.HttpServletResponse
+import org.mockito.Mockito._
+import java.awt.image.BufferedImage
+import com.sun.imageio.plugins.common.ImageUtil
+import javax.imageio.ImageIO
+import org.apache.commons.io.IOUtils
+import com.sun.xml.internal.messaging.saaj.util.ByteInputStream
+import java.io._
+import org.mockito.stubbing.Answer
+import javax.servlet.{Servlet, ServletOutputStream}
 
 /**
  *
@@ -34,7 +45,7 @@ import org.junit.runner.RunWith
  */
 
 @RunWith(classOf[JUnitRunner])
-class ImageCacheServiceSpec extends Spec with ShouldMatchers {
+class ImageCacheServiceSpec extends Spec with ShouldMatchers with MockitoSugar {
 
   describe("A imageCache") {
 
@@ -43,10 +54,10 @@ class ImageCacheServiceSpec extends Spec with ShouldMatchers {
     factory.afterPropertiesSet()
 
     val imageCacheService = new ImageCacheService(factory)
+    val testUrl = """http://62.221.199.163:5294/imageproxy.asp?server=62.221.199.182&port=2107&maxwidth=500&filename=1154-A1.jpg"""
 
     describe("(when an object is not found in the cache)") {
 
-      val testUrl = """http://62.221.199.163:5294/imageproxy.asp?server=62.221.199.182&port=2107&maxwidth=500&filename=1154-A1.jpg"""
       val sanitizedUrl: String = imageCacheService.sanitizeUrl(testUrl)
 
       it("should retrieve it from the remote source") {
@@ -63,6 +74,25 @@ class ImageCacheServiceSpec extends Spec with ShouldMatchers {
         cachedImage.get("viewed").asInstanceOf[Int] should not equal (0)
       }
 
+    }
+
+    describe("(when asked to resize an image)") {
+
+      val mockResponse:HttpServletResponse = mock[HttpServletResponse]
+      val baos:ByteArrayOutputStream = new ByteArrayOutputStream()
+      val fakeStream:ServletOutputStream = new ServletOutputStream {
+        def write(p1: Int) {
+          baos.write(p1)
+        }
+      }
+      when(mockResponse.getOutputStream).thenReturn(fakeStream)
+
+      it("should resize images") {
+        imageCacheService.retrieveImageFromCache(testUrl, "20x20", mockResponse)
+        val resized:BufferedImage = ImageIO.read(new ByteArrayInputStream(baos.toByteArray))
+        resized.getHeight should equal (13) // aspect ratio
+        resized.getWidth should equal (20)
+      }
     }
 
   }

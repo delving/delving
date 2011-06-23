@@ -216,7 +216,7 @@ class ImageCacheService(mongoFactory : MongoFactory) {
 
   private def resizeImage(imageStream: InputStream, width: Int, height: Int): BufferedImage = {
     val bufferedImage:BufferedImage = ImageIO.read(imageStream)
-    Scalr.resize(bufferedImage, width, height)
+    Scalr.resize(bufferedImage, Scalr.Mode.AUTOMATIC, width, height)
   }
 
 }
