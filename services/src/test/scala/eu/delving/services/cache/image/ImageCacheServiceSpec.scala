@@ -30,13 +30,9 @@ import org.scalatest.mock.MockitoSugar
 import javax.servlet.http.HttpServletResponse
 import org.mockito.Mockito._
 import java.awt.image.BufferedImage
-import com.sun.imageio.plugins.common.ImageUtil
 import javax.imageio.ImageIO
-import org.apache.commons.io.IOUtils
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream
 import java.io._
-import org.mockito.stubbing.Answer
-import javax.servlet.{Servlet, ServletOutputStream}
+import javax.servlet.ServletOutputStream
 
 /**
  *
