@@ -72,7 +72,7 @@ class ImageCacheServiceSpec extends Spec with ShouldMatchers with MockitoSugar {
 
     }
 
-    describe("(when asked to resize an image)") {
+    describe("(when asked to serve a thumbnail)") {
 
       val mockResponse:HttpServletResponse = mock[HttpServletResponse]
       val baos:ByteArrayOutputStream = new ByteArrayOutputStream()
@@ -83,11 +83,10 @@ class ImageCacheServiceSpec extends Spec with ShouldMatchers with MockitoSugar {
       }
       when(mockResponse.getOutputStream).thenReturn(fakeStream)
 
-      it("should resize images") {
-        imageCacheService.retrieveImageFromCache(testUrl, "20x20", mockResponse)
+      it("should resize images to a width of 220px") {
+        imageCacheService.retrieveImageFromCache(testUrl, "BRIEF_DOC", mockResponse)
         val resized:BufferedImage = ImageIO.read(new ByteArrayInputStream(baos.toByteArray))
-        resized.getHeight should equal (13) // aspect ratio
-        resized.getWidth should equal (20)
+        resized.getWidth should equal (220)
       }
     }
 

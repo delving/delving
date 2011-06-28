@@ -21,7 +21,6 @@
 
 package eu.delving.services.cache.image
 
-import java.io. {OutputStream, InputStream}
 import javax.servlet.http.HttpServletResponse
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams
 import org.apache.commons.httpclient.methods.GetMethod
@@ -34,6 +33,7 @@ import eu.delving.core.util.MongoFactory
 import java.awt.image.BufferedImage
 import com.thebuzzmedia.imgscalr.Scalr
 import javax.imageio.ImageIO
+import java.io.{ByteArrayInputStream, ByteArrayOutputStream, OutputStream, InputStream}
 
 /**
  *
@@ -55,18 +55,21 @@ class ImageCacheService(mongoFactory : MongoFactory) {
   multiThreadedHttpConnectionManager setParams (connectionParams)
 
   // General Settings
+  val thumbnailWidth = 220
+  val thumbnailSizeString = "BRIEF_DOC"
+  val thumbnailSuffix = "_THUMBNAIL"
   val cacheDuration = 60 * 60 * 24
   private val log : Logger = Logger.getLogger("ImageCacheService")
 
   // findImageInCache
-  def findImageInCache(url: String) : GridFSDBFile = {
-    log info ("attempting to retrieve: " + url)
-    val image : GridFSDBFile = myFS.findOne(url)
+  def findImageInCache(url: String, thumbnail: Boolean = false) : GridFSDBFile = {
+    log info ("attempting to retrieve %s: " format(if(thumbnail) "thumbnail for image" else "image") + " " + url)
+    val image : GridFSDBFile = myFS.findOne( if(thumbnail) url + thumbnailSuffix else url )
     if (image != null) {
       image.put("lastViewed", new Date)
       val viewed  = image.get("viewed")
       if (viewed != null) image.put("viewed", viewed.asInstanceOf[Int] + 1) else image.put("viewed", 1)
-      image.save
+      image.save()
     }
     image
   }
@@ -82,7 +85,7 @@ class ImageCacheService(mongoFactory : MongoFactory) {
       require(url != null)
       require(url != "noImageFound")
       require(!url.isEmpty)
-      findOrInsert(sanitizeUrl(url), parseSize(Option(sizeString)), response)
+      findOrInsert(sanitizeUrl(url), isThumbnail(Option(sizeString)), response)
     }
     catch {
       case ia : IllegalArgumentException =>
@@ -95,14 +98,14 @@ class ImageCacheService(mongoFactory : MongoFactory) {
     }
   }
 
-  def findOrInsert(url: String, targetSize:Option[(Int, Int)], response: HttpServletResponse) : HttpServletResponse = {
-    val image : GridFSDBFile = findImageInCache(url)
+  def findOrInsert(url: String, thumbnail: Boolean, response: HttpServletResponse) : HttpServletResponse = {
+    val image : GridFSDBFile = findImageInCache(url, thumbnail)
     if (image == null) {
       log info ("image not found attempting to store in cache " + url)
       val item = storeImage(url)
       if (item.available) {
-        val storedImage = findImageInCache(url)
-        addImageToResponseStream(storedImage, targetSize, response)
+        val storedImage = findImageInCache(url, thumbnail)
+        addImageToResponseStream(storedImage, response)
         setImageCacheControlHeaders(storedImage, response)
       }
       else {
@@ -111,7 +114,7 @@ class ImageCacheService(mongoFactory : MongoFactory) {
       }
     }
     else {
-      addImageToResponseStream(image, targetSize, response)
+      addImageToResponseStream(image, response)
       setImageCacheControlHeaders(image, response)
     }
   }
@@ -124,7 +127,20 @@ class ImageCacheService(mongoFactory : MongoFactory) {
       inputFile setContentType(image.contentType)
       inputFile put ("viewed", 0)
       inputFile put ("lastViewed", new Date)
-      inputFile.save
+      inputFile.save()
+
+      // also create a thumbnail on the fly
+      // for this, fetch the stream again
+      val thumbnail: BufferedImage = resizeImage(retrieveImageFromUrl(url).dataAsStream, thumbnailWidth)
+      val os: ByteArrayOutputStream = new ByteArrayOutputStream();
+      ImageIO.write(thumbnail, "jpg", os);
+      val is: InputStream = new ByteArrayInputStream(os.toByteArray);
+      val thumbnailFile = myFS.createFile(is, image.url + thumbnailSuffix)
+      thumbnailFile setContentType(image.contentType)
+      thumbnailFile put ("viewed", 0)
+      thumbnailFile put ("lastViewed", new Date)
+      thumbnailFile.save()
+
       CachedItem(true, inputFile)
     }
     else {
@@ -160,23 +176,16 @@ class ImageCacheService(mongoFactory : MongoFactory) {
     <error>
       <message>Unable to retrieve your image (%s) through the CacheProxy</message>
     </error> """, url))
-    response.getWriter.close
+    response.getWriter.close()
     response
   }
 
-  private def addImageToResponseStream(image : GridFSDBFile, targetSize: Option[(Int, Int)], response : HttpServletResponse) : HttpServletResponse = {
+  private def addImageToResponseStream(image : GridFSDBFile, response : HttpServletResponse) : HttpServletResponse = {
     val out : OutputStream = response.getOutputStream
-    if (targetSize.isDefined) {
-      val resizedImage:BufferedImage = resizeImage(image.getInputStream, targetSize.get._1, targetSize.get._2)
-      writeImage(None, out, {
-        outputStream => ImageIO.write(resizedImage, "jpeg", outputStream)
-      })
-    } else {
       val in : InputStream = image.getInputStream
       writeImage(Some(in), out, {
         outputStream => IOUtils.copy(in, outputStream)
       })
-    }
     response
   }
 
@@ -199,19 +208,13 @@ class ImageCacheService(mongoFactory : MongoFactory) {
     response
   }
 
-  // width x height
-  val SizeMatch = """^(\d{0,9}+)x(\d{0,9}+)""".r
-
-  private def parseSize(size:Option[String]): Option[(Int, Int)] = {
-    size.getOrElse(None) match {
-      case SizeMatch(width, height) => Some((Integer.parseInt(width), Integer.parseInt(height)))
-      case _ => None
-    }
+  private def isThumbnail(thumbnail: Option[String]):Boolean = {
+    thumbnail.getOrElse(false) == thumbnailSizeString
   }
 
-  private def resizeImage(imageStream: InputStream, width: Int, height: Int): BufferedImage = {
+  private def resizeImage(imageStream: InputStream, width: Int): BufferedImage = {
     val bufferedImage:BufferedImage = ImageIO.read(imageStream)
-    Scalr.resize(bufferedImage, Scalr.Mode.AUTOMATIC, width, height)
+    Scalr.resize(bufferedImage, Scalr.Mode.FIT_TO_WIDTH, width)
   }
 
 }
