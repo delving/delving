@@ -176,10 +176,13 @@ public class SolrQueryUtil {
         if (params.containsKey("sortBy") && !params.get("sortBy")[0].isEmpty()) {
             String sortField = params.get("sortBy")[0];
             if (sortField.equalsIgnoreCase("title")) {
-                sortField = "title_sort";
+                sortField = "sort_title";
             }
             else if (sortField.equalsIgnoreCase("creator")) {
-                sortField = "creator_sort";
+                sortField = "sort_creator";
+            }
+            else if (sortField.equalsIgnoreCase("year")) {
+                sortField = "sort_all_year";
             }
             if (params.containsKey("sortOrder") && !params.get("sortOrder")[0].isEmpty()) {
                 String sortOrder = params.get("sortOrder")[0];
