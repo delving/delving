@@ -521,7 +521,6 @@
                 <field name="location" type="text" indexed="true" stored="false" multiValued="true" />
                 <field name="date" type="text" indexed="true" stored="false" multiValued="true" />
                 <field name="creator" type="text" indexed="true" stored="true" multiValued="true" />
-                <field name="creator_sort" type="alphaOnlySort" indexed="true" stored="false" multiValued="true" termVectors="true"/>
                 <field name="format" type="text" indexed="true" stored="false" multiValued="true" />
                 <field name="publisher" type="text" indexed="true" stored="false" multiValued="true" />
                 <field name="subject" type="text" indexed="true" stored="false" multiValued="true" />
@@ -536,7 +535,6 @@
                 <field name="relation" type="text" indexed="true" stored="false" multiValued="true" />
                 <!-- Special index fields -->
                 <field name="title" type="text" indexed="true" stored="true" multiValued="true" termVectors="true"/>
-                <field name="title_sort" type="alphaOnlySort" indexed="true" stored="false" multiValued="true" termVectors="true"/>
                 <field name="who" type="text" indexed="true" stored="false" multiValued="true" termVectors="true"/>
                 <field name="when" type="text" indexed="true" stored="false" multiValued="true" termVectors="true"/>
                 <field name="what" type="text" indexed="true" stored="false" multiValued="true" termVectors="true"/>
@@ -709,7 +707,8 @@
      <dynamicField name="facet_*" type="string" indexed="true" stored="true" multiValued="true" />
 
     <!-- dynamic field for sort purposes -->
-     <field name="sort_*" type="alphaOnlySort" indexed="true" stored="false" multiValued="true" termVectors="true"/>
+     <dynamicField name="sort_all_*" type="string" indexed="true" stored="false" multiValued="false" termVectors="true"/>
+     <dynamicField name="sort_*" type="alphaOnlySort" indexed="true" stored="false" multiValued="false" termVectors="true"/>
 
      <!-- Temporary convenience fields to simplify the schema.xml-->
      <dynamicField name="dc_*" type="text" indexed="true" stored="true" multiValued="true"/>
@@ -779,7 +778,6 @@
 
     <copyField source="dc_contributor" dest="creator" />
     <copyField source="dc_creator" dest="creator" />
-    <copyField source="dc_creator" dest="creator_sort" />
 
     <copyField source="dc_date" dest="date" />
     <copyField source="dcterms_created" dest="date" />
@@ -798,7 +796,6 @@
     <copyField source="dc_source" dest="source" />
 
     <copyField source="dc_title" dest="title" />
-    <copyField source="dc_title" dest="title_sort" />
     <copyField source="dcterms_alternative" dest="title" />
 
     <!-- FACETS -->
