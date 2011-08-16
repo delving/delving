@@ -91,7 +91,12 @@ class RichSearchAPIService(aro : ApiRequestObject) {
       case x : Map[String, Array[String]] if x.containsKey("id") && !x.get("id").isEmpty => FullView(getFullResultsFromSolr, aro).renderAsJSON(authorized)
       case _ => SearchSummary(getBriefResultsFromSolr, aro).renderAsJSON(authorized)
     }
-    response
+    if (!callback.isEmpty) {
+      // httpResponse setContentType ("application/jsonp")
+      "%s(%s)".format(callback, response)
+    }
+    else
+      response
   }
 
   def getXMLResultResponse(authorized: Boolean = true): String = {
