@@ -110,7 +110,7 @@ public class MetadataParser {
                     break;
                 case XMLEvent.END_ELEMENT:
                     if (node != null) {
-                        String valueString = removeMultiLines(value.toString());
+                        String valueString = sanitize(value.toString());
                         value.setLength(0);
                         if (valueString.length() > 0) {
                             node.setValue(valueString);
@@ -158,13 +158,12 @@ public class MetadataParser {
         }
     }
 
-    private static String removeMultiLines(String multi) {
-        if (multi.contains("\n")) {
-            return multi.replaceAll("\n", " ").replaceAll(" +", " ").trim();
+    private static String sanitize(String dirty) {
+        StringBuilder out = new StringBuilder(dirty.length());
+        for (char c : dirty.toCharArray()) {
+            out.append(Character.isWhitespace(c) ? ' ' : c);
         }
-        else {
-            return multi;
-        }
+        return out.toString().replaceAll(" +", " ").trim();
     }
 
     public static class AbortException extends Exception {
