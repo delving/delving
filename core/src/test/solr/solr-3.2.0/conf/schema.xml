@@ -593,8 +593,12 @@
                 <field name="abm_landedProperty" type="string" indexed="true" stored="true" multiValued="true"/>
                 <field name="abm_contentProvider" type="string" indexed="true" stored="true" multiValued="true"/>
 
+                 <!-- AB-C facet fields -->
+                 <field name="KUNSTENAAR" type="string" indexed="true" stored="true" multiValued="true"/>
+                 <field name="PERIODE" type="string" indexed="true" stored="true" multiValued="true"/>
+                 <field name="COLLECTIE" type="string" indexed="true" stored="true" multiValued="true"/>
 
-        <!-- Dublin Core / ESE fields -->
+     <!-- Dublin Core / ESE fields -->
 
                 <!--<field name="dc_coverage" type="text" indexed="true" stored="true" multiValued="true" />-->
                 <!--<field name="dc_contributor" type="text" indexed="true" stored="true" multiValued="true" />-->
@@ -716,6 +720,7 @@
      <dynamicField name="europeana_*" type="text" indexed="true" stored="true" multiValued="true"/>
      <dynamicField name="icn_*" type="text" indexed="true" stored="true" multiValued="true"/>
      <dynamicField name="abm_*" type="text" indexed="true" stored="true" multiValued="true"/>
+     <dynamicField name="abc_*" type="text" indexed="true" stored="true" multiValued="true"/>
 
      <!-- Note This field any fieldname string to be indexed!! -->
      <dynamicField name="*" type="text" multiValued="true"/>
@@ -778,12 +783,19 @@
 
     <copyField source="dc_contributor" dest="creator" />
     <copyField source="dc_creator" dest="creator" />
+    <copyField source="abc_kunstenaar" dest="creator" />
 
     <copyField source="dc_date" dest="date" />
     <copyField source="dcterms_created" dest="date" />
     <copyField source="dcterms_issued" dest="date" />
+    <copyField source="abc_productionStart" dest="date" />
+    <copyField source="abc_productionEnd" dest="date" />
+    <copyField source="dcterms_issued" dest="date" />
+    <copyField source="dcterms_issued" dest="date" />
+
 
     <copyField source="dc_description" dest="description" />
+    <copyField source="abc_description" dest="description" />
     <copyField source="dcterms_tableOfContents" dest="description" />
 
     <copyField source="dcterms_spatial" dest="location" />
@@ -797,6 +809,8 @@
 
     <copyField source="dc_title" dest="title" />
     <copyField source="dcterms_alternative" dest="title" />
+    <copyField source="abc_titel" dest="title" />
+
 
     <!-- FACETS -->
     <copyField source="europeana_type" dest="TYPE"/>
@@ -823,9 +837,15 @@
     <copyField source="abm_county" dest="COUNTY" />
     <copyField source="abm_namedPlace" dest="NAMEDPLACE" />
 
+    <!-- AB-C Facets -->
+    <copyField source="abc_creator" dest="KUNSTENAAR" />
+    <copyField source="abc_production" dest="PERIODE" />
+    <copyField source="abc_collection" dest="COLLECTIE" />
+
      <copyField source="dc_*" dest="text"/>
      <copyField source="dcterms_*" dest="text"/>
      <copyField source="abm_*" dest="text"/>
      <copyField source="icn_*" dest="text"/>
+     <copyField source="abc_*" dest="text" />
 
 </schema>

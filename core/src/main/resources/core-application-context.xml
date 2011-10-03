@@ -161,6 +161,7 @@
                 <value>/abm-record-definition.xml</value>
                 <value>/icn-record-definition.xml</value>
                 <value>/ese-record-definition.xml</value>
+                <value>/abc-record-definition.xml</value>
             </list>
         </property>
         <property name="defaultPrefix" value="#{launchProperties['services.harvindexing.prefix']}"/>
