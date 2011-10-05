@@ -57,10 +57,13 @@
         <field prefix="abc" localName="objectId"/>
         <field prefix="abc" localName="dimensionValue"/>
         <field prefix="abc" localName="dimensionUnit"/>
+        <field prefix="abc" localName="dimension"/>
         <field prefix="abc" localName="objectName"/>
         <field prefix="abc" localName="technique"/>
         <field prefix="abc" localName="material"/>
         <field prefix="abc" localName="deepzoomUrl"/>
+        <field prefix="abc" localName="smallThumbnail"/>
+        <field prefix="abc" localName="largeThumbnail"/>
         <field prefix="abc" localName="description"/>
         <field prefix="abc" localName="name"/>
         <field prefix="abc" localName="kunstenaar" facetName="kunstenaar" facetPrefix="kunst" />
