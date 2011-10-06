@@ -131,10 +131,10 @@
             <validation requiredGroup="Data Provider" factName="dataProvider"/>
         </field>
         <field prefix="europeana" localName="isShownAt" fulldoc="true" fieldType="string">
-            <validation url="true" requiredGroup="Shown-at or Shown-by"/>
+            <!--<validation url="true" requiredGroup="Shown-at or Shown-by"/>-->
         </field>
         <field prefix="europeana" localName="isShownBy" fulldoc="true" fieldType="string">
-            <validation url="true" requiredGroup="Shown-at or Shown-by"/>
+            <!--<validation url="true" requiredGroup="Shown-at or Shown-by"/>-->
         </field>
         <field prefix="europeana" localName="language" fieldType="string" facetName="language" searchField="language">
             <validation requiredGroup="Language" factName="language"/>
