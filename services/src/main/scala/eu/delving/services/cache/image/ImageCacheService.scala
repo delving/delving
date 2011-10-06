@@ -101,15 +101,16 @@ class ImageCacheService(mongoFactory : MongoFactory) {
   def findOrInsert(url: String, thumbnail: Boolean, response: HttpServletResponse) : HttpServletResponse = {
     val image : GridFSDBFile = findImageInCache(url, thumbnail)
     if (image == null) {
-      log info ("image not found attempting to store in cache " + url)
+      log.info ("cache miss for an image, going to retriee it from " + url)
       val item = storeImage(url)
       if (item.available) {
         val storedImage = findImageInCache(url, thumbnail)
         addImageToResponseStream(storedImage, response)
         setImageCacheControlHeaders(storedImage, response)
-      }
-      else {
-        log info ("unable to store " + url)
+        log.info ("image succesfully cached from " + url)
+        response
+      } else {
+        log.info ("unable to store image at " + url + ": image not found or of wrong mime type")
         respondWithNotFound(url, response)
       }
     }
@@ -131,15 +132,23 @@ class ImageCacheService(mongoFactory : MongoFactory) {
 
       // also create a thumbnail on the fly
       // for this, fetch the stream again
-      val thumbnail: BufferedImage = resizeImage(retrieveImageFromUrl(url).dataAsStream, thumbnailWidth)
       val os: ByteArrayOutputStream = new ByteArrayOutputStream();
-      ImageIO.write(thumbnail, "jpg", os);
-      val is: InputStream = new ByteArrayInputStream(os.toByteArray);
-      val thumbnailFile = myFS.createFile(is, image.url + thumbnailSuffix)
-      thumbnailFile setContentType(image.contentType)
-      thumbnailFile put ("viewed", 0)
-      thumbnailFile put ("lastViewed", new Date)
-      thumbnailFile.save()
+      try {
+        val thumbnail: BufferedImage = resizeImage(retrieveImageFromUrl(url).dataAsStream, thumbnailWidth)
+        ImageIO.write(thumbnail, "jpg", os);
+        val is: InputStream = new ByteArrayInputStream(os.toByteArray);
+        val thumbnailFile = myFS.createFile(is, image.url + thumbnailSuffix)
+        thumbnailFile setContentType(image.contentType)
+        thumbnailFile put ("viewed", 0)
+        thumbnailFile put ("lastViewed", new Date)
+        thumbnailFile.save()
+      } catch {
+        case t => {
+          log.info("Could not create a thumbnail for image at %s. Error message is: '%s'".format(url, t.getMessage), t)
+        }
+      } finally {
+        os.close()
+      }
 
       CachedItem(true, inputFile)
     }
@@ -181,21 +190,15 @@ class ImageCacheService(mongoFactory : MongoFactory) {
   }
 
   private def addImageToResponseStream(image : GridFSDBFile, response : HttpServletResponse) : HttpServletResponse = {
+    val in : InputStream = image.getInputStream
     val out : OutputStream = response.getOutputStream
-      val in : InputStream = image.getInputStream
-      writeImage(Some(in), out, {
-        outputStream => IOUtils.copy(in, outputStream)
-      })
-    response
-  }
-
-  private def writeImage(in:Option[InputStream], out:OutputStream, callback:OutputStream => Any) {
     try {
-      callback(out)
+      IOUtils.copy(in, out)
     } finally {
-      in.map { stream => stream.close()}
+      in.close()
       out.close()
     }
+    response
   }
 
   private def setImageCacheControlHeaders(image : GridFSDBFile, response : HttpServletResponse) : HttpServletResponse = {
@@ -209,7 +212,7 @@ class ImageCacheService(mongoFactory : MongoFactory) {
   }
 
   private def isThumbnail(thumbnail: Option[String]):Boolean = {
-    thumbnail.getOrElse(false) == thumbnailSizeString
+    thumbnail.getOrElse(return false) == thumbnailSizeString
   }
 
   private def resizeImage(imageStream: InputStream, width: Int): BufferedImage = {
