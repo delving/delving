@@ -256,9 +256,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <!-- todo update to 3.2 -->
             <groupId>com.thebuzzmedia</groupId>
+            <version>3.2</version>
             <artifactId>imgscalr-lib</artifactId>
-            <version>3.1</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
