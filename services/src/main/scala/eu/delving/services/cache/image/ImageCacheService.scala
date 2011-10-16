@@ -101,7 +101,7 @@ class ImageCacheService(mongoFactory : MongoFactory) {
   def findOrInsert(url: String, thumbnail: Boolean, response: HttpServletResponse) : HttpServletResponse = {
     val image : GridFSDBFile = findImageInCache(url, thumbnail)
     if (image == null) {
-      log.info ("cache miss for an image, going to retriee it from " + url)
+      log.info ("cache miss for an image, going to retrieve it from " + url)
       val item = storeImage(url)
       if (item.available) {
         val storedImage = findImageInCache(url, thumbnail)

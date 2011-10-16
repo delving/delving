@@ -39,7 +39,7 @@ public class ServicesStarter {
 
     public static void main(String... args) throws Exception {
         String root = StarterUtil.getEuropeanaPath();
-        System.setProperty("solr.solr.home", root + "/core/src/test/solr/solr-3.2.0");
+        System.setProperty("solr.solr.home", root + "/core/src/test/solr/solr-3.4.0");
 //        System.setProperty("solr.solr.home", root + "/core/src/test/solr/solr-1.4.1/single-core");
 //        System.setProperty("solr.solr.home", root + "/core/src/test/solr/solr-1.4.1/multi-core");
         if (System.getProperty("solr.data.dir") == null) {
@@ -52,7 +52,7 @@ public class ServicesStarter {
         }
         Server server = new Server(port);
         server.addHandler(new WebAppContext(root + "/services/src/main/webapp", "/services"));
-        server.addHandler(new WebAppContext(root + "/core/src/test/solr/solr-3.2.0.war", "/solr"));
+        server.addHandler(new WebAppContext(root + "/core/src/test/solr/solr-3.4.0.war", "/solr"));
         server.start();
     }
 }

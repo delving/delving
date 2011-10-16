@@ -530,6 +530,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     }
 
     private static ResultPagination createPagination(QueryResponse response, SolrQuery query, String requestQueryString, BreadcrumbFactory breadcrumbFactory, Locale locale) throws EuropeanaQueryException {
+        if (response.getResults() == null) throw new EuropeanaQueryException(QueryProblem.MALFORMED_URL.toString());
         int numFound = (int) response.getResults().getNumFound();
         Boolean debug = query.getBool("debugQuery");
         String parsedQuery = "Information not available";
