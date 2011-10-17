@@ -184,6 +184,10 @@ public class SolrQueryUtil {
             else if (sortField.equalsIgnoreCase("year")) {
                 sortField = "sort_all_year";
             }
+            else if (sortField.equalsIgnoreCase("random")) {
+                sortField = SolrQueryUtil.createRandomSortKey();
+            }
+
             if (params.containsKey("sortOrder") && !params.get("sortOrder")[0].isEmpty()) {
                 String sortOrder = params.get("sortOrder")[0];
                 if (sortOrder.equalsIgnoreCase("desc")) {
