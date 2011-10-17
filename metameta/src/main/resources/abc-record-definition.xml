@@ -76,7 +76,7 @@
         <field prefix="abc" localName="vNationality"/>
         <field prefix="abc" localName="vBirthDate"/>
         <field prefix="abc" localName="vBirthPlace"/>
-        <field prefix="abc" localName="vBirthBiography"/>
+        <field prefix="abc" localName="vBiography"/>
 
 
         <!-- normal fields -->
