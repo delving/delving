@@ -480,7 +480,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             }
             solrQuery.setFacet(true);
             solrQuery.setFacetMinCount(1);
-            solrQuery.setFacetLimit(100);
+            //solrQuery.setFacetLimit(100); solr default is 100 so doesn't need to be set explicitly
             if (solrQuery.getRows() ==  null) {
                 solrQuery.setRows(12);
             }

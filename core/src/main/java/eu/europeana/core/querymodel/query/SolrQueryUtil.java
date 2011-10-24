@@ -212,6 +212,13 @@ public class SolrQueryUtil {
                 solrQuery.addFilterQuery(filterQuery);
             }
         }
+        // determine which fields will be returned
+        if (params.containsKey("fl")) {
+            String displayFields = params.get("fl")[0];
+            if (!displayFields.isEmpty()) {
+                solrQuery.setFields(displayFields);
+            }
+        }
         // find rq and add to filter queries
         if (params.containsKey("rq") && params.get("rq").length != 0) {
             String refineSearchFilterQuery = queryAnalyzer.createRefineSearchFilterQuery(params, locale);

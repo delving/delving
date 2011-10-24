@@ -117,7 +117,10 @@ class RichSearchAPIService(aro : ApiRequestObject) {
     require(!userQuery.isEmpty)
     val jParams = aro.request.getParameterMap.asInstanceOf[JMap[String, Array[String]]]
     val solrQuery: SolrQuery = SolrQueryUtil.createFromQueryParams(jParams, aro.queryAnalyzer, aro.locale, ThemeFilter.getTheme.getRecordDefinition)
-    solrQuery.setFields("*,score")
+
+    if (jParams.containsKey("fl")) solrQuery.setFields(jParams.get("fl").headOption.getOrElse("*,score"))
+    if (jParams.contains("facet.limit")) solrQuery.setFacetLimit(Integer.valueOf(jParams.get("facet.limit").headOption.getOrElse("100")))
+
     val briefResultView = aro.beanQueryModelFactory.getBriefResultView(solrQuery, solrQuery.getQuery, jParams, aro.locale)
     aro.clickStreamLogger.logApiBriefView(aro.request, briefResultView, solrQuery)
     briefResultView
@@ -414,6 +417,8 @@ case class ExplainResponse(aro : ApiRequestObject) {
          ExplainItem("format", List("xml", "json", "jsonp", "simile", "similep")),
          ExplainItem("cache", List("true", "false"), "Use Services Module cache for retrieving the europeana:object"),
          ExplainItem("id", List("any valid europeana_uri identifier"), "Will output a full-view"),
+         ExplainItem("fl", List("any valid search field in a comma-separated list"), "Will only output the specified search fields"),
+         ExplainItem("facet.limit", List("Any valid integer. Default is 100"), "Will limit the number of facet entries returned to integer specified."),
          ExplainItem("start", List("any non negative integer")),
          ExplainItem("qf", List("any valid Facet as defined in the facets block")),
          ExplainItem("hqf", List("any valid Facet as defined in the facets block"), "This link is not used for the display part of the API." +

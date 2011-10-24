@@ -58,7 +58,6 @@
         <field prefix="abc" localName="dimensionValue"/>
         <field prefix="abc" localName="dimensionUnit"/>
         <field prefix="abc" localName="dimension"/>
-        <field prefix="abc" localName="objectName"/>
         <field prefix="abc" localName="technique"/>
         <field prefix="abc" localName="material"/>
         <field prefix="abc" localName="deepzoomUrl"/>
@@ -66,9 +65,10 @@
         <field prefix="abc" localName="largeThumbnail"/>
         <field prefix="abc" localName="description"/>
         <field prefix="abc" localName="name"/>
-        <field prefix="abc" localName="kunstenaar" facetName="kunstenaar" facetPrefix="kunst" />
-        <field prefix="abc" localName="production" facetName="periode" facetPrefix="kunst" />
-        <field prefix="abc" localName="collection" facetName="collectie" facetPrefix="kunst" />
+        <field prefix="abc" localName="collection" facetName="collectie" facetPrefix="col" />
+        <field prefix="abc" localName="objectName" facetName="object" facetPrefix="obj"/>
+        <field prefix="abc" localName="kunstenaar" facetName="kunstenaar" facetPrefix="knst" />
+        <field prefix="abc" localName="production" facetName="periode" facetPrefix="per" />
 
         <!--  Vervaardiger Velden -->
         <field prefix="abc" localName="vName"/>
@@ -84,7 +84,7 @@
         <field prefix="dc" localName="contributor" searchField="who,creator"/>
         <field prefix="dc" localName="coverage" searchField="what,subject"/>
         <field prefix="dc" localName="creator" searchField="who,creator" sortable="true"/>
-        <field prefix="dc" localName="date" facetName="dcdate" facetPrefix="dcd" searchField="when,date"/> <!--removed extract year it doesn't belong here -->
+        <field prefix="dc" localName="date" searchField="when,date"/> <!--removed extract year it doesn't belong here -->
         <field prefix="dc" localName="description" searchField="description"/>
         <field prefix="dc" localName="format"/>
         <field prefix="dc" localName="identifier" searchField="identifier"/>
@@ -93,9 +93,9 @@
         <field prefix="dc" localName="relation" searchField="relation"/>
         <field prefix="dc" localName="rights"/>
         <field prefix="dc" localName="source"/>
-        <field prefix="dc" localName="subject" facetName="subject" facetPrefix="sbj" searchField="what,subject"/>
+        <field prefix="dc" localName="subject"  searchField="what,subject"/>
         <field prefix="dc" localName="title" sortable="true"/>
-        <field prefix="dc" localName="type" facetPrefix="dct" facetName="dctype"/>
+        <field prefix="dc" localName="type" facetName="dctype"/>
         <field prefix="dcterms" localName="alternative"/>
         <field prefix="dcterms" localName="conformsTo"/>
         <field prefix="dcterms" localName="created" searchField="when,date"/>
@@ -120,14 +120,14 @@
         <field prefix="dcterms" localName="temporal" searchField="what,subject"/>
         <field prefix="dcterms" localName="rightsHolder"/>
         <field prefix="europeana" localName="collectionName" systemField="true" fulldoc="false"/>
-        <field prefix="europeana" localName="collectionTitle" fulldoc="false" facetName="collection" facetPrefix="col">
+        <field prefix="europeana" localName="collectionTitle" fulldoc="false">
         <!--<field prefix="europeana" localName="collectionTitle" fulldoc="false">-->
             <validation factName="name" requiredGroup="Collection Title"/>
         </field>
         <field prefix="europeana" localName="country" fulldoc="false"> <!-- facetPrefix="count"-->
             <validation requiredGroup="Country" factName="country"/>
         </field>
-        <field prefix="europeana" localName="dataProvider" facetPrefix="dapr" fulldoc="true" briefdoc="true">
+        <field prefix="europeana" localName="dataProvider" fulldoc="true" briefdoc="true">
             <validation requiredGroup="Data Provider" factName="dataProvider"/>
         </field>
         <field prefix="europeana" localName="isShownAt" fulldoc="true" fieldType="string">
@@ -136,20 +136,20 @@
         <field prefix="europeana" localName="isShownBy" fulldoc="true" fieldType="string">
             <!--<validation url="true" requiredGroup="Shown-at or Shown-by"/>-->
         </field>
-        <field prefix="europeana" localName="language" fieldType="string" facetName="language" searchField="language">
+        <field prefix="europeana" localName="language" fieldType="string" searchField="language">
             <validation requiredGroup="Language" factName="language"/>
         </field>
         <field prefix="europeana" localName="object" briefdoc="true">
             <validation object="true" url="true"/>
         </field>
-        <field prefix="europeana" localName="provider" facetPrefix="prov" facetName="provider">
+        <field prefix="europeana" localName="provider" >
             <validation requiredGroup="Provider" factName="provider"/>
         </field>
         <field prefix="europeana" localName="rights"> <!-- add enum class for this later-->
             <validation requiredGroup="Rights" factName="rights"/>
         </field>
         <field prefix="europeana" localName="source"/> <!-- to be deleted is unused -->
-        <field prefix="europeana" localName="type" fieldType="string" facetPrefix="tp" facetName="type">
+        <field prefix="europeana" localName="type" fieldType="string">
             <validation type="true" multivalued="false" factName="type" requiredGroup="Type"/>
         </field>
         <field prefix="europeana" localName="unstored" fieldType="text" fulldoc="false">
@@ -161,8 +161,8 @@
             </validation>
         </field>
         <field prefix="europeana" localName="userTag" searchField="usertags"/>
-        <field prefix="europeana" localName="hasDigitalObject" systemField="true" facetPrefix="hdo"/>
-        <field prefix="europeana" localName="year" fulldoc="false" fieldType="string" facetPrefix="year">
+        <field prefix="europeana" localName="hasDigitalObject"/>
+        <field prefix="europeana" localName="year" fulldoc="false" fieldType="string">
             <validation>
                 <converter multipleOutput="true" call=".extractYear()"/>
             </validation>
