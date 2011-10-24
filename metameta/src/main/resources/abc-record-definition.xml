@@ -65,10 +65,10 @@
         <field prefix="abc" localName="largeThumbnail"/>
         <field prefix="abc" localName="description"/>
         <field prefix="abc" localName="name"/>
-        <field prefix="abc" localName="collection" facetName="collectie" facetPrefix="col" />
-        <field prefix="abc" localName="objectName" facetName="object" facetPrefix="obj"/>
-        <field prefix="abc" localName="kunstenaar" facetName="kunstenaar" facetPrefix="knst" />
-        <field prefix="abc" localName="production" facetName="periode" facetPrefix="per" />
+        <field prefix="abc" localName="collection" facetName="collectie" facetPrefix="col" sortable="true"/>
+        <field prefix="abc" localName="objectName" facetName="object" facetPrefix="obj" sortable="true"/>
+        <field prefix="abc" localName="kunstenaar" facetName="kunstenaar" facetPrefix="knst" sortable="true"/>
+        <field prefix="abc" localName="production" facetName="periode" facetPrefix="per" sortable="true"/>
 
         <!--  Vervaardiger Velden -->
         <field prefix="abc" localName="vName"/>

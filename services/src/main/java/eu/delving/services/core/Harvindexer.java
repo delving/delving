@@ -344,6 +344,24 @@ public class Harvindexer {
                                 final String dc_creator = solrInputDocument.getField("dc_creator").getFirstValue().toString();
                                 solrInputDocument.addField("sort_creator", dc_creator);
                             }
+                            // Custom ABC fields todo replace with recdef later
+                            if (solrInputDocument.containsKey("abc_kunstenaar")) {
+                                final String abc_kunstenaar = solrInputDocument.getField("abc_kunstenaar").getFirstValue().toString();
+                                solrInputDocument.addField("sort_abc_kunstenaar", abc_kunstenaar);
+                            }
+                            if (solrInputDocument.containsKey("abc_productionStart")) {
+                                final String productionStart = solrInputDocument.getField("abc_productionStart").getFirstValue().toString();
+                                solrInputDocument.addField("sort_abc_productionStart", productionStart);
+                            }
+                            if (solrInputDocument.containsKey("abc_objectName")) {
+                                final String abc_objectName = solrInputDocument.getField("abc_objectName").getFirstValue().toString();
+                                solrInputDocument.addField("sort_abc_objectName", abc_objectName);
+                            }
+                            if (solrInputDocument.containsKey("abc_collection")) {
+                                final String abc_collection = solrInputDocument.getField("abc_collection").getFirstValue().toString();
+                                solrInputDocument.addField("sort_abc_collection", abc_collection);
+                            }
+                            // year sort
                             if (solrInputDocument.containsKey("europeana_year")) {
                                 final String europeana_year = solrInputDocument.getField("europeana_year").getFirstValue().toString();
                                 solrInputDocument.addField("sort_all_year", europeana_year);
