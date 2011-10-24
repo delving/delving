@@ -118,7 +118,7 @@ class RichSearchAPIService(aro : ApiRequestObject) {
     val jParams = aro.request.getParameterMap.asInstanceOf[JMap[String, Array[String]]]
     val solrQuery: SolrQuery = SolrQueryUtil.createFromQueryParams(jParams, aro.queryAnalyzer, aro.locale, ThemeFilter.getTheme.getRecordDefinition)
 
-    if (jParams.containsKey("fl")) solrQuery.setFields(jParams.get("fl").headOption.getOrElse("*,score"))
+    if (jParams.containsKey("fl")) solrQuery.setFields(jParams.get("fl").headOption.getOrElse("*,score")) else solrQuery.setFields("*,score")
     if (jParams.contains("facet.limit")) solrQuery.setFacetLimit(Integer.valueOf(jParams.get("facet.limit").headOption.getOrElse("100")))
 
     val briefResultView = aro.beanQueryModelFactory.getBriefResultView(solrQuery, solrQuery.getQuery, jParams, aro.locale)
