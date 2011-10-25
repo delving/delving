@@ -349,7 +349,11 @@ public class BeanQueryModelFactory implements QueryModelFactory {
 
         private DocIdWindowPager createDocIdPager(Map<String, String[]> params, Locale locale) throws SolrServerException, EuropeanaQueryException {
             DocIdWindowPager idWindowPager = null;
-            if (params.containsKey("query")) {
+            if (params.containsKey("bot")) {
+                log.info("GoogleBot coming by. So not returning a pager.");
+                return idWindowPager;
+            }
+            else if (params.containsKey("query")) {
                 final PortalTheme theme = ThemeFilter.getTheme();
                 if (theme != null) {
                     solrServer.setBaseURL(theme.getSolrSelectUrl());
