@@ -41,10 +41,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import static eu.delving.core.binding.SolrBindingService.getDocIds;
 
@@ -343,7 +340,13 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         private FullBeanViewImpl(SolrQuery solrQuery, QueryResponse solrResponse, Map<String, String[]> params, Locale locale) throws EuropeanaQueryException, SolrServerException {
             this.solrResponse = solrResponse;
             fullDoc = createFullDoc();
-            relatedItems = addIndexToBriefDocList(solrQuery, getBriefDocListFromQueryResponse(solrResponse), solrResponse);
+            if (!params.containsKey("bot")) {
+                relatedItems = addIndexToBriefDocList(solrQuery, getBriefDocListFromQueryResponse(solrResponse), solrResponse);
+            }
+            else {
+                // when the agent is a bot do not render related items.
+                relatedItems = new ArrayList<BriefDoc>();
+            }
             docIdWindowPager = createDocIdPager(params, locale);
         }
 
