@@ -424,6 +424,8 @@ case class ExplainResponse(aro : ApiRequestObject) {
          ExplainItem("hqf", List("any valid Facet as defined in the facets block"), "This link is not used for the display part of the API." +
               "It is used to send hidden constraints to the API to create custom API views"),
          ExplainItem("explain", List("all")),
+         ExplainItem("sortBy", List("any valid sort field prefixed by 'sort_'"), "When during"),
+         ExplainItem("sortOrder", List("asc", "desc"), "The sort order of the field specified by sortBy"),
          ExplainItem("lang", List("any valid iso 2 letter lang codes"), "Feature still experimental. In the future it will allow you to get " +
                "localised strings back for the metadata fields, search fields and facets blocks"),
          ExplainItem("wskey", List("any valid webservices key"), "When the API has been marked as closed")
