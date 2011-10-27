@@ -351,7 +351,7 @@ public class Harvindexer {
                             }
                             if (solrInputDocument.containsKey("abc_productionStart")) {
                                 final String productionStart = solrInputDocument.getField("abc_productionStart").getFirstValue().toString();
-                                solrInputDocument.addField("sort_abc_productionStart", productionStart);
+                                solrInputDocument.addField("sort_all_abc_productionStart", productionStart);
                             }
                             if (solrInputDocument.containsKey("abc_objectName")) {
                                 final String abc_objectName = solrInputDocument.getField("abc_objectName").getFirstValue().toString();

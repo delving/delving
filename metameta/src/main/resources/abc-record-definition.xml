@@ -76,6 +76,8 @@
         <field prefix="abc" localName="vNationality"/>
         <field prefix="abc" localName="vBirthDate"/>
         <field prefix="abc" localName="vBirthPlace"/>
+        <field prefix="abc" localName="vDeathDate"/>
+        <field prefix="abc" localName="vDeathPlace"/>
         <field prefix="abc" localName="vBiography"/>
 
 
@@ -156,9 +158,9 @@
             <description>This field is not stored only indexed </description>
         </field>
         <field prefix="europeana" localName="uri" briefdoc="true">
-            <validation id="true" multivalued="false" requiredGroup="URI">
-                <converter call=".toId(spec)"/>
-            </validation>
+            <validation id="true" multivalued="false" requiredGroup="URI"/>
+                <!--<converter call=".toId(spec)"/>-->
+            <!--</validation>-->
         </field>
         <field prefix="europeana" localName="userTag" searchField="usertags"/>
         <field prefix="europeana" localName="hasDigitalObject"/>
