@@ -45,7 +45,12 @@ public class SolrQueryUtil {
                 int colon = facetTerm.indexOf(":");
                 String facetName = facetTerm.substring(0, colon);
                 String facetValue = facetTerm.substring(colon + 1);
-                phraseFilterQueries.add(MessageFormat.format("{0}:\"{1}\"", facetName, facetValue));
+                if (facetValue.startsWith("[")) {
+                    phraseFilterQueries.add(MessageFormat.format("{0}:{1}", facetName, facetValue));
+                }
+                else {
+                    phraseFilterQueries.add(MessageFormat.format("{0}:\"{1}\"", facetName, facetValue));
+                }
             }
         }
         return phraseFilterQueries.toArray(new String[phraseFilterQueries.size()]);
