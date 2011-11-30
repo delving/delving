@@ -52,8 +52,8 @@
         <field prefix="abc" localName="titel"/>
         <field prefix="abc" localName="birthDate"/>
         <field prefix="abc" localName="deathDate"/>
-        <field prefix="abc" localName="productionStart"/>
-        <field prefix="abc" localName="productionEnd"/>
+        <field prefix="abc" localName="beginjaar"/>
+        <field prefix="abc" localName="eindjaar"/>
         <field prefix="abc" localName="objectId"/>
         <field prefix="abc" localName="dimensionValue"/>
         <field prefix="abc" localName="dimensionUnit"/>
