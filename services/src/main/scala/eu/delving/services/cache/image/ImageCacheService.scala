@@ -34,6 +34,7 @@ import java.awt.image.BufferedImage
 import com.thebuzzmedia.imgscalr.Scalr
 import javax.imageio.ImageIO
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, OutputStream, InputStream}
+import eu.delving.services.core.TrustfulManager
 
 /**
  *
@@ -47,6 +48,7 @@ class ImageCacheService(mongoFactory : MongoFactory) {
   val myFS = new GridFS(imageCache)
 
   // HttpClient Settings
+  TrustfulManager.install()
   val connectionParams = new HttpConnectionManagerParams
   connectionParams setDefaultMaxConnectionsPerHost (15)
   connectionParams setMaxTotalConnections (250)
