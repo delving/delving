@@ -28,6 +28,7 @@ import eu.delving.metadata.RecordValidator;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.MappingNotFoundException;
 import eu.delving.services.exceptions.MetaRepoSystemException;
+import eu.europeana.sip.core.DiscardRecordException;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
@@ -59,7 +60,7 @@ class MappingImpl implements MetaRepo.Mapping, MappingInternal, Comparable<MetaR
         this.dataSet = dataSet;
         this.object = object;
         this.metadataFormat = new MetadataFormatImpl((DBObject) object.get(FORMAT));
-        this.recordValidator = new RecordValidator(implFactory.getMetadataModel().getRecordDefinition(metadataFormat.getPrefix()), false);
+        this.recordValidator = new RecordValidator(implFactory.getMetadataModel().getRecordDefinition(metadataFormat.getPrefix()));
     }
 
     @Override
@@ -83,11 +84,12 @@ class MappingImpl implements MetaRepo.Mapping, MappingInternal, Comparable<MetaR
     }
 
     @Override
-    public void executeMapping(List<? extends MetaRepo.Record> records, Map<String, String> namespaces) throws MappingNotFoundException {
+    public void executeMapping(List<? extends MetaRepo.Record> records, Map<String, String> namespaces) throws MappingNotFoundException, MappingException {
         try {
             MappingRunner mappingRunner = getMappingRunner();
             MetadataRecord.Factory factory = new MetadataRecord.Factory(namespaces);
             int invalidCount = 0;
+            int discardedCount = 0;
             Iterator<? extends MetaRepo.Record> walk = records.iterator();
             while (walk.hasNext()) {
                 MetaRepo.Record record = walk.next();
@@ -106,17 +108,20 @@ class MappingImpl implements MetaRepo.Mapping, MappingInternal, Comparable<MetaR
                         walk.remove(); // todo: separate fetching from mapping
                     }
                 }
-                catch (MappingException e) {
-                    log.warn("mapping exception: " + e);
-                    invalidCount++;
+                catch (DiscardRecordException e) {
+                    discardedCount++;
                     walk.remove();
                 }
                 catch (XMLStreamException e) {
                     log.warn("Unable to map record!", e);
+                    throw new MappingException(null, "XML Streaming problem: "+record, e);
                 }
             }
             if (invalidCount > 0) {
                 log.info(String.format("%d invalid records discarded", invalidCount));
+            }
+            if (discardedCount > 0) {
+                log.info(String.format("%d records discarded explicitly", discardedCount));
             }
         }
         catch (MetadataException e) {

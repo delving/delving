@@ -87,7 +87,7 @@
 
     <bean id="freeMarkerUtil" class="eu.delving.core.binding.FreemarkerUtil"/>
 
-    <bean id="staticPageRepo" class="eu.delving.core.storage.impl.StaticRepoImpl"/>
+    <bean id="staticRepo" class="eu.delving.core.storage.impl.StaticRepoImpl"/>
 
     <util:list id="includedMacros">
     </util:list>
@@ -161,6 +161,7 @@
                 <value>/abm-record-definition.xml</value>
                 <value>/icn-record-definition.xml</value>
                 <value>/ese-record-definition.xml</value>
+                <value>/abc-record-definition.xml</value>
             </list>
         </property>
         <property name="defaultPrefix" value="#{launchProperties['services.harvindexing.prefix']}"/>
@@ -220,20 +221,22 @@
         </property>
     </bean>
 
-    <bean id="exposedKeysMessageSource" class="eu.delving.core.util.ExposedKeysMessageSource">
-        <property name="useCodeAsDefaultMessage" value="true"/>
-        <property name="basename" value="classpath:/i18n/messages"/>
-        <property name="fileEncodings" value="UTF-8"/>
-        <property name="defaultEncoding" value="UTF-8"/>
-    </bean>
 
-    <bean id="bidirectionalMetadataFieldNameMap" class="eu.delving.core.util.MultilingualAccessTranslator">
-        <property name="exposedKeysMessageSource" ref="exposedKeysMessageSource"/>
-    </bean>
+    <bean id="multilingualAccessTranslator" class="eu.delving.core.util.LocalizedFieldNames"/>
 
     <bean id="messageSource" class="eu.delving.core.util.MessageSourceRepo">
-        <property name="parentMessageSource" ref="exposedKeysMessageSource"/>
+        <property name="parentMessageSource">
+            <bean class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+                   <property name="useCodeAsDefaultMessage" value="true"/>
+                   <property name="basename" value="classpath:/i18n/messages"/>
+                   <property name="fileEncodings" value="UTF-8"/>
+                   <property name="defaultEncoding" value="UTF-8"/>
+               </bean>
+        </property>
     </bean>
+
+    <bean id="breadcrumbFactory" class="eu.europeana.core.querymodel.query.BreadcrumbFactory"/>
+    <bean id="themeFilter" class="eu.delving.core.util.ThemeFilter"/>
 
 </beans>
 

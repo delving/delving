@@ -24,6 +24,8 @@ package eu.delving.core.storage.impl;
 import com.mongodb.*;
 import eu.delving.core.storage.StaticRepo;
 import eu.delving.core.util.MongoFactory;
+import eu.delving.core.util.PortalTheme;
+import eu.delving.core.util.ThemeFilter;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,24 +65,17 @@ public class StaticRepoImpl implements StaticRepo {
     }
 
     @Override
-    public Map<String, List<MenuItem>> getMenus(Locale locale) {
+    public List<MenuItem> getMenu(String menuName, Locale locale) {
         Map<String, Page> latestPages = getLatestPages();
-        Map<String, List<MenuItem>> menus = new TreeMap<String, List<MenuItem>>();
+        List<MenuItem> items = new ArrayList<MenuItem>();
         for (Page page : latestPages.values()) {
-            String menuName = page.getMenuName();
-            if (menuName != null) {
+            if (menuName.equals(page.getMenuName())) {
                 MenuItem menuItem = new MenuItem(menuName, page.getMenuPriority(), page.getTitle(locale), page.getPath());
-                List<MenuItem> list = menus.get(menuName);
-                if (list == null) {
-                    menus.put(menuName, list = new ArrayList<MenuItem>());
-                }
-                list.add(menuItem);
+                items.add(menuItem);
             }
         }
-        for (List<MenuItem> menu : menus.values()) {
-            Collections.sort(menu);
-        }
-        return menus;
+        Collections.sort(items);
+        return items;
     }
 
     @Override
@@ -361,7 +356,9 @@ public class StaticRepoImpl implements StaticRepo {
     }
 
     private Set<String> getPathSet(String collection) {
-        DBCollection coll = db().getCollection(collection);
+        PortalTheme portalTheme = ThemeFilter.getTheme();
+        String collectionName = portalTheme == null ? collection : String.format("%s_%s",collection, portalTheme.getName());
+        DBCollection coll = database().getCollection(collectionName);
         coll.ensureIndex(mob(Page.PATH, 1));
         DBCursor cursor = coll.find();
         Set<String> set = new TreeSet<String>();
@@ -373,14 +370,18 @@ public class StaticRepoImpl implements StaticRepo {
     }
 
     private DBCollection pages() {
-        return db().getCollection(PAGES_COLLECTION);
+        PortalTheme portalTheme = ThemeFilter.getTheme();
+        String collectionName = portalTheme == null ? PAGES_COLLECTION : String.format("%s_%s",PAGES_COLLECTION, portalTheme.getName());
+        return database().getCollection(collectionName);
     }
 
     private DBCollection images() {
-        return db().getCollection(IMAGES_COLLECTION);
+        PortalTheme portalTheme = ThemeFilter.getTheme();
+        String collectionName = portalTheme == null ? IMAGES_COLLECTION : String.format("%s_%s",IMAGES_COLLECTION, portalTheme.getName());
+        return database().getCollection(collectionName);
     }
 
-    private DB db() {
+    private DB database() {
         return mongoFactory.getMongo().getDB(databaseName);
     }
 

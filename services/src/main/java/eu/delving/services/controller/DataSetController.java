@@ -29,6 +29,7 @@ import eu.delving.services.exceptions.DataSetNotFoundException;
 import eu.delving.services.exceptions.MappingNotFoundException;
 import eu.delving.services.exceptions.RecordParseException;
 import eu.delving.sip.*;
+import eu.europeana.sip.core.MappingException;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -77,10 +78,6 @@ public class DataSetController {
 
     @Autowired
     private AccessKey accessKey;
-
-    @Qualifier("mongoDb")
-    @Autowired
-    private MongoFactory mongoFactory;
 
     @Autowired
     @Qualifier("solrUpdateServer")
@@ -185,7 +182,7 @@ public class DataSetController {
         }
     }
 
-    private void writeSipZip(String dataSetSpec, OutputStream outputStream, String accessKey) throws IOException, MappingNotFoundException, AccessKeyException, XMLStreamException, MetadataException {
+    private void writeSipZip(String dataSetSpec, OutputStream outputStream, String accessKey) throws IOException, MappingNotFoundException, AccessKeyException, XMLStreamException, MetadataException, MappingException {
         MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
         if (dataSet == null) {
             throw new IOException("Data Set not found"); // IOException?
@@ -211,7 +208,7 @@ public class DataSetController {
         dataSet.save();
     }
 
-    private String writeSourceStream(MetaRepo.DataSet dataSet, ZipOutputStream zos, String accessKey) throws MappingNotFoundException, AccessKeyException, XMLStreamException, IOException {
+    private String writeSourceStream(MetaRepo.DataSet dataSet, ZipOutputStream zos, String accessKey) throws MappingNotFoundException, AccessKeyException, XMLStreamException, IOException, MappingException {
         SourceStream sourceStream = new SourceStream(zos);
         sourceStream.startZipStream(dataSet.getNamespaces().toMap());
         ObjectId afterId = null;
@@ -428,7 +425,7 @@ public class DataSetController {
         info.spec = dataSet.getSpec();
         info.name = dataSet.getDetails().getName();
         info.state = dataSet.getState(false).toString();
-        info.recordCount = dataSet.getDetails().getUploadedRecordCount();
+        info.recordCount = dataSet.getRecordCount();
         info.errorMessage = dataSet.getErrorMessage();
         info.recordsIndexed = dataSet.getRecordsIndexed();
         info.hashes = dataSet.getHashes();

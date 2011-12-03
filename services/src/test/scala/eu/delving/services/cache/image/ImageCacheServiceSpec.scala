@@ -26,6 +26,13 @@ import org.scalatest.matchers.ShouldMatchers
 import eu.delving.core.util.MongoFactory
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
+import org.scalatest.mock.MockitoSugar
+import javax.servlet.http.HttpServletResponse
+import org.mockito.Mockito._
+import java.awt.image.BufferedImage
+import javax.imageio.ImageIO
+import java.io._
+import javax.servlet.ServletOutputStream
 
 /**
  *
@@ -34,36 +41,55 @@ import org.junit.runner.RunWith
  */
 
 @RunWith(classOf[JUnitRunner])
-class ImageCacheServiceSpec extends Spec with ShouldMatchers {
+class ImageCacheServiceSpec extends Spec with ShouldMatchers with MockitoSugar {
 
-// todo: fix this test
-//  describe("A imageCache") {
-//
-//    val factory = new MongoFactory
-//    factory.setTestContext("true")
-//
-//    val imageCacheService = new ImageCacheService(factory)
-//
-//    describe("(when an object is not found in the cache)") {
-//
-//      val testUrl = """http://www.sffarkiv.no/webdb/fileStream.aspx?fileName=dbatlas_leks\1412-sol\1412001004.jpg"""
-//      val sanitizedUrl: String = imageCacheService.sanitizeUrl(testUrl)
-//
-//      it("should retrieve it from the remote source") {
-//        imageCacheService.retrieveImageFromUrl(sanitizedUrl).storable should be(true)
-//      }
-//
-//      it("should store the image in Mongo") {
-//        imageCacheService.storeImage(sanitizedUrl).available should be(true)
-//      }
-//
-//      it("should find the saved item") {
-//        val cachedImage = imageCacheService.findImageInCache(sanitizedUrl)
-//        cachedImage.getFilename should equal(sanitizedUrl)
-//        cachedImage.get("viewed").asInstanceOf[Int] should not equal (0)
-//      }
-//
-//    }
-//
-//  }
+  describe("A imageCache") {
+
+    val factory = new MongoFactory
+    factory.setTestContext("true")
+    factory.afterPropertiesSet()
+
+    val imageCacheService = new ImageCacheService(factory)
+    val testUrl = """https://repository.uba.uva.nl:8443/fedora/objects/unicum:tud.images.f777593b7b667ab5d6efef5eb26d88f8/datastreams/IMAGE/content"""
+//    val testUrl = """http://62.221.199.163:5294/imageproxy.asp?server=62.221.199.182&port=2107&maxwidth=500&filename=1154-A1.jpg"""
+
+    describe("(when an object is not found in the cache)") {
+
+      val sanitizedUrl: String = imageCacheService.sanitizeUrl(testUrl)
+
+      it("should retrieve it from the remote source") {
+        imageCacheService.retrieveImageFromUrl(sanitizedUrl).storable should be(true)
+      }
+
+      it("should store the image in Mongo") {
+        imageCacheService.storeImage(sanitizedUrl).available should be(true)
+      }
+
+      it("should find the saved item") {
+        val cachedImage = imageCacheService.findImageInCache(sanitizedUrl)
+        cachedImage.getFilename should equal(sanitizedUrl)
+        cachedImage.get("viewed").asInstanceOf[Int] should not equal (0)
+      }
+
+    }
+
+    describe("(when asked to serve a thumbnail)") {
+
+      val mockResponse:HttpServletResponse = mock[HttpServletResponse]
+      val baos:ByteArrayOutputStream = new ByteArrayOutputStream()
+      val fakeStream:ServletOutputStream = new ServletOutputStream {
+        def write(p1: Int) {
+          baos.write(p1)
+        }
+      }
+      when(mockResponse.getOutputStream).thenReturn(fakeStream)
+
+      it("should resize images to a width of 220px") {
+        imageCacheService.retrieveImageFromCache(testUrl, "BRIEF_DOC", mockResponse)
+        val resized:BufferedImage = ImageIO.read(new ByteArrayInputStream(baos.toByteArray))
+        resized.getWidth should equal (220)
+      }
+    }
+
+  }
 }

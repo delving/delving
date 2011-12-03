@@ -21,18 +21,18 @@
 
 package eu.delving.services.controller;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URLEncoder;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import eu.delving.services.cache.image.ImageCacheService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URLEncoder;
 
 /**
  * Controller for chache and resolver
@@ -84,7 +84,7 @@ public class ServiceController {
             @RequestParam(value = "id", required = false) String url,
             @RequestParam(value = "size", required = false) String sizeString
     ) throws IOException {
-        imageCacheService.retrieveImageFromCache(url, response);
+        imageCacheService.retrieveImageFromCache(url, sizeString, response);
     }
 
     private static void report(HttpServletResponse response, String message) throws IOException {

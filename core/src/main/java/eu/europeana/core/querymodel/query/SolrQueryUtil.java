@@ -45,7 +45,12 @@ public class SolrQueryUtil {
                 int colon = facetTerm.indexOf(":");
                 String facetName = facetTerm.substring(0, colon);
                 String facetValue = facetTerm.substring(colon + 1);
-                phraseFilterQueries.add(MessageFormat.format("{0}:\"{1}\"", facetName, facetValue));
+                if (facetValue.startsWith("[")) {
+                    phraseFilterQueries.add(MessageFormat.format("{0}:{1}", facetName, facetValue));
+                }
+                else {
+                    phraseFilterQueries.add(MessageFormat.format("{0}:\"{1}\"", facetName, facetValue));
+                }
             }
         }
         return phraseFilterQueries.toArray(new String[phraseFilterQueries.size()]);
@@ -130,19 +135,19 @@ public class SolrQueryUtil {
         return queries.toArray(new String[queries.size()]);
     }
 
-    public static SolrQuery createFromQueryParams(Map<String, String[]> params, QueryAnalyzer queryAnalyzer, RecordDefinition recordDefinition) throws EuropeanaQueryException {
+    public static SolrQuery createFromQueryParams(Map<String, String[]> params, QueryAnalyzer queryAnalyzer, Locale locale, RecordDefinition recordDefinition) throws EuropeanaQueryException {
         SolrQuery solrQuery = new SolrQuery();
         if (params.containsKey("query") || params.containsKey("query1")) {
             if (!params.containsKey("query")) {  // support advanced search
-                solrQuery.setQuery(queryAnalyzer.createAdvancedQuery(params));
+                solrQuery.setQuery(queryAnalyzer.createAdvancedQuery(params, locale));
             }
             else {
                 if (params.containsKey("zoeken_in") && !params.get("zoeken_in")[0].equalsIgnoreCase("text")) {
                     String zoekenIn = params.get("zoeken_in")[0];
-                    solrQuery.setQuery(zoekenIn + ":\"" + queryAnalyzer.sanitize(params.get("query")[0]) + "\""); // only get the first one
+                    solrQuery.setQuery(zoekenIn + ":\"" + queryAnalyzer.sanitizeAndTranslate(params.get("query")[0], locale) + "\""); // only get the first one
                 }
                 else {
-                    solrQuery.setQuery(queryAnalyzer.sanitize(params.get("query")[0])); // only get the first one
+                    solrQuery.setQuery(queryAnalyzer.sanitizeAndTranslate(params.get("query")[0], locale)); // only get the first one
                 }
             }
         }
@@ -176,11 +181,18 @@ public class SolrQueryUtil {
         if (params.containsKey("sortBy") && !params.get("sortBy")[0].isEmpty()) {
             String sortField = params.get("sortBy")[0];
             if (sortField.equalsIgnoreCase("title")) {
-                sortField = "title_sort";
+                sortField = "sort_title";
             }
             else if (sortField.equalsIgnoreCase("creator")) {
-                sortField = "creator_sort";
+                sortField = "sort_creator";
             }
+            else if (sortField.equalsIgnoreCase("year")) {
+                sortField = "sort_all_year";
+            }
+            else if (sortField.equalsIgnoreCase("random")) {
+                sortField = SolrQueryUtil.createRandomSortKey();
+            }
+
             if (params.containsKey("sortOrder") && !params.get("sortOrder")[0].isEmpty()) {
                 String sortOrder = params.get("sortOrder")[0];
                 if (sortOrder.equalsIgnoreCase("desc")) {
@@ -205,9 +217,16 @@ public class SolrQueryUtil {
                 solrQuery.addFilterQuery(filterQuery);
             }
         }
+        // determine which fields will be returned
+        if (params.containsKey("fl")) {
+            String displayFields = params.get("fl")[0];
+            if (!displayFields.isEmpty()) {
+                solrQuery.setFields(displayFields);
+            }
+        }
         // find rq and add to filter queries
         if (params.containsKey("rq") && params.get("rq").length != 0) {
-            String refineSearchFilterQuery = queryAnalyzer.createRefineSearchFilterQuery(params);
+            String refineSearchFilterQuery = queryAnalyzer.createRefineSearchFilterQuery(params, locale);
             if (!refineSearchFilterQuery.isEmpty()) {
                 solrQuery.addFilterQuery(refineSearchFilterQuery);
             }

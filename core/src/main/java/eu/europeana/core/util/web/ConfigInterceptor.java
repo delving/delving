@@ -24,7 +24,8 @@ package eu.europeana.core.util.web;
 import eu.delving.core.binding.FreemarkerUtil;
 import eu.delving.core.binding.QueryParamList;
 import eu.delving.core.util.PortalTheme;
-import eu.delving.core.util.ThemeInterceptor;
+import eu.delving.core.util.ThemeFilter;
+import eu.delving.core.util.ThemeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.ModelAndView;
@@ -52,11 +53,14 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
     @Autowired
     private FreemarkerUtil freeMarkerUtil;
 
+    @Autowired
+    private ThemeHandler themeHandler;
+
     @SuppressWarnings({"unchecked"})
     @Override
     public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
         super.postHandle(httpServletRequest, httpServletResponse, o, modelAndView);
-        final PortalTheme theme = ThemeInterceptor.getTheme();
+        final PortalTheme theme = themeHandler.getByRequest(httpServletRequest);
         if (modelAndView != null && !modelAndView.getViewName().startsWith("redirect:")) {
             modelAndView.addObject("debug", Boolean.valueOf(debug));
             modelAndView.addObject("interfaceLanguage", ControllerUtil.getLocale(httpServletRequest));

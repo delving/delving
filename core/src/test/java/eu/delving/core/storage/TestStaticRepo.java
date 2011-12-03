@@ -118,12 +118,12 @@ public class TestStaticRepo {
                 }
             }
         }
-        Map<String, List<StaticRepo.MenuItem>> menus = repo.getMenus(null);
-        Assert.assertEquals("Should be three", 3, menus.size());
-        Assert.assertTrue("priorities wrong", menus.get("menu0").get(0).getMenuPriority() < menus.get("menu0").get(1).getMenuPriority());
-        for (List<StaticRepo.MenuItem> menu : menus.values()) {
-            System.out.println("menu " + menu.get(0).getMenuName());
-            for (StaticRepo.MenuItem item : menu) {
+        for (int menuIndex = 0; menuIndex < 3; menuIndex++) {
+            String menuName = "menu" + menuIndex;
+            List<StaticRepo.MenuItem> items = repo.getMenu(menuName, null);
+            Assert.assertTrue("priorities wrong", items.get(0).getMenuPriority() < items.get(1).getMenuPriority());
+            System.out.println("menu " + menuName);
+            for (StaticRepo.MenuItem item : items) {
                 System.out.println(item.getPath() + " " + item.getMenuPriority());
             }
         }

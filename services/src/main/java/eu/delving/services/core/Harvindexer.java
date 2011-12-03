@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 DELVING BV
+ * Copyright 2011 DELVING BV
  *
  * Licensed under the EUPL, Version 1.1 or as soon they
  * will be approved by the European Commission - subsequent
@@ -335,6 +335,37 @@ public class Harvindexer {
                                 solrInputDocument.remove("europeana_collectionName");
                             }
                             solrInputDocument.addField("europeana_collectionName", dataSet.getSpec()); // todo: can't just use a string field name here
+                            // do some sorting hacks for title, creator and date
+                            if (solrInputDocument.containsKey("dc_title")) {
+                                final String dc_title = solrInputDocument.getField("dc_title").getFirstValue().toString();
+                                solrInputDocument.addField("sort_title", dc_title);
+                            }
+                            if (solrInputDocument.containsKey("dc_creator")) {
+                                final String dc_creator = solrInputDocument.getField("dc_creator").getFirstValue().toString();
+                                solrInputDocument.addField("sort_creator", dc_creator);
+                            }
+                            // Custom ABC fields todo replace with recdef later
+                            if (solrInputDocument.containsKey("abc_kunstenaar")) {
+                                final String abc_kunstenaar = solrInputDocument.getField("abc_kunstenaar").getFirstValue().toString();
+                                solrInputDocument.addField("sort_abc_kunstenaar", abc_kunstenaar);
+                            }
+                            if (solrInputDocument.containsKey("abc_beginjaar")) {
+                                final String productionStart = solrInputDocument.getField("abc_beginjaar").getFirstValue().toString();
+                                solrInputDocument.addField("sort_all_abc_beginjaar", productionStart);
+                            }
+                            if (solrInputDocument.containsKey("abc_objectName")) {
+                                final String abc_objectName = solrInputDocument.getField("abc_objectName").getFirstValue().toString();
+                                solrInputDocument.addField("sort_abc_objectName", abc_objectName);
+                            }
+                            if (solrInputDocument.containsKey("abc_collection")) {
+                                final String abc_collection = solrInputDocument.getField("abc_collection").getFirstValue().toString();
+                                solrInputDocument.addField("sort_abc_collection", abc_collection);
+                            }
+                            // year sort
+                            if (solrInputDocument.containsKey("europeana_year")) {
+                                final String europeana_year = solrInputDocument.getField("europeana_year").getFirstValue().toString();
+                                solrInputDocument.addField("sort_all_year", europeana_year);
+                            }
 //                            indexer.add(solrInputDocument); // this is the old way
                             solrStreamingServer.add(solrInputDocument);
 //                            record.save(); todo: or something like it, to replace consoleDao.saveEuropeanaId(europeanaId);

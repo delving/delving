@@ -6,8 +6,7 @@ import _root_.org.scalatest.Spec
 import _root_.org.scalatest.junit.JUnitRunner
 import org.apache.solr.client.solrj.SolrQuery
 import scala.collection.JavaConversions._
-import java.util.List
-
+import java.util.{Locale, List}
 
 /**
  *
@@ -17,6 +16,8 @@ import java.util.List
 
 @RunWith(classOf[JUnitRunner])
 class ResultPaginationSpec extends Spec with ShouldMatchers {
+  val breadcrumbFactory = new BreadcrumbFactory
+
   describe("A ResultPagination") {
 
     describe("(when a start pagination range)") {
@@ -113,6 +114,6 @@ class ResultPaginationSpec extends Spec with ShouldMatchers {
       solrQuery setStart start
       solrQuery
     }
-    new ResultPaginationImpl(createSolrQuery, numFound, query, null)
+    new ResultPaginationImpl(createSolrQuery, numFound, query, null, breadcrumbFactory, Locale.CANADA)
   }
 }

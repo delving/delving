@@ -24,9 +24,11 @@ package eu.europeana.sip.xml;
 import eu.delving.metadata.MetadataNamespace;
 import eu.delving.metadata.RecordMapping;
 import eu.delving.metadata.RecordValidator;
+import eu.delving.metadata.Uniqueness;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.ProgressListener;
+import eu.europeana.sip.core.DiscardRecordException;
 import eu.europeana.sip.core.GroovyCodeResource;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
@@ -42,6 +44,7 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Take the input and config informationm and produce an output xml file
@@ -87,7 +90,9 @@ public class Normalizer implements Runnable {
     public void run() {
         FileStore.MappingOutput fileSetOutput = null;
         boolean store = normalizeDirectory != null;
-        RecordValidator recordValidator = new RecordValidator(sipModel.getRecordDefinition(), true);
+        Uniqueness uniqueness = new Uniqueness();
+        RecordValidator recordValidator = new RecordValidator(sipModel.getRecordDefinition());
+        recordValidator.guardUniqueness(uniqueness);
         try {
             RecordMapping recordMapping = sipModel.getMappingModel().getRecordMapping();
             if (recordMapping == null) {
@@ -110,9 +115,9 @@ public class Normalizer implements Runnable {
             MetadataParser parser = new MetadataParser(
                     sipModel.getDataSetStore().createXmlInputStream(),
                     sipModel.getRecordRoot(),
-                    sipModel.getRecordCount(),
-                    progressAdapter
+                    sipModel.getRecordCount()
             );
+            parser.setProgressListener(progressAdapter);
             MetadataRecord record;
             while ((record = parser.nextRecord()) != null && running) {
                 try {
@@ -145,8 +150,8 @@ public class Normalizer implements Runnable {
                                 sipModel.getUserNotifier().tellUser("Unable to write discarded record", e1);
                                 abort();
                             }
-                            fileSetOutput.recordDiscarded();
                         }
+                        fileSetOutput.recordDiscarded();
                     }
                     else {
                         listener.invalidInput(e);
@@ -173,6 +178,19 @@ public class Normalizer implements Runnable {
                         abort();
                     }
                 }
+                catch (DiscardRecordException e) {
+                    if (store) {
+                        try {
+                            fileSetOutput.getDiscardedWriter().write("Discarded explicitly: \n" + record.toString());
+                            fileSetOutput.getDiscardedWriter().write("\n========================================\n");
+                        }
+                        catch (IOException e1) {
+                            sipModel.getUserNotifier().tellUser("Unable to write discarded record", e1);
+                            abort();
+                        }
+                    }
+                    fileSetOutput.recordDiscarded();
+                }
                 catch (Exception e) {
                     sipModel.getUserNotifier().tellUser("Problem writing output", e);
                     abort();
@@ -180,6 +198,16 @@ public class Normalizer implements Runnable {
             }
             if (store) {
                 fileSetOutput.getOutputWriter().write("</metadata>\n");
+            }
+            Set<String> repeated = uniqueness.getRepeated();
+            if (!repeated.isEmpty()) {
+                StringBuilder out = new StringBuilder();
+                int countdown = 6;
+                for (String line : repeated) {
+                    if (countdown-- == 0) break;
+                    out.append(line).append("<br>");
+                }
+                sipModel.getUserNotifier().tellUser(String.format("<html>Identifier should be unique, but there were %d repeats, including:<br> ", repeated.size())+out);
             }
             fileSetOutput.close(!running);
         }
@@ -207,6 +235,7 @@ public class Normalizer implements Runnable {
             log.info(String.format("Validating Time %d", totalValidationTime));
             recordValidator.report();
             listener.finished(running);
+            uniqueness.destroy();
             if (!running) { // aborted, so metadataparser will not call finished()
                 progressAdapter.finished(false);
             }

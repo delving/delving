@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * This class is used to compute result navigation to be inserted in the Freemarker Model
@@ -15,7 +16,7 @@ import java.util.List;
 
 
 public class ResultPaginationImpl implements ResultPagination {
-    private static final String FACET_PROMPT = "&amp;qf=";
+    private static final String FACET_PROMPT = "&qf=";
     private static final int MARGIN = 5;
     private static final int PAGE_NUMBER_THRESHOLD = 7;
     private SolrQuery solrQuery;
@@ -30,7 +31,7 @@ public class ResultPaginationImpl implements ResultPagination {
     private PresentationQueryImpl presentationQuery = new PresentationQueryImpl();
     private List<PageLink> pageLinks = new ArrayList<PageLink>();
 
-    public ResultPaginationImpl(SolrQuery solrQuery, int numFound, String requestQueryString, String parsedQuery) throws EuropeanaQueryException {
+    public ResultPaginationImpl(SolrQuery solrQuery, int numFound, String requestQueryString, String parsedQuery, BreadcrumbFactory breadcrumbFactory, Locale locale) throws EuropeanaQueryException {
         this.solrQuery = solrQuery;
         this.numFound = numFound;
         int rows = solrQuery.getRows();
@@ -59,7 +60,7 @@ public class ResultPaginationImpl implements ResultPagination {
         for (int page = fromPage; page <= toPage; page++) {
             pageLinks.add(new PageLink(page, (page - 1) * rows + 1, pageNumber != page));
         }
-        breadcrumbs = Breadcrumb.createList(solrQuery);
+        breadcrumbs = breadcrumbFactory.createList(solrQuery, locale);
         presentationQuery.queryForPresentation = createQueryForPresentation(solrQuery);
         presentationQuery.queryToSave = requestQueryString;
         presentationQuery.userSubmittedQuery = solrQuery.getQuery();
@@ -83,10 +84,10 @@ public class ResultPaginationImpl implements ResultPagination {
             if (filterQuery.startsWith("start=")) {
                 continue; // start page must be reset to eliminate paging errors
             }
-            url.append(filterQuery).append("&amp;");
+            url.append(filterQuery).append("&");
         }
         String urlString = url.toString().trim();
-        if (urlString.endsWith("&amp;")) {
+        if (urlString.endsWith("&")) {
             urlString = urlString.substring(0, urlString.length() - 1);
         }
         return urlString;

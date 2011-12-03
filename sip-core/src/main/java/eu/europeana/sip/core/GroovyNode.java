@@ -26,7 +26,6 @@ import groovy.lang.DelegatingMetaClass;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClass;
 import groovy.xml.QName;
-import org.codehaus.groovy.runtime.NullObject;
 
 import java.util.Collection;
 import java.util.List;
@@ -52,12 +51,12 @@ public class GroovyNode {
 
     private Object value;
 
-    public GroovyNode(String name) {
-        this(null, new QName(name));
-    }
-
     public GroovyNode(GroovyNode parent, String namespaceUri, String localName, String prefix) {
         this(parent, new QName(namespaceUri, localName, prefix));
+    }
+
+    public GroovyNode(GroovyNode parent, String name) {
+        this(parent, new QName(name), new GroovyList());
     }
 
     public GroovyNode(GroovyNode parent, QName qName) {
@@ -117,17 +116,8 @@ public class GroovyNode {
         return "";
     }
 
-    public List children() {
-        if (value == null) {
-            return new GroovyList();
-        }
-        if (value instanceof List) {
-            return (List) value;
-        }
-        // we're probably just a String
-        GroovyList result = new GroovyList();
-        result.add(value);
-        return result;
+    public GroovyList children() {
+        return (value instanceof GroovyList) ? (GroovyList) value : new GroovyList(value);
     }
 
     public Map<String, String> attributes() {
@@ -152,6 +142,26 @@ public class GroovyNode {
 
     public Object value() {
         return value;
+    }
+
+    public int size() {
+        return text().length();
+    }
+
+    public boolean contains(String s) {
+        return text().contains(s);
+    }
+
+    public String [] split(String s) {
+        return text().split(s);
+    }
+
+    public boolean endsWith(String s) {
+        return text().endsWith(s);
+    }
+
+    public String replaceAll(String from, String to) {
+        return text().replaceAll(from, to);
     }
 
     public void setValue(Object value) {
@@ -210,7 +220,7 @@ public class GroovyNode {
         for (Object child : children()) {
             if (child instanceof GroovyNode) {
                 GroovyNode childNode = (GroovyNode) child;
-                if (childNode.value() instanceof List && ((List)childNode.value).isEmpty()) {
+                if (childNode.value() instanceof List && ((List) childNode.value).isEmpty()) {
                     continue;
                 }
                 Object childNodeName = childNode.name();
@@ -225,9 +235,6 @@ public class GroovyNode {
                 }
             }
         }
-        if (answer.isEmpty()) {
-            answer.add(NullObject.getNullObject());
-        }
         return answer;
     }
 
@@ -239,16 +246,16 @@ public class GroovyNode {
 
     private void getValueNodes(GroovyList answer) {
         if (value instanceof GroovyList) {
-            for (Object object : ((GroovyList)value)) {
+            for (Object object : ((GroovyList) value)) {
                 if (object instanceof GroovyNode) {
-                    ((GroovyNode)object).getValueNodes(answer);
+                    ((GroovyNode) object).getValueNodes(answer);
                 }
                 else {
-                    getValueNodes((GroovyList)object);
+                    getValueNodes((GroovyList) object);
                 }
             }
         }
-        else if (value instanceof String && !((String)value).trim().isEmpty()) {
+        else if (value instanceof String && !((String) value).trim().isEmpty()) {
             answer.add(this);
         }
         else {
@@ -284,7 +291,7 @@ public class GroovyNode {
                 if (property.startsWith("@")) {
                     String attribute = property.substring(1);
                     GroovyNode n = (GroovyNode) object;
-                    n.attributes().put(attribute, (String)newValue);
+                    n.attributes().put(attribute, (String) newValue);
                     return;
                 }
                 delegate.setProperty(object, property, newValue);

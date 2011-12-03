@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Something to hold the groovy node and turn it into a string
@@ -57,6 +58,10 @@ public class MetadataRecord {
         return rootNode;
     }
 
+    public boolean contains(Pattern pattern) {
+        return checkFor(rootNode, pattern);
+    }
+
     public int getRecordNumber() {
         return recordNumber;
     }
@@ -69,6 +74,22 @@ public class MetadataRecord {
         List<MetadataVariable> variables = new ArrayList<MetadataVariable>();
         getVariables(rootNode, variables);
         return variables;
+    }
+
+    private boolean checkFor(GroovyNode groovyNode, Pattern pattern) {
+        if (groovyNode.value() instanceof GroovyList) {
+            GroovyList list = (GroovyList) groovyNode.value();
+            for (Object member : list) {
+                GroovyNode childNode = (GroovyNode) member;
+                if (checkFor(childNode, pattern)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        else {
+            return pattern.matcher(groovyNode.text()).matches();
+        }
     }
 
     private void getVariables(GroovyNode groovyNode, List<MetadataVariable> variables) {
@@ -148,7 +169,7 @@ public class MetadataRecord {
                             break;
                         case XMLEvent.START_ELEMENT:
                             if (node == null) {
-                                rootNode = node = new GroovyNode("input");
+                                rootNode = node = new GroovyNode(null, "input");
                             }
                             else {
                                 node = new GroovyNode(node, input.getNamespaceURI(), input.getLocalName(), input.getPrefix());

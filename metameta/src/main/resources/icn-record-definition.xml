@@ -136,7 +136,8 @@
         <field prefix="dcterms" localName="temporal" searchField="what,subject"/>
         <field prefix="dcterms" localName="rightsHolder"/>
         <field prefix="europeana" localName="collectionName" systemField="true" fulldoc="false"/>
-        <field prefix="europeana" localName="collectionTitle" fulldoc="false">
+        <field prefix="europeana" localName="collectionTitle" fulldoc="false" facetName="collection" facetPrefix="col">
+        <!--<field prefix="europeana" localName="collectionTitle" fulldoc="false">-->
             <validation factName="name" requiredGroup="Collection Title"/>
         </field>
         <field prefix="europeana" localName="country" fulldoc="false"> <!-- facetPrefix="count"-->

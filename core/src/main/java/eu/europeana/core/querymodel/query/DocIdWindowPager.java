@@ -28,6 +28,7 @@ import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -77,7 +78,7 @@ public interface DocIdWindowPager {
 
     void setPortalName(String portalName);
 
-    void initialize(Map<String, String[]> httpParameters, SolrQuery originalBriefSolrQuery, QueryModelFactory queryModelFactory, RecordDefinition metadataModel) throws SolrServerException, EuropeanaQueryException;
+    void initialize(Map<String, String[]> httpParameters, BreadcrumbFactory breadcrumbFactory, Locale locale, SolrQuery originalBriefSolrQuery, QueryModelFactory queryModelFactory, RecordDefinition metadataModel) throws SolrServerException, EuropeanaQueryException;
 
     String getSortBy();
 }

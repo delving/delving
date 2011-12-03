@@ -21,7 +21,7 @@
 
 package eu.delving.services.controller;
 
-import eu.delving.core.util.ThemeInterceptor;
+import eu.delving.core.util.ThemeFilter;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -58,7 +58,7 @@ public class SolrProxyController {
     @RequestMapping("/api/solr/select")
     public void searchController(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final String solrQueryString = request.getQueryString();
-        HttpMethod method = new GetMethod(String.format("%s/select?%s", ThemeInterceptor.getTheme().getSolrSelectUrl(), solrQueryString));
+        HttpMethod method = new GetMethod(String.format("%s/select?%s", ThemeFilter.getTheme().getSolrSelectUrl(), solrQueryString));
         httpClient.executeMethod(method);
         Boolean getAsStream = false;
         for (Header header : method.getResponseHeaders()) {

@@ -32,6 +32,7 @@ import eu.delving.services.exceptions.*;
 import eu.delving.sip.AccessKey;
 import eu.delving.sip.DataSetState;
 import eu.europeana.sip.core.GroovyCodeResource;
+import eu.europeana.sip.core.MappingException;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,13 +134,14 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public DataSet getFirstDataSet(DataSetState dataSetState) {
+    public DataSet getDataSetForIndexing(int maxSimultaneous) {
         DBCollection collection = db().getCollection(DATASETS_COLLECTION);
-        DBObject object = collection.findOne(mob(DataSet.DATA_SET_STATE, dataSetState.toString()));
-        if (object == null) {
-            return null;
+        int indexingCount = collection.find(mob(DataSet.DATA_SET_STATE, DataSetState.INDEXING.toString())).count();
+        if (indexingCount < maxSimultaneous) {
+            DBObject object = collection.findOne(mob(DataSet.DATA_SET_STATE, DataSetState.QUEUED.toString()));
+            if (object != null) return factory().createDataSet(object);
         }
-        return factory().createDataSet(object);
+        return null;
     }
 
     @Override
@@ -155,7 +157,7 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public Set<MetadataFormat> getMetadataFormats(String id, String accessKey) throws MappingNotFoundException, AccessKeyException {
+    public Set<MetadataFormat> getMetadataFormats(String id, String accessKey) throws MappingNotFoundException, AccessKeyException, MappingException {
         Set<MetadataFormat> set = new TreeSet<MetadataFormat>();
         ObjectId objectId = new ObjectId(id);
         for (DataSet dataSet : getDataSets()) {
@@ -217,12 +219,12 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public Record getRecord(String identifier, String metadataPrefix, String accessKey) throws BadArgumentException, DataSetNotFoundException, MappingNotFoundException, AccessKeyException {
+    public Record getRecord(String identifier, String metadataPrefix, String accessKey) throws BadArgumentException, DataSetNotFoundException, MappingNotFoundException, AccessKeyException, MappingException {
         RecordIdentifier recordIdentifier = createIdentifier(identifier);
         return fetch(recordIdentifier, metadataPrefix, accessKey);
     }
 
-    public Record fetch(RecordIdentifier identifier, String metadataPrefix, String accessKey) throws DataSetNotFoundException, MappingNotFoundException, AccessKeyException {
+    public Record fetch(RecordIdentifier identifier, String metadataPrefix, String accessKey) throws DataSetNotFoundException, MappingNotFoundException, AccessKeyException, MappingException {
         DataSet dataSet = getDataSet(identifier.collectionId);
         if (dataSet == null) {
             throw new DataSetNotFoundException(String.format("Do data set for identifier [%s]", identifier.collectionId));

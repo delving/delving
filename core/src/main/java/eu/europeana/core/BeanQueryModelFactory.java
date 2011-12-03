@@ -24,7 +24,7 @@ package eu.europeana.core;
 import eu.delving.core.binding.FacetMap;
 import eu.delving.core.binding.SolrBindingService;
 import eu.delving.core.util.PortalTheme;
-import eu.delving.core.util.ThemeInterceptor;
+import eu.delving.core.util.ThemeFilter;
 import eu.delving.metadata.MetadataModel;
 import eu.europeana.core.querymodel.query.*;
 import org.apache.log4j.Logger;
@@ -41,9 +41,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static eu.delving.core.binding.SolrBindingService.getDocIds;
 
@@ -79,6 +77,9 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     @Autowired
     private QueryAnalyzer queryAnalyzer;
 
+    @Autowired
+    private BreadcrumbFactory breadcrumbFactory;
+
     public QueryAnalyzer getQueryAnalyzer() {
         return queryAnalyzer;
     }
@@ -87,8 +88,8 @@ public class BeanQueryModelFactory implements QueryModelFactory {
      * create solr query from http query parameters
      */
     @Override
-    public SolrQuery createFromQueryParams(Map<String, String[]> params) throws EuropeanaQueryException {
-        return SolrQueryUtil.createFromQueryParams(params, queryAnalyzer, ThemeInterceptor.getTheme().getRecordDefinition());
+    public SolrQuery createFromQueryParams(Map<String, String[]> params, Locale locale) throws EuropeanaQueryException {
+        return SolrQueryUtil.createFromQueryParams(params, queryAnalyzer, locale, ThemeFilter.getTheme().getRecordDefinition());
     }
 
     @Override
@@ -103,18 +104,18 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     }
 
     @Override
-    public BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString, Map<String, String[]> params) throws EuropeanaQueryException, UnsupportedEncodingException {
+    public BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString, Map<String, String[]> params, Locale locale) throws EuropeanaQueryException, UnsupportedEncodingException {
         QueryResponse queryResponse = getSolrResponse(solrQuery, true, params);
-        return new BriefBeanViewImpl(solrQuery, queryResponse, requestQueryString);
+        return new BriefBeanViewImpl(solrQuery, queryResponse, requestQueryString, locale);
     }
 
     @Override
-    public BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString) throws EuropeanaQueryException, UnsupportedEncodingException {
-        return getBriefResultView(solrQuery, requestQueryString, null);
+    public BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString, Locale locale) throws EuropeanaQueryException, UnsupportedEncodingException {
+        return getBriefResultView(solrQuery, requestQueryString, null, locale);
     }
 
     @Override
-    public FullBeanView getFullResultView(Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException {
+    public FullBeanView getFullResultView(Map<String, String[]> params, Locale locale) throws EuropeanaQueryException, SolrServerException {
         String europeanaUri = "";
         if (params.get("uri") != null) {
             europeanaUri = params.get("uri")[0];
@@ -128,7 +129,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.setQuery("europeana_uri:\"" + europeanaUri + "\"");
         solrQuery.setQueryType(QueryType.MORE_LIKE_THIS_QUERY.toString());
-        return new FullBeanViewImpl(solrQuery, getSolrResponse(solrQuery, false, params), params);
+        return new FullBeanViewImpl(solrQuery, getSolrResponse(solrQuery, false, params), params, locale);
     }
 
     // todo remove maybe use FullBeanView.getFullDoc instead
@@ -140,8 +141,8 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     }
 
     @Override
-    public List<?> getDocIdList(Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException {
-        SolrQuery solrQuery = createFromQueryParams(params);
+    public List<?> getDocIdList(Map<String, String[]> params, Locale locale) throws EuropeanaQueryException, SolrServerException {
+        SolrQuery solrQuery = createFromQueryParams(params, locale);
         Integer start = solrQuery.getStart();
         if (start > 1) {
             solrQuery.setStart(start - 2);
@@ -149,7 +150,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         solrQuery.setRows(3);
         solrQuery.setFields("europeana_uri");
         // Fetch results from server
-        final PortalTheme theme = ThemeInterceptor.getTheme();
+        final PortalTheme theme = ThemeFilter.getTheme();
         if (theme != null) {
                 solrServer.setBaseURL(theme.getSolrSelectUrl());
         }
@@ -174,7 +175,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         solrQuery.setRows(rowsReturned);
         solrQuery.setFields("europeana_uri", "timestamp");
         solrQuery.setStart(pageNumber * rowsReturned);
-        final PortalTheme theme = ThemeInterceptor.getTheme();
+        final PortalTheme theme = ThemeFilter.getTheme();
         if (theme != null) {
             solrServer.setBaseURL(theme.getSolrSelectUrl());
         }
@@ -226,8 +227,8 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         private SpellCheckResponse spellcheck;
 
         @SuppressWarnings("unchecked")
-        private BriefBeanViewImpl(SolrQuery solrQuery, QueryResponse solrResponse, String requestQueryString) throws UnsupportedEncodingException, EuropeanaQueryException {
-            pagination = createPagination(solrResponse, solrQuery, requestQueryString);
+        private BriefBeanViewImpl(SolrQuery solrQuery, QueryResponse solrResponse, String requestQueryString, Locale locale) throws UnsupportedEncodingException, EuropeanaQueryException {
+            pagination = createPagination(solrResponse, solrQuery, requestQueryString, breadcrumbFactory, locale);
             // todo: convert this list into briefdoc instances
 //            SolrDocumentList list = solrResponse.getResults();
             briefDocs = addIndexToBriefDocList(solrQuery, getBriefDocListFromQueryResponse(solrResponse), solrResponse);
@@ -332,27 +333,35 @@ public class BeanQueryModelFactory implements QueryModelFactory {
 
     private class FullBeanViewImpl implements FullBeanView {
         private QueryResponse solrResponse;
-        private Map<String, String[]> params;
         private FullDoc fullDoc;
         private DocIdWindowPager docIdWindowPager;
         private List<? extends BriefDoc> relatedItems;
 
-        private FullBeanViewImpl(SolrQuery solrQuery, QueryResponse solrResponse, Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException {
+        private FullBeanViewImpl(SolrQuery solrQuery, QueryResponse solrResponse, Map<String, String[]> params, Locale locale) throws EuropeanaQueryException, SolrServerException {
             this.solrResponse = solrResponse;
-            this.params = params;
             fullDoc = createFullDoc();
-            relatedItems = addIndexToBriefDocList(solrQuery, getBriefDocListFromQueryResponse(solrResponse), solrResponse);
-            docIdWindowPager = createDocIdPager(params);
+            if (!params.containsKey("bot")) {
+                relatedItems = addIndexToBriefDocList(solrQuery, getBriefDocListFromQueryResponse(solrResponse), solrResponse);
+            }
+            else {
+                // when the agent is a bot do not render related items.
+                relatedItems = new ArrayList<BriefDoc>();
+            }
+            docIdWindowPager = createDocIdPager(params, locale);
         }
 
-        private DocIdWindowPager createDocIdPager(Map<String, String[]> params) throws SolrServerException, EuropeanaQueryException {
+        private DocIdWindowPager createDocIdPager(Map<String, String[]> params, Locale locale) throws SolrServerException, EuropeanaQueryException {
             DocIdWindowPager idWindowPager = null;
-            if (params.containsKey("query")) {
-                final PortalTheme theme = ThemeInterceptor.getTheme();
+            if (params.containsKey("bot")) {
+                log.info("GoogleBot coming by. So not returning a pager.");
+                return idWindowPager;
+            }
+            else if (params.containsKey("query")) {
+                final PortalTheme theme = ThemeFilter.getTheme();
                 if (theme != null) {
                     solrServer.setBaseURL(theme.getSolrSelectUrl());
                 }
-                idWindowPager = docIdWindowPagerFactory.getPager(params, createFromQueryParams(params), ThemeInterceptor.getTheme().getRecordDefinition());
+                idWindowPager = docIdWindowPagerFactory.getPager(params, locale, createFromQueryParams(params, locale), ThemeFilter.getTheme().getRecordDefinition());
             }
             return idWindowPager;
         }
@@ -436,7 +445,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         QueryResponse queryResponse;
         // todo: add view limitation to query
         try {
-            final PortalTheme theme = ThemeInterceptor.getTheme();
+            final PortalTheme theme = ThemeFilter.getTheme();
             if (theme != null) {
                 solrServer.setBaseURL(theme.getSolrSelectUrl());
             }
@@ -478,11 +487,11 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             }
             solrQuery.setFacet(true);
             solrQuery.setFacetMinCount(1);
-            solrQuery.setFacetLimit(100);
+            //solrQuery.setFacetLimit(100); solr default is 100 so doesn't need to be set explicitly
             if (solrQuery.getRows() ==  null) {
                 solrQuery.setRows(12);
             }
-            solrQuery.addFacetField(ThemeInterceptor.getTheme().getRecordDefinition().getFacetFieldStrings());
+            solrQuery.addFacetField(ThemeFilter.getTheme().getRecordDefinition().getFacetFieldStrings());
             // todo now hard-coded but these values must be retrieved from the RecordDefinition later
             if (solrQuery.getFields() == null) {
                 solrQuery.setFields("europeana_uri,dc_title,europeana_object,dc_creator,europeana_year,europeana_provider," +
@@ -491,7 +500,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
 //            solrQuery.setFields(metadataModel.getRecordDefinition().getFieldStrings());
             }
             if (solrQuery.getQueryType().equalsIgnoreCase(QueryType.SIMPLE_QUERY.toString())) {
-                solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery(), ThemeInterceptor.getTheme().getRecordDefinition()).toString());
+                solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery(), ThemeFilter.getTheme().getRecordDefinition()).toString());
             }
         }
         SolrQuery dCopy = addHiddenQueryFilters(solrQuery, params);
@@ -506,14 +515,14 @@ public class BeanQueryModelFactory implements QueryModelFactory {
                 dCopy.addFilterQuery(hqf_field);
             }
         }
-        final PortalTheme theme = ThemeInterceptor.getTheme();
+        final PortalTheme theme = ThemeFilter.getTheme();
         if (theme != null && !theme.getHiddenQueryFilters().isEmpty()) {
              final String[] themeHqf = SolrQueryUtil.getFilterQueriesAsPhrases(theme.getHiddenQueryFilters().split(","));
             for (String qf : themeHqf) {
                 dCopy.addFilterQuery(qf);
             }
         }
-        dCopy.setFilterQueries(SolrQueryUtil.getFilterQueriesAsOrQueries(dCopy, ThemeInterceptor.getTheme().getRecordDefinition().getFacetMap()));
+        dCopy.setFilterQueries(SolrQueryUtil.getFilterQueriesAsOrQueries(dCopy, ThemeFilter.getTheme().getRecordDefinition().getFacetMap()));
         return dCopy;
     }
 
@@ -527,13 +536,14 @@ public class BeanQueryModelFactory implements QueryModelFactory {
          return getSolrResponseFromServer(dCopy, true); // todo should this not be false
     }
 
-    private static ResultPagination createPagination(QueryResponse response, SolrQuery query, String requestQueryString) throws EuropeanaQueryException {
+    private static ResultPagination createPagination(QueryResponse response, SolrQuery query, String requestQueryString, BreadcrumbFactory breadcrumbFactory, Locale locale) throws EuropeanaQueryException {
+        if (response.getResults() == null) throw new EuropeanaQueryException(QueryProblem.MALFORMED_URL.toString());
         int numFound = (int) response.getResults().getNumFound();
         Boolean debug = query.getBool("debugQuery");
         String parsedQuery = "Information not available";
         if (debug != null && debug) {
             parsedQuery = String.valueOf(response.getDebugMap().get("parsedquery_toString"));
         }
-        return new ResultPaginationImpl(query, numFound, requestQueryString, parsedQuery);
+        return new ResultPaginationImpl(query, numFound, requestQueryString, parsedQuery, breadcrumbFactory, locale);
     }
 }

@@ -21,9 +21,13 @@
 
 package eu.europeana.core.querymodel.query;
 
+import eu.delving.core.util.LocalizedFieldNames;
+import eu.delving.core.util.ThemeFilter;
 import eu.delving.metadata.RecordDefinition;
 
-import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -38,9 +42,6 @@ import java.util.TreeSet;
  */
 
 public class QueryAnalyzer {
-
-    public QueryAnalyzer() {
-    }
 
     public QueryType findSolrQueryType(String query, RecordDefinition recordDefinition) throws EuropeanaQueryException {
         String[] terms = query.split("\\s+");
@@ -79,30 +80,104 @@ public class QueryAnalyzer {
         return QueryType.SIMPLE_QUERY;
     }
 
-    public String sanitize(String query) {
-        String[] terms = query.split("\\s+");
-        StringBuilder out = new StringBuilder();
-        for (String term : terms) {
-            if (BOOLEAN_KEYWORDS.contains(term)) {
-                term = term.toUpperCase();
+    private List<String> extractParts(String query) {
+        List<String> answer = new ArrayList<String>();
+        String[] queryParts = query.split("\\s+");
+        for (String part : queryParts) {
+            if (BOOLEAN_KEYWORDS.contains(part)) {
+                part = part.toUpperCase();
             }
-            boolean emptyTerm = true;
-            for (int walk = 0; walk < term.length(); walk++) {
-                char ch = term.charAt(walk);
+            StringBuilder out = new StringBuilder();
+            for (int walk = 0; walk < part.length(); walk++) {
+                char ch = part.charAt(walk);
                 switch (ch) {
                     case '{':
                     case '}':
                         break;
                     default:
                         out.append(ch);
-                        emptyTerm = false;
                 }
             }
-            if (!emptyTerm) {
-                out.append(' ');
+            if (out.length() > 0) {
+                answer.add(out.toString());
+            }
+        }
+        return answer;
+    }
+
+    public String sanitizeAndTranslate(String query, Locale locale) {
+        StringBuilder out = new StringBuilder();
+        for (String part : extractParts(query)) {
+            int colon = part.indexOf(":");
+            if (colon < 0) {
+                out.append(part).append(" ");
+            }
+            else {
+                String facet = part.substring(0, colon);
+                String value = part.substring(colon + 1);
+                LocalizedFieldNames.Lookup lookup = ThemeFilter.getLookup();
+                if (lookup != null) {
+                    facet = lookup.toFieldName(facet, locale);
+                }
+                out.append(facet).append(":").append(value).append(" ");
             }
         }
         return out.toString().trim();
+    }
+
+    /**
+     * Create advanced query from params with facet[1-3], operator[1-3], query[1-3].
+     * <p/>
+     * This query is structured by the advanced search pane in the portal
+     *
+     * @param params request parameters
+     * @param locale where
+     * @return all parameters formatted as a single Lucene Query
+     */
+
+    public String createAdvancedQuery(Map<String, String[]> params, Locale locale) {
+        StringBuilder queryString = new StringBuilder();
+        for (int i = 1; i < 4; i++) {
+            String queryKey = String.format("query%d", i);
+            String facetKey = String.format("facet%d", i);
+            String operatorKey = String.format("operator%d", i);
+            if (params.containsKey(queryKey) && params.containsKey(facetKey)) {
+                String facet = params.get(facetKey)[0];
+                String query = params.get(queryKey)[0];
+                String operator = null;
+                if (i != 1) {
+                    operator = params.get(operatorKey)[0];
+                }
+                if (!query.isEmpty()) {
+                    if (operator != null) {
+                        queryString.append(" ").append(operator).append(" ");
+                    }
+                    if (!facet.isEmpty()) {
+                        queryString.append(facet);
+                    }
+                    else {
+                        queryString.append("text");
+                    }
+                    queryString.append(":").append(query);
+                }
+            }
+        }
+        return sanitizeAndTranslate(queryString.toString(), locale);
+    }
+
+    public String createRefineSearchFilterQuery(Map<String, String[]> params, Locale locale) throws EuropeanaQueryException {
+        String refineQuery = params.get("rq")[0];
+        // check length
+        String newQuery = "";
+        if (refineQuery.trim().length() > 0) {
+            if (refineQuery.contains(":")) {
+                newQuery = refineQuery;
+            }
+            else {
+                newQuery = String.format("text:\"%s\"", refineQuery);
+            }
+        }
+        return sanitizeAndTranslate(newQuery, locale);
     }
 
     private static final Set<String> BOOLEAN_KEYWORDS = new TreeSet<String>();
@@ -119,55 +194,4 @@ public class QueryAnalyzer {
     }
 
 
-    /**
-     * Create advanced query from params with facet[1-3], operator[1-3], query[1-3].
-     * <p/>
-     * This query is structured by the advanced search pane in the portal
-     *
-     * @param params request parameters
-     * @return all parameters formatted as a single Lucene Query
-     */
-
-    public String createAdvancedQuery(Map<String, String[]> params) {
-        StringBuilder queryString = new StringBuilder();
-        for (int i = 1; i < 4; i++) {
-            if (params.containsKey(MessageFormat.format("query{0}", i)) && params.containsKey(MessageFormat.format("facet{0}", i))) {
-                String facetDefault = "text";
-                String facet = params.get(MessageFormat.format("facet{0}", i))[0];
-                String query = params.get(MessageFormat.format("query{0}", i))[0];
-                String operator = null;
-                if (i != 1) {
-                    operator = params.get(MessageFormat.format("operator{0}", i))[0];
-                }
-                if (!query.isEmpty()) {
-                    if (operator != null) {
-                        queryString.append(" ").append(operator).append(" ");
-                    }
-                    if (!facet.isEmpty()) {
-                        queryString.append(facet);
-                    }
-                    else {
-                        queryString.append(facetDefault);
-                    }
-                    queryString.append(":").append(query);
-                }
-            }
-        }
-        return sanitize(queryString.toString());
-    }
-
-    public String createRefineSearchFilterQuery(Map<String, String[]> params) throws EuropeanaQueryException {
-        String refineQuery = params.get("rq")[0];
-        // check length
-        String newQuery = "";
-        if (refineQuery.trim().length() > 0) {
-            if (refineQuery.contains(":")) {
-                newQuery = MessageFormat.format("{0}", refineQuery);
-            }
-            else {
-                newQuery = MessageFormat.format("text:\"{0}\"", sanitize(refineQuery));
-            }
-        }
-        return sanitize(newQuery);
-    }
 }

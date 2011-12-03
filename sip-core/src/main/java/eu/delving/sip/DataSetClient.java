@@ -38,7 +38,7 @@ import java.util.zip.ZipInputStream;
 public class DataSetClient {
     private static final int LIST_FETCH_DELAY_MILLIS = 5000;
     private Logger log = Logger.getLogger(getClass());
-    private Executor executor = Executors.newSingleThreadExecutor();
+    private Executor executor = Executors.newFixedThreadPool(2);
     private boolean fetching;
     private Timer periodicListFetchTimer;
     private Context context;

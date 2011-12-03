@@ -28,7 +28,7 @@ import _root_.org.scalatest.junit.JUnitRunner
 import scala.collection.JavaConversions._
 import collection.immutable.List
 import collection.mutable.{HashMap, ListBuffer}
-import java.util.{Map => JMap, HashMap => JHashMap}
+import java.util.{Locale, Map => JMap, HashMap => JHashMap}
 
 /**
  *
@@ -82,7 +82,7 @@ class QueryAnalyzerSpec extends Spec with ShouldMatchers with DelvingTestUtil {
     }
 
     describe("(when sanitizing a query)") {
-      def sanitize(query: String) = qa.sanitize(query)
+      def sanitize(query: String) = qa.sanitizeAndTranslate(query, Locale.CANADA)
 
 
       it("should remove left and right braches, e.g. { } ") {
@@ -108,7 +108,7 @@ class QueryAnalyzerSpec extends Spec with ShouldMatchers with DelvingTestUtil {
     }
 
     describe("(when creating an AdvancedQuery from http request parameters)") {
-      def advancedQuery(params: List[(String, String)]) = qa.createAdvancedQuery(params)
+      def advancedQuery(params: List[(String, String)]) = qa.createAdvancedQuery(params, Locale.CANADA)
 
 
       it("should only use non-empty facets and queries") {
@@ -127,7 +127,7 @@ class QueryAnalyzerSpec extends Spec with ShouldMatchers with DelvingTestUtil {
     }
 
     describe("(when creating a RefineQuery from http request parameters)") {
-      def refineSearch(params: List[(String, String)]) = qa.createRefineSearchFilterQuery(params)
+      def refineSearch(params: List[(String, String)]) = qa.createRefineSearchFilterQuery(params, Locale.CANADA)
 
       it("should return an empty string when the request parameter is empty") {
         refineSearch(List()).isEmpty should be(true)

@@ -1,7 +1,7 @@
 /*
- * Copyright 2007 EDL FOUNDATION
+ * Copyright 2011 DELVING BV
  *
- * Licensed under the EUPL, Version 1.1 or - as soon they
+ * Licensed under the EUPL, Version 1.1 or as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * you may not use this work except in compliance with the
@@ -39,8 +39,9 @@ public class ServicesStarter {
 
     public static void main(String... args) throws Exception {
         String root = StarterUtil.getEuropeanaPath();
-        System.setProperty("solr.solr.home", root + "/core/src/test/solr/single-core");
-//        System.setProperty("solr.solr.home", root + "/core/src/test/solr/multi-core");
+        System.setProperty("solr.solr.home", root + "/core/src/test/solr/solr-3.4.0");
+//        System.setProperty("solr.solr.home", root + "/core/src/test/solr/solr-1.4.1/single-core");
+//        System.setProperty("solr.solr.home", root + "/core/src/test/solr/solr-1.4.1/multi-core");
         if (System.getProperty("solr.data.dir") == null) {
             final LaunchProperties launchProperties = new LaunchProperties(Arrays.asList("services.harvindexing.prefix"));
             System.setProperty("solr.data.dir", root + "/core/target/solrdata/" + launchProperties.getProperty("services.harvindexing.prefix"));
@@ -51,7 +52,7 @@ public class ServicesStarter {
         }
         Server server = new Server(port);
         server.addHandler(new WebAppContext(root + "/services/src/main/webapp", "/services"));
-        server.addHandler(new WebAppContext(root + "/core/src/test/solr/solr-1.4.1.war", "/solr"));
+        server.addHandler(new WebAppContext(root + "/core/src/test/solr/solr-3.4.0.war", "/solr"));
         server.start();
     }
 }

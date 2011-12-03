@@ -26,7 +26,7 @@ import eu.delving.core.binding.QueryParamList;
 import eu.delving.core.util.EmailTarget;
 import eu.delving.core.util.PortalTheme;
 import eu.delving.core.util.ThemeHandler;
-import eu.delving.core.util.ThemeInterceptor;
+import eu.delving.core.util.ThemeFilter;
 import eu.europeana.core.querymodel.query.EuropeanaQueryException;
 import eu.europeana.core.querymodel.query.QueryProblem;
 import org.apache.log4j.Logger;
@@ -78,7 +78,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
 
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object object, Exception exception) {
-        PortalTheme theme = ThemeInterceptor.getTheme();
+        PortalTheme theme = ThemeFilter.getTheme();
         if (theme == null) {
             theme = themeHandler.getDefaultTheme();
         }
@@ -95,7 +95,6 @@ public class ExceptionResolver implements HandlerExceptionResolver {
             Boolean debugMode = Boolean.valueOf(debug);
             String stackTrace = getStackTrace(exception);
             if (queryProblem == QueryProblem.NONE || queryProblem == QueryProblem.SOLR_UNREACHABLE) {
-
                 if (!debugMode) { // don't send email in debugMode
                     emailSender.
                             create("exception").
@@ -114,13 +113,14 @@ public class ExceptionResolver implements HandlerExceptionResolver {
                             set("referer", request.getHeader("referer")).
                             send();
                 }
-                else {
-                    log.error(stackTrace + queryProblem);
-                }
+                log.error(stackTrace + queryProblem);
+            }
+            else {
+                log.warn("Oops", exception);
             }
             String errorMessage = MessageFormat.format("errorMessage={0}", queryProblem.toString());
             clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.EXCEPTION_CAUGHT, errorMessage);
-            ModelAndView mav = ThemeInterceptor.createThemedModelAndViewPage("exception");
+            ModelAndView mav = ThemeFilter.createThemedModelAndViewPage("exception");
             mav.addObject("debug", debugMode);
             mav.addObject("interfaceLanguage", ControllerUtil.getLocale(request));
             mav.addObject("cacheUrl", theme.getCacheUrl());
@@ -143,7 +143,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
 
     private ModelAndView ajaxFailure(HttpServletRequest request, HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        ModelAndView page = ThemeInterceptor.createThemedModelAndViewPage("xml/ajax");
+        ModelAndView page = ThemeFilter.createThemedModelAndViewPage("xml/ajax");
         page.addObject("success", false);
         page.addObject("exception", getStackTrace(e));
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.AJAX_ERROR);

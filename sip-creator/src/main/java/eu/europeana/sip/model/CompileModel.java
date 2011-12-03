@@ -26,6 +26,7 @@ import eu.delving.metadata.MappingModel;
 import eu.delving.metadata.MetadataModel;
 import eu.delving.metadata.RecordMapping;
 import eu.delving.metadata.RecordValidator;
+import eu.europeana.sip.core.DiscardRecordException;
 import eu.europeana.sip.core.GroovyCodeResource;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
@@ -267,33 +268,50 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
             }
             MappingRunner mappingRunner = new MappingRunner(groovyCodeResource, mappingCode);
             try {
-                String output = mappingRunner.runMapping(metadataRecord);
-                if (recordValidator != null) {
-                    List<String> problems = new ArrayList<String>();
-                    String validated = recordValidator.validateRecord(output, problems);
-                    if (problems.isEmpty()) {
-                        compilationComplete(validated);
+                try {
+                    String output = mappingRunner.runMapping(metadataRecord);
+                    if (recordValidator != null) {
+                        List<String> problems = new ArrayList<String>();
+                        String validated = recordValidator.validateRecord(output, problems);
+                        if (problems.isEmpty()) {
+                            compilationComplete(validated);
+                        }
+                        else {
+                            throw new RecordValidationException(metadataRecord, problems);
+                        }
                     }
                     else {
-                        throw new RecordValidationException(metadataRecord, problems);
-                    }
-                }
-                else {
-                    compilationComplete(output);
-                    if (editedCode == null) {
-                        notifyStateChange(State.PRISTINE);
-                    }
-                    else {
-                        FieldMapping fieldMapping = recordMapping.getFieldMapping(selectedPath);
-                        if (fieldMapping != null) {
-                            fieldMapping.setCode(editedCode);
-                            notifyStateChange(State.COMMITTED);
-                            editedCode = null;
+                        compilationComplete(output);
+                        if (editedCode == null) {
                             notifyStateChange(State.PRISTINE);
                         }
                         else {
-                            notifyStateChange(State.EDITED);
+                            FieldMapping fieldMapping = recordMapping.getFieldMapping(selectedPath);
+                            if (fieldMapping != null) {
+                                fieldMapping.setCode(editedCode);
+                                notifyStateChange(State.COMMITTED);
+                                editedCode = null;
+                                notifyStateChange(State.PRISTINE);
+                            }
+                            else {
+                                notifyStateChange(State.EDITED);
+                            }
                         }
+                    }
+                }
+                catch (DiscardRecordException e) {
+                    compilationComplete(e.getMessage());
+                    FieldMapping fieldMapping = recordMapping.getFieldMapping(selectedPath);
+                    if (fieldMapping != null) {
+                        if (editedCode != null) {
+                            fieldMapping.setCode(editedCode);
+                            notifyStateChange(State.COMMITTED);
+                            editedCode = null;
+                        }
+                        notifyStateChange(State.PRISTINE);
+                    }
+                    else {
+                        notifyStateChange(State.EDITED);
                     }
                 }
             }
@@ -333,7 +351,7 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
                 int docLength = document.getLength();
                 try {
                     document.remove(0, docLength);
-                    HTMLEditorKit.ParserCallback callback = htmlDocument.getReader(0); 
+                    HTMLEditorKit.ParserCallback callback = htmlDocument.getReader(0);
                     htmlDocument.getParser().parse(new StringReader(content), callback, true);
                     callback.flush();
                 }

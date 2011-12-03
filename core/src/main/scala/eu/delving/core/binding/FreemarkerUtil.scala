@@ -47,6 +47,7 @@ class FreemarkerUtil {
 
   def getStaticPage(pagePath : String, locale : String) =  StaticPage(staticPageRepo.getPage(pagePath), locale)
 
+  def getStaticMenu(menuName : String, locale : String) =  staticPageRepo.getMenu(menuName, new Locale(locale))
   @Autowired @BeanProperty var staticPageRepo:  StaticRepo = _
 }
 
@@ -62,6 +63,7 @@ case class StaticPage(page : Page, language : String = "en") {
     else ""
   }
   def getTitle = page.getTitle(locale)
+  def getMenuName = page.getMenuName()
 }
 
 case class QueryParamList(params: Map[String, Array[String]]) {

@@ -58,6 +58,11 @@ public enum MetadataNamespace {
             "http://www.icn.nl/",
             "http://www.icn.nl/schemas/ICN-V3.2.xsd"
     ),
+    ABC(
+            "abc",
+            "http://www.ab-c.nl/",
+            "http://www.ab-c.nl/schemas/ABC-V3.2.xsd"
+    ),
     ABM(
             "abm",
             "http://abmu.org/abm",

@@ -1,3 +1,24 @@
+/*
+ * Copyright 2011 DELVING BV
+ *
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
+ */
+
 package eu.delving.core.binding
 
 import org.scalatest.junit.JUnitRunner
@@ -92,7 +113,7 @@ class SolrBindingServiceSpec extends Spec with ShouldMatchers with BeforeAndAfte
         val fullDoc = fullDocList.head
         val formattedField = fullDoc.getConcatenatedArray("dc_title", Array("dc_title", "dc_date"))
         formattedField.getKey should equal ("dc_title")
-        formattedField.getValuesFormatted(";;") should equal ("dc_title=1;;dc_title=12;;dc_date=1;;dc_date=12")
+        formattedField.getValuesFormatted(";;") should equal ("dc_date=1;;dc_date=12;;dc_title=1;;dc_title=12")
         formattedField.getValues.size should equal (4)
         formattedField.isNotEmpty should be (true)
         val emptyField = fullDoc.getConcatenatedArray("dc_date", Array("dcterms_created", "dcterms_issued"))
@@ -101,7 +122,6 @@ class SolrBindingServiceSpec extends Spec with ShouldMatchers with BeforeAndAfte
         emptyField.isNotEmpty should be (false)
 
       }
-
     }
 
     describe("(when giving parsing a Record from a OAI-PMH GetRecord response)") {

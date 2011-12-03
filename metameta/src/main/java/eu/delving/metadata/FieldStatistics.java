@@ -136,6 +136,10 @@ public class FieldStatistics implements Comparable<FieldStatistics>, Serializabl
 
         public void finish() {
             if (uniqueness != null) {
+                Set<String> repeated = uniqueness.getRepeated();
+                if (repeated.isEmpty()) {
+                    uniqueValues = total > 1;
+                }
                 uniqueness = null;
                 if (total > 1) {
                     uniqueValues = true;

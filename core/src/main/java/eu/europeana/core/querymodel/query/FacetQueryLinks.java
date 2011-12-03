@@ -15,7 +15,7 @@ import java.util.List;
  */
 
 public class FacetQueryLinks {
-    private static final String FACET_PROMPT = "&amp;qf=";
+    private static final String FACET_PROMPT = "&qf=";
     private String type;
     private boolean facetSelected = false;
     private List<FacetCountLink> links = new ArrayList<FacetCountLink>();

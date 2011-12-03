@@ -31,7 +31,7 @@
     <artifactId>services</artifactId>
     <packaging>war</packaging>
     <name>Services</name>
-    <version>0.2.5</version>
+    <version>0.2.9</version>
     <description>
         Services Web-Application for all Delving core functionality
     </description>
@@ -69,7 +69,7 @@
     <parent>
         <groupId>eu.delving</groupId>
         <artifactId>parent</artifactId>
-        <version>0.2.5</version>
+        <version>0.2.9</version>
     </parent>
 
     <pluginRepositories>
@@ -85,6 +85,14 @@
             </releases>
         </pluginRepository>
     </pluginRepositories>
+
+    <repositories>
+        <repository>
+            <id>The Buzz Media Maven Repository</id>
+            <url>http://maven.thebuzzmedia.com</url>
+        </repository>
+    </repositories>
+
 
     <build>
         <defaultGoal>package</defaultGoal>
@@ -137,12 +145,12 @@
         <dependency>
             <groupId>eu.delving</groupId>
             <artifactId>core</artifactId>
-            <version>0.2.5-SNAPSHOT</version>
+            <version>0.2.9-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eu.delving</groupId>
             <artifactId>sip-core</artifactId>
-            <version>0.2.4-SNAPSHOT</version>
+            <version>0.2.9-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
@@ -200,14 +208,14 @@
             <artifactId>jsp-2.1</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <scope>test</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.httpcomponents</groupId>-->
+            <!--<artifactId>httpclient</artifactId>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.scalatest</groupId>
-            <artifactId>scalatest</artifactId>
+            <artifactId>scalatest_2.9.0</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -229,8 +237,8 @@
         </dependency>
         <dependency>
             <groupId>net.liftweb</groupId>
-            <artifactId>lift-json_2.8.1</artifactId>
-            <version>2.2</version>
+            <artifactId>lift-json_2.9.0</artifactId>
+            <version>2.4-M1</version>
         </dependency>
         <dependency>
             <groupId>com.google.collections</groupId>
@@ -240,6 +248,20 @@
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.8.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <!-- todo update to 3.2 -->
+            <groupId>com.thebuzzmedia</groupId>
+            <version>3.2</version>
+            <artifactId>imgscalr-lib</artifactId>
+            <type>jar</type>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

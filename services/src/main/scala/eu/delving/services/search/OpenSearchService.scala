@@ -4,9 +4,9 @@ import javax.servlet.http.HttpServletRequest
 import eu.europeana.core.BeanQueryModelFactory
 import xml.Elem
 import org.apache.solr.client.solrj.SolrQuery
-import java.util.Properties
 import scala.collection.JavaConversions._
 import eu.europeana.core.querymodel.query. {QueryType, BriefDoc, BriefBeanView}
+import java.util.{Locale, Properties}
 
 
 class OpenSearchService(request: HttpServletRequest, beanQueryModelFactory: BeanQueryModelFactory, launchProperties: Properties) {
@@ -20,7 +20,7 @@ class OpenSearchService(request: HttpServletRequest, beanQueryModelFactory: Bean
     val query : SolrQuery = new SolrQuery(request.getParameter("query"))
     query.setQueryType(QueryType.ADVANCED_QUERY.toString)
     if (request.getParameter("startPage") != null) { query.setStart(request.getParameter("startPage").toInt) }
-    beanQueryModelFactory.getBriefResultView(query, query.getQuery)
+    beanQueryModelFactory.getBriefResultView(query, query.getQuery, Locale.ENGLISH) // todo: get the locale from somewhere!!!!!
   }
 
   def parseRequest() : String = getResultResponse(true).toString

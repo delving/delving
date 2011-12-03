@@ -32,7 +32,7 @@
     <artifactId>core</artifactId>
     <packaging>jar</packaging>
     <name>Delving Shared Core Classes</name>
-    <version>0.2.5-SNAPSHOT</version>
+    <version>0.2.9-SNAPSHOT</version>
     <description>
         This module contains the lion's share of the Delving Framework code
     </description>
@@ -70,7 +70,7 @@
     <parent>
         <groupId>eu.delving</groupId>
         <artifactId>parent</artifactId>
-        <version>0.2.5</version>
+        <version>0.2.9</version>
     </parent>
 
     <build>
@@ -121,7 +121,7 @@
         <dependency>
             <groupId>eu.delving</groupId>
             <artifactId>metameta</artifactId>
-            <version>0.2.4-SNAPSHOT</version>
+            <version>0.2.9-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -233,7 +233,7 @@
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>
-            <artifactId>scalatest</artifactId>
+            <artifactId>scalatest_2.9.0</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

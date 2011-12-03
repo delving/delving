@@ -79,7 +79,9 @@
 
     <bean id="harvindexer" class="eu.delving.services.core.Harvindexer"/>
 
-    <bean id="indexJobRunner" class="eu.delving.services.core.IndexJobRunner"/>
+    <bean id="indexJobRunner" class="eu.delving.services.core.IndexJobRunner">
+        <property name="maxSimultaneous" value="3"/>
+    </bean>
 
     <bean id="indexTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
         <property name="jobDetail">

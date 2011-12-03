@@ -35,6 +35,8 @@ import eu.delving.services.exceptions.MappingNotFoundException;
 import eu.delving.services.exceptions.MetaRepoSystemException;
 import eu.delving.services.exceptions.RecordParseException;
 import eu.delving.sip.DataSetState;
+import eu.europeana.sip.core.MappingException;
+import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
 import java.io.ByteArrayInputStream;
@@ -54,6 +56,7 @@ import static eu.delving.core.util.MongoObject.mob;
  */
 
 class DataSetImpl implements MetaRepo.DataSet {
+    private static Logger LOG = Logger.getLogger(DataSetImpl.class);
     private ImplFactory implFactory;
     private DBObject object;
     private DBCollection recColl;
@@ -110,6 +113,7 @@ class DataSetImpl implements MetaRepo.DataSet {
         implFactory.removeFirstHarvestSteps(getSpec());
         object.put(SOURCE_HASH, "");
         save();
+        records().drop();
         try {
             MetaRepo.Details details = getDetails();
             Facts facts = Facts.read(new ByteArrayInputStream(details.getFacts()));
@@ -123,33 +127,41 @@ class DataSetImpl implements MetaRepo.DataSet {
             MongoObjectParser.Record record;
             Date modified = new Date();
             object.put(NAMESPACES, parser.getNamespaces());
+            int recordCount = 0;
             while ((record = parser.nextRecord()) != null) {
                 record.getMob().put(MetaRepo.Record.MODIFIED, modified);
                 record.getMob().put(MetaRepo.Record.DELETED, false);
-                records().update( // just match unique values for now
-                        mob(
-                                MetaRepo.Record.UNIQUE,
-                                record.getMob().get(MetaRepo.Record.UNIQUE)
-                        ),
-                        record.getMob(),
-                        true,
-                        false
-                );
+                records().insert(record.getMob());
+//                records().update( // just match unique values for now
+//                        mob(
+//                                MetaRepo.Record.UNIQUE,
+//                                record.getMob().get(MetaRepo.Record.UNIQUE)
+//                        ),
+//                        record.getMob(),
+//                        true,
+//                        false
+//                );
+                recordCount++;
+                if (recordCount % 10000 == 0) {
+                    LOG.info(String.format("%d Records read, current count %d", recordCount, records().count()));
+                }
             }
+            LOG.info(String.format("Finally, %d Records read, current count %d", recordCount, records().count()));
             parser.close();
-            // mark records unmodified by above loop as deleted
-            records().update(
-                    mob(
-                            MetaRepo.Record.MODIFIED,
-                            mob("$lt", modified)
-                    ),
-                    mob(
-                            "$set",
-                            mob(MetaRepo.Record.DELETED, true)
-                    ),
-                    false,
-                    true
-            );
+//            // mark records unmodified by above loop as deleted
+//            records().update(
+//                    mob(
+//                            MetaRepo.Record.MODIFIED,
+//                            mob("$lt", modified)
+//                    ),
+//                    mob(
+//                            "$set",
+//                            mob(MetaRepo.Record.DELETED, true)
+//                    ),
+//                    false,
+//                    true
+//            );
+//            LOG.info(String.format("After marking orphans, %d Records read, current count %d", recordCount, records().count()));
         }
         catch (Exception e) {
             throw new RecordParseException("Unable to parse records", e);
@@ -274,11 +286,11 @@ class DataSetImpl implements MetaRepo.DataSet {
 
     @Override
     public int getRecordCount() {
-        return records().find().count();
+        return (int)records().count();
     }
 
     @Override
-    public MetaRepo.Record getRecord(ObjectId id, String prefix, String accessKey) throws MappingNotFoundException, AccessKeyException { // if prefix is passed in, mapping can be done
+    public MetaRepo.Record getRecord(ObjectId id, String prefix, String accessKey) throws MappingNotFoundException, AccessKeyException, MappingException { // if prefix is passed in, mapping can be done
         DBObject rawRecord = records().findOne(mob(MetaRepo.MONGO_ID, id));
         if (rawRecord != null) {
             MetaRepo.Mapping mapping = getMapping(prefix, accessKey);
@@ -304,7 +316,7 @@ class DataSetImpl implements MetaRepo.DataSet {
     }
 
     @Override
-    public RecordFetch getRecords(String prefix, int count, Date from, ObjectId afterId, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException {
+    public RecordFetch getRecords(String prefix, int count, Date from, ObjectId afterId, Date until, String accessKey) throws MappingNotFoundException, AccessKeyException, MappingException {
         MetaRepo.Mapping mapping = getMapping(prefix, accessKey);
         final List<RecordImpl> list = new ArrayList<RecordImpl>();
         DBCursor cursor = createCursor(from, afterId, until).limit(count).sort(mob(MetaRepo.MONGO_ID, 1));

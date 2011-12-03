@@ -34,6 +34,7 @@ import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -76,7 +77,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
 
     @Override
     @SuppressWarnings({"AccessingNonPublicFieldOfAnotherObject"})
-    public void initialize(Map<String, String[]> httpParameters, SolrQuery originalBriefSolrQuery, QueryModelFactory queryModelFactory, RecordDefinition metadataModel) throws SolrServerException, EuropeanaQueryException {
+    public void initialize(Map<String, String[]> httpParameters, BreadcrumbFactory breadcrumbFactory, Locale locale, SolrQuery originalBriefSolrQuery, QueryModelFactory queryModelFactory, RecordDefinition metadataModel) throws SolrServerException, EuropeanaQueryException {
         this.query = originalBriefSolrQuery.getQuery();
         int fullDocUriInt = getFullDocInt(httpParameters, originalBriefSolrQuery);
         this.fullDocUriInt = fullDocUriInt;
@@ -90,7 +91,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         }
         List<? extends DocId> list = SolrBindingService.getDocIds(queryResponse);
         final SolrDocumentList response = queryResponse.getResults();
-        this.breadcrumbs = Breadcrumb.createList(originalBriefSolrQuery); // todo comment out
+        this.breadcrumbs = breadcrumbFactory.createList(originalBriefSolrQuery, locale); // todo comment out
         int offset = (int) response.getStart();
         int numFound = (int) response.getNumFound();
         this.numFound = numFound;
@@ -176,7 +177,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
             final String[] filterQueries = httpParameters.get("qf");
             if (filterQueries != null) {
                 for (String filterQuery : filterQueries) {
-                    out.append("&amp;qf=").append(filterQuery);
+                    out.append("&qf=").append(filterQuery);
                 }
             }
         }
@@ -188,28 +189,28 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
             }
             out.append("bq=").append(encode(query));
         }
-        out.append("&amp;start=").append(startPage);
+        out.append("&start=").append(startPage);
         String view = fetchParameter(httpParameters, "view", "");
         if (view.isEmpty()) {
             view = "table";
         }
-        out.append("&amp;view=").append(view);
+        out.append("&view=").append(view);
         if (!tab.isEmpty()) {
-            out.append("&amp;tab=").append(tab);
+            out.append("&tab=").append(tab);
         }
         if (!format.isEmpty()) {
-            out.append("&amp;format=").append(format);
+            out.append("&format=").append(format);
         }
         if (!siwa.isEmpty()) {
-            out.append("&amp;siwa=").append(siwa);
+            out.append("&siwa=").append(siwa);
         }
         if (!sortBy.isEmpty()) {
-            out.append("&amp;sortBy=").append(sortBy);
+            out.append("&sortBy=").append(sortBy);
         }
         if (!theme.isEmpty()) {
-            out.append("&amp;theme=").append(theme);
+            out.append("&theme=").append(theme);
         }
-        out.append("&amp;rtr=true");
+        out.append("&rtr=true");
         returnToResults = out.toString();
     }
 
@@ -220,26 +221,26 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         final String[] filterQueries = httpParameters.get("qf");
         if (filterQueries != null) {
             for (String filterQuery : filterQueries) {
-                out.append("&amp;qf=").append(filterQuery);
+                out.append("&qf=").append(filterQuery);
             }
         }
-        out.append("&amp;start=").append(nextInt);
-        out.append("&amp;startPage=").append(startPage);
-        out.append("&amp;pageId=").append(pageId);
-        out.append("&amp;sortBy=").append(sortBy);
+        out.append("&start=").append(nextInt);
+        out.append("&startPage=").append(startPage);
+        out.append("&pageId=").append(pageId);
+        out.append("&sortBy=").append(sortBy);
         String view = fetchParameter(httpParameters, "view", "");
         if (view.isEmpty()) {
             view = "table";
         }
-        out.append("&amp;view=").append(view);
+        out.append("&view=").append(view);
         if (!tab.isEmpty()) {
-            out.append("&amp;tab=").append(tab);
+            out.append("&tab=").append(tab);
         }
         if (!format.isEmpty()) {
-            out.append("&amp;format=").append(format);
+            out.append("&format=").append(format);
         }
         if (!siwa.isEmpty()) {
-            out.append("&amp;siwa=").append(siwa);
+            out.append("&siwa=").append(siwa);
         }
         nextFullDocUrl = out.toString();
     }
@@ -251,20 +252,20 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         final String[] filterQueries = httpParameters.get("qf");
         if (filterQueries != null) {
             for (String filterQuery : filterQueries) {
-                out.append("&amp;qf=").append(filterQuery);
+                out.append("&qf=").append(filterQuery);
             }
         }
-        out.append("&amp;start=").append(previousInt);
-        out.append("&amp;startPage=").append(startPage);
-        out.append("&amp;pageId=").append(pageId);
-        out.append("&amp;sortBy=").append(sortBy);
+        out.append("&start=").append(previousInt);
+        out.append("&startPage=").append(startPage);
+        out.append("&pageId=").append(pageId);
+        out.append("&sortBy=").append(sortBy);
         String view = fetchParameter(httpParameters, "view", "");
         if (view.isEmpty()) {
             view = "table";
         }
-        out.append("&amp;view=").append(view);
+        out.append("&view=").append(view);
         if (tab.isEmpty()) {
-            out.append("&amp;tab=").append(tab);
+            out.append("&tab=").append(tab);
         }
         previousFullDocUrl = out.toString();
     }
@@ -275,7 +276,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         final String[] facetQueries = SolrQueryUtil.getFilterQueriesWithoutPhrases(solrQuery);
         if (facetQueries != null) {
             for (String facetTerm : facetQueries) {
-                out.append("&amp;qf=").append(facetTerm);
+                out.append("&qf=").append(facetTerm);
             }
         }
         out.append("&startPage=").append(startPage);
@@ -299,9 +300,6 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public DocIdWindowPagerImpl() {
     }
 
     @Override

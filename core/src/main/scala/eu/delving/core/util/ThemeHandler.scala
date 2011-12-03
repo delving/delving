@@ -24,11 +24,11 @@ package eu.delving.core.util
 import org.apache.log4j.Logger
 import java.lang.String
 import xml.{Node, NodeSeq, Elem, XML}
-import javax.servlet.http.HttpServletRequest
 import java.util.Properties
 import reflect.BeanProperty
 import org.springframework.beans.factory.annotation.Autowired
 import eu.delving.metadata.{RecordDefinition, MetadataModel}
+import javax.servlet.ServletRequest
 
 /**
  *
@@ -41,7 +41,9 @@ class ThemeHandler {
 
   private lazy val themeList: Seq[PortalTheme] = loadThemes()
 
-  def getThemeNames() : java.util.Set[String] = {
+  private val defaultQueryKeys = List("dc.title","dc.description","dc.creator","dc.subject", "dc.date") // todo add more default cases
+
+  def getThemeNames: java.util.Set[String] = {
     val set :java.util.Set[String] = new java.util.TreeSet[String]
     themeList.foreach(theme => set.add(theme.name))
     set
@@ -67,9 +69,9 @@ class ThemeHandler {
     else getDefaultTheme
   }
 
-  def getByBaseUrl(request : HttpServletRequest) : PortalTheme = getByBaseUrl(request.getServerName)
+  def getByBaseUrl(request : ServletRequest) : PortalTheme = getByBaseUrl(request.getServerName)
 
-  def getByRequest(request : HttpServletRequest) : PortalTheme = {
+  def getByRequest(request : ServletRequest) : PortalTheme = {
     if (hasSingleTheme) getDefaultTheme
     else if (debug && request.getParameterMap.containsKey("theme")) getByThemeName(request.getParameter("theme"))
     else getByBaseUrl(request)
@@ -98,6 +100,7 @@ class ThemeHandler {
       val templateDir = node \\ "templateDir"
       def getNodeText(label : String) : String = (node \\ label).text
       def getBooleanNodeText(label : String) : Boolean = try {(node \\ label).text.toBoolean} catch {case ex : Exception => false}
+      def getNodeTextAsArray(label : String)  : Array[String] = (node \\ label).text.trim().split(" *, *")
 
       def createEmailTarget(node: Node): EmailTarget = {
         EmailTarget(
@@ -114,7 +117,7 @@ class ThemeHandler {
         name = getNodeText("name"),
         templateDir = getNodeText("templateDir"),
         isDefault = isDefault,
-        localiseQueryString = getBooleanNodeText("localiseQueryString"),
+        localiseQueryKeys = defaultQueryKeys.toArray ++ getNodeTextAsArray("localiseQueryKeys"),
         hqf = getNodeText("hiddenQueryFilter"),
         baseUrl = getNodeText("portalBaseUrl"),
         solrSelectUrl = getNodeText("solrSelectUrl"),
@@ -152,7 +155,7 @@ case class PortalTheme (
   name : String,
   templateDir : String,
   isDefault : Boolean = false,
-  localiseQueryString : Boolean = false,
+  localiseQueryKeys : Array[String] = Array(),
   hqf : String = "",
   baseUrl : String = "",
   displayName: String = "default",
@@ -177,7 +180,8 @@ case class PortalTheme (
   def getAddThisCode = addThisCode
   def getDefaultLanguage = defaultLanguage
   def getColorScheme = colorScheme
-  def withLocalisedQueryString = localiseQueryString
+  def withLocalisedQueryString = localiseQueryKeys.isEmpty
+  def getLocaliseQueryKeys = localiseQueryKeys
   def getEmailTarget = emailTarget
   def getHomePage = homePage
   def getRecordDefinition = recordDefinition

@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class IndexJobRunner {
     private Logger log = Logger.getLogger(getClass());
+    private int maxSimultaneous = 3;
 
     @Autowired
     private Harvindexer harvindexer;
@@ -39,8 +40,12 @@ public class IndexJobRunner {
     @Autowired
     private MetaRepo metaRepo;
 
+    public void setMaxSimultaneous(int maxSimultaneous) {
+        this.maxSimultaneous = maxSimultaneous;
+    }
+
     public void runParallelHarvindexing() {
-        MetaRepo.DataSet dataSet = metaRepo.getFirstDataSet(DataSetState.QUEUED);
+        MetaRepo.DataSet dataSet = metaRepo.getDataSetForIndexing(maxSimultaneous);
         if (dataSet == null) {
             log.debug("no collection found for indexing");
         }

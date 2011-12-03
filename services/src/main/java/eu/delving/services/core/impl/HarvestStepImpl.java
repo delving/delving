@@ -25,6 +25,7 @@ import com.mongodb.DBObject;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.AccessKeyException;
 import eu.delving.services.exceptions.MappingNotFoundException;
+import eu.europeana.sip.core.MappingException;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
@@ -110,6 +111,9 @@ class HarvestStepImpl implements MetaRepo.HarvestStep {
                     object.put(ERROR_MESSAGE, e.toString());
                 }
                 catch (MappingNotFoundException e) {
+                    object.put(ERROR_MESSAGE, e.toString());
+                }
+                catch (MappingException e) {
                     object.put(ERROR_MESSAGE, e.toString());
                 }
             }

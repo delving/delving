@@ -21,9 +21,11 @@
 package eu.delving.core.util;
 
 import eu.delving.core.storage.StaticRepo;
+import eu.delving.core.storage.UserRepo;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
@@ -32,16 +34,8 @@ import org.springframework.core.io.ResourceLoader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 /**
  * This class puts everything from a directory into the StaticRepo to kickstart it, of course only if said has
@@ -50,30 +44,35 @@ import java.util.jar.JarFile;
  * @author Gerald de Jong <gerald@delving.eu>
  */
 
-public class StaticKickstarter implements ResourceLoaderAware {
+public class StaticKickstarter implements ResourceLoaderAware, InitializingBean {
     private static final String TITLE_PREFIX = "title:";
     private static final String MENU_NAME_PREFIX = "menuName:";
     private static final String MENU_PRIORITY_PREFIX = "menuPriority:";
     private Logger log = Logger.getLogger(getClass());
-    private StaticRepo staticRepo;
     private boolean kicked;
     private ResourceLoader resourceLoader;
 
     @Autowired
     private ThemeHandler themeHandler;
 
-    public void setStaticRepo(StaticRepo staticRepo) {
-        this.staticRepo = staticRepo;
+    @Autowired
+    private ThemeFilter themeFilter;
+
+    @Autowired
+    private StaticRepo staticRepo;
+
+    @Override
+    public void setResourceLoader(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
         if (kicked) {
             log.error("Kickstarter being loaded twice");
         }
         kicked = true;
         new Thread(new Kicker()).start();
-    }
-
-    @Override
-    public void setResourceLoader(ResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
     }
 
     private class Kicker implements Runnable {
@@ -94,6 +93,7 @@ public class StaticKickstarter implements ResourceLoaderAware {
                         log.error(String.format("Resource '%s' not a directory", resourceName));
                         continue;
                     }
+                    themeFilter.initialize(themeName);
                     kickstartDirectory(directory, directory);
                 }
             }
@@ -153,7 +153,7 @@ public class StaticKickstarter implements ResourceLoaderAware {
                             log.info(String.format("Page %s created", repoPath));
                         }
                         else {
-                            log.info(String.format("Page %s is already in the static repository, so not updating it", repoPath));
+                            log.debug(String.format("Page %s is already in the static repository, so not updating it", repoPath));
                         }
                         break;
                     case PNG:

@@ -23,7 +23,7 @@ package eu.europeana.core.util.web;
 
 import eu.delving.core.storage.TokenRepo;
 import eu.delving.core.util.EmailTarget;
-import eu.delving.core.util.ThemeInterceptor;
+import eu.delving.core.util.ThemeFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -41,7 +41,7 @@ public class TokenReplyEmailSender {
     private EmailSender emailSender;
 
     public String sendRegisterEmail(String emailAddress, String baseUrl) {
-        final EmailTarget emailTarget = ThemeInterceptor.getTheme().getEmailTarget();
+        final EmailTarget emailTarget = ThemeFilter.getTheme().getEmailTarget();
         TokenRepo.RegistrationToken token = tokenRepo.createRegistrationToken(emailAddress);
         emailSender.
                 create("confirmation").
@@ -53,7 +53,7 @@ public class TokenReplyEmailSender {
     }
 
     public String sendForgotPasswordEmail(String emailAddress, String baseUrl) {
-        final EmailTarget emailTarget = ThemeInterceptor.getTheme().getEmailTarget();
+        final EmailTarget emailTarget = ThemeFilter.getTheme().getEmailTarget();
         TokenRepo.RegistrationToken token = tokenRepo.createRegistrationToken(emailAddress);
         emailSender.
                 create("forgot-password").

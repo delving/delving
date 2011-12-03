@@ -21,10 +21,18 @@
 
 package eu.delving.metadata;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.BitSet;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Use some adjacent primes to check for uniqueness of strings based on hashCode
@@ -33,58 +41,101 @@ import java.util.BitSet;
  */
 
 public class Uniqueness {
-    private static final int[] PRIMES = {
-            4105001, 4105019, 4105033, 4105069, 4105091,
-    };
-    private MessageDigest messageDigest;
-    private BitSet[] bitSet = new BitSet[PRIMES.length];
+    private static final int HOLD_THRESHOLD = 100000;
+    private static final int TEXT_SIZE_LIMIT = 120;
+    private Set<String> all = new HashSet<String>(HOLD_THRESHOLD * 3 / 2);
+    private File tempFile;
+    private Writer out;
+    private int count;
 
     public Uniqueness() {
-        try {
-            this.messageDigest = MessageDigest.getInstance("MD5");
-        }
-        catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("MD5 not available??");
-        }
-        for (int walk = 0; walk < bitSet.length; walk++) {
-            bitSet[walk] = new BitSet(PRIMES[walk]);
-        }
     }
 
     public boolean isRepeated(String text) {
-        BigInteger hashCode =  hash(text);
-        boolean setEverywhere = true;
-        for (int walk = 0; walk < bitSet.length && setEverywhere; walk++) {
-            if (!getBit(hashCode, walk)) {
-                setEverywhere = false;
+        count++;
+        if (text.length() > TEXT_SIZE_LIMIT) {
+            return true; // a silly test on such large strings
+        }
+        if (all != null) {
+            if (all.contains(text)) {
+                return true;
+            }
+            all.add(text);
+            if (all.size() > HOLD_THRESHOLD) {
+                try {
+                    tempFile = File.createTempFile("Uniqueness", ".tmp");
+                    System.out.println("Creating temporary file "+tempFile.getAbsolutePath());
+                    tempFile.deleteOnExit();
+                    out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tempFile), "UTF-8"));
+                    for (String one : all) {
+                        out.write(one);
+                        out.write('\n');
+                    }
+                    all = null;
+                }
+                catch (IOException e) {
+                    throw new RuntimeException("Unable to create temporary file!", e);
+                }
+            }
+            return false;
+        }
+        else {
+            try {
+                out.write(text);
+                out.write('\n');
+            }
+            catch (IOException e) {
+                throw new RuntimeException("Unable to write to temporary file!", e);
+            }
+            return false;
+        }
+    }
+
+    public Set<String> getRepeated() {
+        Set<String> repeated = new TreeSet<String>();
+        if (all != null) {
+            return repeated; // empty
+        }
+        else {
+            try {
+                out.close();
+                out = null;
+                BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(tempFile), "UTF-8"));
+                all = new HashSet<String>(count * 3 / 2);
+                String line;
+                while ((line = in.readLine()) != null) {
+                    if (all.contains(line)) {
+                        repeated.add(line);
+                        if (repeated.size() > 20) {
+                            break;
+                        }
+                    }
+                    all.add(line);
+                }
+                all = null;
+                in.close();
+                if (!tempFile.delete()) {
+                    System.out.println("Unable to delete");
+                }
+            }
+            catch (IOException e) {
+                throw new RuntimeException("Unable to work with temporary file!", e);
             }
         }
-        if (setEverywhere) {
-            return true;
-        }
-        for (int walk = 0; walk < bitSet.length; walk++) {
-            setBit(hashCode, walk);
-        }
-        return false;
+        return repeated;
     }
 
-    private boolean getBit(BigInteger hashCode, int bitSetIndex) {
-        BigInteger bitNumber = hashCode.mod(BigInteger.valueOf(bitSet[bitSetIndex].size()));
-        return bitSet[bitSetIndex].get(bitNumber.intValue());
-    }
-
-    private void setBit(BigInteger hashCode, int bitSetIndex) {
-        BigInteger bitNumber = hashCode.mod(BigInteger.valueOf(bitSet[bitSetIndex].size()));
-        bitSet[bitSetIndex].set(bitNumber.intValue());
-    }
-
-    public BigInteger hash(String string) {
+    public void destroy() {
         try {
-            messageDigest.reset();
-            return new BigInteger(messageDigest.digest(string.getBytes("UTF-8")));
+            if (out != null) {
+                out.close();
+            }
+            if (tempFile != null && !tempFile.delete()) {
+                // nothing
+            }
         }
-        catch (Exception e) {
-            throw new RuntimeException(e);
+        catch (IOException e) {
+            // nothing
         }
     }
 }

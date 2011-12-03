@@ -43,11 +43,7 @@ public class GroovyList extends ArrayList<Object> {
         super(4);
     }
 
-    public GroovyList(Collection<Object> collection) {
-        super(collection);
-    }
-
-    public GroovyList(String... array) {
+    public GroovyList(Object... array) {
         super(array.length);
         addAll(Arrays.asList(array));
     }
@@ -73,6 +69,10 @@ public class GroovyList extends ArrayList<Object> {
             }
         }
         return answer;
+    }
+
+    public GroovyList children() {
+        return this;
     }
 
     /**

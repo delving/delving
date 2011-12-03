@@ -44,6 +44,7 @@ public class TestRecordValidator {
             "<europeana:collectionTitle>Tittle</europeana:collectionTitle>",
     };
     private Logger log = Logger.getLogger(getClass());
+    private Uniqueness uniqueness = new Uniqueness();
     private RecordValidator recordValidator;
     private List<String> problems = new ArrayList<String>();
     private List<String> validFields = new ArrayList<String>(Arrays.asList(VALID_FIELDZ));
@@ -53,7 +54,8 @@ public class TestRecordValidator {
         MetadataModelImpl metadataModel = new MetadataModelImpl();
         metadataModel.setRecordDefinitionResources(Arrays.asList("/abm-record-definition.xml"));
         metadataModel.setDefaultPrefix("abm");
-        recordValidator = new RecordValidator(metadataModel.getRecordDefinition(), true);
+        recordValidator = new RecordValidator(metadataModel.getRecordDefinition());
+        recordValidator.guardUniqueness(uniqueness);
         problems.clear();
     }
 
