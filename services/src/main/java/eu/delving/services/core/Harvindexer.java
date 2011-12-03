@@ -349,9 +349,9 @@ public class Harvindexer {
                                 final String abc_kunstenaar = solrInputDocument.getField("abc_kunstenaar").getFirstValue().toString();
                                 solrInputDocument.addField("sort_abc_kunstenaar", abc_kunstenaar);
                             }
-                            if (solrInputDocument.containsKey("abc_productionStart")) {
-                                final String productionStart = solrInputDocument.getField("abc_productionStart").getFirstValue().toString();
-                                solrInputDocument.addField("sort_all_abc_productionStart", productionStart);
+                            if (solrInputDocument.containsKey("abc_beginjaar")) {
+                                final String productionStart = solrInputDocument.getField("abc_beginjaar").getFirstValue().toString();
+                                solrInputDocument.addField("sort_all_abc_beginjaar", productionStart);
                             }
                             if (solrInputDocument.containsKey("abc_objectName")) {
                                 final String abc_objectName = solrInputDocument.getField("abc_objectName").getFirstValue().toString();

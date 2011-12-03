@@ -788,8 +788,8 @@
     <copyField source="dc_date" dest="date" />
     <copyField source="dcterms_created" dest="date" />
     <copyField source="dcterms_issued" dest="date" />
-    <copyField source="abc_productionStart" dest="date" />
-    <copyField source="abc_productionEnd" dest="date" />
+    <copyField source="abc_beginjaar" dest="date" />
+    <copyField source="abc_eindjaar" dest="date" />
     <copyField source="dcterms_issued" dest="date" />
     <copyField source="dcterms_issued" dest="date" />
 

@@ -59,7 +59,7 @@
         <field prefix="abc" localName="dimensionUnit"/>
         <field prefix="abc" localName="dimension"/>
         <field prefix="abc" localName="technique"/>
-        <field prefix="abc" localName="material"/>
+        <field prefix="abc" localName="materiaal"/>
         <field prefix="abc" localName="deepzoomUrl"/>
         <field prefix="abc" localName="smallThumbnail"/>
         <field prefix="abc" localName="largeThumbnail"/>
