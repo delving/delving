@@ -99,12 +99,14 @@ public class LocalizedFieldNames {
             if (map == null) {
                 fieldToName.put(locale, map = new TreeMap<String, String>());
                 for (String key : keys) {
-                    String wholeKey = METADATA_KEY_PREFIX + key;
-                    String value = messageSource.getMessage(wholeKey, null, locale);
-                    if (wholeKey.equals(value)) {
-                        throw new RuntimeException(String.format("No translation found for %s", wholeKey));
+                    if (!key.isEmpty()) {
+                        String wholeKey = METADATA_KEY_PREFIX + key;
+                        String value = messageSource.getMessage(wholeKey, null, locale);
+                        if (wholeKey.equals(value)) {
+                            throw new RuntimeException(String.format("No translation found for %s", wholeKey));
+                        }
+                        map.put(wholeKey, value);
                     }
-                    map.put(wholeKey, value);
                 }
             }
             return map;
