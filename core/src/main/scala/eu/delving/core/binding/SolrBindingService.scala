@@ -24,7 +24,6 @@ package eu.delving.core.binding
 import scala.collection.JavaConversions._
 import scala.reflect.BeanProperty
 import org.apache.solr.common.SolrDocumentList
-import java.util. {Date, ArrayList, List => JList}
 import java.lang.{Boolean => JBoolean, Float => JFloat}
 import eu.europeana.core.querymodel.query._
 import org.apache.solr.client.solrj.response. {FacetField, QueryResponse}
@@ -33,6 +32,7 @@ import xml. {MetaData, NodeSeq, Elem, XML}
 import collection.immutable. {HashMap, Map => ImMap}
 import org.apache.solr.client.solrj.response.FacetField.Count
 import collection.mutable. {Buffer, ListBuffer, Map}
+import java.util.{Date, ArrayList, List => JList}
 
 /**
  *
@@ -146,6 +146,8 @@ object SolrBindingService {
 
   def createFacetMap(links : JList[FacetQueryLinks]) = FacetMap(links.toList)
 
+  def createFacetStatistics(facets: JList[FacetField], withDigitalObjects: JList[FacetField]) = FacetStatisticsMap(facets.toList, withDigitalObjects.toList)
+
   def createFacetStatistics(facets: JList[FacetField]) = FacetStatisticsMap(facets.toList)
 }
 
@@ -162,12 +164,27 @@ case class FacetMap(private val links : List[FacetQueryLinks]) {
   def getFacet(key: String) : FacetQueryLinks = facetMap.getOrElse(key, new FacetQueryLinks("unknown"))
 }
 
-case class FacetStatisticsMap(private val facets: List[FacetField]) {
+case class FacetObject(name: String, totalCount: Long, digitalObject: Long = 0)
 
-  val facetsMap = Map[String, JList[FacetField.Count]]()
+case class FacetStatisticsMap(private val facets: List[FacetField], private val digitalObjectFacet: List[FacetField] = List[FacetField]()) {
+
+  val facetsMap = Map[String, JList[FacetObject]]()
   facets.foreach{
     facet =>
-      if (facet.getValueCount != 0) facetsMap put (facet.getName, facet.getValues)
+      if (facet.getValueCount != 0) facetsMap put (facet.getName, createMergedFacetObjects(facet.getName, facet.getValues, digitalObjectFacet.find(_.getName.equalsIgnoreCase(facet.getName)).getOrElse(getDummyFacetField).getValues)) // add merged counts
+  }
+
+  private def createMergedFacetObjects(name: String, total: JList[FacetField.Count], withDigitalObjects: JList[FacetField.Count]) : JList[FacetObject] = {
+    val list = total.map{
+      facet => {
+        val matchedValue = withDigitalObjects.find(_.getName == facet.getName)
+        matchedValue match {
+          case Some(matchedFacet) => FacetObject(facet.getName, facet.getCount, matchedFacet.getCount)
+          case None => FacetObject(facet.getName, facet.getCount, 0)
+        }
+      }
+    }
+    list.toList
   }
 
   def facetExists(key: String): Boolean = facetsMap.containsKey(key)
@@ -181,13 +198,13 @@ case class FacetStatisticsMap(private val facets: List[FacetField]) {
   }
 
   def getFacetValueCount(key: String, facetName: String) = {
-    val count : Count = getFacet(facetName).filter(fc => fc.getName == key).headOption.getOrElse(new FacetField.Count(getDummyFacetField, "unknown", 0))
+    val count = facets.toList.filter(facet => facet.getName.equalsIgnoreCase(facetName)).headOption.getOrElse(getDummyFacetField).getValues.find(_.getName == key).headOption.getOrElse(new FacetField.Count(getDummyFacetField, key, 0))
     count.getCount
   }
 
   def getFacetCount(key: String) = facets.filter(ff => ff.getName == key).headOption.getOrElse(getDummyFacetField).getValueCount
 
-  def getFacet(key: String) : JList[FacetField.Count] = facetsMap.getOrElse(key, getDummyFacetField.getValues)
+  def getFacet(key: String) : JList[FacetObject] = facetsMap.getOrElse(key, List(FacetObject(key, 0, 0)))
 
 }
 
