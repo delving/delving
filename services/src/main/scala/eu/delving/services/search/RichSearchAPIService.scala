@@ -120,6 +120,7 @@ class RichSearchAPIService(aro : ApiRequestObject) {
 
     if (jParams.containsKey("fl")) solrQuery.setFields(jParams.get("fl").headOption.getOrElse("*,score")) else solrQuery.setFields("*,score")
     if (jParams.contains("facet.limit")) solrQuery.setFacetLimit(Integer.valueOf(jParams.get("facet.limit").headOption.getOrElse("100")))
+    if (jParams.getOrElse("facet.missing", "false").toString.equalsIgnoreCase("true")) solrQuery.setFacetMissing(true)
 
     val briefResultView = aro.beanQueryModelFactory.getBriefResultView(solrQuery, solrQuery.getQuery, jParams, aro.locale)
     aro.clickStreamLogger.logApiBriefView(aro.request, briefResultView, solrQuery)
@@ -257,6 +258,13 @@ case class SearchSummary(result : BriefBeanView, aro : ApiRequestObject) {
     "Subject(s)" -> "dc:subject", "County" -> "abm:county", "Municipality" -> "abm:municipality", "Place" -> "abm:namedPlace",
     "Person(s)" -> "abm:aboutPerson")
 
+  // workaround for to be able to use internationalisation keys for the facets
+  val facetMap = LinkedHashMap[String, String]("LANGUAGE" -> "dc:language", "YEAR" -> "europeana:year", "HASDIGITALOBJECT" -> "europeana:hasDigitalObject",
+    "TYPE" -> "dc:type", "PROVIDER" -> "europeana:provider", "DATAPROVIDER" -> "europeana:dataProvider", "NAMEDPLACE" -> "abm:namedPlace",
+    "COUNTY" -> "abm:county", "ABOUTPERSON" -> "abm:aboutPerson", "MUNICIPALITY" -> "abm:municipality")
+
+  def getMetadataKey(facetKey: String) = facetMap.get(facetKey).getOrElse("unknown")
+
   def renderAsXML(authorized : Boolean) : Elem = {
 
     val response : Elem =
@@ -301,7 +309,7 @@ case class SearchSummary(result : BriefBeanView, aro : ApiRequestObject) {
         </items>
         <facets>
           {result.getFacetQueryLinks.map(fql =>
-            <facet name={fql.getType} isSelected={fql.isSelected.toString}>
+            <facet name={fql.getType} isSelected={fql.isSelected.toString} i18n={localiseKey(metadataField = getMetadataKey(fql.getType), language = language)}>
               {fql.getLinks.map(link =>
                     <link url={minusAmp(link.getUrl)} isSelected={link.isRemove.toString} value={link.getValue} count={link.getCount.toString}>{link.getValue} ({link.getCount})</link>
             )}
