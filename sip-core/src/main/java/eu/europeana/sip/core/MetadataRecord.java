@@ -190,7 +190,7 @@ public class MetadataRecord {
                             if (node == null) {
                                 throw new RuntimeException("Node cannot be null");
                             }
-                            String valueString = value.toString().replaceAll("\n", " ").replaceAll(" +", " ").trim();
+                            String valueString = sanitize(value.toString());
                             value.setLength(0);
                             if (valueString.length() > 0) {
                                 node.setValue(valueString);
@@ -223,6 +223,19 @@ public class MetadataRecord {
             out.append(xmlRecord);
             out.append("</record>");
             return out.toString();
+        }
+
+        public static String sanitize(String dirty) {
+            if (dirty.contains("\n") || dirty.contains("\r")) {
+                StringBuilder out = new StringBuilder(dirty.length());
+                for (char c : dirty.toCharArray()) {
+                    out.append(Character.isWhitespace(c) ? ' ' : c);
+                }
+                return out.toString().replaceAll(" +", " ").trim();
+            }
+            else {
+                return dirty;
+            }
         }
     }
 

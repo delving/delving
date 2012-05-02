@@ -110,7 +110,7 @@ public class MetadataParser {
                     break;
                 case XMLEvent.END_ELEMENT:
                     if (node != null) {
-                        String valueString = sanitize(value.toString());
+                        String valueString = MetadataRecord.Factory.sanitize(value.toString());
                         value.setLength(0);
                         if (valueString.length() > 0) {
                             node.setValue(valueString);
@@ -156,14 +156,6 @@ public class MetadataParser {
         catch (XMLStreamException e) {
             e.printStackTrace(); // should never happen
         }
-    }
-
-    private static String sanitize(String dirty) {
-        StringBuilder out = new StringBuilder(dirty.length());
-        for (char c : dirty.toCharArray()) {
-            out.append(Character.isWhitespace(c) ? ' ' : c);
-        }
-        return out.toString().replaceAll(" +", " ").trim();
     }
 
     public static class AbortException extends Exception {
