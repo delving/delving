@@ -165,8 +165,8 @@ class ImageCacheService(mongoFactory : MongoFactory) {
     val httpClient = new HttpClient(multiThreadedHttpConnectionManager)
     val method = new GetMethod(url)
     httpClient executeMethod (method)
-    method.getResponseHeaders.foreach(header => log debug (header) )
-//    println(method.getStatusText)
+    method.getResponseHeaders.foreach(header => log info (header) )
+    println(method.getStatusText)
     val storable = isStorable(method)
     WebResource(url, method.getResponseBodyAsStream, storable._1, storable._2)
   }
@@ -176,7 +176,7 @@ class ImageCacheService(mongoFactory : MongoFactory) {
     val contentLength : Header = method.getResponseHeader("Content-Length")
     val mimeTypes = List("image/png", "image/jpeg", "image/jpg", "image/gif", "image/tiff", "image/pjpeg")
     //todo build a size check in later
-    (mimeTypes.contains(contentType.getValue.toLowerCase), contentType.getValue)
+    (mimeTypes.contains(contentType.getValue.toLowerCase.split(",").head), contentType.getValue)
   }
 
   private def respondWithNotFound(url: String, response: HttpServletResponse) : HttpServletResponse = {

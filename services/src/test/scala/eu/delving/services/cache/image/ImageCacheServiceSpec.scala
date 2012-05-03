@@ -50,8 +50,9 @@ class ImageCacheServiceSpec extends Spec with ShouldMatchers with MockitoSugar {
     factory.afterPropertiesSet()
 
     val imageCacheService = new ImageCacheService(factory)
-    val testUrl = """https://repository.uba.uva.nl:8443/fedora/objects/unicum:tud.images.f777593b7b667ab5d6efef5eb26d88f8/datastreams/IMAGE/content"""
-//    val testUrl = """http://62.221.199.163:5294/imageproxy.asp?server=62.221.199.182&port=2107&maxwidth=500&filename=1154-A1.jpg"""
+//    val testUrl = """http://media31.dimu.no/media/image/OMU/TM.01805.1-16/0?byIndex=true&height=400&width=400"""
+//    val testUrl = """https://repository.uba.uva.nl:8443/fedora/objects/unicum:tud.images.f777593b7b667ab5d6efef5eb26d88f8/datastreams/IMAGE/content"""
+    val testUrl = """http://62.221.199.163:5294/imageproxy.asp?server=62.221.199.182&port=2107&maxwidth=500&filename=1154-A1.jpg"""
 
     describe("(when an object is not found in the cache)") {
 
