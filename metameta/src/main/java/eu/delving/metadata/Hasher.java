@@ -74,6 +74,7 @@ public class Hasher {
             Hasher hasher = new Hasher();
             hasher.update(file);
             File hashedFile = new File(file.getParentFile(), hasher.getHashString() + SEPARATOR + file.getName());
+            if (hashedFile.exists()) hashedFile.delete();
             if (!file.renameTo(hashedFile)) {
                 throw new IOException(String.format("Unable to rename %s to %s", file.getAbsolutePath(), hashedFile.getAbsolutePath())) ;
             }
