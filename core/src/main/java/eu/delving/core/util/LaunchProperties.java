@@ -61,7 +61,7 @@ public class LaunchProperties extends Properties {
             }
         }
         catch (Exception e) {
-            log.fatal("Error loading properties from " + propertyFilePath);
+            log.fatal("Error loading properties from " + propertyFilePath, e);
             System.exit(1);
         }
     }
