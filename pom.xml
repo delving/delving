@@ -69,12 +69,12 @@
         <repository>
             <id>releases</id>
             <name>delving</name>
-            <url>http://development.delving.org:8081/nexus/content/groups/public</url>
+            <url>http://development.delving.org/nexus/content/groups/public</url>
         </repository>
         <repository>
             <id>snapshots</id>
             <name>delving</name>
-            <url>http://development.delving.org:8081/nexus/content/repositories/snapshots</url>
+            <url>http://development.delving.org/nexus/content/repositories/snapshots</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
