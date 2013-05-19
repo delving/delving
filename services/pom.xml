@@ -190,7 +190,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.oxm</artifactId>
+            <artifactId>spring-oxm</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
