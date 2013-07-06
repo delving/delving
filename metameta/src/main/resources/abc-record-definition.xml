@@ -116,7 +116,7 @@
         <field prefix="dcterms" localName="issued" searchField="date"/>
         <field prefix="dcterms" localName="medium" searchField="format"/>
         <field prefix="dcterms" localName="provenance"/>
-        <field prefix="dcterms" localName="references"/>
+        <field prefix="dcterms" localName="references" facetName="exhibition" facetPrefix="exh" sortable="true"/>
         <field prefix="dcterms" localName="replaces" searchField="relation"/>
         <field prefix="dcterms" localName="requires" searchField="relation"/>
         <field prefix="dcterms" localName="spatial" searchField="where,location,subject"/>
